@@ -345,7 +345,22 @@ def _item(id, kind, title, ident, url, all_urls, host, provider, origins, topics
         "category": category, "license": license, "weights": weights,
         "notes": notes, "context": context, "source_files": source_files,
         "preview_url": preview_url, "via_linkedin": via_linkedin,
+        "date": "", "drive_url": "",
     }
+
+def derive_date(text):
+    t = text or ""
+    m = re.search(r"/(20\d{2})\.(\d{2})\.\d{2}", t)          # biorxiv/medrxiv YYYY.MM.DD
+    if m and 1 <= int(m.group(2)) <= 12:
+        return m.group(1) + "-" + m.group(2)
+    m = re.search(r"/(20\d{2})/(\d{2})/", t)                 # blog /YYYY/MM/
+    if m and 1 <= int(m.group(2)) <= 12:
+        return m.group(1) + "-" + m.group(2)
+    m = re.search(r"\b([0-2]\d)(\d{2})\.\d{4,5}\b", t)       # arXiv YYMM.xxxxx
+    if m and 1 <= int(m.group(2)) <= 12:
+        yy = int(m.group(1))
+        return ("20" if yy < 80 else "19") + m.group(1) + "-" + m.group(2)
+    return ""
 
 # ----------------------------------------------------------------------------- main
 
@@ -369,6 +384,22 @@ def main():
             if pv.get(it["id"]):
                 it["preview_url"] = pv[it["id"]]
         print("merged", sum(1 for it in items if it["preview_url"]), "previews")
+
+    # dates + Drive-copy links (match your existing Drive PDFs by id/DOI token)
+    drive = {}
+    dp = os.path.join(SRC, "drive_pdfs.json")
+    if os.path.exists(dp):
+        with open(dp, encoding="utf-8") as f:
+            drive = json.load(f)
+    for it in items:
+        it["date"] = derive_date(it["url"] + " " + it.get("ident", "") + " " + it.get("context", ""))
+        if it["kind"] in ("paper", "dataset") and drive:
+            hay = (it["url"] + " " + it.get("ident", "")).lower()
+            for tok, fid in drive.items():
+                if tok.lower() in hay:
+                    it["drive_url"] = "https://drive.google.com/file/d/" + fid + "/view"
+                    break
+    print("dated", sum(1 for it in items if it["date"]), "| drive-linked", sum(1 for it in items if it["drive_url"]))
 
     def tally(field):
         c = {}

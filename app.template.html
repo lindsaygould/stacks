@@ -111,6 +111,32 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .railstats{margin-top:26px;padding-top:14px;border-top:1px solid var(--edge);font-family:var(--mono);
     font-size:10.5px;line-height:1.9;color:var(--faint)}
   .railstats b{color:var(--dim);font-weight:400}
+  /* timeline */
+  .tl-lbl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--dim);margin-bottom:6px;font-variant-numeric:tabular-nums}
+  .tl-histo{display:flex;align-items:flex-end;gap:2px;height:36px;margin-bottom:8px}
+  .tl-histo span{flex:1;min-width:1px;border-radius:2px 2px 0 0;background:var(--hover);transition:background .16s}
+  .tl-histo span.in{background:var(--grad)}
+  .tl-presets{display:flex;flex-wrap:wrap;gap:6px}
+  .tl-presets button{font-size:11.5px;padding:4px 10px;border-radius:99px;border:1px solid var(--edge);background:var(--hover);color:var(--dim);transition:all .14s}
+  .tl-presets button:hover{color:var(--ink);border-color:var(--edge2)}
+  .tl-presets button.on{background:var(--grad);color:var(--on-accent);border-color:transparent;font-weight:600}
+  .tl-range{display:flex;gap:6px;align-items:center;margin-top:8px;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+  .tl-range input{border:1px solid var(--edge);background:var(--hover);color:var(--ink);border-radius:8px;padding:4px 6px;font-family:var(--mono);font-size:11px;width:96px}
+  /* drive button */
+  .tg.drive{color:#2f8f5b;border-color:rgba(47,143,91,.45)}
+  .m-drive{border:1px solid rgba(47,143,91,.5);color:#2f8f5b;border-radius:99px;padding:9px 16px;font-size:13px;font-weight:600}
+  .m-drive:hover{background:rgba(47,143,91,.1)}
+  /* progressive add */
+  .adv-toggle{margin-top:14px;font-size:12.5px;color:var(--accent);font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+  .adv-body{display:none}
+  .adv-body.open{display:block}
+  /* auth gate */
+  #gate{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px}
+  #gate .box{max-width:380px;text-align:center}
+  #gate h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+  #gate p{color:var(--dim);font-size:14px;line-height:1.55;margin-bottom:20px}
+  #gate .gbtn{display:inline-flex}
+  #gate .err{color:#e0663a;font-size:13px;margin-top:14px}
 
   main{padding:20px 24px 110px;min-width:0}
   .toolbar{display:flex;align-items:center;gap:10px 14px;margin-bottom:16px;flex-wrap:wrap}
@@ -314,6 +340,7 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   <aside id="rail" aria-label="Filters">
     <div class="railhead"><h2>Filters</h2><button id="clear-all">Clear all</button></div>
     <div id="pills" aria-live="polite"></div>
+    <section class="facet" id="timeline"></section>
     <div id="facets"></div>
     <div class="railstats" id="railstats"></div>
   </aside>
@@ -336,6 +363,7 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
           <option value="kind">Type</option>
           <option value="source">Source</option>
           <option value="added">Recently added</option>
+          <option value="date">Newest dated</option>
         </select></label></div>
     </div>
     <div id="grid"></div>
@@ -365,6 +393,12 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
 <script>
 'use strict';
 const BASE_DATA = __INVERSAL_DATA__;
+
+/* ---- Gmail gate (private access) ----
+   To turn on: set clientId to a Google OAuth Web Client ID (console.cloud.google.com
+   -> APIs & Services -> Credentials -> OAuth client ID -> Web app; add this site's URL
+   as an authorized JavaScript origin), and list the emails you allow. Empty = open. */
+const AUTH = { clientId: '', allow: [] };
 
 const KIND_LABEL = {paper:'Paper', model:'Model', repo:'Repo', dataset:'Dataset', toolkit:'Toolkit',
   benchmark:'Benchmark', video:'Video', podcast:'Podcast', article:'Article', company:'Company', event:'Event', grant:'Grant', other:'Other'};
@@ -415,7 +449,7 @@ let ALL = [];
 function rebuild(){ ALL = BASE_DATA.items.concat(USER); }
 rebuild();
 
-const state = { q:'', sort:'relevance', view:'cards', f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set()} };
+const state = { q:'', sort:'relevance', view:'cards', dateFrom:'', dateTo:'', f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set()} };
 
 const FACETS = [
   {key:'kind', title:'Type', field:'kind', order:['paper','model','repo','dataset','toolkit','benchmark','video','podcast','article','company','event','grant','other'], label:k=>KIND_LABEL[k]||k},
@@ -437,15 +471,52 @@ function passFacet(it,fk){
   for(const v of sel) if(arr.includes(v)) return true;
   return false;
 }
+function passDate(it){
+  if(!state.dateFrom && !state.dateTo) return true;
+  if(!it.date) return false;
+  if(state.dateFrom && it.date < state.dateFrom) return false;
+  if(state.dateTo && it.date > state.dateTo) return false;
+  return true;
+}
 function filtered(exceptFacet){
   return ALL.filter(it=>{
     if(!matchesText(it,state.q)) return false;
+    if(!passDate(it)) return false;
     for(const f of FACETS){ if(f.key===exceptFacet) continue; if(!passFacet(it,f.key)) return false; }
     return true;
   });
 }
 function current(){ return filtered(null); }
 
+function renderTimeline(){
+  const el=$('#timeline'); const dated=ALL.filter(i=>i.date);
+  if(dated.length<3){ el.innerHTML=''; return; }
+  const months=[...new Set(dated.map(i=>i.date))].sort();
+  const min=months[0], max=months[months.length-1];
+  const seq=[]; let y=+min.slice(0,4), m=+min.slice(5,7); const ey=+max.slice(0,4), em=+max.slice(5,7);
+  while((y<ey||(y===ey&&m<=em)) && seq.length<420){ seq.push(y+'-'+String(m).padStart(2,'0')); if(++m>12){m=1;y++;} }
+  const counts={}; dated.forEach(i=>counts[i.date]=(counts[i.date]||0)+1);
+  const maxc=Math.max(1,...seq.map(mo=>counts[mo]||0));
+  const active=!!(state.dateFrom||state.dateTo); const from=state.dateFrom||min, to=state.dateTo||max;
+  const bars=seq.map(mo=>{ const h=Math.round(5+((counts[mo]||0)/maxc)*30); const inr=active&&mo>=from&&mo<=to;
+    return '<span class="'+(inr?'in':'')+'" style="height:'+h+'px" title="'+mo+': '+(counts[mo]||0)+'"></span>'; }).join('');
+  el.innerHTML='<h3>When'+(active?' · '+esc(from)+' → '+esc(to):'')+'</h3>'
+    +'<div class="tl-lbl"><span>'+esc(min)+'</span><span>'+esc(max)+'</span></div>'
+    +'<div class="tl-histo">'+bars+'</div>'
+    +'<div class="tl-presets"><button data-p="all" class="'+(!active?'on':'')+'">All time</button>'
+    +'<button data-p="2026" class="'+(state.dateFrom==='2026-01'?'on':'')+'">2026</button>'
+    +'<button data-p="2025" class="'+(state.dateFrom==='2025-01'?'on':'')+'">2025</button>'
+    +'<button data-p="old" class="'+(state.dateTo==='2024-12'&&!state.dateFrom?'on':'')+'">Older</button></div>'
+    +'<div class="tl-range"><input type="month" id="d-from" value="'+(state.dateFrom||'')+'" aria-label="From month"><span>→</span><input type="month" id="d-to" value="'+(state.dateTo||'')+'" aria-label="To month"></div>';
+  el.querySelectorAll('.tl-presets button').forEach(b=>b.onclick=()=>{ const p=b.dataset.p;
+    if(p==='all'){state.dateFrom='';state.dateTo='';}
+    else if(p==='2026'){state.dateFrom='2026-01';state.dateTo='2026-12';}
+    else if(p==='2025'){state.dateFrom='2025-01';state.dateTo='2025-12';}
+    else{state.dateFrom='';state.dateTo='2024-12';}
+    syncViewsUI(); sync(); render(); });
+  $('#d-from').onchange=e=>{ state.dateFrom=e.target.value; syncViewsUI(); sync(); render(); };
+  $('#d-to').onchange=e=>{ state.dateTo=e.target.value; syncViewsUI(); sync(); render(); };
+}
 function renderFacets(){
   const wrap=$('#facets'); wrap.innerHTML='';
   for(const f of FACETS){
@@ -484,6 +555,7 @@ function sortItems(items){
   if(s==='kind') return items.slice().sort((a,b)=>a.kind.localeCompare(b.kind)||a.title.localeCompare(b.title));
   if(s==='source') return items.slice().sort((a,b)=>(a.origins[0]||'').localeCompare(b.origins[0]||'')||a.title.localeCompare(b.title));
   if(s==='added') return items.slice().sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
+  if(s==='date') return items.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   if(state.q) return items.slice().sort((a,b)=>score(b,state.q)-score(a,state.q));
   return items;
 }
@@ -521,7 +593,8 @@ function renderGrid(){
       const desc = it.context || it.notes || (it.category?('Type: '+it.category):'') || it.url;
       const tags = it.focus.concat(it.topics).slice(0,3).map(t=>'<span class="tg">'+esc(FOCUS_LABEL[t]||TOPIC_LABEL[t]||t)+'</span>').join('');
       const src = it.origins.map(o=>'<span class="tg src'+(o==='Added by you'?' you':'')+'">'+esc(o)+'</span>').join('')
-        + (it.via_linkedin?'<span class="tg li">via LinkedIn</span>':'');
+        + (it.via_linkedin?'<span class="tg li">via LinkedIn</span>':'')
+        + (it.drive_url?'<span class="tg drive">Drive ✓</span>':'');
       const el=document.createElement('article'); el.className='card'; el.dataset.id=it.id;
       el.innerHTML = cardCover(it)
         +'<div class="cbody"><div class="ctitle">'+esc(it.title)+'</div>'
@@ -547,6 +620,7 @@ function openDetail(id){
   let rows='';
   rows+=row('Links',urls);
   rows+=row('Provider',esc(it.provider)+(it.host?(' · '+esc(it.host)):''));
+  if(it.date) rows+=row('Date',esc(it.date));
   if(it.category) rows+=row('Category',esc(it.category));
   if(it.license) rows+=row('License',esc(it.license));
   if(it.weights) rows+=row('Weights','Pretrained weights available');
@@ -563,6 +637,7 @@ function openDetail(id){
     +(it.notes&&it.notes!==it.context?'<div class="m-desc">'+esc(it.notes)+'</div>':'')
     +rows
     +'<div class="m-actions"><a class="m-open" href="'+esc(it.url)+'" target="_blank" rel="noopener">Open source ↗</a>'
+    +(it.drive_url?'<a class="m-drive" href="'+esc(it.drive_url)+'" target="_blank" rel="noopener">📄 Your Drive copy</a>':'')
     +'<button class="m-copy" id="copy-md">Copy as Markdown</button>'
     +(it.added?'<button class="m-copy" id="del-item">Delete</button>':'')+'</div></div>';
   $('#modal-body').innerHTML=body; showModal('#modal');
@@ -593,10 +668,13 @@ function openAdd(){
   const domainBoxes=['ai','mental-health'].map(k=>'<label><input type="checkbox" data-domain="'+k+'">'+DOMAIN_LABEL[k]+'</label>').join('');
   const topicBoxes=Object.keys(TOPIC_LABEL).map(k=>'<label><input type="checkbox" data-topic="'+k+'">'+TOPIC_LABEL[k]+'</label>').join('');
   $('#add-body').innerHTML='<div class="m-pad"><div class="m-kind">Add material</div>'
-    +'<h2 class="m-title" style="margin-bottom:2px">New source</h2>'
-    +'<p class="form-hint">Paste any link — a paper, repo, model, YouTube video, company, grant, article. Type &amp; provider are guessed for you. If it came from a LinkedIn post, drop the post text in Context.</p>'
+    +'<h2 class="m-title" style="margin-bottom:2px">Paste a link</h2>'
+    +'<p class="form-hint">That’s all you need — type, provider and a title fill in automatically. Add details only if you want to.</p>'
     +'<div class="form-row"><label>URL</label><input type="url" id="a-url" placeholder="https://…"></div>'
-    +'<div class="form-row"><label>Title</label><input type="text" id="a-title" placeholder="What is it?"></div>'
+    +'<div class="m-actions" style="margin-top:14px"><button class="m-open" id="a-save">Add to Stacks</button><button class="m-copy" data-close>Cancel</button></div>'
+    +'<span class="adv-toggle" id="adv-toggle">＋ Add details (optional)</span>'
+    +'<div class="adv-body" id="adv-body">'
+    +'<div class="form-row"><label>Title</label><input type="text" id="a-title" placeholder="Auto from the link"></div>'
     +'<div class="form-row"><label>Type</label><select id="a-kind">'+Object.keys(KIND_LABEL).map(k=>'<option value="'+k+'">'+KIND_LABEL[k]+'</option>').join('')+'</select></div>'
     +'<div class="form-row"><label>Domain</label><div class="checks">'+domainBoxes+'</div></div>'
     +'<div class="form-row"><label>Mental-health focus</label><div class="checks">'+focusBoxes+'</div></div>'
@@ -604,13 +682,13 @@ function openAdd(){
     +'<div class="form-row"><label>Source</label><select id="a-source"><option>Added by you</option><option>Manual search</option><option>Claude</option><option>Claude Science</option></select></div>'
     +'<div class="form-row"><label>Context / notes <span style="text-transform:none;color:var(--faint)">(paste the LinkedIn post or why it matters)</span></label><textarea id="a-notes" placeholder="One-line summary, the LinkedIn caption, why you saved it…"></textarea>'
     +'<label style="margin-top:8px;text-transform:none;letter-spacing:normal;color:var(--dim);display:inline-flex;gap:6px;align-items:center"><input type="checkbox" id="a-li"> Came from a LinkedIn post</label></div>'
-    +'<div class="m-actions"><button class="m-open" id="a-save">Add to Stacks</button><button class="m-copy" data-close>Cancel</button></div>'
-    +'<p class="form-hint" style="margin-top:12px">Saved in this browser. Use <b>Export → JSON</b> to download the full library and commit it to the repo to make it permanent.</p></div>';
+    +'</div>'
+    +'<p class="form-hint" style="margin-top:14px">Saved in this browser. Use <b>Export → JSON</b> to download the full library and commit it to the repo to make it permanent.</p></div>';
   showModal('#addmodal');
-  const urlEl=$('#a-url');
+  $('#adv-toggle').onclick=()=>{ $('#adv-body').classList.toggle('open'); $('#adv-toggle').textContent=$('#adv-body').classList.contains('open')?'– Hide details':'＋ Add details (optional)'; };
+  const urlEl=$('#a-url'); setTimeout(()=>urlEl.focus(),50);
   urlEl.oninput=()=>{ const u=urlEl.value.trim(); if(!/^https?:\/\//.test(u)) return;
     $('#a-kind').value=detectKind(u);
-    if(u.toLowerCase().includes('youtube')||u.toLowerCase().includes('youtu.be')){ /* preview auto on save */ }
     if(!$('#a-title').value){ try{ const seg=new URL(u).pathname.split('/').filter(Boolean).pop()||new URL(u).hostname;
       $('#a-title').value=decodeURIComponent(seg).replace(/[-_]/g,' ').replace(/\.(pdf|html?)$/,''); }catch(e){} }
   };
@@ -667,9 +745,9 @@ function download(name,text,type){ const b=new Blob([text],{type}); const a=docu
 function loadViews(){ try{ return JSON.parse(localStorage.getItem('stacks-views')||'[]'); }catch(e){ return []; } }
 function storeViews(v){ localStorage.setItem('stacks-views', JSON.stringify(v)); }
 function serializeState(){ const f={}; for(const k in state.f) f[k]=Array.from(state.f[k]);
-  return {q:state.q, sort:state.sort, view:state.view, f}; }
+  return {q:state.q, sort:state.sort, view:state.view, dateFrom:state.dateFrom, dateTo:state.dateTo, f}; }
 function applyState(s){ state.q=s.q||''; $('#q').value=state.q; state.sort=s.sort||'relevance'; $('#sort').value=state.sort;
-  state.view=s.view||'cards'; for(const k in state.f){ state.f[k]=new Set((s.f&&s.f[k])||[]); }
+  state.view=s.view||'cards'; state.dateFrom=s.dateFrom||''; state.dateTo=s.dateTo||''; for(const k in state.f){ state.f[k]=new Set((s.f&&s.f[k])||[]); }
   setViewSeg(); sync(); render(); }
 function renderViewsSelect(sel){ const views=loadViews(); const el=$('#views');
   el.innerHTML='<option value="">— saved views —</option>'+views.map((v,i)=>'<option value="'+i+'"'+(sel===i?' selected':'')+'>'+esc(v.name)+'</option>').join('');
@@ -756,16 +834,18 @@ function ask(q){
   }
 }
 
-function clearFilters(){ for(const f of FACETS) state.f[f.key].clear(); }
+function clearFilters(){ for(const f of FACETS) state.f[f.key].clear(); state.dateFrom=''; state.dateTo=''; }
 function showModal(sel){ $(sel).hidden=false; document.body.style.overflow='hidden'; }
 function hideModal(sel){ $(sel).hidden=true; document.body.style.overflow=''; }
-function render(){ renderFacets(); renderPills(); renderGrid(); }
+function render(){ renderTimeline(); renderFacets(); renderPills(); renderGrid(); }
 function sync(){ const p=new URLSearchParams(); if(state.q)p.set('q',state.q);
   for(const f of FACETS) if(state.f[f.key].size) p.set(f.key, Array.from(state.f[f.key]).join('~'));
   if(state.sort!=='relevance') p.set('sort',state.sort); if(state.view!=='cards') p.set('view',state.view);
+  if(state.dateFrom)p.set('from',state.dateFrom); if(state.dateTo)p.set('to',state.dateTo);
   history.replaceState(null,'', location.pathname+(p.toString()?('?'+p):'')); }
 function restore(){ const p=new URLSearchParams(location.search); state.q=p.get('q')||''; $('#q').value=state.q;
   state.sort=p.get('sort')||'relevance'; $('#sort').value=state.sort; state.view=p.get('view')||'cards'; setViewSeg();
+  state.dateFrom=p.get('from')||''; state.dateTo=p.get('to')||'';
   for(const f of FACETS){ const v=p.get(f.key); if(v) v.split('~').forEach(x=>state.f[f.key].add(x)); } }
 
 function railstats(){ const c=BASE_DATA.counts;
@@ -794,7 +874,23 @@ const PILLS=['Show me all the repos','Papers about ketamine','EEG foundation mod
 $('#chat-pills').innerHTML=PILLS.map(p=>'<button>'+p+'</button>').join('');
 $('#chat-pills').querySelectorAll('button').forEach(b=>b.onclick=()=>ask(b.textContent));
 
-restore(); renderViewsSelect(); railstats(); render();
+function jwtEmail(tok){ try{ const p=tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+  return (JSON.parse(decodeURIComponent(escape(atob(p)))).email||'').toLowerCase(); }catch(e){ return ''; } }
+window.onCred=function(resp){ const email=jwtEmail(resp.credential||'');
+  if(AUTH.allow.map(e=>e.toLowerCase()).includes(email)){ localStorage.setItem('stacks-auth', email); const g=$('#gate'); if(g) g.remove(); }
+  else{ const e=$('#gerr'); if(e) e.textContent= email? (email+' is not on the allowed list.') : 'Sign-in failed — try again.'; } };
+function initGate(){
+  if(!AUTH.clientId) return;
+  if(localStorage.getItem('stacks-auth')) return;
+  const g=document.createElement('div'); g.id='gate';
+  g.innerHTML='<div class="box"><h1>Stacks</h1><p>This library is private. Sign in with an approved Google account to continue.</p><div id="gbtn" class="gbtn"></div><div class="err" id="gerr"></div></div>';
+  document.body.appendChild(g);
+  const s=document.createElement('script'); s.src='https://accounts.google.com/gsi/client'; s.async=true;
+  s.onload=()=>{ try{ google.accounts.id.initialize({client_id:AUTH.clientId, callback:window.onCred});
+    google.accounts.id.renderButton($('#gbtn'), {theme:'filled_black', size:'large', text:'signin_with', shape:'pill'}); }catch(e){} };
+  document.body.appendChild(s);
+}
+restore(); renderViewsSelect(); railstats(); render(); initGate();
 </script>
 </body>
 </html>
