@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Inversal — your neuro-AI knowledge base</title>
+<title>Stacks — your research source library</title>
 <script>
-(function(){var t='dark';try{t=localStorage.getItem('inversal-theme')||'dark'}catch(e){}
+(function(){var t='dark';try{t=localStorage.getItem('stacks-theme')||'dark'}catch(e){}
 if(t!=='light')document.documentElement.classList.add('dark');})();
 </script>
 <style>
@@ -47,7 +47,6 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   ::-webkit-scrollbar{width:10px;height:10px}
   ::-webkit-scrollbar-thumb{background:var(--hover);border-radius:99px;border:2px solid transparent;background-clip:content-box}
 
-  /* topbar */
   .topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:16px;padding:12px 22px;
     background:var(--topbar);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);
     border-bottom:1px solid var(--edge)}
@@ -57,7 +56,7 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .brand-text{display:flex;flex-direction:column;line-height:1.15}
   .brand-name{font-size:16px;font-weight:750;letter-spacing:-.02em}
   .brand-sub{font-size:10px;color:var(--faint);letter-spacing:.06em;text-transform:uppercase}
-  .searchwrap{flex:1;max-width:560px;position:relative}
+  .searchwrap{flex:1;max-width:520px;position:relative}
   .searchwrap input{width:100%;padding:10px 34px 10px 14px;border:1px solid var(--edge);border-radius:12px;
     background:var(--hover);color:var(--ink);font-size:14.5px;transition:border-color .18s,background .18s}
   .searchwrap input:focus{outline:none;border-color:var(--accent);background:var(--bg2)}
@@ -72,8 +71,8 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .btn-primary:hover{filter:brightness(1.06);color:var(--on-accent)}
   #btn-theme{padding:8px 11px;font-size:14px}
   .btn-rail{display:none}
-  @media(max-width:960px){.btn-rail{display:inline-block}}
-  @media(max-width:680px){
+  @media(max-width:980px){.btn-rail{display:inline-block}}
+  @media(max-width:720px){
     .topbar{flex-wrap:wrap;gap:10px 10px;padding:10px 14px}
     .searchwrap{order:3;flex-basis:100%;max-width:none}
     .top-actions .hide-sm{display:none}
@@ -81,13 +80,12 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .mission{padding:9px 22px;font-size:12px;line-height:1.55;color:var(--dim);border-bottom:1px solid var(--edge);
     background:var(--grad-soft)}
   .mission b{color:var(--ink);font-weight:600}
-  @media(max-width:680px){.mission{padding:8px 14px;font-size:11px}}
+  @media(max-width:720px){.mission{padding:8px 14px;font-size:11px}}
 
-  /* layout */
   .layout{display:grid;grid-template-columns:290px 1fr;max-width:1620px;margin:0 auto;align-items:start}
-  @media(max-width:960px){.layout{grid-template-columns:1fr}}
+  @media(max-width:980px){.layout{grid-template-columns:1fr}}
   #rail{position:sticky;top:61px;max-height:calc(100vh - 61px);overflow-y:auto;padding:20px 18px 30px 24px}
-  @media(max-width:960px){#rail{display:none;position:static;max-height:none;border-bottom:1px solid var(--edge)}
+  @media(max-width:980px){#rail{display:none;position:static;max-height:none;border-bottom:1px solid var(--edge)}
     body.rail-open #rail{display:block}}
   .railhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
   .railhead h2{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--faint);font-weight:700}
@@ -100,8 +98,7 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .pill button{color:var(--dim);font-size:14px;line-height:1}
   .pill button:hover{color:var(--ink)}
   .facet{margin-top:20px}
-  .facet>h3{font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:var(--faint);font-weight:700;
-    margin-bottom:9px;display:flex;align-items:center;gap:7px}
+  .facet>h3{font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:var(--faint);font-weight:700;margin-bottom:9px}
   .cloud{display:flex;flex-wrap:wrap;gap:7px}
   .fchip{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500;padding:5px 11px;
     border-radius:99px;border:1px solid var(--edge);background:var(--hover);color:var(--dim);transition:all .16s;line-height:1.3}
@@ -115,34 +112,49 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
     font-size:10.5px;line-height:1.9;color:var(--faint)}
   .railstats b{color:var(--dim);font-weight:400}
 
-  /* main */
   main{padding:20px 24px 110px;min-width:0}
-  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
-  #count{font-family:var(--mono);font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}
+  .toolbar{display:flex;align-items:center;gap:10px 14px;margin-bottom:16px;flex-wrap:wrap}
+  #count{font-family:var(--mono);font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums;margin-right:auto}
   #count b{color:var(--ink);font-weight:600}
+  .tool-grp{display:flex;align-items:center;gap:7px}
   .toolbar label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);
-    display:flex;align-items:center;gap:8px}
+    display:flex;align-items:center;gap:7px}
   .toolbar select{border:1px solid var(--edge);background:var(--hover);color:var(--ink);border-radius:10px;padding:7px 10px;
-    font-size:13.5px;text-transform:none;letter-spacing:normal}
+    font-size:13px;text-transform:none;letter-spacing:normal;max-width:170px}
+  .seg{display:inline-flex;border:1px solid var(--edge);border-radius:10px;overflow:hidden}
+  .seg button{padding:7px 12px;font-size:12.5px;color:var(--dim);border-right:1px solid var(--edge)}
+  .seg button:last-child{border-right:none}
+  .seg button.on{background:var(--grad);color:var(--on-accent);font-weight:600}
+  .icon-btn{padding:7px 11px;border:1px solid var(--edge);border-radius:10px;background:var(--hover);font-size:12.5px;color:var(--dim)}
+  .icon-btn:hover{color:var(--ink);border-color:var(--edge2)}
 
   #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
   @media(max-width:460px){#grid{grid-template-columns:1fr}}
+  #grid.rows{display:flex;flex-direction:column;gap:8px}
   .card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--edge);border-radius:14px;
     overflow:hidden;min-width:0;transition:transform .16s,border-color .16s,box-shadow .16s;cursor:pointer}
   .card:hover{transform:translateY(-3px);border-color:var(--edge2);box-shadow:var(--shadow)}
-  .card.flash{border-color:transparent;box-shadow:0 0 0 2.5px var(--a1),var(--shadow)}
+  .card.flash,.row.flash{border-color:transparent;box-shadow:0 0 0 2.5px var(--a1),var(--shadow)}
   .cover{height:96px;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;position:relative;
     overflow:hidden;color:#fff}
-  .cover .mono{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1;text-transform:uppercase;
+  .cover .mono,.cover .fbmono{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1;text-transform:uppercase;
     text-shadow:0 1px 12px rgba(0,0,0,.28);z-index:1}
   .cover .prov{position:absolute;bottom:10px;left:16px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;
-    opacity:.92;text-transform:uppercase;z-index:1}
+    opacity:.95;text-transform:uppercase;z-index:1;text-shadow:0 1px 8px rgba(0,0,0,.5)}
   .cover .kindtag{position:absolute;top:11px;right:12px;font-size:10px;font-weight:700;letter-spacing:.04em;
-    text-transform:uppercase;background:rgba(0,0,0,.28);padding:3px 9px;border-radius:99px;z-index:1;
+    text-transform:uppercase;background:rgba(0,0,0,.34);padding:3px 9px;border-radius:99px;z-index:2;
     -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  .cover .li{position:absolute;top:11px;left:12px;z-index:2;width:18px;height:18px;border-radius:4px;background:#0a66c2;
+    color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;text-transform:lowercase}
   .cover::after{content:'';position:absolute;inset:0;background:
       radial-gradient(80% 120% at 88% -20%, rgba(255,255,255,.28), transparent 55%),
-      radial-gradient(60% 100% at 0% 120%, rgba(0,0,0,.22), transparent 60%)}
+      radial-gradient(60% 100% at 0% 120%, rgba(0,0,0,.28), transparent 60%)}
+  .cover.img{padding:0;background:#000}
+  .cover.img img{width:100%;height:100%;object-fit:cover;display:block}
+  .cover.img .fbmono{display:none}
+  .cover.img.failed{background:linear-gradient(135deg,var(--c1),var(--c2));align-items:center;justify-content:flex-start;padding:14px 16px}
+  .cover.img.failed img{display:none}
+  .cover.img.failed .fbmono{display:block}
   .cbody{display:flex;flex-direction:column;gap:9px;padding:14px 15px 13px;flex:1;min-width:0}
   .ctitle{font-size:14.5px;line-height:1.34;font-weight:650;letter-spacing:-.01em;color:var(--ink);
     text-wrap:balance;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
@@ -150,19 +162,31 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .ctags{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto;padding-top:4px}
   .tg{font-size:10.5px;padding:2px 8px;border-radius:99px;border:1px solid var(--edge);color:var(--dim);
     background:transparent;transition:all .14s;text-transform:capitalize}
-  .tg:hover{border-color:var(--edge2);color:var(--ink)}
   .tg.src{border-style:dashed;color:var(--faint)}
   .tg.src.you{color:var(--a2);border-color:var(--a2)}
+  .tg.li{color:#4f9be6;border-color:rgba(79,155,230,.4);text-transform:none}
   .cfoot{display:flex;align-items:center;gap:8px;padding:9px 15px;border-top:1px solid var(--edge);
     font-family:var(--mono);font-size:10.5px;color:var(--faint)}
   .cfoot .dot{width:5px;height:5px;border-radius:50%;background:var(--a2)}
   .cfoot a.open{margin-left:auto;color:var(--accent);font-weight:600}
 
+  /* rows / list view */
+  .row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--edge);border-radius:11px;
+    padding:10px 14px;cursor:pointer;transition:border-color .14s,background .14s;min-width:0}
+  .row:hover{border-color:var(--edge2);background:var(--hover)}
+  .row-kind{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:#fff;
+    padding:3px 8px;border-radius:6px;flex:none;min-width:64px;text-align:center}
+  .row-title{font-weight:600;font-size:13.5px;color:var(--ink);flex:2;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row-prov{font-family:var(--mono);font-size:10.5px;color:var(--faint);flex:1;min-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row-tags{display:flex;gap:5px;flex:1.5;min-width:0;overflow:hidden}
+  .row-src{font-family:var(--mono);font-size:10px;color:var(--faint);flex:none;white-space:nowrap}
+  .row-open{color:var(--accent);font-weight:600;font-size:12px;flex:none}
+  @media(max-width:780px){.row-prov,.row-tags,.row-src{display:none}}
+
   #empty{grid-column:1/-1;text-align:center;padding:70px 20px;color:var(--dim)}
   #empty .g{font-size:30px;margin-bottom:10px}
   #empty .big{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:6px}
 
-  /* modal */
   .scrim{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:22px;
     background:rgba(6,7,10,.62);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
   .scrim[hidden]{display:none}
@@ -171,13 +195,13 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .panel-x{position:absolute;top:13px;right:13px;z-index:2;width:34px;height:34px;font-size:19px;color:var(--ink);
     background:var(--hover);border:1px solid var(--edge);border-radius:99px}
   .panel-x:hover{border-color:var(--edge2)}
-  .m-cover{height:120px;display:flex;align-items:flex-end;padding:16px 22px;color:#fff;position:relative;overflow:hidden;
+  .m-cover{height:150px;display:flex;align-items:flex-end;padding:16px 22px;color:#fff;position:relative;overflow:hidden;
     border-radius:18px 18px 0 0}
   .m-cover .mono{font-size:40px;font-weight:800;letter-spacing:-.03em;z-index:1;text-transform:uppercase}
+  .m-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .m-cover .prov{position:absolute;top:14px;right:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
-    text-transform:uppercase;opacity:.92;z-index:1}
-  .m-cover::after{content:'';position:absolute;inset:0;background:
-      radial-gradient(70% 120% at 90% -20%, rgba(255,255,255,.28), transparent 55%)}
+    text-transform:uppercase;opacity:.95;z-index:1;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+  .m-cover::after{content:'';position:absolute;inset:0;background:radial-gradient(70% 120% at 90% -20%, rgba(255,255,255,.24), transparent 55%),linear-gradient(0deg,rgba(0,0,0,.35),transparent 60%)}
   .m-pad{padding:20px 24px 24px}
   .m-kind{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
   .m-title{font-size:20px;font-weight:750;letter-spacing:-.014em;line-height:1.3;margin:8px 0 4px;overflow-wrap:anywhere}
@@ -185,9 +209,11 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .m-title a:hover{color:var(--accent)}
   .m-meta{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
   .m-desc{color:var(--dim);line-height:1.62;font-size:14px;margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere}
+  .m-lictx{margin-top:12px;padding:11px 13px;border-left:2px solid #0a66c2;background:rgba(10,102,194,.07);border-radius:0 8px 8px 0;
+    font-size:13px;color:var(--dim);line-height:1.55}
+  .m-lictx b{color:var(--ink);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
   .m-row{display:flex;gap:10px;font-size:13px;margin-top:12px;line-height:1.5}
-  .m-row .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);
-    min-width:92px;padding-top:2px}
+  .m-row .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);min-width:92px;padding-top:2px}
   .m-row .v{color:var(--ink);overflow-wrap:anywhere;flex:1}
   .m-row .v a{display:block;margin-bottom:3px}
   .m-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
@@ -196,10 +222,8 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .m-copy{border:1px solid var(--edge);border-radius:99px;padding:9px 16px;font-size:13px;color:var(--dim)}
   .m-copy:hover{color:var(--ink);border-color:var(--edge2)}
 
-  /* forms (add / import) */
   .form-row{margin-top:14px}
-  .form-row label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
-    color:var(--faint);margin-bottom:6px}
+  .form-row label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
   .form-row input[type=text],.form-row input[type=url],.form-row select,.form-row textarea{width:100%;padding:9px 12px;
     border:1px solid var(--edge);border-radius:10px;background:var(--hover);color:var(--ink);font-size:14px}
   .form-row textarea{min-height:64px;resize:vertical;font-family:var(--sans)}
@@ -211,7 +235,6 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .checks input{accent-color:var(--accent)}
   .form-hint{font-size:11.5px;color:var(--faint);margin-top:6px;line-height:1.5}
 
-  /* assistant */
   #fab{position:fixed;right:24px;bottom:24px;z-index:65;height:52px;padding:0 20px 0 16px;border-radius:99px;
     display:flex;align-items:center;gap:9px;background:var(--grad);color:var(--on-accent);font-size:14px;font-weight:650;
     box-shadow:var(--shadow);transition:transform .18s}
@@ -239,12 +262,10 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .src .n{font-family:var(--mono);color:var(--accent)}
   .src .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
   .src .kd{font-family:var(--mono);font-size:9.5px;color:var(--faint);text-transform:uppercase}
-  .apply{align-self:flex-start;font-size:11.5px;font-weight:600;color:var(--accent);border:1px solid var(--edge);
-    border-radius:99px;padding:5px 12px;margin-top:2px}
+  .apply{align-self:flex-start;font-size:11.5px;font-weight:600;color:var(--accent);border:1px solid var(--edge);border-radius:99px;padding:5px 12px;margin-top:2px}
   .apply:hover{border-color:var(--accent)}
   #chat-pills{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px}
-  #chat-pills button{font-size:11.5px;font-weight:500;padding:6px 11px;border-radius:99px;border:1px solid var(--edge);
-    background:var(--bg2);color:var(--dim);text-align:left;transition:all .14s}
+  #chat-pills button{font-size:11.5px;font-weight:500;padding:6px 11px;border-radius:99px;border:1px solid var(--edge);background:var(--bg2);color:var(--dim);text-align:left;transition:all .14s}
   #chat-pills button:hover{color:var(--ink);border-color:var(--edge2);transform:translateY(-1px)}
   #chat-form{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--edge)}
   #chat-in{flex:1;padding:9px 13px;border:1px solid var(--edge);border-radius:11px;background:var(--bg2);color:var(--ink);font-size:13.5px}
@@ -263,15 +284,14 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
     <svg class="glyph" viewBox="0 0 32 32" fill="none" aria-hidden="true">
       <defs><linearGradient id="ig" x1="0" y1="0" x2="32" y2="32">
         <stop offset="0" stop-color="#9d8bff"/><stop offset="1" stop-color="#4fd6e6"/></linearGradient></defs>
-      <circle cx="16" cy="16" r="14" stroke="url(#ig)" stroke-width="2"/>
-      <circle cx="16" cy="16" r="3.4" fill="url(#ig)"/>
-      <circle cx="16" cy="4.6" r="2.1" fill="url(#ig)"/><circle cx="27.4" cy="16" r="2.1" fill="url(#ig)"/>
-      <circle cx="16" cy="27.4" r="2.1" fill="url(#ig)"/><circle cx="4.6" cy="16" r="2.1" fill="url(#ig)"/>
-      <path d="M16 8.5v4.1M16 19.4v4M8.5 16h4.1M19.4 16h4" stroke="url(#ig)" stroke-width="1.4"/>
+      <rect x="4" y="7" width="24" height="4.4" rx="1.4" stroke="url(#ig)" stroke-width="2"/>
+      <rect x="4" y="14" width="24" height="4.4" rx="1.4" stroke="url(#ig)" stroke-width="2"/>
+      <rect x="4" y="21" width="24" height="4.4" rx="1.4" stroke="url(#ig)" stroke-width="2"/>
+      <circle cx="9" cy="9.2" r="1.1" fill="url(#ig)"/><circle cx="9" cy="16.2" r="1.1" fill="url(#ig)"/><circle cx="9" cy="23.2" r="1.1" fill="url(#ig)"/>
     </svg>
     <div class="brand-text">
-      <span class="brand-name">Inversal</span>
-      <span class="brand-sub">Research knowledge base</span>
+      <span class="brand-name">Stacks</span>
+      <span class="brand-sub">Research source library</span>
     </div>
   </div>
   <div class="searchwrap">
@@ -279,16 +299,16 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
     <span class="kbd">/</span>
   </div>
   <div class="top-actions">
-    <button class="btn btn-primary" id="btn-add">+ Add</button>
-    <button class="btn hide-sm" id="btn-data" title="Export / import your library">Data</button>
+    <button class="btn btn-primary" id="btn-add">+ Add material</button>
+    <button class="btn hide-sm" id="btn-data" title="Export / import">Export</button>
     <button class="btn" id="btn-theme" title="Toggle light / dark">☾</button>
     <button class="btn btn-rail" id="btn-rail" aria-expanded="false">Filters</button>
   </div>
 </header>
 
-<div class="mission">Inversal is where every <b>paper</b>, <b>repo</b>, and <b>model</b> you collect for the work lives —
-  searchable, filterable, and ready to interrogate. Each item keeps its <b>source</b> (manual search, Claude, or Claude Science),
-  and you can add anything you find online with one click.</div>
+<div class="mission">Stacks is the durable home for everything behind the work — <b>papers</b>, <b>repos</b>, <b>models</b>,
+  <b>videos</b>, <b>companies</b>, articles and more — searchable, filterable, and provenance-aware (Manual search · Claude · Claude Science).
+  Add anything you find with one click, and ask <b>the Librarian</b> to pull exactly what you need.</div>
 
 <div class="layout">
   <aside id="rail" aria-label="Filters">
@@ -300,24 +320,32 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   <main>
     <div class="toolbar">
       <span id="count"></span>
-      <label>Sort
+      <div class="tool-grp"><div class="seg" id="viewseg">
+        <button data-view="cards" class="on">▦ Cards</button><button data-view="rows">≣ Rows</button></div></div>
+      <div class="tool-grp">
+        <label>View
+          <select id="views"><option value="">— saved views —</option></select>
+        </label>
+        <button class="icon-btn" id="save-view" title="Save current filters as a view">＋ Save</button>
+        <button class="icon-btn" id="del-view" title="Delete selected view" hidden>✕</button>
+      </div>
+      <div class="tool-grp"><label>Sort
         <select id="sort">
           <option value="relevance">Best match</option>
           <option value="title">Title A–Z</option>
           <option value="kind">Type</option>
           <option value="source">Source</option>
           <option value="added">Recently added</option>
-        </select>
-      </label>
+        </select></label></div>
     </div>
     <div id="grid"></div>
   </main>
 </div>
 
-<button id="fab"><span class="fg">✦</span> Ask Inversal</button>
-<section id="chat" hidden aria-label="Ask Inversal">
+<button id="fab"><span class="fg">✦</span> Ask the Librarian</button>
+<section id="chat" hidden aria-label="Ask the Librarian">
   <div class="chat-head">
-    <span class="chat-title"><span class="s">✦</span> Ask Inversal</span>
+    <span class="chat-title"><span class="s">✦</span> Ask the Librarian</span>
     <button id="chat-close" aria-label="Close">×</button>
   </div>
   <div class="chat-scope" id="chat-scope"></div>
@@ -338,8 +366,8 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
 'use strict';
 const BASE_DATA = __INVERSAL_DATA__;
 
-/* ---------- constants / labels ---------- */
-const KIND_LABEL = {paper:'Paper', model:'Model', repo:'Repo', dataset:'Dataset', toolkit:'Toolkit', benchmark:'Benchmark'};
+const KIND_LABEL = {paper:'Paper', model:'Model', repo:'Repo', dataset:'Dataset', toolkit:'Toolkit',
+  benchmark:'Benchmark', video:'Video', article:'Article', company:'Company', event:'Event', grant:'Grant', other:'Other'};
 const CODE_KINDS = ['repo','model','toolkit','benchmark','dataset'];
 const FOCUS_LABEL = {tms:'TMS', ketamine:'Ketamine', eeg:'EEG', wearables:'Wearables'};
 const TOPIC_LABEL = {'foundation-model':'Foundation models', psychedelics:'Psychedelics', neurofeedback:'Neurofeedback',
@@ -350,15 +378,19 @@ const PROV_COLORS = {
   'bioRxiv':['#b0342a','#7a1f18'], 'medRxiv':['#317a5a','#1e4c39'], 'Nature':['#2b6f4e','#173d2b'],
   'ScienceDirect':['#e9711c','#a24d12'], 'Cell Press':['#356fb6','#1f4372'], 'PubMed / PMC':['#33628f','#20405c'],
   'JAMA':['#4a6d8c','#2c4459'], 'DOI':['#e0a41f','#9c7013'], 'LinkedIn':['#0a66c2','#053f78'],
-  'YouTube':['#c4302b','#7f1e1b'], 'OpenReview':['#5a54c9','#332f80'], 'NeurIPS':['#4a54b0','#2b3070'],
+  'YouTube':['#c4302b','#7f1e1b'], 'Vimeo':['#1ab7ea','#0d7fa6'], 'Spotify':['#1db954','#127636'],
+  'OpenReview':['#5a54c9','#332f80'], 'NeurIPS':['#4a54b0','#2b3070'], 'ICLR':['#4a54b0','#2b3070'],
   'Frontiers':['#3a7a4e','#245030'], 'Springer':['#2f5a86','#1c3a58'], 'Wiley':['#2c6e8f','#1a4457'],
   'Oxford':['#1f4e79','#123049'], 'PNAS':['#7a5aa8','#4a3468'], 'Kickstarter':['#2bbd6f','#188046'],
-  'PiEEG':['#5a6cc0','#333f80'], 'BrainFlow':['#4a7bb5','#2c4d73'], 'MNE':['#4a7bb5','#2c4d73'],
-  'SSRN':['#7a6a4a','#4c422e'], 'MDPI':['#3a7a6e','#245049'], 'Web':['#5b57e8','#2f2c8f']
+  'Medium':['#2b2b2b','#111111'], 'Substack':['#e0663a','#a1401f'], 'WIRED':['#2b2b2b','#111111'],
+  'PsyPost':['#3a6ea5','#22436a'], 'Meta AI':['#2d6ae0','#183f8a'], 'X':['#2b2b2b','#0b0b0b'],
+  'Google Drive':['#2f8f5b','#1c5738'], 'MIT Press':['#7a1f2b','#4c1319'], 'SAGE':['#3a6ea5','#22436a'],
+  'OSF':['#2f7bbf','#1c4a73'], 'Web':['#5b57e8','#2f2c8f']
 };
 function provColors(p){ return PROV_COLORS[p] || PROV_COLORS['Web']; }
+const KIND_COLOR = {paper:'#c0392b',model:'#f0a417',repo:'#3a3f4b',dataset:'#7a5aa8',toolkit:'#2c6e8f',
+  benchmark:'#4a54b0',video:'#c4302b',article:'#e0663a',company:'#2f8f5b',event:'#5b57e8',grant:'#1db954',other:'#5a6572'};
 
-/* query-side topic keywords for the assistant */
 const Q_TOPIC = {
   eeg:['eeg','electroenceph','microstate'], tms:['tms','rtms','itbs','transcranial','stimulation','neuromodulation'],
   ketamine:['ketamine','esketamine','spravato'], wearables:['wearable','muse','oura','whoop','emotiv','neurable','headset','in-ear','openbci','consumer'],
@@ -369,7 +401,6 @@ const Q_TOPIC = {
   connectome:['connectome','connectivity','fmri','amygdala','dmn','default mode'], depression:['depression','mdd','antidepressant','anhedonia','trd']
 };
 
-/* ---------- helpers ---------- */
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const debounce = (fn,ms)=>{let t;return (...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};};
@@ -377,26 +408,23 @@ function monogram(t){ const w=String(t||'').replace(/^arxiv[:\s]*/i,'').replace(
   if(!w.length) return '?'; if(w.length===1) return w[0].slice(0,2); return (w[0][0]+w[1][0]); }
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1900); }
 
-/* ---------- data (base + user) ---------- */
-function loadUser(){ try{ return JSON.parse(localStorage.getItem('inversal-user')||'[]'); }catch(e){ return []; } }
-function saveUser(a){ localStorage.setItem('inversal-user', JSON.stringify(a)); }
+function loadUser(){ try{ return JSON.parse(localStorage.getItem('stacks-user')||'[]'); }catch(e){ return []; } }
+function saveUser(a){ localStorage.setItem('stacks-user', JSON.stringify(a)); }
 let USER = loadUser();
 let ALL = [];
 function rebuild(){ ALL = BASE_DATA.items.concat(USER); }
 rebuild();
 
-/* ---------- state ---------- */
-const state = { q:'', sort:'relevance', f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set()} };
+const state = { q:'', sort:'relevance', view:'cards', f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set()} };
 
 const FACETS = [
-  {key:'kind', title:'Type', field:'kind', order:['paper','model','repo','dataset','toolkit','benchmark'], label:k=>KIND_LABEL[k]||k},
+  {key:'kind', title:'Type', field:'kind', order:['paper','model','repo','dataset','toolkit','benchmark','video','article','company','event','grant','other'], label:k=>KIND_LABEL[k]||k},
   {key:'domains', title:'Domain', field:'domains', order:['ai','mental-health'], label:k=>DOMAIN_LABEL[k]||k},
   {key:'focus', title:'Mental-health focus', field:'focus', order:['tms','ketamine','eeg','wearables'], label:k=>FOCUS_LABEL[k]||k},
   {key:'origins', title:'Source', field:'origins', order:['Manual search','Claude Science','Claude','Added by you'], label:k=>k},
   {key:'topics', title:'Topics', field:'topics', order:['foundation-model','biomarker','connectome','neurofeedback','depression','psychedelics','bci','sleep'], label:k=>TOPIC_LABEL[k]||k},
 ];
 
-/* ---------- filtering ---------- */
 function matchesText(it,q){
   if(!q) return true;
   const hay = (it.title+' '+(it.ident||'')+' '+it.provider+' '+it.host+' '+(it.notes||'')+' '+(it.context||'')+' '
@@ -405,8 +433,7 @@ function matchesText(it,q){
 }
 function passFacet(it,fk){
   const sel=state.f[fk]; if(!sel.size) return true;
-  const vals = it[FACETS.find(f=>f.key===fk).field];
-  const arr = Array.isArray(vals)?vals:[vals];
+  const vals = it[FACETS.find(f=>f.key===fk).field]; const arr = Array.isArray(vals)?vals:[vals];
   for(const v of sel) if(arr.includes(v)) return true;
   return false;
 }
@@ -419,43 +446,36 @@ function filtered(exceptFacet){
 }
 function current(){ return filtered(null); }
 
-/* ---------- render facets ---------- */
 function renderFacets(){
   const wrap=$('#facets'); wrap.innerHTML='';
   for(const f of FACETS){
-    const base=filtered(f.key);
-    const counts={};
+    const base=filtered(f.key); const counts={};
     for(const it of base){ const vals=it[f.field]; (Array.isArray(vals)?vals:[vals]).forEach(v=>{ if(v) counts[v]=(counts[v]||0)+1; }); }
     let keys=f.order.filter(k=>counts[k]!==undefined || state.f[f.key].has(k));
     Object.keys(counts).forEach(k=>{ if(!keys.includes(k)) keys.push(k); });
     if(!keys.length) continue;
-    const sec=document.createElement('section'); sec.className='facet';
-    sec.innerHTML='<h3>'+esc(f.title)+'</h3>';
+    const sec=document.createElement('section'); sec.className='facet'; sec.innerHTML='<h3>'+esc(f.title)+'</h3>';
     const cloud=document.createElement('div'); cloud.className='cloud';
     for(const k of keys){
       const on=state.f[f.key].has(k); const n=counts[k]||0;
-      const b=document.createElement('button');
-      b.className='fchip'+(on?' on':'')+((!on&&!n)?' zero':'');
+      const b=document.createElement('button'); b.className='fchip'+(on?' on':'')+((!on&&!n)?' zero':'');
       b.innerHTML=esc(f.label(k))+' <span class="c">'+n+'</span>';
-      b.onclick=()=>{ on?state.f[f.key].delete(k):state.f[f.key].add(k); sync(); render(); };
+      b.onclick=()=>{ on?state.f[f.key].delete(k):state.f[f.key].add(k); syncViewsUI(); sync(); render(); };
       cloud.appendChild(b);
     }
     sec.appendChild(cloud); wrap.appendChild(sec);
   }
 }
-
-/* ---------- render pills ---------- */
 function renderPills(){
   const p=$('#pills'); p.innerHTML='';
   for(const f of FACETS){ for(const k of state.f[f.key]){
     const el=document.createElement('span'); el.className='pill';
     el.innerHTML=esc(f.label(k))+' <button aria-label="Remove">×</button>';
-    el.querySelector('button').onclick=()=>{ state.f[f.key].delete(k); sync(); render(); };
+    el.querySelector('button').onclick=()=>{ state.f[f.key].delete(k); syncViewsUI(); sync(); render(); };
     p.appendChild(el);
   }}
 }
 
-/* ---------- render cards ---------- */
 function score(it,q){ let s=0; const t=q.toLowerCase(); if(it.title.toLowerCase().includes(t))s+=5;
   if((it.context||'').toLowerCase().includes(t))s+=2; if((it.notes||'').toLowerCase().includes(t))s+=1; return s; }
 function sortItems(items){
@@ -468,36 +488,53 @@ function sortItems(items){
   return items;
 }
 function cardCover(it){
-  const [c1,c2]=provColors(it.provider);
-  return '<div class="cover" style="background:linear-gradient(135deg,'+c1+','+c2+')">'
-    +'<span class="mono">'+esc(monogram(it.title))+'</span>'
-    +'<span class="kindtag">'+esc(KIND_LABEL[it.kind]||it.kind)+'</span>'
-    +'<span class="prov">'+esc(it.provider)+'</span></div>';
+  const [c1,c2]=provColors(it.provider); const mono=esc(monogram(it.title));
+  const li = it.via_linkedin ? '<span class="li" title="via a LinkedIn post">in</span>' : '';
+  const kt = '<span class="kindtag">'+esc(KIND_LABEL[it.kind]||it.kind)+'</span><span class="prov">'+esc(it.provider)+'</span>'+li;
+  if(it.preview_url){
+    return '<div class="cover img" style="--c1:'+c1+';--c2:'+c2+'">'
+      +'<img loading="lazy" src="'+esc(it.preview_url)+'" alt="" onerror="this.closest(\'.cover\').classList.add(\'failed\')">'
+      +'<span class="fbmono">'+mono+'</span>'+kt+'</div>';
+  }
+  return '<div class="cover" style="background:linear-gradient(135deg,'+c1+','+c2+')"><span class="mono">'+mono+'</span>'+kt+'</div>';
 }
 function renderGrid(){
   const grid=$('#grid'); const items=sortItems(current());
-  $('#count').innerHTML='Showing <b>'+items.length+'</b> of '+ALL.length+' resources';
-  if(!items.length){ grid.innerHTML='<div id="empty"><div class="g">✦</div><div class="big">Nothing matches</div>'
-    +'<p>Try removing a filter or clearing the search.</p></div>'; return; }
+  $('#count').innerHTML='Showing <b>'+items.length+'</b> of '+ALL.length+' sources';
+  grid.className = state.view==='rows' ? 'rows' : '';
+  if(!items.length){ grid.className=''; grid.innerHTML='<div id="empty"><div class="g">✦</div><div class="big">Nothing matches</div><p>Try removing a filter or clearing the search.</p></div>'; return; }
   const frag=document.createDocumentFragment();
-  for(const it of items){
-    const desc = it.context || it.notes || (it.category?('Type: '+it.category):'') || it.url;
-    const tags = it.focus.concat(it.topics).slice(0,3).map(t=>'<span class="tg">'+esc(FOCUS_LABEL[t]||TOPIC_LABEL[t]||t)+'</span>').join('');
-    const src = it.origins.map(o=>'<span class="tg src'+(o==='Added by you'?' you':'')+'">'+esc(o)+'</span>').join('');
-    const el=document.createElement('article'); el.className='card'; el.dataset.id=it.id;
-    el.innerHTML = cardCover(it)
-      +'<div class="cbody"><div class="ctitle">'+esc(it.title)+'</div>'
-      +'<div class="cdesc">'+esc(desc)+'</div>'
-      +'<div class="ctags">'+tags+src+'</div></div>'
-      +'<div class="cfoot"><span class="dot"></span>'+esc(it.provider)
-      +'<a class="open" href="'+esc(it.url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open ↗</a></div>';
-    el.onclick=()=>openDetail(it.id);
-    frag.appendChild(el);
+  if(state.view==='rows'){
+    for(const it of items){
+      const el=document.createElement('article'); el.className='row'; el.dataset.id=it.id;
+      const tags=it.focus.concat(it.topics).slice(0,2).map(t=>'<span class="tg">'+esc(FOCUS_LABEL[t]||TOPIC_LABEL[t]||t)+'</span>').join('');
+      el.innerHTML='<span class="row-kind" style="background:'+(KIND_COLOR[it.kind]||'#5a6572')+'">'+esc(KIND_LABEL[it.kind]||it.kind)+'</span>'
+        +'<span class="row-title">'+esc(it.title)+(it.via_linkedin?' <span class="tg li" style="padding:1px 6px">in</span>':'')+'</span>'
+        +'<span class="row-prov">'+esc(it.provider)+'</span>'
+        +'<span class="row-tags">'+tags+'</span>'
+        +'<span class="row-src">'+esc(it.origins[0]||'')+'</span>'
+        +'<a class="row-open" href="'+esc(it.url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open ↗</a>';
+      el.onclick=()=>openDetail(it.id); frag.appendChild(el);
+    }
+  } else {
+    for(const it of items){
+      const desc = it.context || it.notes || (it.category?('Type: '+it.category):'') || it.url;
+      const tags = it.focus.concat(it.topics).slice(0,3).map(t=>'<span class="tg">'+esc(FOCUS_LABEL[t]||TOPIC_LABEL[t]||t)+'</span>').join('');
+      const src = it.origins.map(o=>'<span class="tg src'+(o==='Added by you'?' you':'')+'">'+esc(o)+'</span>').join('')
+        + (it.via_linkedin?'<span class="tg li">via LinkedIn</span>':'');
+      const el=document.createElement('article'); el.className='card'; el.dataset.id=it.id;
+      el.innerHTML = cardCover(it)
+        +'<div class="cbody"><div class="ctitle">'+esc(it.title)+'</div>'
+        +'<div class="cdesc">'+esc(desc)+'</div>'
+        +'<div class="ctags">'+tags+src+'</div></div>'
+        +'<div class="cfoot"><span class="dot"></span>'+esc(it.provider)
+        +'<a class="open" href="'+esc(it.url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open ↗</a></div>';
+      el.onclick=()=>openDetail(it.id); frag.appendChild(el);
+    }
   }
   grid.innerHTML=''; grid.appendChild(frag);
 }
 
-/* ---------- detail modal ---------- */
 function openDetail(id){
   const it=ALL.find(x=>x.id===id); if(!it) return;
   const [c1,c2]=provColors(it.provider);
@@ -506,24 +543,26 @@ function openDetail(id){
     + it.focus.map(t=>'<span class="tg">'+esc(FOCUS_LABEL[t]||t)+'</span>').join('')
     + it.topics.map(t=>'<span class="tg">'+esc(TOPIC_LABEL[t]||t)+'</span>').join('')
     + it.origins.map(o=>'<span class="tg src'+(o==='Added by you'?' you':'')+'">'+esc(o)+'</span>').join('');
-  let rows='';
   const row=(k,v)=> v?('<div class="m-row"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>'):'';
+  let rows='';
   rows+=row('Links',urls);
   rows+=row('Provider',esc(it.provider)+(it.host?(' · '+esc(it.host)):''));
   if(it.category) rows+=row('Category',esc(it.category));
   if(it.license) rows+=row('License',esc(it.license));
   if(it.weights) rows+=row('Weights','Pretrained weights available');
   if(it.source_files&&it.source_files.length) rows+=row('From',esc(it.source_files.join(', ')));
-  const body='<div class="m-cover" style="background:linear-gradient(135deg,'+c1+','+c2+')">'
-      +'<span class="mono">'+esc(monogram(it.title))+'</span><span class="prov">'+esc(it.provider)+'</span></div>'
-    +'<div class="m-pad"><div class="m-kind">'+esc(KIND_LABEL[it.kind]||it.kind)+'</div>'
+  const coverInner = it.preview_url ? '<img src="'+esc(it.preview_url)+'" alt="">' : '<span class="mono">'+esc(monogram(it.title))+'</span>';
+  const body='<div class="m-cover" style="background:linear-gradient(135deg,'+c1+','+c2+')">'+coverInner+'<span class="prov">'+esc(it.provider)+'</span></div>'
+    +'<div class="m-pad"><div class="m-kind">'+esc(KIND_LABEL[it.kind]||it.kind)+(it.via_linkedin?' · via LinkedIn':'')+'</div>'
     +'<h2 class="m-title"><a href="'+esc(it.url)+'" target="_blank" rel="noopener">'+esc(it.title)+'</a></h2>'
     +(it.ident&&it.ident!==it.title?'<div class="m-kind">'+esc(it.ident)+'</div>':'')
     +'<div class="m-meta">'+chips+'</div>'
-    +(it.context?'<div class="m-desc">'+esc(it.context)+'</div>':'')
+    +(it.context?(it.via_linkedin
+        ? '<div class="m-lictx"><b>Context from the LinkedIn post</b><br>'+esc(it.context)+'</div>'
+        : '<div class="m-desc">'+esc(it.context)+'</div>'):'')
     +(it.notes&&it.notes!==it.context?'<div class="m-desc">'+esc(it.notes)+'</div>':'')
     +rows
-    +'<div class="m-actions"><a class="m-open" href="'+esc(it.url)+'" target="_blank" rel="noopener">Open resource ↗</a>'
+    +'<div class="m-actions"><a class="m-open" href="'+esc(it.url)+'" target="_blank" rel="noopener">Open source ↗</a>'
     +'<button class="m-copy" id="copy-md">Copy as Markdown</button>'
     +(it.added?'<button class="m-copy" id="del-item">Delete</button>':'')+'</div></div>';
   $('#modal-body').innerHTML=body; showModal('#modal');
@@ -531,27 +570,30 @@ function openDetail(id){
   if(it.added) $('#del-item').onclick=()=>{ USER=USER.filter(x=>x.id!==it.id); saveUser(USER); rebuild(); hideModal('#modal'); render(); toast('Deleted'); };
 }
 
-/* ---------- add-item modal ---------- */
 function detectKind(url){ const u=url.toLowerCase();
   if(u.includes('huggingface.co/datasets')) return 'dataset';
   if(u.includes('huggingface.co')) return 'model';
   if(u.includes('github.com')||u.includes('github.io')) return 'repo';
+  if(u.includes('youtube.com')||u.includes('youtu.be')||u.includes('vimeo')||u.includes('spotify')) return 'video';
   if(u.includes('arxiv.org')||u.includes('doi.org')||u.includes('biorxiv')||u.includes('medrxiv')||u.includes('nature.com')
-     ||u.includes('sciencedirect')||u.includes('ncbi.nlm.nih')||u.includes('pnas.org')||u.includes('cell.com')) return 'paper';
-  return 'paper'; }
+     ||u.includes('sciencedirect')||u.includes('ncbi.nlm.nih')||u.includes('pnas.org')||u.includes('cell.com')||u.includes('osf.io')) return 'paper';
+  if(u.includes('medium.com')||u.includes('substack')||u.includes('wired')||u.includes('psypost')) return 'article';
+  return 'company'; }
 function providerFromUrl(url){ try{ let h=new URL(url).hostname.replace(/^www\./,'').toLowerCase();
   const map=[['github','GitHub'],['huggingface','Hugging Face'],['arxiv','arXiv'],['biorxiv','bioRxiv'],['medrxiv','medRxiv'],
     ['nature','Nature'],['sciencedirect','ScienceDirect'],['cell.com','Cell Press'],['ncbi','PubMed / PMC'],['jamanetwork','JAMA'],
-    ['linkedin','LinkedIn'],['lnkd','LinkedIn'],['youtube','YouTube'],['youtu.be','YouTube'],['pnas','PNAS'],['frontiersin','Frontiers'],
-    ['springer','Springer'],['wiley','Wiley'],['oup.com','Oxford'],['mdpi','MDPI'],['ssrn','SSRN'],['doi.org','DOI']];
-  for(const [k,v] of map) if(h.includes(k)) return {p:v,h:h}; return {p:'Web',h:h}; }catch(e){ return {p:'Web',h:''}; } }
+    ['linkedin','LinkedIn'],['lnkd','LinkedIn'],['youtube','YouTube'],['youtu.be','YouTube'],['vimeo','Vimeo'],['spotify','Spotify'],
+    ['pnas','PNAS'],['frontiersin','Frontiers'],['springer','Springer'],['wiley','Wiley'],['oup.com','Oxford'],['mdpi','MDPI'],
+    ['ssrn','SSRN'],['medium','Medium'],['substack','Substack'],['wired','WIRED'],['osf.io','OSF'],['doi.org','DOI']];
+  for(const [k,v] of map) if(h.includes(k)) return {p:v,h:h}; return {p:h,h:h}; }catch(e){ return {p:'Web',h:''}; } }
+function ytThumb(url){ const m=url.match(/(?:v=|youtu\.be\/|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/); return m?('https://img.youtube.com/vi/'+m[1]+'/hqdefault.jpg'):''; }
 function openAdd(){
   const focusBoxes=['tms','ketamine','eeg','wearables'].map(k=>'<label><input type="checkbox" data-focus="'+k+'">'+FOCUS_LABEL[k]+'</label>').join('');
   const domainBoxes=['ai','mental-health'].map(k=>'<label><input type="checkbox" data-domain="'+k+'">'+DOMAIN_LABEL[k]+'</label>').join('');
   const topicBoxes=Object.keys(TOPIC_LABEL).map(k=>'<label><input type="checkbox" data-topic="'+k+'">'+TOPIC_LABEL[k]+'</label>').join('');
-  $('#add-body').innerHTML='<div class="m-pad"><div class="m-kind">Add to Inversal</div>'
-    +'<h2 class="m-title" style="margin-bottom:2px">New resource</h2>'
-    +'<p class="form-hint">Paste a link — a paper, GitHub repo, Hugging Face model, LinkedIn post, anything. Type and provider are guessed for you.</p>'
+  $('#add-body').innerHTML='<div class="m-pad"><div class="m-kind">Add material</div>'
+    +'<h2 class="m-title" style="margin-bottom:2px">New source</h2>'
+    +'<p class="form-hint">Paste any link — a paper, repo, model, YouTube video, company, grant, article. Type &amp; provider are guessed for you. If it came from a LinkedIn post, drop the post text in Context.</p>'
     +'<div class="form-row"><label>URL</label><input type="url" id="a-url" placeholder="https://…"></div>'
     +'<div class="form-row"><label>Title</label><input type="text" id="a-title" placeholder="What is it?"></div>'
     +'<div class="form-row"><label>Type</label><select id="a-kind">'+Object.keys(KIND_LABEL).map(k=>'<option value="'+k+'">'+KIND_LABEL[k]+'</option>').join('')+'</select></div>'
@@ -559,13 +601,15 @@ function openAdd(){
     +'<div class="form-row"><label>Mental-health focus</label><div class="checks">'+focusBoxes+'</div></div>'
     +'<div class="form-row"><label>Topics</label><div class="checks">'+topicBoxes+'</div></div>'
     +'<div class="form-row"><label>Source</label><select id="a-source"><option>Added by you</option><option>Manual search</option><option>Claude</option><option>Claude Science</option></select></div>'
-    +'<div class="form-row"><label>Notes / context</label><textarea id="a-notes" placeholder="Why it matters, a one-line summary, the LinkedIn caption…"></textarea></div>'
-    +'<div class="m-actions"><button class="m-open" id="a-save">Add resource</button><button class="m-copy" data-close>Cancel</button></div>'
-    +'<p class="form-hint" style="margin-top:12px">Saved in this browser. Use <b>Data → Export</b> to download the full library and commit it back to the repo so it’s permanent.</p></div>';
+    +'<div class="form-row"><label>Context / notes <span style="text-transform:none;color:var(--faint)">(paste the LinkedIn post or why it matters)</span></label><textarea id="a-notes" placeholder="One-line summary, the LinkedIn caption, why you saved it…"></textarea>'
+    +'<label style="margin-top:8px;text-transform:none;letter-spacing:normal;color:var(--dim);display:inline-flex;gap:6px;align-items:center"><input type="checkbox" id="a-li"> Came from a LinkedIn post</label></div>'
+    +'<div class="m-actions"><button class="m-open" id="a-save">Add to Stacks</button><button class="m-copy" data-close>Cancel</button></div>'
+    +'<p class="form-hint" style="margin-top:12px">Saved in this browser. Use <b>Export → JSON</b> to download the full library and commit it to the repo to make it permanent.</p></div>';
   showModal('#addmodal');
   const urlEl=$('#a-url');
   urlEl.oninput=()=>{ const u=urlEl.value.trim(); if(!/^https?:\/\//.test(u)) return;
     $('#a-kind').value=detectKind(u);
+    if(u.toLowerCase().includes('youtube')||u.toLowerCase().includes('youtu.be')){ /* preview auto on save */ }
     if(!$('#a-title').value){ try{ const seg=new URL(u).pathname.split('/').filter(Boolean).pop()||new URL(u).hostname;
       $('#a-title').value=decodeURIComponent(seg).replace(/[-_]/g,' ').replace(/\.(pdf|html?)$/,''); }catch(e){} }
   };
@@ -576,50 +620,83 @@ function saveNew(){
   if(!/^https?:\/\//.test(url)){ toast('Enter a valid URL'); return; }
   const {p,h}=providerFromUrl(url);
   const gather=sel=>Array.from($('#add-body').querySelectorAll('input[data-'+sel+']:checked')).map(x=>x.getAttribute('data-'+sel));
-  const it={ id:'u'+Date.now(), kind:$('#a-kind').value, title:$('#a-title').value.trim()||url, ident:'',
+  const kind=$('#a-kind').value;
+  const it={ id:'u'+Date.now(), kind:kind, title:$('#a-title').value.trim()||url, ident:'',
     url:url, all_urls:[url], host:h, provider:p, origins:[$('#a-source').value],
     domains:gather('domain'), focus:gather('focus'), topics:gather('topic'),
     category:'', license:'', weights:null, notes:$('#a-notes').value.trim(), context:$('#a-notes').value.trim(),
-    source_files:['Added in Inversal'], added:true, addedAt:Date.now() };
-  if(it.kind==='model'||it.kind==='benchmark'||it.kind==='toolkit'){ if(!it.domains.includes('ai')) it.domains.push('ai'); }
+    source_files:['Added in Stacks'], preview_url:(kind==='video'?ytThumb(url):''), via_linkedin:$('#a-li').checked,
+    added:true, addedAt:Date.now() };
+  if(['model','benchmark','toolkit'].includes(it.kind) && !it.domains.includes('ai')) it.domains.push('ai');
   USER.unshift(it); saveUser(USER); rebuild(); hideModal('#addmodal'); state.sort='added'; $('#sort').value='added'; sync(); render(); toast('Added — remember to export');
 }
 
-/* ---------- data (export / import) ---------- */
+/* export / import */
 function openData(){
-  $('#data-body').innerHTML='<div class="m-pad"><div class="m-kind">Your library</div><h2 class="m-title">Export & import</h2>'
-    +'<p class="form-hint">Inversal ships with <b>'+BASE_DATA.items.length+'</b> resources. You’ve added <b>'+USER.length+'</b> in this browser. '
-    +'Export the merged set as JSON or CSV. To make additions permanent for everyone, replace <b>data/dataset.json</b> in the repo (or commit the CSV) and rebuild.</p>'
-    +'<div class="m-actions"><button class="m-open" id="d-json">Export JSON</button><button class="m-copy" id="d-csv">Export CSV</button>'
-    +'<label class="m-copy" style="cursor:pointer">Import JSON<input type="file" id="d-imp" accept="application/json" hidden></label></div>'
-    +'<p class="form-hint" style="margin-top:14px">Import merges a previously exported JSON back into this browser (deduped by URL).</p></div>';
+  const cur=current().length;
+  $('#data-body').innerHTML='<div class="m-pad"><div class="m-kind">Your library</div><h2 class="m-title">Export &amp; import</h2>'
+    +'<p class="form-hint">Stacks ships with <b>'+BASE_DATA.items.length+'</b> sources; you’ve added <b>'+USER.length+'</b> in this browser. '
+    +'To make additions permanent for everyone, export JSON and replace <b>data/dataset.json</b> in the repo, then rebuild.</p>'
+    +'<div class="m-actions" style="flex-direction:column;align-items:stretch;gap:8px">'
+    +'<button class="m-open" id="d-all">Export everything (JSON)</button>'
+    +'<button class="m-copy" id="d-view">Export current view — '+cur+' sources (CSV)</button>'
+    +'<button class="m-copy" id="d-papers">Export papers only (CSV)</button>'
+    +'<button class="m-copy" id="d-repos">Export repos &amp; models only (CSV)</button>'
+    +'<label class="m-copy" style="cursor:pointer;text-align:center">Import JSON<input type="file" id="d-imp" accept="application/json" hidden></label></div></div>';
   showModal('#datamodal');
-  $('#d-json').onclick=()=>download('inversal-dataset.json', JSON.stringify({generated:new Date().toISOString().slice(0,10), items:ALL}, null, 1), 'application/json');
-  $('#d-csv').onclick=()=>download('inversal.csv', toCSV(ALL), 'text/csv');
+  $('#d-all').onclick=()=>download('stacks-all.json', JSON.stringify({generated:new Date().toISOString().slice(0,10), items:ALL}, null, 1), 'application/json');
+  $('#d-view').onclick=()=>download('stacks-view.csv', toCSV(sortItems(current())), 'text/csv');
+  $('#d-papers').onclick=()=>download('stacks-papers.csv', toCSV(ALL.filter(i=>i.kind==='paper')), 'text/csv');
+  $('#d-repos').onclick=()=>download('stacks-repos-models.csv', toCSV(ALL.filter(i=>CODE_KINDS.includes(i.kind))), 'text/csv');
   $('#d-imp').onchange=e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader();
     r.onload=()=>{ try{ const obj=JSON.parse(r.result); const incoming=(obj.items||obj); const have=new Set(ALL.map(x=>x.url));
-      let added=0; incoming.forEach(x=>{ if(x.url&&!have.has(x.url)){ x.added=true; x.id=x.id||('u'+Date.now()+Math.round(Math.random()*1e4)); USER.push(x); have.add(x.url); added++; } });
+      let added=0; incoming.forEach(x=>{ if(x.url&&!have.has(x.url)){ x.added=true; x.id=x.id||('u'+Date.now()+Math.round(performance.now())); USER.push(x); have.add(x.url); added++; } });
       saveUser(USER); rebuild(); hideModal('#datamodal'); render(); toast('Imported '+added+' new'); }catch(err){ toast('Bad JSON file'); } };
     r.readAsText(f); };
 }
 function toCSV(items){
-  const cols=['id','kind','title','url','provider','origins','domains','focus','topics','category','license','notes'];
+  const cols=['id','kind','title','url','provider','origins','domains','focus','topics','category','license','via_linkedin','context'];
   const q=v=>{ v=Array.isArray(v)?v.join('; '):(v==null?'':String(v)); return '"'+v.replace(/"/g,'""')+'"'; };
   return cols.join(',')+'\n'+items.map(it=>cols.map(c=>q(it[c])).join(',')).join('\n');
 }
 function download(name,text,type){ const b=new Blob([text],{type}); const a=document.createElement('a');
   a.href=URL.createObjectURL(b); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
 
-/* ---------- assistant ---------- */
+/* saved views (Kairos-style) */
+function loadViews(){ try{ return JSON.parse(localStorage.getItem('stacks-views')||'[]'); }catch(e){ return []; } }
+function storeViews(v){ localStorage.setItem('stacks-views', JSON.stringify(v)); }
+function serializeState(){ const f={}; for(const k in state.f) f[k]=Array.from(state.f[k]);
+  return {q:state.q, sort:state.sort, view:state.view, f}; }
+function applyState(s){ state.q=s.q||''; $('#q').value=state.q; state.sort=s.sort||'relevance'; $('#sort').value=state.sort;
+  state.view=s.view||'cards'; for(const k in state.f){ state.f[k]=new Set((s.f&&s.f[k])||[]); }
+  setViewSeg(); sync(); render(); }
+function renderViewsSelect(sel){ const views=loadViews(); const el=$('#views');
+  el.innerHTML='<option value="">— saved views —</option>'+views.map((v,i)=>'<option value="'+i+'"'+(sel===i?' selected':'')+'>'+esc(v.name)+'</option>').join('');
+  $('#del-view').hidden = !(sel!==undefined && sel!==''); }
+function syncViewsUI(){ $('#views').value=''; $('#del-view').hidden=true; }
+$('#save-view')&&($('#save-view').onclick=()=>{ const name=prompt('Name this view (e.g. “EEG foundation models”, “Grants to apply for”)'); if(!name) return;
+  const views=loadViews(); views.push({name:name.trim(), state:serializeState()}); storeViews(views); renderViewsSelect(views.length-1); toast('View saved'); });
+$('#views')&&($('#views').onchange=e=>{ const i=e.target.value; if(i==='') return; const v=loadViews()[+i]; if(v){ applyState(v.state); $('#del-view').hidden=false; } });
+$('#del-view')&&($('#del-view').onclick=()=>{ const i=$('#views').value; if(i==='') return; const views=loadViews(); views.splice(+i,1); storeViews(views); renderViewsSelect(); toast('View deleted'); });
+
+/* view segmented */
+function setViewSeg(){ document.querySelectorAll('#viewseg button').forEach(b=>b.classList.toggle('on', b.dataset.view===state.view)); }
+document.querySelectorAll('#viewseg button').forEach(b=>b.onclick=()=>{ state.view=b.dataset.view; setViewSeg(); sync(); render(); });
+
+/* assistant */
 function parse(q){
-  const ql=' '+q.toLowerCase()+' ';
-  let types=[];
+  const ql=' '+q.toLowerCase()+' '; let types=[];
   if(/\brepos?\b|repositor|\bcode\b/.test(ql)) types.push(...CODE_KINDS);
   if(/\bmodels?\b|foundation model|checkpoint|weights|encoder/.test(ql)) types.push('model');
-  if(/\bpapers?\b|preprint|arxiv|studies|study|literature|\bread\b|article/.test(ql)) types.push('paper');
+  if(/\bpapers?\b|preprint|arxiv|studies|study|literature|\bread\b|article?s?\b/.test(ql)) types.push('paper');
   if(/\bdatasets?\b/.test(ql)) types.push('dataset');
   if(/\btoolkits?\b|\blibrar/.test(ql)) types.push('toolkit');
   if(/\bbenchmarks?\b/.test(ql)) types.push('benchmark');
+  if(/\bvideos?\b|youtube|talks?\b|podcasts?\b|watch\b/.test(ql)) types.push('video');
+  if(/\bcompan|startups?\b|product page/.test(ql)) types.push('company');
+  if(/\barticles?\b|blog|newsletter|essay/.test(ql)) types.push('article');
+  if(/\bevents?\b|conferences?\b|workshops?\b|symposi|summit/.test(ql)) types.push('event');
+  if(/\bgrants?\b|fellowships?\b|funding|apply|residency|accelerator/.test(ql)) types.push('grant');
   types=[...new Set(types)];
   const topics=[]; for(const [t,ws] of Object.entries(Q_TOPIC)) if(ws.some(w=>ql.includes(w))) topics.push(t);
   const sources=[];
@@ -644,17 +721,16 @@ function runQuery(q){
       let s=0; terms.forEach(t=>{ if(it.title.toLowerCase().includes(t))s+=3; else if(hay.includes(t))s+=1; }); return {it,s}; })
       .filter(x=>x.s>0).sort((a,b)=>b.s-a.s).map(x=>x.it);
   }
-  // human summary
   const pieces=[];
   if(types.length){
     if(CODE_KINDS.every(k=>types.includes(k)) && types.length===CODE_KINDS.length) pieces.push('repos & models');
-    else pieces.push(types.map(t=>KIND_LABEL[t].toLowerCase()+'s').join(' & '));
+    else pieces.push(types.map(t=>(KIND_LABEL[t]||t).toLowerCase()+'s').join(' & '));
   }
   if(topics.length) pieces.push('on '+topics.map(t=>(FOCUS_LABEL[t]||TOPIC_LABEL[t]||t).toLowerCase()).join(' / '));
   if(sources.length) pieces.push('from '+sources.join(' / '));
   const label=pieces.join(' ')||'matches';
   let text;
-  if(!res.length) text='Nothing in the library matches that yet. Try a broader term, or add it with + Add.';
+  if(!res.length) text='Nothing in the library matches that yet. Try a broader term, or add it with + Add material.';
   else if(wantCount) text='You have '+res.length+' '+label+' in the library.';
   else text='Found '+res.length+' '+label+'.'+(res.length>12?' Top matches:':'');
   return {text, res, types, topics, sources};
@@ -672,39 +748,35 @@ function ask(q){
     bot.appendChild(srcs);
     if(types.length||topics.length||sources.length){
       const ap=document.createElement('button'); ap.className='apply'; ap.textContent='Show all '+res.length+' in the grid →';
-      ap.onclick=()=>{ clearFilters(); types.forEach(t=>state.f.kind.add(t)); topics.forEach(t=>{ if(FOCUS_LABEL[t])state.f.focus.add(t); else state.f.topics.add(t); }); sources.forEach(s=>state.f.origins.add(s)); sync(); render(); $('#chat').hidden=true; window.scrollTo({top:0,behavior:'smooth'}); };
+      ap.onclick=()=>{ clearFilters(); types.forEach(t=>state.f.kind.add(t)); topics.forEach(t=>{ if(FOCUS_LABEL[t])state.f.focus.add(t); else state.f.topics.add(t); }); sources.forEach(s=>state.f.origins.add(s)); syncViewsUI(); sync(); render(); $('#chat').hidden=true; window.scrollTo({top:0,behavior:'smooth'}); };
       bot.appendChild(ap);
     }
   }
 }
 
-/* ---------- misc ---------- */
 function clearFilters(){ for(const f of FACETS) state.f[f.key].clear(); }
 function showModal(sel){ $(sel).hidden=false; document.body.style.overflow='hidden'; }
 function hideModal(sel){ $(sel).hidden=true; document.body.style.overflow=''; }
 function render(){ renderFacets(); renderPills(); renderGrid(); }
 function sync(){ const p=new URLSearchParams(); if(state.q)p.set('q',state.q);
   for(const f of FACETS) if(state.f[f.key].size) p.set(f.key, Array.from(state.f[f.key]).join('~'));
-  if(state.sort!=='relevance') p.set('sort',state.sort);
+  if(state.sort!=='relevance') p.set('sort',state.sort); if(state.view!=='cards') p.set('view',state.view);
   history.replaceState(null,'', location.pathname+(p.toString()?('?'+p):'')); }
 function restore(){ const p=new URLSearchParams(location.search); state.q=p.get('q')||''; $('#q').value=state.q;
-  state.sort=p.get('sort')||'relevance'; $('#sort').value=state.sort;
+  state.sort=p.get('sort')||'relevance'; $('#sort').value=state.sort; state.view=p.get('view')||'cards'; setViewSeg();
   for(const f of FACETS){ const v=p.get(f.key); if(v) v.split('~').forEach(x=>state.f[f.key].add(x)); } }
 
-/* ---------- railstats ---------- */
 function railstats(){ const c=BASE_DATA.counts;
-  $('#railstats').innerHTML='<b>'+ALL.length+'</b> resources · <b>'+c.papers+'</b> papers · <b>'+c.repos_models+'</b> repos/models<br>'
+  $('#railstats').innerHTML='<b>'+ALL.length+'</b> sources · <b>'+c.papers+'</b> papers · <b>'+c.repos_models+'</b> repos/models · <b>'+(c.other||0)+'</b> other<br>'
     +'built '+BASE_DATA.generated+(USER.length?(' · <b>'+USER.length+'</b> added by you'):''); }
 
-/* ---------- wire up ---------- */
-$('#q').addEventListener('input', debounce(e=>{ state.q=e.target.value.trim(); sync(); render(); },140));
+$('#q').addEventListener('input', debounce(e=>{ state.q=e.target.value.trim(); syncViewsUI(); sync(); render(); },140));
 $('#sort').addEventListener('change', e=>{ state.sort=e.target.value; render(); });
-$('#clear-all').onclick=()=>{ clearFilters(); state.q=''; $('#q').value=''; sync(); render(); };
+$('#clear-all').onclick=()=>{ clearFilters(); state.q=''; $('#q').value=''; syncViewsUI(); sync(); render(); };
 $('#btn-add').onclick=openAdd;
 $('#btn-data').onclick=openData;
 $('#btn-rail').onclick=()=>document.body.classList.toggle('rail-open');
-$('#btn-theme').onclick=()=>{ const d=document.documentElement.classList.toggle('dark');
-  localStorage.setItem('inversal-theme', d?'dark':'light'); };
+$('#btn-theme').onclick=()=>{ const d=document.documentElement.classList.toggle('dark'); localStorage.setItem('stacks-theme', d?'dark':'light'); };
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{ ['#modal','#addmodal','#datamodal'].forEach(hideModal); });
 document.querySelectorAll('.scrim').forEach(s=>s.addEventListener('click',e=>{ if(e.target===s) hideModal('#'+s.id); }));
 $('#fab').onclick=()=>{ const c=$('#chat'); c.hidden=!c.hidden; if(!c.hidden) $('#chat-in').focus(); };
@@ -715,14 +787,12 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){ ['#modal','#addmodal','#datamodal'].forEach(hideModal); $('#chat').hidden=true; }
 });
 
-/* assistant scope + pills */
-$('#chat-scope').innerHTML='I search only your <b>Inversal library</b> ('+ALL.length+' resources) — I don’t browse the web. Ask me to list, filter, or count.';
-const PILLS=['Show me all the repos','Papers about ketamine','EEG foundation models','What’s from Claude Science?','Wearable EEG','TMS biomarkers','How many models are there?'];
-$('#chat-pills').innerHTML=PILLS.map(p=>'<button>'+esc(p)+'</button>').join('');
+$('#chat-scope').innerHTML='I search only your <b>Stacks library</b> ('+ALL.length+' sources) — I don’t browse the web. Ask me to list, filter, or count.';
+const PILLS=['Show me all the repos','Papers about ketamine','EEG foundation models','Only the YouTube videos','Which companies are tracked?','Grants &amp; fellowships','What’s from Claude Science?'];
+$('#chat-pills').innerHTML=PILLS.map(p=>'<button>'+p+'</button>').join('');
 $('#chat-pills').querySelectorAll('button').forEach(b=>b.onclick=()=>ask(b.textContent));
 
-/* boot */
-restore(); railstats(); render();
+restore(); renderViewsSelect(); railstats(); render();
 </script>
 </body>
 </html>
