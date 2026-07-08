@@ -1,16 +1,16 @@
-# Inversal
+# Stacks
 
 A searchable, filterable knowledge base for the papers, repositories, and models behind the research — a calmer, smarter home for everything that would otherwise get lost in a folder or a source dump.
 
-**Live site:** https://lindsaygould.github.io/inversal/
+**Live site:** https://lindsaygould.github.io/stacks/
 
 ## What it does
 
-- **295 resources** to start — 242 papers + 53 repos/models — each tagged by **type**, **domain** (AI / mental health), **focus** (TMS · ketamine · EEG · wearables), extra **topics** (foundation models, biomarkers, connectome/fMRI, depression, psychedelics, BCI, sleep, neurofeedback), and **source provenance** (Manual search · Claude · Claude Science).
+- **628 sources** to start — 300 papers + 68 repos/models, plus videos, companies, articles and more — each tagged by **type**, **domain** (AI / mental health), **focus** (TMS · ketamine · EEG · wearables), extra **topics** (foundation models, biomarkers, connectome/fMRI, depression, psychedelics, BCI, sleep, neurofeedback), and **source provenance** (Manual search · Claude · Claude Science).
 - **Filter + search** everything from the left rail; facet counts update as you narrow, like booking a flight.
 - **Typed previews** — every card gets a provider-colored cover (arXiv, GitHub, Hugging Face, Nature, LinkedIn, …) so the wall is scannable at a glance, with no broken images.
 - **Add anything** you find online with one click (**+ Add**): paste a URL, the type + provider are guessed, tag it, save. Additions live in your browser and can be exported to make them permanent (**Data → Export**).
-- **Ask Inversal** — a bottom-right assistant that searches only this library (no web, no API key): *“show me all the repos”*, *“papers about ketamine”*, *“EEG foundation models”*, *“what’s from Claude Science?”* It answers with counts and clickable source cards, and can push its results into the grid as filters.
+- **Ask Stacks** — a bottom-right assistant that searches only this library (no web, no API key): *“show me all the repos”*, *“papers about ketamine”*, *“EEG foundation models”*, *“what’s from Claude Science?”* It answers with counts and clickable source cards, and can push its results into the grid as filters.
 
 ## How it’s built
 
