@@ -367,7 +367,7 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
 const BASE_DATA = __INVERSAL_DATA__;
 
 const KIND_LABEL = {paper:'Paper', model:'Model', repo:'Repo', dataset:'Dataset', toolkit:'Toolkit',
-  benchmark:'Benchmark', video:'Video', article:'Article', company:'Company', event:'Event', grant:'Grant', other:'Other'};
+  benchmark:'Benchmark', video:'Video', podcast:'Podcast', article:'Article', company:'Company', event:'Event', grant:'Grant', other:'Other'};
 const CODE_KINDS = ['repo','model','toolkit','benchmark','dataset'];
 const FOCUS_LABEL = {tms:'TMS', ketamine:'Ketamine', eeg:'EEG', wearables:'Wearables'};
 const TOPIC_LABEL = {'foundation-model':'Foundation models', psychedelics:'Psychedelics', neurofeedback:'Neurofeedback',
@@ -389,7 +389,7 @@ const PROV_COLORS = {
 };
 function provColors(p){ return PROV_COLORS[p] || PROV_COLORS['Web']; }
 const KIND_COLOR = {paper:'#c0392b',model:'#f0a417',repo:'#3a3f4b',dataset:'#7a5aa8',toolkit:'#2c6e8f',
-  benchmark:'#4a54b0',video:'#c4302b',article:'#e0663a',company:'#2f8f5b',event:'#5b57e8',grant:'#1db954',other:'#5a6572'};
+  benchmark:'#4a54b0',video:'#c4302b',podcast:'#1db954',article:'#e0663a',company:'#2f8f5b',event:'#5b57e8',grant:'#d98a1f',other:'#5a6572'};
 
 const Q_TOPIC = {
   eeg:['eeg','electroenceph','microstate'], tms:['tms','rtms','itbs','transcranial','stimulation','neuromodulation'],
@@ -418,7 +418,7 @@ rebuild();
 const state = { q:'', sort:'relevance', view:'cards', f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set()} };
 
 const FACETS = [
-  {key:'kind', title:'Type', field:'kind', order:['paper','model','repo','dataset','toolkit','benchmark','video','article','company','event','grant','other'], label:k=>KIND_LABEL[k]||k},
+  {key:'kind', title:'Type', field:'kind', order:['paper','model','repo','dataset','toolkit','benchmark','video','podcast','article','company','event','grant','other'], label:k=>KIND_LABEL[k]||k},
   {key:'domains', title:'Domain', field:'domains', order:['ai','mental-health'], label:k=>DOMAIN_LABEL[k]||k},
   {key:'focus', title:'Mental-health focus', field:'focus', order:['tms','ketamine','eeg','wearables'], label:k=>FOCUS_LABEL[k]||k},
   {key:'origins', title:'Source', field:'origins', order:['Manual search','Claude Science','Claude','Added by you'], label:k=>k},
@@ -574,7 +574,8 @@ function detectKind(url){ const u=url.toLowerCase();
   if(u.includes('huggingface.co/datasets')) return 'dataset';
   if(u.includes('huggingface.co')) return 'model';
   if(u.includes('github.com')||u.includes('github.io')) return 'repo';
-  if(u.includes('youtube.com')||u.includes('youtu.be')||u.includes('vimeo')||u.includes('spotify')) return 'video';
+  if(u.includes('spotify')||u.includes('podcasts.apple')||u.includes('/episode/')) return 'podcast';
+  if(u.includes('youtube.com')||u.includes('youtu.be')||u.includes('vimeo')) return 'video';
   if(u.includes('arxiv.org')||u.includes('doi.org')||u.includes('biorxiv')||u.includes('medrxiv')||u.includes('nature.com')
      ||u.includes('sciencedirect')||u.includes('ncbi.nlm.nih')||u.includes('pnas.org')||u.includes('cell.com')||u.includes('osf.io')) return 'paper';
   if(u.includes('medium.com')||u.includes('substack')||u.includes('wired')||u.includes('psypost')) return 'article';
@@ -692,7 +693,8 @@ function parse(q){
   if(/\bdatasets?\b/.test(ql)) types.push('dataset');
   if(/\btoolkits?\b|\blibrar/.test(ql)) types.push('toolkit');
   if(/\bbenchmarks?\b/.test(ql)) types.push('benchmark');
-  if(/\bvideos?\b|youtube|talks?\b|podcasts?\b|watch\b/.test(ql)) types.push('video');
+  if(/\bvideos?\b|youtube|\bwatch\b|\btalks?\b/.test(ql)) types.push('video');
+  if(/\bpodcasts?\b|spotify|episodes?\b|\blisten\b/.test(ql)) types.push('podcast');
   if(/\bcompan|startups?\b|product page/.test(ql)) types.push('company');
   if(/\barticles?\b|blog|newsletter|essay/.test(ql)) types.push('article');
   if(/\bevents?\b|conferences?\b|workshops?\b|symposi|summit/.test(ql)) types.push('event');
@@ -788,7 +790,7 @@ document.addEventListener('keydown',e=>{
 });
 
 $('#chat-scope').innerHTML='I search only your <b>Stacks library</b> ('+ALL.length+' sources) — I don’t browse the web. Ask me to list, filter, or count.';
-const PILLS=['Show me all the repos','Papers about ketamine','EEG foundation models','Only the YouTube videos','Which companies are tracked?','Grants &amp; fellowships','What’s from Claude Science?'];
+const PILLS=['Show me all the repos','Papers about ketamine','EEG foundation models','Only the videos','Podcasts to listen to','Which companies are tracked?','Grants &amp; fellowships','What’s from Claude Science?'];
 $('#chat-pills').innerHTML=PILLS.map(p=>'<button>'+p+'</button>').join('');
 $('#chat-pills').querySelectorAll('button').forEach(b=>b.onclick=()=>ask(b.textContent));
 

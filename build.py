@@ -70,7 +70,8 @@ ACADEMIC_HOSTS = ["arxiv.org", "biorxiv.org", "medrxiv.org", "nature.com", "scie
     "oup.com", "frontiersin.org", "journals.sagepub.com", "direct.mit.edu", "osf.io",
     "jamanetwork.com", "springer.com", "wiley.com", "mdpi.com", "ssrn.com", "jmoodanxdisorders.org",
     "biomedcentral.com", "elifesciences.org", "plos.org", "jneurosci.org", "cebp.aacrjournals.org"]
-VIDEO_HOSTS = ["youtube.com", "youtu.be", "vimeo.com", "open.spotify.com", "spotify.com"]
+VIDEO_HOSTS = ["youtube.com", "youtu.be", "vimeo.com"]
+PODCAST_HOSTS = ["open.spotify.com", "spotify.com", "podcasts.apple.com", "pod.link", "overcast.fm"]
 ARTICLE_HOSTS = ["medium.com", "substack.com", "wired.com", "psypost.org", "businesswire.com",
     "paulgraham.com", "techcrunch.com", "theverge.com", "quantamagazine.org", "psychologytoday.com"]
 
@@ -283,6 +284,8 @@ def classify_other(url, host, ctx):
         return "dataset" if "/datasets/" in url else "model"
     if "github.com" in h or "github.io" in h:
         return "repo"
+    if any(s in h for s in PODCAST_HOSTS) or "/episode/" in url or re.search(r"\bpodcast\b", ql):
+        return "podcast"
     if any(s in h for s in VIDEO_HOSTS):
         return "video"
     if any(a in h for a in ACADEMIC_HOSTS):
@@ -357,6 +360,16 @@ def main():
     docx = build_docx(existing)
     items = papers + repos + docx
 
+    # merge captured previews (og:image URLs + rendered PDF page-1 thumbnails)
+    pv_path = os.path.join(HERE, "data", "previews.json")
+    if os.path.exists(pv_path):
+        with open(pv_path, encoding="utf-8") as f:
+            pv = json.load(f)
+        for it in items:
+            if pv.get(it["id"]):
+                it["preview_url"] = pv[it["id"]]
+        print("merged", sum(1 for it in items if it["preview_url"]), "previews")
+
     def tally(field):
         c = {}
         for it in items:
@@ -372,7 +385,7 @@ def main():
             "total": len(items),
             "papers": sum(1 for it in items if it["kind"] == "paper"),
             "repos_models": sum(1 for it in items if it["kind"] in ("model", "repo", "toolkit", "benchmark", "dataset")),
-            "other": sum(1 for it in items if it["kind"] in ("video", "article", "company", "event", "grant", "other")),
+            "other": sum(1 for it in items if it["kind"] in ("video", "podcast", "article", "company", "event", "grant", "other")),
             "from_docx": len(docx),
             "by_kind": tally("kind"), "by_origin": tally("origins"),
             "by_domain": tally("domains"), "by_focus": tally("focus"), "by_topic": tally("topics"),
