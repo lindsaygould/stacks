@@ -81,6 +81,13 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
     background:var(--grad-soft)}
   .mission b{color:var(--ink);font-weight:600}
   @media(max-width:720px){.mission{padding:8px 14px;font-size:11px}}
+  .quicklists{display:flex;flex-wrap:wrap;gap:7px;padding:10px 22px;border-bottom:1px solid var(--edge);align-items:center}
+  .quicklists .ql-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-right:2px}
+  .quicklists button{font-size:12px;padding:4px 12px;border-radius:99px;border:1px solid var(--edge);background:var(--hover);color:var(--dim);transition:all .14s}
+  .quicklists button:hover{color:var(--ink);border-color:var(--edge2);transform:translateY(-1px)}
+  @media(max-width:720px){.quicklists{padding:9px 14px}}
+  #chat-key{font-size:15px;color:var(--dim);line-height:1;margin-right:6px}
+  #chat-key:hover{color:var(--ink)}
 
   .layout{display:grid;grid-template-columns:290px 1fr;max-width:1620px;margin:0 auto;align-items:start}
   @media(max-width:980px){.layout{grid-template-columns:1fr}}
@@ -334,7 +341,8 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
 
 <div class="mission">Stacks is the durable home for everything behind the work — <b>papers</b>, <b>repos</b>, <b>models</b>,
   <b>videos</b>, <b>companies</b>, articles and more — searchable, filterable, and provenance-aware (Manual search · Claude · Claude Science).
-  Add anything you find with one click, and ask <b>the Librarian</b> to pull exactly what you need.</div>
+  Add anything you find with one click, and ask <b>the Librarian</b> to pull exactly what you need — or answer questions about the sources.</div>
+<div class="quicklists" id="quicklists"></div>
 
 <div class="layout">
   <aside id="rail" aria-label="Filters">
@@ -374,7 +382,8 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
 <section id="chat" hidden aria-label="Ask the Librarian">
   <div class="chat-head">
     <span class="chat-title"><span class="s">✦</span> Ask the Librarian</span>
-    <button id="chat-close" aria-label="Close">×</button>
+    <span style="margin-left:auto;display:flex;align-items:center"><button id="chat-key" title="Set your Anthropic API key">⚙</button>
+    <button id="chat-close" aria-label="Close">×</button></span>
   </div>
   <div class="chat-scope" id="chat-scope"></div>
   <div id="chat-msgs"></div>
@@ -461,7 +470,7 @@ const FACETS = [
 
 function matchesText(it,q){
   if(!q) return true;
-  const hay = (it.title+' '+(it.ident||'')+' '+it.provider+' '+it.host+' '+(it.notes||'')+' '+(it.context||'')+' '
+  const hay = (it.title+' '+(it.ident||'')+' '+it.provider+' '+it.host+' '+(it.notes||'')+' '+(it.context||'')+' '+(it.abstract||'')+' '
     +it.origins.join(' ')+' '+it.domains.join(' ')+' '+it.focus.join(' ')+' '+it.topics.join(' ')+' '+(it.category||'')+' '+it.url).toLowerCase();
   return q.toLowerCase().split(/\s+/).filter(Boolean).every(term=>hay.includes(term));
 }
@@ -590,7 +599,7 @@ function renderGrid(){
     }
   } else {
     for(const it of items){
-      const desc = it.context || it.notes || (it.category?('Type: '+it.category):'') || it.url;
+      const desc = it.abstract || it.context || it.notes || (it.category?('Type: '+it.category):'') || it.url;
       const tags = it.focus.concat(it.topics).slice(0,3).map(t=>'<span class="tg">'+esc(FOCUS_LABEL[t]||TOPIC_LABEL[t]||t)+'</span>').join('');
       const src = it.origins.map(o=>'<span class="tg src'+(o==='Added by you'?' you':'')+'">'+esc(o)+'</span>').join('')
         + (it.via_linkedin?'<span class="tg li">via LinkedIn</span>':'')
@@ -816,8 +825,7 @@ function runQuery(q){
   return {text, res, types, topics, sources};
 }
 function chatBubble(cls, html){ const d=document.createElement('div'); d.className='msg '+cls; d.innerHTML=html; $('#chat-msgs').appendChild(d); $('#chat-msgs').scrollTop=1e6; return d; }
-function ask(q){
-  if(!q.trim()) return; chatBubble('user', esc(q));
+function listAnswer(q){
   const {text,res,types,topics,sources}=runQuery(q);
   const bot=chatBubble('bot', esc(text));
   if(res.length){
@@ -831,7 +839,65 @@ function ask(q){
       ap.onclick=()=>{ clearFilters(); types.forEach(t=>state.f.kind.add(t)); topics.forEach(t=>{ if(FOCUS_LABEL[t])state.f.focus.add(t); else state.f.topics.add(t); }); sources.forEach(s=>state.f.origins.add(s)); syncViewsUI(); sync(); render(); $('#chat').hidden=true; window.scrollTo({top:0,behavior:'smooth'}); };
       bot.appendChild(ap);
     }
+    const meta=document.createElement('div'); meta.style.cssText='font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:4px'; meta.textContent='Listed '+res.length+' — free, no key'; bot.appendChild(meta);
   }
+}
+/* ---- key + retrieval-augmented answering ---- */
+function getKey(){ try{ return localStorage.getItem('stacks-anthropic-key')||''; }catch(e){ return ''; } }
+function setKey(k){ try{ localStorage.setItem('stacks-anthropic-key',(k||'').trim()); }catch(e){} }
+function askForKey(pendingQ){
+  const b=chatBubble('bot','To answer questions about your sources I use Claude with your own Anthropic API key — stored only in this browser, never uploaded. Paste it to continue.');
+  const form=document.createElement('div'); form.style.cssText='display:flex;gap:6px;margin-top:8px';
+  form.innerHTML='<input type="password" placeholder="sk-ant-…" style="flex:1;padding:7px 10px;border:1px solid var(--edge);border-radius:9px;background:var(--bg2);color:var(--ink);font-size:12px"><button class="chat-send" style="width:auto;padding:0 14px;font-size:12px">Save</button>';
+  const inp=form.querySelector('input'), btn=form.querySelector('button');
+  btn.onclick=()=>{ if(inp.value.trim()){ setKey(inp.value); form.remove(); chatBubble('bot','Key saved in this browser. Ask away.'); if(pendingQ) ragAnswer(pendingQ); } };
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+  b.appendChild(form); inp.focus();
+}
+function retrieve(q,k){
+  const terms=q.toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(w=>w.length>2);
+  return ALL.map(it=>{ const t=it.title.toLowerCase(); const ab=(it.abstract||'').toLowerCase();
+      const hay=t+' '+ab+' '+(it.context||'').toLowerCase()+' '+(it.notes||'').toLowerCase()+' '+it.focus.join(' ')+' '+it.topics.join(' ')+' '+it.provider.toLowerCase();
+      let s=0; terms.forEach(x=>{ if(t.includes(x))s+=4; else if(ab.includes(x))s+=2; else if(hay.includes(x))s+=1; }); return {it,s}; })
+    .filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,k||8).map(x=>x.it);
+}
+async function ragAnswer(q){
+  const key=getKey(); if(!key){ askForKey(q); return; }
+  const src=retrieve(q,8);
+  if(!src.length){ chatBubble('bot','Nothing in the library touches that yet. Try different words, or add the source with + Add material.'); return; }
+  const bubble=chatBubble('bot','Reading the sources…');
+  const ctx=src.map((it,i)=>'['+(i+1)+'] '+it.title+' — '+it.kind+', '+it.provider+(it.date?(', '+it.date):'')+'\n'+((it.abstract||it.context||it.notes||'(no text indexed)').slice(0,900))).join('\n\n');
+  const system='You are the Librarian for a personal research library on neuroscience, EEG, brain-AI, and mental health. Answer the user question using ONLY the numbered sources below. Cite every claim with its source number in brackets like [2]. Prefer specifics — findings, numbers, methods — over generalities. If the sources do not contain the answer, say so plainly and suggest what to search for or add. Never invent sources or facts. Keep it concise.';
+  const user='Question: '+q+'\n\nSources:\n'+ctx;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-opus-4-8',max_tokens:1200,system:system,messages:[{role:'user',content:user}]})});
+    if(!resp.ok){ let t=''; try{t=await resp.text();}catch(e){} bubble.textContent = resp.status===401?'That API key was rejected. Set a valid Anthropic key with the ⚙ button.':('Anthropic error '+resp.status+': '+t.slice(0,180)); return; }
+    const data=await resp.json();
+    if(data.stop_reason==='refusal'){ bubble.textContent='The model declined to answer that one.'; return; }
+    const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim()||'(no answer returned)';
+    bubble.textContent=text;
+    const nums=[...new Set((text.match(/\[(\d+)\]/g)||[]).map(m=>parseInt(m.replace(/\D/g,''),10)))].filter(n=>n>=1&&n<=src.length);
+    const cited=nums.length?nums:src.slice(0,4).map((_,i)=>i+1);
+    const wrap=document.createElement('div'); wrap.className='srcs';
+    cited.forEach(n=>{ const it=src[n-1]; if(!it)return; const b=document.createElement('button'); b.className='src';
+      b.innerHTML='<span class="n">'+n+'</span><span class="t">'+esc(it.title)+'</span><span class="kd">'+esc(it.kind)+'</span>';
+      b.onclick=()=>openDetail(it.id); wrap.appendChild(b); });
+    bubble.appendChild(wrap);
+    const meta=document.createElement('div'); meta.style.cssText='font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:6px'; meta.textContent='Answered from '+src.length+' sources'; bubble.appendChild(meta);
+  }catch(e){ bubble.textContent='Could not reach Anthropic (network or key issue). Check your connection and the ⚙ key.'; }
+}
+function isListy(q){
+  const ql=q.toLowerCase().trim();
+  if(ql.endsWith('?')) return false;
+  if(/^(show|list|give me|display|filter|only|find me|pull up|what are)\b/.test(ql)) return true;
+  const {types,topics,sources}=parse(q);
+  return (types.length||topics.length||sources.length) && ql.split(/\s+/).length<=6;
+}
+function ask(q){
+  if(!q.trim()) return; chatBubble('user', esc(q));
+  if(isListy(q)) listAnswer(q); else ragAnswer(q);
 }
 
 function clearFilters(){ for(const f of FACETS) state.f[f.key].clear(); state.dateFrom=''; state.dateTo=''; }
@@ -869,10 +935,15 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){ ['#modal','#addmodal','#datamodal'].forEach(hideModal); $('#chat').hidden=true; }
 });
 
-$('#chat-scope').innerHTML='I search only your <b>Stacks library</b> ('+ALL.length+' sources) — I don’t browse the web. Ask me to list, filter, or count.';
-const PILLS=['Show me all the repos','Papers about ketamine','EEG foundation models','Only the videos','Podcasts to listen to','Which companies are tracked?','Grants &amp; fellowships','What’s from Claude Science?'];
+$('#chat-scope').innerHTML='I <b>list</b> instantly (free), or <b>answer</b> questions about your sources with citations — answering uses your own Anthropic key (⚙, kept only in this browser).';
+const PILLS=['Show me all the repos','Papers about ketamine','What do the papers say about rACC theta and antidepressant response?','EEG foundation models','Which sources say microstates need 20+ electrodes?','Grants &amp; fellowships','Podcasts to listen to'];
 $('#chat-pills').innerHTML=PILLS.map(p=>'<button>'+p+'</button>').join('');
 $('#chat-pills').querySelectorAll('button').forEach(b=>b.onclick=()=>ask(b.textContent));
+$('#chat-key').onclick=()=>{ $('#chat').hidden=false; askForKey(null); };
+const QUICK=[['Papers',['paper']],['Repos & models',CODE_KINDS],['Videos',['video']],['Podcasts',['podcast']],['Companies',['company']],['Grants',['grant']],['Articles',['article']]];
+function renderQuick(){ const el=$('#quicklists'); if(!el) return;
+  el.innerHTML='<span class="ql-label">Quick views</span>'+QUICK.map((q,i)=>'<button data-i="'+i+'">'+esc(q[0])+'</button>').join('');
+  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{ clearFilters(); state.q=''; $('#q').value=''; QUICK[+b.dataset.i][1].forEach(k=>state.f.kind.add(k)); syncViewsUI(); sync(); render(); window.scrollTo({top:0,behavior:'smooth'}); }); }
 
 function jwtEmail(tok){ try{ const p=tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
   return (JSON.parse(decodeURIComponent(escape(atob(p)))).email||'').toLowerCase(); }catch(e){ return ''; } }
@@ -890,7 +961,7 @@ function initGate(){
     google.accounts.id.renderButton($('#gbtn'), {theme:'filled_black', size:'large', text:'signin_with', shape:'pill'}); }catch(e){} };
   document.body.appendChild(s);
 }
-restore(); renderViewsSelect(); railstats(); render(); initGate();
+restore(); renderViewsSelect(); railstats(); render(); renderQuick(); initGate();
 </script>
 </body>
 </html>

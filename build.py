@@ -401,6 +401,25 @@ def main():
                     break
     print("dated", sum(1 for it in items if it["date"]), "| drive-linked", sum(1 for it in items if it["drive_url"]))
 
+    # arXiv abstracts — real titles + content so the Librarian can answer about papers
+    ab = {}
+    abp = os.path.join(HERE, "data", "abstracts.json")
+    if os.path.exists(abp):
+        with open(abp, encoding="utf-8") as f:
+            ab = json.load(f)
+    for it in items:
+        it["abstract"] = ""
+        if it["kind"] in ("paper", "dataset"):
+            hay = (it["url"] + " " + it.get("ident", "")).lower()
+            if "arxiv" in hay:
+                m = re.search(r"(\d{4}\.\d{4,5})", hay)
+                if m and m.group(1) in ab:
+                    a = ab[m.group(1)]
+                    it["abstract"] = a.get("abstract", "")
+                    if a.get("title") and (it["title"].startswith("arXiv ") or it["title"] == it.get("ident", "")):
+                        it["title"] = a["title"]
+    print("abstracts", sum(1 for it in items if it["abstract"]))
+
     def tally(field):
         c = {}
         for it in items:
