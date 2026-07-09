@@ -416,9 +416,26 @@ def main():
                 if m and m.group(1) in ab:
                     a = ab[m.group(1)]
                     it["abstract"] = a.get("abstract", "")
-                    if a.get("title") and (it["title"].startswith("arXiv ") or it["title"] == it.get("ident", "")):
+                    tl = it["title"].strip().lower()
+                    if a.get("title") and (it["title"].startswith("arXiv ") or it["title"] == it.get("ident", "")
+                                           or re.match(r"^(arxiv|doi)?[:\s]*\d{4}\.\d{4,5}(v\d+)?$", tl)):
                         it["title"] = a["title"]
     print("abstracts", sum(1 for it in items if it["abstract"]))
+
+    # resolved metadata: real titles + abstracts recovered by scripts/enrich_oa.py
+    # (only placeholder id-titles get a resolved title; abstracts fill papers that had none)
+    rp = os.path.join(HERE, "data", "resolved_meta.json")
+    resolved = json.load(open(rp)) if os.path.exists(rp) else {}
+    rt = ra = 0
+    for it in items:
+        r = resolved.get(it["id"])
+        if not r:
+            continue
+        if r.get("title"):
+            it["title"] = r["title"]; rt += 1
+        if r.get("abstract") and not it["abstract"]:
+            it["abstract"] = r["abstract"]; ra += 1
+    print("resolved-meta: titles", rt, "| abstracts", ra)
 
     # full text (content/<item-id>.txt) + reading status
     content_ids = set(os.path.splitext(os.path.basename(p))[0]
