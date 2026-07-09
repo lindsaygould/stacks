@@ -2,7 +2,8 @@
 
 A searchable, filterable knowledge base for the papers, repositories, and models behind the research — a calmer, smarter home for everything that would otherwise get lost in a folder or a source dump.
 
-**Live site:** https://lindsaygould.github.io/stacks/
+**Live site (Vercel, primary):** https://stacks-lindsayagould-6658s-projects.vercel.app
+**Backup (GitHub Pages):** https://lindsaygould.github.io/stacks/
 
 ## What it does
 
