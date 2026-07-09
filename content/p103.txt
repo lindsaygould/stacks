@@ -1,0 +1,2383 @@
+Deep graph learning of multimodal brain networks defines treatment-predictive signatures in major depression 
+
+|  |
+| :-: |
+| [**Page 1**]() |
+
+**ARTICLE**
+
+**OPEN**
+
+Deep graph learning of multimodal brain networks defines
+
+treatment-predictive signatures in major depression
+
+Yong Jiao [1](http://orcid.org/0000-0003-3871-6234), Kanhao Zhao [1](http://orcid.org/0000-0002-2955-0917), Xinxu Wei [2](http://orcid.org/0000-0002-7031-3278), Nancy B. Carlisle3, Corey J. Keller [4](http://orcid.org/0000-0003-0529-3490),5,6, Desmond J. Oathes [7](http://orcid.org/0000-0001-7346-2669),8,9,10,
+
+Gregory A. Fonzo [11](http://orcid.org/0000-0002-0213-1034) and Yu Zhang [1](http://orcid.org/0000-0003-4087-6544),2 ✉
+
+© The Author(s) 2025
+
+Major depressive disorder (MDD) presents a substantial health burden with low treatment response rates. Predicting antidepressant
+
+efficacy is challenging due to MDD’s complex and varied neuropathology. Identifying biomarkers for antidepressant treatment
+
+requires thorough analysis of clinical trial data. Multimodal neuroimaging, combined with advanced data-driven methods, can
+
+enhance our understanding of the neurobiological processes influencing treatment outcomes. To address this, we analyzed resting-
+
+state fMRI and EEG connectivity data from 130 patients treated with sertraline and 135 patients with placebo from the Establishing
+
+Moderators and Biosignatures of Antidepressant Response in Clinical Care (EMBARC) study. A deep learning framework was
+
+developed using graph neural networks to integrate data-augmented connectivity and cross-modality correlation, aiming to predict
+
+individual symptom changes by revealing multimodal brain network signatures. The results showed that our model demonstrated
+
+promising prediction accuracy, with an R2 value of 0.24 for sertraline and 0.20 for placebo. It also exhibited potential in transferring
+
+predictions using only EEG. Key brain regions identified for predicting sertraline response included the inferior temporal gyrus
+
+(fMRI) and posterior cingulate cortex (EEG), while for placebo response, the precuneus (fMRI) and supplementary motor area (EEG)
+
+were critical. Additionally, both modalities identified the superior temporal gyrus and posterior cingulate cortex as significant for
+
+sertraline response, while the anterior cingulate cortex and postcentral gyrus were common predictors in the placebo arm.
+
+Additionally, variations in the frontoparietal control, ventral attention, dorsal attention, and limbic networks were notably
+
+associated with MDD treatment. By integrating fMRI and EEG, our study established novel multimodal brain network signatures to
+
+predict individual responses to sertraline and placebo in MDD, providing interpretable neural circuit patterns that may guide future
+
+targeted interventions. Trial Registration: Establishing Moderators and Biosignatures of Antidepressant Response for Clinical Care
+
+for Depression (EMBARC) ClinicalTrials.gov Identifier: NCT\#01407094.
+
+Molecular Psychiatry (2025) 30:3963–3974; <https://doi.org/10.1038/s41380-025-02974-6>
+
+**INTRODUCTION**
+
+Major depressive disorder (MDD) remains a major global mental
+
+health concern, affecting millions of people. Despite the wide-
+
+spread use of serotonin reuptake inhibitors and other antide-
+
+pressants, their effectiveness varies substantially, leaving many
+
+patients without sufficient relief \[[1](#10)\]. This variability underscores
+
+the urgent need to understand the biological and psychological
+
+mechanisms driving different treatment responses. Personalized
+
+treatment strategies, considering the heterogeneity of MDD, are
+
+becoming increasingly important \[[2](#10), [3](#11)\]. Emerging evidence
+
+suggests that brain network (or connectivity) variations may
+
+capture pivotal information associated with treatment effects
+
+\[[4](#11), [5](#11)\]. Understanding these complex variations is vital for
+
+developing more effective, personalized therapeutic strategies
+
+for MDD.
+
+In neuropsychiatric research, functional magnetic resonance
+
+imaging (fMRI) and electroencephalography (EEG) are essential for
+
+studying the neurobiology of MDD \[[6](#11)\]. By measuring hemody-
+
+namic responses to neural activity, fMRI provides spatially high-
+
+resolution images of brain function, identifying regions implicated
+
+in psychiatric disorders \[[7](#11)\]. In contrast, EEG records electrical
+
+oscillations from neural activity, offering superior temporal
+
+resolution for capturing network dynamics \[[8](#11)\]. Together, these
+
+modalities enhance our understanding of the complex neural
+
+circuits associated with MDD, supporting the advancement of
+
+more tailored therapeutic interventions.
+
+Received: 25 September 2024 Revised: 4 March 2025 Accepted: 20 March 2025
+
+Published online: 31 March 2025
+
+1Department of Bioengineering, Lehigh University, Bethlehem, PA, USA. 2Department of Electrical and Computer Engineering, Lehigh University, Bethlehem, PA, USA.
+
+3Department of Psychology, Lehigh University, Bethlehem, PA, USA. 4Department of Psychiatry and Behavioral Sciences, Stanford University School of Medicine, Stanford, CA,
+
+USA. 5Wu Tsai Neurosciences Institute, Stanford University, Stanford, CA, USA. 6Veterans Affairs Palo Alto Healthcare System, and the Sierra Pacific Mental Illness, Research,
+
+Education, and Clinical Center (MIRECC), Palo Alto, CA, USA. 7Center for Brain Imaging and Stimulation, Department of Psychiatry, University of Pennsylvania Perelman School of
+
+Medicine, Philadelphia, PA, USA. 8Center for Neuromodulation in Depression and Stress, Department of Psychiatry, University of Pennsylvania Perelman School of Medicine,
+
+Philadelphia, PA, USA. 9Penn Brain Science, Translation, Innovation, and Modulation Center, University of Pennsylvania Perelman School of Medicine, Philadelphia, PA, USA.
+
+10Departments of Neurology, Neurosurgery, Bioengineering and Neuroscience, University of Pennsylvania Perelman School of Medicine, Philadelphia, PA, USA. 11Center for
+
+Psychedelic Research and Therapy, Department of Psychiatry and Behavioral Sciences, Dell Medical School, The University of Texas at Austin, Austin, TX, USA.
+
+✉email: <yuzi20@lehigh.edu>
+
+**[www.nature.com/mp](http://www.nature.com/mp)**
+
+Molecular Psychiatry
+
+1234567
+
+890();,:
+
+-----
+
+|  |
+| :-: |
+| [**Page 2**]() |
+
+The fusion of multimodal brain imaging techniques is gaining
+
+popularity in mental disorder analysis, since it allows for a
+
+multidimensional analysis, providing comprehensive insights into
+
+the interrelationships between various imaging modalities. This
+
+integrative technique offers a more reliable foundation for
+
+precision diagnosis and prognosis, enhancing the analytical
+
+capabilities of each technique. Recent studies have successfully
+
+used multimodal fusion to predict and understand various mental
+
+health conditions. For instance, utilizing complementary informa-
+
+tion from MRI, PET, assessment metrics, and demographic data
+
+has shown promise for improved diagnoses of Alzheimer’s disease
+
+and autism \[[9](#11)\]. Another recent study employed multimodal fusion
+
+of functional and structural data to provide a comprehensive view
+
+of longitudinal changes in brain patterns \[[10](#11)\]. Integrating
+
+functional and structural connectivity from fMRI and diffusion
+
+tensor imaging emphasized dynamic inter-modal dependencies
+
+\[[11](#11)\]. Furthermore, coupled tensor/matrix factorization was used to
+
+extract joint latent components from MEG and fMRI data,
+
+revealing fine-grained spatiotemporal brain dynamics and improv-
+
+ing understanding of brain function and development in
+
+adolescents \[[12](#11)\]. A recent study on MDD identified common
+
+and unique structural and functional connectivity coupling
+
+changes, highlighting the structural and functional connectivity
+
+coupling changes, highlighting the vulnerability of these connec-
+
+tions to external stressors and adverse behaviors \[[13](#11)\]. Despite
+
+these advances, there is a lack of research employing the fusion of
+
+fMRI and EEG to predict antidepressant outcomes. Combining
+
+EEG’s temporal resolution with fMRI’s spatial detail at the brain
+
+network level may offer a comprehensive view of neural circuits,
+
+enhancing our understanding of the neurobiological basis of MDD
+
+and its interaction with antidepressant treatment.
+
+Recent advancements in machine learning and artificial
+
+intelligence have demonstrated potential in identifying brain
+
+biomarkers for more precise mental health interventions \[[14](#11), [15](#11)\].
+
+The human brain can be modeled as a complex network
+
+comprising numerous spatially distributed but functionally inter-
+
+connected brain regions \[[16](#11)\]. Graph neural networks (GNNs) \[[17](#11)\],
+
+a type of deep learning models, are particularly suited for
+
+analyzing brain functional architecture due to their ability to
+
+handle complex node interactions. This unique advantage has led
+
+to their increasing application in studying mental disorders
+
+through brain network modeling \[[11](#11), [18](#11)–[22](#11)\]. Nevertheless, very
+
+few studies employing GNNs have focused on multi-modality
+
+brain network analysis for predicting treatment responses
+
+leveraging clinical trial data.
+
+Utilizing data from the Establishing Moderators and Biosignatures
+
+of Antidepressant Response in Clinical Care (EMBARC) study, a large
+
+neuroimaging-coupled randomized clinical trial, we propose a novel
+
+deep learning framework integrating fMRI and EEG connectivity to
+
+establish robust biomarkers for predicting antidepressant and
+
+placebo treatment responses in MDD. This framework augments
+
+the functional connectivity of both modalities and constructs brain
+
+graphs for pre-treatment fMRI and EEG data, respectively. It
+
+subsequently employs GNNs to capture the spatial dependencies
+
+within each modality, thereby optimizing spatial characteristics. By
+
+maximizing the correlation between latent features, our approach
+
+harnesses complementary information through modality fusion to
+
+predict treatment outcomes. An interpretability analysis conducted
+
+based on the trained model parameters further identifies critical
+
+biomarkers from both brain region and connectivity perspectives,
+
+advancing our comprehension of neural circuits that dictate
+
+response to antidepressant treatment.
+
+**METHODS AND MATERIALS**
+
+**Clinical trial dataset**
+
+Our study utilized data from the EMBARC study \[[1](#10)\], a comprehensive,
+
+neuroimaging-integrated, placebo-controlled, randomized clinical trial
+
+focusing on depression. Participants aged 18 to 65 were enrolled from
+
+four study locations: Massachusetts General Hospital, University of Texas
+
+Southwestern Medical Center, University of Michigan, and Columbia
+
+University. In this double-blind trial, individuals diagnosed with MDD were
+
+randomly assigned to receive either an eight-week treatment of sertraline
+
+or placebo. Out of 309 patients diagnosed with MDD, 296 met the
+
+inclusion criteria and received treatment. For subjects who have both fMRI
+
+and EEG data, there are 130 from the sertraline arm (38 male, 92 female)
+
+and 135 from the placebo arm (50 male, 85 female) after preprocessing.
+
+The primary outcome was measured using the 17-item Hamilton Rating
+
+Scale for Depression (HAMD17) \[[23](#11)\] at multiple time points (baseline, weeks
+
+1, 2, 3, 4, 6, and 8). Missing HAMD17 scores at week 8 were estimated
+
+through Bayesian regression methods \[[24](#11)\] using baseline HAMD17, week 1
+
+HAMD17, week 2 HAMD17, week 3 HAMD17, week 4 HAMD17, week 6
+
+HAMD17, baseline Quick Inventory of Depressive Symptoms (QIDS) total
+
+score, baseline Mood and Symptom Questionnaire subscale scores for
+
+Anxious Arousal, Anhedonic Depression, and General Distress, Snaith-
+
+Hamilton Pleasure Scale (SHAPS) total score, age, years of education,
+
+gender, and Wechsler Abbreviated Scale of Intelligence (WASI) t-scores for
+
+Vocabulary and Matrix Reasoning. Treatment outcome was measured by
+
+the change in HAMD17 scores from the baseline to week 8.
+
+**fMRI acquisition and preprocessing**
+
+Resting-state functional magnetic resonance imaging (rs-fMRI) scans were
+
+conducted using T2\* weighted images via a single-shot gradient echo-planar
+
+pulse sequence. Each session lasted eight minutes using parameter settings:
+
+repetition time 2000 ms, echo time 28ms, matrix size 64×64, voxel size
+
+3.2 × 3.2 × 3.1 mm3. More details of the fMRI acquisition can be found in \[[25](#11)\].
+
+The rs-fMRI data were preprocessed using the fMRIPrep pipeline \[[26](#11)\].
+
+This involved correcting the T1 weighted images for intensity nonunifor-
+
+mity and skull stripping, followed by spatial normalization via nonlinear
+
+registration to a T1w reference \[[27](#11)\]. Brain tissues, including cerebrospinal
+
+fluid, white matter, and grey matter, were segmented using FSL from the
+
+brain-extracted T1 weighted images \[[28](#11)\]. Fieldmap information was
+
+utilized to correct distortions in the echo-planar imaging, improving the
+
+co-registration with the anatomical reference. The BOLD signals were
+
+aligned to the T1-weighted images using boundary-based registration with
+
+nine degrees of freedom to address remaining distortions \[[29](#11)\]. Head-
+
+motion parameters were estimated using MCFLIRT (FSL), and the BOLD
+
+signals were subjected to slice-time correction, susceptibility distortion
+
+correction, and were resampled into MNI152NLin2009cAsym space.
+
+Motion artifacts were removed using ICA-AROMA \[[30](#11)\], and following
+
+spatial smoothing with a 6mm FWHM Gaussian kernel, the data
+
+underwent quality control for head motion.
+
+**EEG acquisition and preprocessing**
+
+Resting-state EEG (rs-EEG) data were recorded from each of the four study
+
+sites (Columbia University: 72-channel BioSemi system at 256 Hz sampling
+
+rate, McLean Hospital: 129-channel Geodesic Net system at 250Hz,
+
+University of Michigan: 60-channel NeuroScan Synamp system at 250 Hz,
+
+University of Texas Southwestern Medical Center: 62-channel NeuroScan
+
+Synamp system at 250Hz). Amplifier calibrations were consistently
+
+performed across all sites. The rs-EEG recording protocol consisted of four
+
+two-minute segments—two with eyes closed and two with eyes open,
+
+executed in a counterbalanced sequence. Participants were advised to
+
+minimize blinking and eye movements, maintaining fixation on a central
+
+cross during the eyes-open condition.
+
+The rs-EEG data was processed offline using a fully automated artifact
+
+rejection pipeline in EEGLAB \[[2](#10)\]. Initially, EEG signals were downsampled to
+
+a frequency of 250 Hz, followed by the elimination of the 60 Hz AC line
+
+noise \[[31](#11)\]. Subsequently, a high-pass filter with a cutoff frequency of
+
+0.01 Hz was employed to filter out low-frequency elements that were not
+
+physiological. The next stages involved the identification and removal of
+
+epochs and channels that did not meet specific threshold criteria for
+
+magnitude and spatial correlation, respectively. Participants with an excess
+
+of 20% problematic channels were excluded. For channels with
+
+compromised signals, a reconstruction was carried out using spherical
+
+spline interpolation based on signals from adjacent channels \[[32](#11)\]. To
+
+further cleanse the data, independent component analysis was applied to
+
+remove additional artifacts like those caused by scalp muscles, eye
+
+movements, and ECG \[[33](#11)\]. After artifact rejection, 54 EEG channels
+
+common to all four study sites were identified and extracted for each
+
+subject. The EEG signals were then standardized to a common average
+
+reference. Lastly, the signals were divided into four key frequency bands:
+
+Y. Jiao et al.
+
+3964
+
+Molecular Psychiatry (2025) 30:3963 – 3974
+
+-----
+
+|  |
+| :-: |
+| [**Page 3**]() |
+
+theta (4–7Hz), alpha (8–12Hz), beta (13–30Hz), and low gamma
+
+(31–50 Hz) for further analysis.
+
+Source localization using the Brainstorm toolbox \[[34](#11)\] with a minimum-
+
+norm estimation \[[35](#11)\] was then conducted to convert channel-space EEG into
+
+source-space signals over 3003 vertices. This conversion was achieved
+
+through a three-layer boundary element head model, comprising scalp, skull,
+
+and cortical surface, calculated using the OpenMEEG plugin \[[36](#11)\], which
+
+utilizes the FreeSurfer average brain template \[[37](#11)\]. The model facilitated the
+
+generation of 3003 dipoles with free orientations. A lead-field matrix, critical
+
+for linking the activity of these dipoles to EEG data, was subsequently derived
+
+from the boundary element model. Principal component analysis was then
+
+applied to condense the three-dimensional estimated source signal at each
+
+vertex into a one-dimensional time series of the principal component.
+
+**Functional connectivity calculation**
+
+For rs-fMRI, regional time series was first computed by averaging the
+
+preprocessed voxel-level BOLD signals into time series for 100 regions of
+
+interest (ROIs) defined by the Schaefer parcellation \[[38](#11)\]. Functional
+
+connectivity was then calculated as Pearson correlation coefficient
+
+between the time series of every pair of ROIs. The resulting connectivity
+
+values were *z*-score normalized and then subjected to Fisher’s *r*-to-*z*
+
+transformation to improve normality.
+
+For rs-EEG, power envelope connectivity (PEC) was calculated in preference
+
+to other metrics such as coherence or phase lag index, as PEC not only has
+
+shown promise in mitigating spurious correlations caused by volume
+
+conduction, a common issue in EEG that can produce misleading connectivity
+
+patterns between adjacent channels \[[39](#11), [40](#11)\], but also demonstrates superior
+
+stability in resting-state analyses as power envelopes exhibit more consistent
+
+temporal characteristics than instantaneous phase relationships \[[41](#11)\]. More
+
+importantly, PEC’s focus on power envelope fluctuations provides a more
+
+compatible temporal framework for integration with fMRI’s hemodynamic
+
+responses, as it captures slow temporal dynamics of neural oscillation
+
+amplitudes (typically \<1Hz) \[[42](#11)\]. This temporal correspondence has been
+
+empirically validated by multiple studies showing significant spatial overlap
+
+between PEC-derived networks and fMRI connectivity patterns \[[43](#11)\]. PEC
+
+addresses the volume conduction problem by focusing on the oscillatory
+
+power of signals, rather than their raw phase or amplitude, which are more
+
+susceptible to such artifacts. Specifically, Hilbert transform was first used to
+
+convert source estimates into analytical time series, followed by orthogonaliz-
+
+ing the analytical time series of each pair of brain signals to eliminate zero-
+
+phase-lag correlation. Unlike phase lag index which may discard genuine zero-
+
+phase-lag connectivity, PEC’s orthogonalization approach maintains sensitivity
+
+to physiologically meaningful synchronization while effectively eliminating
+
+artifactual correlations \[[44](#11)\]. The power envelopes were then obtained by
+
+squaring these orthogonalized analytical signals. A logarithmic transformation
+
+was subsequently applied to refine the data and enhance the normality of the
+
+measurements. PEC was then calculated using Pearson’s correlation coefficient
+
+between the log-transformed power envelopes of each brain region pair.
+
+Similar to fMRI, EEG connectivity features were extracted based on the
+
+Schaefer parcellation. The resulting connectivity values were *z*-score normal-
+
+ized before undergoing Fisher’s *r*-to-*z* transformation to improve normality and
+
+ensure comparability across modalities.
+
+**Data augmentation**
+
+Data augmentation is widely adopted in deep learning as a strategy to
+
+enhance performance and prevent overfitting. To increase the sample size
+
+for more robust multimodal fusion and prevent overfitting, we employed
+
+Common Orthogonal Basis Extraction (COBE) \[[45](#11)\], a well-established
+
+algorithm in group component analysis, to augment functional connectiv-
+
+ity data for both fMRI and EEG. COBE is adept at extracting a common basis
+
+from multi-block datasets. By removing the common components from
+
+the original functional connectivity of fMRI or EEG, individualized features
+
+are isolated. These individualized features, as newly generated data, retain
+
+essential discriminatory information related to their original functional
+
+connectivity, thereby forming the augmented data in this study. Additional
+
+details about the augmentation process are provided in Supplementary S1.
+
+**Deep learning of multimodal brain network signatures**
+
+We developed a GNN-based deep learning model to integrate multimodal
+
+brain networks from fMRI and EEG, identifying robust and powerful brain
+
+signatures indicative of antidepressant response. Our model consists of two
+
+main components: 1) utilizing parallel GNNs to encode the connectivity
+
+features of fMRI and EEG, performing spatial optimization; 2) training pairs of
+
+fMRI and EEG weights to ensure that the linear combination of node features
+
+maximizes the correlation in resulting latent features between these two
+
+modalities to achieve effective modality fusion. The overview of the
+
+framework is illustrated in Fig. [1](#3). GNNs are particularly effective for
+
+processing graph-structured data due to their capacity to encapsulate the
+
+intricate relationships among nodes \[[46](#11), [47](#11)\]. Methods and implementation
+
+details are provided in Supplementary S2 and S3.
+
+**Brain region and connectivity importance evaluation**
+
+Besides the novel multimodal graph fusion strategy, our model also offers
+
+interpretable brain network patterns, advancing the understanding of
+
+neurobiological mechanisms underlying treatment effects. We used two
+
+learnable weight matrices (see Supplementary S2) in our model function as
+
+mappings for maximizing the correlation between fMRI and EEG latent
+
+features. These matrices quantify the contributions of different ROIs to the
+
+fMRI-EEG association as self-learned model parameters during end-to-end
+
+training, thus providing an intuitive reflection of the brain regional importance
+
+in modality fusion. We integrated these pairs of vectors into a singular pair
+
+using the weights in the aggregation block, followed by absolute value
+
+computation and normalization. An average was then computed over ten folds
+
+in the optimal run as the evaluation of the brain region importance.
+
+**Prediction**
+
+**Maximize**
+
+**correlation**
+
+**fMRI Graph**
+
+**EEG Graph**
+
+**GNN**
+
+**GNN**
+
+**fMRI latent**
+
+**features**
+
+**EEG latent**
+
+**features**
+
+**Brain Parcellation**
+
+**fMRI**
+
+**FC**
+
+**EEG**
+
+**FC**
+
+∆
+
+**ROI Signals**
+
+**ROI Signals**
+
+**Fig. 1 The** fl**owchart of the framework.** Functional connectivity (FC) features derived from fMRI and EEG are firstly obtained based on
+
+parcellation and subsequently encoded via two parallel GNNs. The correlation between these multimodal representations is then maximized
+
+to enhance their compatibility for modality fusion. Subsequently, these highly correlated latent variables are concatenated and fed into a
+
+multilayer perceptron (MLP) to predict changes in HAMD17 score. More detailed implementation aspects of the architecture are available in
+
+Supplementary Figure S2.
+
+Y. Jiao et al.
+
+3965
+
+Molecular Psychiatry (2025) 30:3963 – 3974
+
+-----
+
+|  |
+| :-: |
+| [**Page 4**]() |
+
+In addition, the adjacency matrix of the graphs was constructed by
+
+calculating similarities between node pairs in real-time, reflecting the inherent
+
+associations among ROIs. However, it may not represent the optimal topology
+
+for subsequent modality fusion and final predictions. To address this, we
+
+introduced scaling matrices for fMRI and EEG, enabling dynamic estimation
+
+and adjustment of connection strength between ROI pairs during end-to-end
+
+training for each modality. This approach captures and refines crucial
+
+connectivity patterns tailored for modality fusion and final prediction, rather
+
+than solely relying on similarity measures. We assessed the significance of
+
+connections by averaging the matrix values from the most predictive runs for
+
+each modality in both treatment arms. It is important to note that the learnable
+
+weight matrices and the scaling matrices serve distinct but complementary
+
+roles in our model. The learnable weight matrices are used for selecting salient
+
+brain regions for modality fusion, while the scaling matrices focus on
+
+interpreting optimized dependencies within graph-structured unimodal data.
+
+**RESULTS**
+
+**Multimodal prediction of treatment outcome**
+
+We hypothesize that different EEG frequency bands contain
+
+distinct discriminative information relevant to treatment
+
+prediction. Therefore, instead of using a single unified model,
+
+we combined EEG data from each frequency band with fMRI to
+
+train separate models. Figure [2](#4)a shows the predictive results of
+
+two treatment arms across four EEG bands combined with fMRI,
+
+derived from ten independent runs of 10-fold cross-validation
+
+using various seeds for model parameter initialization. Combining
+
+fMRI with EEG in the theta, alpha, and beta bands show notable
+
+predictiveness. Given the alpha band’s superior predictive
+
+accuracy relative to the other bands (Paired t-test: pfdr \< 0.01,
+
+pfdr \< 0.001, pfdr \<0.01 for theta, beta, gamma in sertraline arm,
+
+and pfdr \< 0.05, pfdr \< 0.01 for theta, beta in placebo arm based on
+
+R2), all subsequent analyses in this study focused exclusively on
+
+the alpha band. Figure [2](#4)b illustrates the outcomes of the optimal
+
+predictive performance runs for the sertraline and placebo arms
+
+respectively. A substantial correlation was observed between the
+
+actual and predicted changes in HAMD17 scores in both arms (For
+
+sertraline: R2 = 0.31, Pearson’s r = 0.58, p = 5.36 × 10−13
+
+; For
+
+placebo, R2 = 0.28, Pearson’s r = 0.56, p = 1.66 × 10−12
+
+). The
+
+statistical significance of predictive accuracy was further validated
+
+**a**
+
+**b**
+
+**Fig. 2 Performance of treatment outcome prediction for the sertraline (blue) and placebo (orange) arms, respectively. a** Prediction results
+
+across four EEG bands under our deep learning-based multimodal analytical framework. **b** The optimal run of predictive outcomes using alpha
+
+band EEG in conjunction with fMRI. The statistical significance of predictive accuracy was validated through 1000 random permutation tests
+
+with Ppermutation\<0.001 for both sertraline and placebo. Each point represents a patient in the test set.
+
+Y. Jiao et al.
+
+3966
+
+Molecular Psychiatry (2025) 30:3963 – 3974
+
+-----
+
+|  |
+| :-: |
+| [**Page 5**]() |
+
+through 1000 random permutation tests (Ppermutation\<0.001 for
+
+both sertraline and placebo). Results from the other nine runs are
+
+presented in Supplementary Figure S3. To account for the
+
+influence of gender, we also regressed out gender covariate
+
+before evaluating model performance, and the results are
+
+presented in Supplementary Figure S4.
+
+**Multimodal versus unimodal prediction**
+
+To validate the advantage of multimodal prediction over
+
+unimodal prediction, we evaluated the performance of using fMRI
+
+and EEG independently, i.e., using unimodality for both training
+
+and testing. The model maintains its core structure, excluding only
+
+the unilateral GNN and the modality fusion component, aligning it
+
+with the original model’s design. The results shown in Fig. [3](#5)
+
+indicate that the multimodal fusion model outperformed models
+
+trained with a single modality, whether fMRI or EEG. This finding
+
+suggests that, despite the higher cost of collecting both EEG and
+
+fMRI data in a clinical setting, it remains practically valuable for
+
+enhancing the accuracy of treatment outcome predictions and
+
+identifying more informative biomarkers.
+
+Considering the challenges and costs of collecting both fMRI
+
+and EEG data in real-world clinical settings, we also aim to adapt
+
+our multimodal model for patients who only have unimodal
+
+neuroimaging. Our model maximizes correlation, suggesting that
+
+the latent features derived from fMRI and EEG reflect similar brain
+
+patterns while providing complementary information for treat-
+
+ment prediction. We trained a standalone multilayer perceptron
+
+(MLP) regressor, half the size of the original multimodal model’s
+
+MLP, using the latent features from both modalities in the training
+
+set. This allows us to use the corresponding latent features from
+
+one side of the GNN pipeline for patients with only unimodal
+
+neuroimaging, inputting them directly into the reduced MLP to
+
+generate predictions, without needing to concatenate features
+
+from the other modality. Figure [3 ](#5)shows the results of training
+
+with both modalities and testing with either fMRI or alpha EEG.
+
+The data splitting and random seeds for model parameter
+
+initialization were kept identical to previous settings to ensure a
+
+fair comparison and avoid data leakage. Although predictive
+
+performance was lower with fMRI, alpha EEG yielded results only
+
+slightly inferior to multimodal prediction. This suggests that alpha
+
+EEG played a dominant role during training, with fMRI provid-
+
+ing supplementary information. In other words, multimodal fusion
+
+provided the best predictive performance for new patients.
+
+Unimodal prediction, such as using only alpha EEG, could be
+
+improved when informed by multimodal signatures, indicating its
+
+promising clinical application value due to its much lower cost.
+
+However, it is important to note that this phenomenon may be
+
+case-specific; different training data could result in EEG not always
+
+being dominant.
+
+**Treatment outcome-predictive brain regions**
+
+The ROI’s importance is presented in Fig. [4 ](#6)through circular barplots.
+
+The Schaefer atlas \[[38](#11)\] parcellated the 100 ROIs into seven spatially
+
+distributed functional networks, including visual network (VN),
+
+somatomotor network (SMN), dorsal attention network (DAN),
+
+ventral attention network (VAN), limbic network (LN), frontoparietal
+
+control network (FPCN), and default mode network (DMN). The
+
+radar chart in the center of the figure calculates the average ROI
+
+importance in each functional network, reflecting the importance at
+
+the network level. The most salient 20 ROIs with the highest weights
+
+are visualized on the cerebral cortex in Fig. [5](#7)a.
+
+In the sertraline arm, fMRI primarily highlighted the superior and
+
+inferior temporal gyri within the temporal lobe, in addition to the
+
+middle occipital and cuneus regions in the occipital lobe, the
+
+cingulate cortex, and associative areas including the supramarginal
+
+gyrus, precuneus, and anterior insula. On the other hand, EEG
+
+pinpointed key areas in the frontal lobe, particularly in the
+
+Brodmann area 8 and inferior frontal gyrus, while also emphasizing
+
+the precuneus, posterior cingulate, calcarine, and precentral areas.
+
+In the placebo arm, fMRI predominantly revealed the precuneus,
+
+precentral, and postcentral gyrus in the parietal lobe, along with the
+
+anterior cingulate cortex, middle temporal gyrus, and posterior
+
+insula. Concurrently, EEG detected distinct regions in the frontal
+
+lobe, encompassing the supplementary motor area and anterior
+
+cingulate, as well as the precuneus, inferior parietal gyri, middle
+
+temporal, and posterior cingulate cortices. At the network level,
+
+VAN was prominently displayed in the fMRI findings, whereas FPCN
+
+was distinctly observed in the EEG data for sertraline. Moreover,
+
+**Fig. 3 Performance comparison of treatment outcome prediction for the sertraline and placebo arms using different training and testing**
+
+**strategies.** Blue and orange represent sertraline and placebo arms respectively. fMRI, training and testing using fMRI only. EEG, training and
+
+testing using alpha EEG only. Multimodal→fMRI, training with multimodal data and testing with fMRI. MultimodalEEG, training with
+
+multimodal data and testing with alpha EEG. Multimodal, training and testing using multimodal data.
+
+Y. Jiao et al.
+
+3967
+
+Molecular Psychiatry (2025) 30:3963 – 3974
+
+-----
+
+|  |
+| :-: |
+| [**Page 6**]() |
+
+FPCN was significantly represented in the fMRI, while DAN was
+
+clearly apparent in the EEG for the placebo arm.
+
+To elucidate the advantages of multimodal approaches over
+
+unimodal ones in predicting treatment outcomes, we further
+
+explored the distinctions in salient ROIs identified by models
+
+trained separately on fMRI and EEG alone. Figure [5](#7)b displays the
+
+top 20 salient ROIs derived from a single modality. Analysis of this
+
+figure reveals that while the multimodal and unimodal models
+
+generally demonstrate similar brain patterns, notable differences
+
+exist in specific regions. In the sertraline arm, the multimodal
+
+model accentuates the inferior parietal and superior temporal
+
+regions more than the fMRI-based model, and the precentral and
+
+calcarine regions more than the EEG-based model. In the placebo
+
+arm, the multimodal model places increased emphasis on the
+
+posterior insula and rostral middle frontal regions compared to
+
+the fMRI model, and on the middle cingulate and middle occipital
+
+regions compared to the EEG model.
+
+**Critical brain connections**
+
+The 20 most significant connections are visualized in edge
+
+bundling figures and brain connectomes in Fig. [6](#8). In the sertraline
+
+arm, notable connections include strong negative connections
+
+between the middle frontal/superior orbitofrontal and inferior
+
+frontal/temporal pole in the fMRI connectome, and a strong
+
+positive connection between the precuneus/inferior parietal in the
+
+EEG connectome. In the placebo arm, the most prominent positive
+
+and negative connections are between the inferior frontal/middle
+
+occipital and superior temporal/superior frontal in the fMRI
+
+connectome, and between the precuneus/precentral and fusi-
+
+form/supplementary motor area in the EEG connectome.
+
+To further analyze network-level connectivity patterns, we
+
+evaluated the connection intensity by calculating the average of
+
+the absolute edge scaling values between each network pair. The
+
+results for each condition are presented using heatmaps and
+
+chord charts in Fig. [7](#9). In the sertraline arm, LN exhibits notably
+
+fMRI
+
+EEG
+
+Sertraline
+
+Placebo
+
+**Fig. 4 Averaged ROI**T**s importance scores across ten folds of the optimal run for each condition.** The central radar chart reflects the
+
+importance scores of the networks by averaging the ROIs of each network. VN visual network. SMN somatomotor network. DAN dorsal
+
+attention network. VAN ventral attention network. LN limbic network. FPCN frontoparietal control network. DMN default mode network.
+
+Y. Jiao et al.
+
+3968
+
+Molecular Psychiatry (2025) 30:3963 – 3974
+
+-----
+
+|  |
+| :-: |
+| [**Page 7**]() |
+
+high within-network connection intensity for both fMRI and EEG,
+
+with LN-DAN displaying significant inter-network connection
+
+intensity in fMRI. In the placebo arm, VN shows high within-
+
+network connection intensity for both fMRI and EEG, and VN-DAN
+
+exhibits significant inter-network connection intensity in fMRI. For
+
+EEG, LN-SMN and LN-VAN demonstrated stronger inter-network
+
+connection intensity. The bar plots in Fig. [7 ](#9)represent the
+
+averaged between-network and within-network connection
+
+intensities for each condition. The between-network intensity
+
+was calculated by averaging the connection intensities across
+
+each network and the other six networks.
+
+**Associations of brain network signatures with MDD clinical**
+
+**symptoms**
+
+In the EMBARC dataset, patients with MDD were additionally
+
+evaluated using the Mood and Anxiety Symptom Questionnaire
+
+(MASQ) and the Quick Inventory of Depressive Symptomatology
+
+(QIDS). The MASQ, designed to assess mood and anxiety symptoms,
+
+categorizes conditions such as ‘General Distress’, ‘Anhedonic
+
+Depression’, and ‘Anxious Arousal’. The QIDS quantifies the severity
+
+of depressive symptoms, featuring metrics like the ‘QIDS Total
+
+Score’. We applied previously trained multimodal models to derive
+
+latent representations of test samples, which served as the inputs to
+
+the MLP regressor, subsequently using Generalized Additive Models
+
+(GAMs) \[[48](#11)\] and conducting 10-fold cross-validation to predict
+
+these scales. As depicted in Fig. [8](#9), the results show correlations
+
+between the clinical scales predicted by the GAMs and the actual
+
+clinical scales. In the sertraline arm, the predicted results are
+
+significantly correlated with the true scores for General Distress
+
+(r = 0.23, p = 0.026) and Anhedonic Depression (r = 0.23,
+
+p = 0.024). In the placebo arm, the predicted results are significantly
+
+correlated with the trues scores for Anxious Arousal (r = 0.19,
+
+p = 0.049) and QIDS Total Score (r = 0.26, p = 0.013). Additionally,
+
+we examined the predictability of brain signatures for baseline
+
+HAMD17 score. Although some correlations are observed (r = 0.18,
+
+p = 0.048 for sertraline; r = 0.28, p = 0.008 for placebo), they are
+
+notably weaker than the prediction of HAMD17 change (Fisher’s *z*-
+
+test p \< 0.001 for sertraline and p = 0.003 for placebo). This implies
+
+that the treatment outcome prediction was not primarily driven by
+
+the baseline HAMD17 variation despite its correlation with brain
+
+signatures.
+
+**Clinical implications of identi**fi**ed signatures**
+
+To enhance the clinical applicability of the identified predictive
+
+signatures in both treatment arms, disregarding the actual
+
+treatments received and their outcomes, we stratified all patients
+
+into either a sertraline preferred, or a placebo preferred group
+
+based on predicted responses derived from well-trained sertraline
+
+and placebo prediction models. The predictive analysis indicated
+
+99 sertraline preferred and 31 placebo preferred patients in the
+
+sertraline arm, and 84 sertraline preferred and 51 placebo
+
+preferred patients in the placebo arm. Responder rates (defined
+
+as more than a 50% reduction in HAMD17 score) were significantly
+
+higher among patients whose predicted preferences aligned with
+
+their assigned treatments compared to those whose preferences
+
+did not align (Chi-square test for responder rates: sertraline arm:
+
+57.6% \[57/99\] vs. 3.2% \[1/31\], χ2 = 26.1, *p* \< 0.0001; placebo arm:
+
+58.8% \[30/51\] vs. 14.3% \[12/84\], χ2 = 27.3, *p* \< 0.0001). Similarly,
+
+actual HAMD17 reduction rates were significantly higher among
+
+patients whose assigned treatments matched their preferences
+
+compared to those whose treatments did not (two-sample *t*-test
+
+for treatment preference: sertraline arm: *t* = 9.5, *p* \< 0.0001;
+
+placebo arm: *t* = 6.6, *p* \< 0.0001). These findings provide robust
+
+clinical context for our predictions and underscore their practical
+
+relevance for treatment selection. Further details and visualiza-
+
+tions are provided in Supplementary Figure S5.
+
+**Ablation study**
+
+We investigated the impact of varying data augmentation rates on
+
+predictive performance, as shown in Supplementary Figure S6.
+
+Additionally, we conducted an ablation study to evaluate the
+
+effectiveness of the components within our proposed framework.
+
+The experimental results indicated that the GNNs, scaling
+
+matrices, and weight matrices were all crucial to the model.
+
+Detailed results are provided in Supplementary Table S1.
+
+**Comparison of predictive performance with baseline methods**
+
+To demonstrate the superior predictive performance of our GNN-
+
+based framework, we also report the results of baseline methods,
+
+including SVR, Random Forest, and Elastic Net, in Supplementary
+
+Table S2. The computational complexities are summarized in
+
+Supplementary Table S3. The experimental results indicated that
+
+the baseline methods struggled to effectively predict treatment
+
+responses, even with the application of data augmentation.
+
+**DISCUSSION**
+
+In this study, we developed a novel GNN-based deep learning
+
+framework to integrate the functional connectivity of fMRI and
+
+EEG for identifying multimodal biomarkers of antidepressant
+
+Multimodality
+
+Single modality
+
+fMRI
+
+EEG
+
+Sertraline
+
+Placebo
+
+fMRI
+
+EEG
+
+**a**
+
+**b**
+
+**Fig. 5 Comparison of salient ROIs between multimodal and unimodal analysis.** The color reflects the importance of brain regions, with
+
+higher values indicating greater significance. **a** Top 20 salient ROIs derived from multimodal model. Blue circles identify the ROIs that are
+
+prominent in multimodal analysis but not in unimodal analysis. **b** Top 20 salient ROIs derived from unimodal model.
+
+Y. Jiao et al.
+
+3969
+
+Molecular Psychiatry (2025) 30:3963 – 3974
+
+-----
+
+|  |
+| :-: |
+| [**Page 8**]() |
+
+Sertraline
+
+Placebo
+
+A
+
+\!\!"\#$%% & '(")\*+
+
+,-./-01234567
+
+89:;9\<=\>?@ABC
+
+DEFFGHIHJKLMNGOPQ
+
+IR
+
+STUVWXYWZ\[\[XUX\\\]^\_\`a
+
+bcdecfghi
+
+jklmnopqrstu
+
+vwxyz{|}\~
+
+
+
+ ¡¢£
+
+¤¥¦§¥¨©ª«¬®
+
+¯°±²³´µ¶·¸
+
+¹º»»¼½¾¿¿ºÀºÁÂ¼ÃÄÅ
+
+ÆÇÈÉÇÊËÌÍ
+
+ÎÏÐÑÒÓÔÒÕÑÖ
+
+×ØÙÚÛÜÝÞßà
+
+áâãäåæçèéêëìíîïðîñíòìðîóôõö÷øñ
+
+ùúûüýþÿü
+
+\!" \#&#31;$&#30;" %&'()\#\*+,-./0123
+
+456789:;\<=\>?;@6@AB4C
+
+DEFGHIJGKLMNOPQRSTSUVRWXYZ\[\\
+
+\]^\_\`abc\`defghij
+
+klmnopqnrstuvwx
+
+yz{|{}z
+
+
+
+
+
+ ¡¢
+
+£¤¥¦§¨©§ª«§¨¦¬«®¯°±
+
+²³´µ¶·¸µ¹º»¼½¾
+
+¿ÀÁÂÃÄÁÃÅÆÇÈ
+
+ÉÊËÌÍÎÏÍÐÑÍÎÌÒÑÓÔÕÖ×
+
+ØÙÚÛÚÜÝÙÞßàáâ
+
+ãäåæçèéçêçéëìíîïðñ
+
+òóôôõö÷ö
+
+ø ùúûüýþÿ
+
+\!"\#\!$%\!" &%'()\*
+
+\+,-./0-/1234
+
+56789:;9\<9;6=\>?@AB
+
+CDEFGHIGJGIKLMNOPQ
+
+RSTUVWVUXYZV\[\\\]^
+
+\_\`abcde\`dfgahijklm
+
+nopqrstruovwxyz{|
+
+}
+
+&#6;&#3;&#5;&#6;&#3;&#1;
+
+ &#17; &#14;&#15;&#17;&#16;
+
+&#25;&#27;&#23;&#26;  ¡
+
+¢£&\#¤ ¥¤¦\#§&¥¤(") +
+
+¦©ª«¬0--0®12-.5¯7
+
+°\>±²:9A³C
+
+´µ¶¶·¸¹µº»¼·½¾¸¿ÀÁ
+
+STUU^VÂVÃ\\\]WÄÅY\\YWÆWV\]\_Ça
+
+ÈÉÊËÌÍÎÏÉÐdÌÍÎhi
+
+ÑÒÓ ÔÕÖ×ØÙÚÖÙÛÜÝÞ
+
+ßàzá|y{|âáã äåæçèéêëì
+
+íîï
+
+ððñ òóôõö÷øô÷ùúûü
+
+ýªþ«¨©ÿ¨¥¨©«&#1;¥¦¬&#2;®
+
+±&#4;&#5;&#6;°&#7;&#6;&#8;&#6;&#7;± µ¶¯¸ &#11;½¿ ½ &#14;Ã&#15;Å
+
+ÉÆ&#17;È&#20;Ç&#19;&#21;&#22;ÉË&#23;Í
+
+ØÚÛ×ÛÚ&#26;&#27;&#28;ÛÜÞ&#29;à&#30;â&#31;äåæ ç\!é
+
+"\#$%&'()%\*\*(+,\#-.&'(/012ÿ3þ4ú5úÿü&#1;&#2;&#3;6&#5;7899 &#8;:&#7;; &#11; &#14;\<&#7;;9= &#7;&#8; \>&#16;&#14;?&#16;@ABB&#24;&#21;C&#19;D&#22;&#23;&#18;&#24;&#25;E&#19;DBF&#18;&#22;&#22;&#18;&#19;&#21;&#18;G&#27;&#25;H&#27;IJKKLMNJOPQLRSMTUV W,XYZ\[\\Z\]\[,^./0XY123 \_\`abcdacefgh iJjIKkEKlImnEKLMNoP
+
+lp
+
+qrssXStSuvwRWXYZx\\
+
+ty
+
+z{||fb}b
+
+^defhj
+
+}
+
+qtsrtvx}{zzz\~z} ¡¢
+
+¨¡¡¦¢§©£¬«¯°±
+
+¤¥¦·¹§³¹¨·©§º»ª¹³¸µº»¼½¾
+
+«¬Ã¬®¯°®Á±À²Ä³¬®ÆÇÈ
+
+´ÏµÒÍÑÓ¶Î··ÓÌ¸ÍÏ¹ÒÑÓÕÖ×
+
+ØÙÚÛºÜÚº»àáâ
+
+¼é½ìæçèéç¾èë¿äîíìæïðñ
+
+ÀÁÂÃþýüÿ
+
+Ä&#8;Å&#7; Æ&#3; Ç
+
+ÇÈ ÉÊËÌÍÎÏÐÑ
+
+ÒÓÔ&#18;&#19;&#20;&#21;&#19;Õ&#18;ÖÔ
+
+Õ×
+
+Ø"ÙÙ' Ú
+
+ÚÛ ÜÝÞßàáâãä
+
+å,æçèéêë0ì-,çí,î,í0èéê234
+
+56789:;9\<9;6=\>?@AB
+
+ïKLFGHIGðHKñDNMLFOPQ
+
+RSTòUYóUôòõYV\[öUóZ÷V\[\\ø^
+
+ùeúúicûd\`gbjiküm
+
+ýrqþwqowvzÿ|
+
+&#1;\~&#2;\~&#3;&#4;&#5;
+
+1/24,
+
+\!"\#&#27;$
+
+%&''()\*++&,&-.(/01
+
+234536789:;\<=
+
+\>?@A?BCDEFGHI
+
+JKLLMNONPQRSTMUVW
+
+OX
+
+YZ\[\\\]^\_\]\`aa^\[^bcdefg
+
+hijkilmnopqrstuvwxyz{
+
+|}
+
+
+
+ ¡¡¢£¤¥¦§¨©
+
+ª«¬«®¯°±²³´
+
+µ¶·¸¹º»¼½¾
+
+¿ÀÁÁÂÃÄÅÅÀÆÀÇÈÂÉÊË
+
+ÌÍÎÏÍÐÑÒÓ
+
+ÔÕÖ×ØÙÚØÛ×Ü
+
+ÝÞßàáâãäåæ
+
+çèéêëìíîïðñòóôõöô÷óøòöôùúûüýþ÷
+
+ÿ
+
+\!
+
+"\#$%&'(&)%\*$(&+,-./)0123456789
+
+:;\<=\>?@ABCDEAF\<FGH:I
+
+JKLMNOPMQRSTUVWXYZY\[\\X\]^\_\`ab
+
+cdefghifjklmnop
+
+qrstuvwtxyz{|}
+
+
+
+
+
+
+
+ ¡¢£ ¤£¥¦§¨
+
+©ª«¬®¯°±®¬²±³´µ¶·
+
+¸¹º»¼½¾»¿ÀÁÂÃÄ
+
+ÅÆÇÈÉÊÇÉËÌÍÎ
+
+ÏÐÑÒÓÔÕÓÖ×ÓÔÒØ×ÙÚÛÜÝ
+
+Þßàáàâãßäåæçè
+
+éêëìíîïíðíïñòóôõö÷
+
+øùúúûüýü
+
+þ ÿ
+
+\!"
+
+\#$%&'()'\*+'(&,+-./0
+
+12345635789:
+
+;\<=\>?@A?B?A\<CDEFGH
+
+IJKLMNOMPMOQRSTUVW
+
+XYZ\[\\\]\\\[^\_\`\\abcd
+
+efghijkfjlmgnopqrs
+
+tuvwxyzx{u|}
+
+
+
+
+
+¡¢¢£¤¥¡¦§¨£©ª¤«¬
+
+®¯°°\!±²±&#29;³ ´µ¶·³·´¸´± \#&#27;$
+
+¹º,)»&¼»½)¾,¼».(/¿1
+
+½ÀÁÂÃ63Ä36Å7834;Æ=
+
+ÇDÈÉ@?GÊI
+
+ËÌÍÍÎÏÐÌÑÒÓÎÔÕÏÖ×Ø
+
+YZ\[\[d\\Ù\\ÚbcÛÜÝ\_b\_ÛÞÛ\\ceßg
+
+àáâãäåæçáèjäåæno
+
+éêë ìíîïðñòîñóôõö
+
+÷øùúùû üýþÿ
+
+&#7;
+
+ 
+
+°&#22;±®¯&#23;®&#24;«®¯±&#25;«¬²
+
+·&#28;&#29;&#30;¶&#31;&#30; &#30;&#31;·\!º»¼µ¾"\#ÃÅ$Ã%$&É'Ë
+
+()\*\*+ÏÌ)Î,Í+-.ÏÑ/Ó
+
+01ÞàáÝáà234áâä5æ6è78ëì9í:ï
+
+;\<=\>?@AB\>CCADE\<FG?@AHIJK&#5;LM&#6;NO&#6;P&#6;O&#5;Q&#7;&#8; R&#11;STUU&#19;&#14;V W&#16;&#17;&#18;&#19;&#20;X WUY&#18;&#16;&#16;&#18; &#14;&#18;Z&#22;&#20;\[&#22;\\\]^^&#30;&#27;\_&#25;\`&#28;&#29;&#24;&#30;&#31;a&#25;\`^b&#24;&#28;&#28;&#24;&#25;&#27;&#24;c\!&#31;d\!efgghijfklmhnoipqr s2tuvwxvyw2z456tu789 {|}} POQKQOKQRSTV
+
+
+
+^YYX\]^\_\`b
+
+
+
+lhhdjklnp
+
+
+
+w ¡zyxz|¢\~£¤¥¦§¨¥¦¤¦©ª«¬®¯°®±®°«²³´µ¶·¸¹ £¥º» ¤¡¡¤£¥¦§¨
+
+¼®½½³¬¾¯¿²±³µ¶·
+
+ÀÁÂ½¿Ã¹¿Ä½ÅÃÀÁÆ¿¹¾»ÀÁÂÃÄ
+
+ÇÈÉÉÈÊËÌÉÉÊÇÍÆÎÊÏÈÊÌÍÎ
+
+ÐÕÑØÓ×ÙÒÔÓÓÙÒÔÓÕÕØ×ÙÛÜÝ
+
+ÞßàáÖâàÖ×æçè
+
+ØïÙòìíîïíÚîñÛêôóòìõö÷
+
+ÜÝÞß
+
+à&#14;á &#15;â &#15;ã
+
+ãä åæçèéêëìí
+
+îïð&#24;&#25;&#26;&#27;&#25;ñ&#24;òð&#27;&#25;&#29;&#31; \!"
+
+ñó
+
+ô(õõ-&ö&
+
+ö÷ øùúûüýþÿ
+
+2&#2;&#3;&#4;&#5;&#6;&#7;6&#8;32&#3; 2 2 6&#4;&#5;&#6;89:
+
+;\<=\>?@A?B?A\<CDEFGH
+
+QRLMNOM NQ JTSRLUVW
+
+XYZ&#14;\[\_&#15;\[&#16;&#14;&#17;\_\\a&#18;\[&#15;\`&#19;\\ab&#20;d
+
+k&#22;&#22;oi&#23;jfmhpoq&#24;s
+
+xw&#26;}wu}|&#27;
+
+&#29;&#30;&#31; \!
+
+A
+
+"\#$%&'()\*+,
+
+\-./012345-6
+
+789:;\<=\>?7@
+
+ABCCDEFGGBHBIJDKLM
+
+NOPQORSTUVWXY
+
+Z\[\\\]\[^\_\`abcde
+
+fghhijkjlmnopiqrs
+
+kt
+
+uvwxyz{y|}}zwz
+
+
+
+ ¡¢£
+
+¤¥¦§¨©ª¨«¬¬©©®¯°±²³´
+
+µ¶·¸¹º»¹¼½½º¾º¿ÀÁÂÃÄÅ
+
+ÆÇÈÉÇÊËÌÍÎÏÐ
+
+ÑÒÓÔÕÖ×ØÙÚ
+
+ÛÜÝÝÞßàááÜâÜãäÞåæç
+
+èéêëéìíîï
+
+ðñòóôõöô÷óøùúûüýþÿ
+
+\!"\#$%&
+
+'()\*)+,(-./0123435678439:;\<
+
+\=\>?@ABCAD@E?CAFGHIJDKLMNOPQRST
+
+UVWXYZ\[\\\]^\_\`\\aWabcUd
+
+efghijkhlmnopqrstutvwsxyz{|}
+
+
+
+
+
+ ¡¢£¤¥
+
+¦§¨©ª«¬ª©®¯¬ª°±²³´
+
+µ
+
+¶·¸¹º»¼º½¾º »¹¿¾ÀÁÂÃ
+
+ÄÅÆÇÈÉÊÈËÌÈÉÇÍÌÎÏÐÑÒ
+
+ÓÔÕÖ×ØÙÖÚÛÜÝÞß
+
+àáâãäåâäæçèé
+
+êëìíîïðîñòîïíóòôõö÷ø
+
+ùúûüûýþúÿ
+
+ \!"
+
+\#$%&'()&\*+,-./
+
+012345647845398:;\<=
+
+\>?@ABCDBEFBCAGFHIJK
+
+LMNOPQNPRSTU
+
+VWXYZ\[\\Z\]Z\\W^\_\`abc
+
+defghijhkhjlmnopqr
+
+stuvwxwvyz{w|}
+
+
+
+
+
+ ¡¢£¤¥¦§¨¡©ª«
+
+¬®¯°±²°³±´µ¶·®¯¸¹º
+
+»¼½½¾¿À¼ÁÂÃ¾ÄÅ¿ÆÇÈ
+
+ÉÊËËÌÍÎÍÏÐÑÒÓÔÕÐÕÒÖÒÍÑ×ØÙ
+
+ÚÛÜÝÞßàÞáÝâÜàÞãäåæç
+
+áèéêëìíîíìïðñíòóôõ
+
+ö÷øùúûüýþ
+
+ÿ
+
+\!"\#$%&#31;&'"\#$()
+
+\*+, -./0123/24567
+
+89:;\<=\>\<?;@ ABCDEFGHI
+
+JKLMNOPNQNROSPTNPUSVWXYZ
+
+\[\\\] ^\_\`abcd\`cefgh
+
+ijklmnompqmnlrqstuv
+
+wxyz{|}{{}x
+
+
+
+ ¡¢¡ £¤¥¡¦§¨©ª«¬®¯°±²³
+
+´µ¶·¸¹º»·¼¼º½¾µ¿À¸¹ºÁÂÃÄÅÆÇÈÉÊÈËÈÊÅÌÍÎÏÐÑÒÓÔÔÕÖ×ØÙÚÛÜÕÝÞØÙÔßÜÚÚÜØÖÜàáÝâá
+
+ãäååæçèéêëìíæîïéêåðíëëíéçíñòîóòôõöö÷øùõúûü÷ýþøÿ k&#28;jl&#29;fl&#30;j&#31; flmno\!q
+
+ "
+
+\#$%%yt\&t'()sxyz{\*}
+
+&+
+
+,-../0123
+
+/4
+
+56789:;\<=\>;\<:\< ¡£?¥@ABCDEFDGDFAHIJKLMN¹O»¾ÀPºQ»¿¼¸º¼· ¿¾ÀÁ ÂÃ
+
+RÉSSÎÇTÈÊUÍÌÎÐÑÒ
+
+VWXØÚYÔÚZØ\[YÛÜ\\ÚÔÙÖÛÜÝÞß
+
+\]^ä\_^\`ab\_\_\`âcádåe^\`çè é
+
+fðgóîòhiïjjhíkîðlóòhö÷ø
+
+ùúûümýûmn
+
+o p &#7;&#8; &#8;q r
+
+stuv&#31;&#30;&#29; \!"
+
+w)x(\*y$\*z(
+
+z{ |}\~
+
+3454348:;\<=
+
+
+
+CHAA
+
+ 
+
+MQNM M¡M QST¢
+
+VWXYZ\[\\Z\]Z\\W^\_\`abc
+
+£lmghijh¤il¥eonmgpqr
+
+stu¦vz§v¦©zw|ªv§{«w|}¬
+
+®®¯°
+
+±²³
+
+´¥µ§¢¤¥¤¶¦·¸¡¨§¢©¹«
+
+º»¼½¾¿ÀÁÂÃÄ
+
+ÅÆÇÈÉÊËÌÍÅÎ
+
+ÏÐÑÒÓÔÕÖ×ÏØ
+
+ÙÚÛÛÜÝÞßßÚàÚáâÜãäå
+
+æçèéçêëìíîïðñ
+
+òóôõóö÷øùúûüý
+
+þÿ
+
+\!"\#
+
+$%&'()\*+,-./
+
+0123456789:;
+
+\<=\>?@AB@CDDAEAFGHIJKL
+
+MNOPQRSQTUURVRWXYZ\[\\\]
+
+^\_\`a\_bcdefgh
+
+ijklmnopqr
+
+stuuvwxyytzt{|v}
+
+
+
+
+
+ ¡¢£¤¥¦§¥¨¤©£§¥ª«¬®¯¨
+
+°±²³´µ¶³·¸¹º»¼
+
+½¾¿À¿ÁÂ¾ÃÄÅÆÇÈÉÊÉËÌÍÎÊÉÏÐÑÒ
+
+ÓÔÕÖ×ØÙ×ÚÖÛÕÙ×ÜÝÞßàÚáâãäåæçèéê
+
+ëìíîïðñòóôõöò÷í÷øùëú
+
+ûüýþÿ &#1;þ
+
+\!
+
+"\#$%&'(%)\*+,-./
+
+012324516789:;
+
+\<=\>?@AB@C?DEB@FGHIJ
+
+CK
+
+LMNOPQRPSTPQOUTVWXY
+
+Z\[\\\]^\_\`^ab^\_\]cbdefgh
+
+ijklmnolpqrstu
+
+vwxyz{xz|}
+
+
+
+
+
+ ¡ ¢£¤¥¦§¨
+
+©ª««¬®
+
+¯ °±²³´µ¶·¸
+
+¹º»¼½¾¿¼ÀÁÂÃÄÅ
+
+ÆÇÈÉÊËÌÊÍÎÊËÉÏÎÐÑÒÓ
+
+ÔÕÖ×ØÙÚØÛÜØÙ×ÝÜÞßàá
+
+âãäåæçäæèéêë
+
+ìíîïðñòðóðòíôõö÷øù
+
+úûüýþÿþ&#1;þ
+
+\!"\#$
+
+%&'()\*+),&-./0123
+
+4566789:;\<=\>7?@A
+
+BCDEÀ½¿ÀF½CG»HIDEÂÃÄ
+
+JÆKKËLMÆÇÈÉËÊNLÍÅÎ
+
+OÓPPÕQRQÑSÔTUVWSWTXTQÔ×ÏØ
+
+YZàÝ\[Ú\\\[\]Ý^à\\\[âÜã\_å
+
+\]\`abcêçdçêeëìçèïfñ
+
+gøhiôóûjý
+
+klmmnoplqrsntuovwx
+
+y&#16;z&#22;&#23;&#17;{|&#19;&#22;&#19;&#17;}
+
+&#30;"\#
+
+ 
+
+4636  ¡¢£¤
+
+¥¦E?@A§@C@AF§\>@§=FGHJKL
+
+©P©ª «¬®¯°±°²³´µ
+
+¶d·ebçb¹\_bceº\_\`f»h
+
+¼k½¾¿jÀ¿Á¿ÀkÂnopirÃÄwyÅwÆÅÇ}ÈÉ
+
+ÊËÌÌÍ\~ËÎÍÏÐÑ
+
+ÒÓÔÕÖ×ØÙÚÛ
+
+ÜÝÞßàáâãßääâåæÝçèàáâéêëì¶íµ·î±·ï·±¶³¸¹ºð¼ñòóóÄ¿ô¾õÁÂÃÄÅö¾õó÷ÃÁÁÃ¾¿ÃøÇÅùÇ
+
+úûüüÏÌýÊþÍÎÉÏÐÿÊþüÉÍÍÉÊÌÉ&#1;ÒÐ&#2;Ò&#3;&#4;&#5;&#5;&#6;&#7;&#8;&#4; &#11;&#6; &#7;&#14;&#15;&#16; &#17;ã&#18;&#19;&#20;&#21;&#22;&#20;&#23;&#21;ã&#24;åæç&#18;&#19;èéê &#25;&#26;&#27;&#28;&#29;&#30;&#27;&#29;&#31; \!" \#&#1;$ &#2;%ü&#2;&'(ü&#2;&#3;&#4;&#5;)
+
+&\*
+
+\+,--&#15; . /01 &#14;&#15;&#16;&#17;2
+
+.3
+
+4566&#29;&#25;7&#25;89&#21;&#27;&#28;&#29;:&#31;;\!
+
+7\<
+
+\=(\>?+\*)+-@/A4B21CD1E1FC5DB1D45679G;HIJKLMNLOLNIPQRSTUVOWQTVXPYQURNPRMUTVWXY
+
+Z\_\[\[d\]\\^\`\]cbdfgh
+
+^\_\`npajpbncaqrdpjolqrstu
+
+efzgfhijgghxkwl{mfh}
+
+nopqqrs
+
+ttu
+
+v w£ x¢y¥¤£¦§¨
+
+z{|}µ´³¶·¸
+
+\~¿¾ÀºÀ¾
+
+ 
+
+ÉÊËÌÊÉÌÊÎÐÑÒÓ
+
+
+
+ÙÞ××
+
+ 
+
+ã ¡¢£¤¥ç¦äã¡§ã¨ã§ç¢£¤éêë
+
+ìíîïðñòðóðòíôõö÷øù
+
+©&#2;&#3;ýþÿþªÿ&#2;«¬&#5;&#4;&#3;ý
+
+® ¯°&#16; &#18;± ®&#17;² &#18;&#19;³
+
+´&#28;µµ &#26;¶&#27;&#23;&#30;&#25;\! "·$
+
+¸)(¹.(&.-1º3
+
+»;¼=8:5;:½5\<¾¿7\>=8?ÀA
+
+ÁÂ
+
+ÃÄÂ
+
+ÅÆÂ
+
+ÁÆÂ
+
+ÇÂ
+
+ÈÉÊÂ
+
+ÅÄÂ
+
+**a**
+
+**b**
+
+fMRI
+
+EEG
+
+Sertraline
+
+Placebo
+
+**Fig. 6 Top 20 connections with the highest averaged absolute edge scaling values. a** Edge bunding figures for each condition. **b** Brain
+
+connectomes for each condition. Red and blue lines represent positive and negative connections respectively. The line thickness reflects the
+
+connection intensity.
+
+Y. Jiao et al.
+
+3970
+
+Molecular Psychiatry (2025) 30:3963 – 3974
+
+-----
+
+|  |
+| :-: |
+| [**Page 9**]() |
+
+treatment outcomes. Our model demonstrated significant efficacy
+
+in predicting responses to both sertraline and placebo. The GNNs
+
+effectively mapped interactions between ROIs, yielding spatially
+
+optimized representations for fMRI and EEG connectivity. By
+
+leveraging adaptive edge scaling matrices that dynamically refine
+
+connectivity strength, the model improved modality fusion and
+
+prediction accuracy. Integrating correlations between GNN-
+
+encoded latent features allowed the extraction of informative
+
+multimodal brain patterns, revealing synergistic information from
+
+both fMRI and EEG. Importantly, we adapted our model for
+
+situations where patients have only EEG data by training a
+
+standalone MLP, which yielded more accurate predictions than
+
+models trained with a single modality. This adaptation greatly
+
+enhances the model’s practical utility in real clinical settings. The
+
+findings indicate that multimodal fusion provided the best
+
+predictive performance, underscoring the value of combining
+
+EEG and fMRI data despite the higher costs. The adaptation for
+
+unimodal prediction, using only alpha EEG, showed promise by
+
+leveraging multimodal signatures. This approach maintains clinical
+
+application value due to its lower cost, although it is important to
+
+recognize that the dominance of EEG in predictive performance
+
+may be case-specific. Different training data or prediction tasks
+
+could result in scenarios where EEG is not always the dominant
+
+modality. Further research should explore these dynamics to
+
+optimize the use of unimodal in clinical settings. On the other
+
+hand, predicting placebo treatment, while not directly relevant to
+
+clinical care, holds considerable potential in drug development. A
+
+placebo-predictive signature could enhance phase 2 studies by
+
+selecting comparator groups with low predicted placebo
+
+responses rates, potentially reducing costs by allowing for smaller
+
+sample sizes and more robust drug efficacy assessments.
+
+Our model not only delivers impressive predictive performance
+
+but also offers valuable insights through interpretative analysis. By
+
+examining the learnable parameters, including edge scaling
+
+matrices for spatial pattern optimization and weight matrices for
+
+modality fusion, we identified common brain patterns across
+
+modalities and biomarkers specific to antidepressant sertraline or
+
+placebo. This analysis revealed distinct ROIs and connectivity
+
+patterns associated with each treatment, enhancing our under-
+
+standing of the neural circuits involved. Our findings align with
+
+previous research, indicating that connectivity across theta, alpha,
+
+and gamma bands in EEG provides essential insights into treatment
+
+responses \[[4](#11), [49](#11)–[51](#11)\]. We observed that the prefrontal cortex,
+
+cingulate cortex, and specific areas of the temporal and parietal
+
+low
+
+high
+
+low
+
+high
+
+low
+
+high
+
+low
+
+high
+
+fMRI
+
+EEG
+
+Sertraline
+
+Placebo
+
+low
+
+high
+
+low
+
+high
+
+low
+
+high
+
+low
+
+high
+
+**Fig. 7 Network-level connectivity patterns.** For each condition, the connection intensities of each network pair are illustrated through the
+
+heatmaps on the left and the chord charts in the middle, while the bar charts on the right represent the average between-network and
+
+within-network connection intensities of each network.
+
+Sertraline
+
+Placebo
+
+**Fig. 8 Associations of brain signatures with baseline clinical symptoms.** Brain signatures of test samples were generated through
+
+previously trained multimodal models in the optimal run of 10-fold cross-validation. GAMs were then employed to predict these clinical scales
+
+using these brain signatures. *P* values are false discovery rate (FDR) corrected. N.S. means non-significant.
+
+Y. Jiao et al.
+
+3971
+
+Molecular Psychiatry (2025) 30:3963 – 3974
+
+-----
+
+|  |
+| :-: |
+| [**Page 10**]() |
+
+lobes provide signals crucial for predicting antidepressant response,
+
+which are consistent with findings reported in previous studies
+
+\[[52](#11)–[55](#11)\]. Notably, the superior temporal gyrus and posterior
+
+cingulate cortex substantially contributed to sertraline response in
+
+both fMRI and EEG modalities (Fig. [4](#6)). These regions are linked to
+
+emotional regulation and social cognition, critical factors in
+
+depression \[[56](#11)–[62](#12)\]. For predicting placebo response, the anterior
+
+cingulate cortex and the postcentral gyrus played consistent roles
+
+across modalities. Elevated resting activity in this region may
+
+indicate better clinical outcomes, as it is linked to adaptive self-
+
+referential processing and enhanced cognitive control \[[63](#12)\]. Further-
+
+more, numerous studies have demonstrated the association
+
+between the anterior cingulate cortex-involved functional connec-
+
+tivity changes and placebo response \[[49](#11), [64](#12)–[66](#12)\]. Additionally, the
+
+postcentral gyrus, associated with emotional regulation and sensory
+
+processing, has also been implicated in various forms of depression
+
+\[[67](#12), [68](#12)\]. Moreover, our multimodal approach uniquely identifies
+
+specific brain regions compared to the unimodal approach, such as
+
+the superior temporal gyrus on fMRI and the posterior insula on EEG.
+
+These findings underscore the advantages of multimodal fusion,
+
+which uncovers associations that are not detectable through single-
+
+modality analysis. The posterior insula, in particular, is crucial for
+
+emotion processing \[[69](#12)\] and has been extensively implicated in the
+
+pathophysiology of depression \[[70](#12)–[73](#12)\].
+
+At the network level, our findings (Fig. [4](#6)) indicate that FPCN,
+
+VAN, and DAN are essential for predicting treatment responses
+
+from a multimodal integration perspective. FPCN, involved in
+
+problem-solving, working memory, and emotion regulation
+
+\[[74](#12), [75](#12)\], was prominent in the EEG modality for the sertraline
+
+arm and the fMRI modality for placebo. VAN, responsible for
+
+attention switching and integrating emotional and sensory stimuli
+
+\[[76](#12)–[78](#12)\], along with DAN, involved in goal-directed external
+
+attention \[[79](#12)\], suggests that the extent to which individuals with
+
+MDD respond to antidepressants or placebo may depend on
+
+externally oriented attention and processing salience. Figure [7](#9)
+
+shows that FPCN typically exhibits weaker within network
+
+connections while DMN, associated with internally oriented
+
+attention and self-referential thought, shower stronger within-
+
+network connections compared to those of DAN. Strong inter-
+
+network connections between FPCN and DMN may underlie
+
+cognitive control deficits observed in MDD \[[70](#12)\], such as difficulties
+
+in concentration and emotion regulation. Although LN comprises
+
+fewer brain regions, it features multiple high-intensity intercon-
+
+nections and exhibits the strongest within-network connections in
+
+the sertraline arm. The LN system has consistently been associated
+
+with the control of emotions and mood disorders, autonomic
+
+regulation, and cognitive deficits \[[80](#12)\], and shown sensitivity to
+
+stress correlates with the severity of depression \[[81](#12)–[83](#12)\]. These
+
+specific network patterns may contribute to core deficits in
+
+cognitive and affective functioning, thereby serving as brain
+
+signatures to inform treatment outcomes. Our framework
+
+provides additional validation for the importance of specific brain
+
+regions, functional networks, and connections as biomarkers in
+
+predicting treatment outcomes for MDD, offering a new
+
+perspective on neurobiological mechanisms and underscoring
+
+their potential utility in real-world diagnostic scenarios.
+
+Our results also highlight significant correlations between
+
+signature-predicted baseline clinical scores from GAMs and the
+
+actual ones in both the sertraline and placebo arms, providing
+
+supplementary evidence to confirm the clinical relevance of the
+
+identified brain network signatures. The use of the MASQ and
+
+QIDS scales in this study underscores their importance in
+
+capturing the complex symptomatology of MDD. The correlations
+
+found with these scales provide a nuanced understanding of how
+
+symptoms, such as anhedonia and anxiety, are reflected in brain
+
+network function. This insight could enhance diagnostic criteria
+
+and aid in the creation of targeted interventions for these
+
+symptoms. Future studies might investigate the stability of these
+
+correlations through longitudinal research and across different
+
+treatment arms. Moreover, extending the analysis to other forms
+
+of depression and anxiety disorders could reveal broader
+
+applications of these brain network signatures.
+
+This study has several limitations and potential areas for expansion
+
+that merit consideration. Despite our study having a larger sample
+
+size compared to most existing clinical trial studies on antidepressant
+
+treatment, the data remains modest for training deep learning
+
+models. This limitation was highlighted by our data augmentation
+
+ablation analysis. Thus, to validate our biomarker findings, larger
+
+sample sizes and replication studies with independent cohorts are
+
+essential \[[84](#12)\]. Currently, our prediction model is based on baseline
+
+data; future research should consider longitudinal data to better
+
+understand the relationship between functional connectivity changes
+
+and treatment outcomes. Expanding our modality fusion approach to
+
+integrate more data types will also provide richer neurophysiological
+
+information. Additionally, with larger sample sizes, advanced deep
+
+learning techniques could be explored to handle partial modality
+
+missing, which is common in clinical settings. Promising approaches
+
+include variational autoencoders for learning shared latent represen-
+
+tations across modalities \[[85](#12)\], self-attention mechanisms for flexible
+
+modality fusion \[[86](#12)\], and contrastive learning strategies to align
+
+representations from different modalities even with incomplete data
+
+\[[87](#12)\]. These approaches hold promise for improving model robustness
+
+and generalizability when faced with real-world data heterogeneity.
+
+**CONCLUSION**
+
+This study aimed to predict treatment outcomes in MDD and
+
+quantify brain signatures using a GNN-based deep learning
+
+method that integrates fMRI and EEG data. Our approach
+
+identified key brain regions and connections related to anti-
+
+depressant response, highlighting the utility of multimodal
+
+approach in understanding complex brain interactions. Lever-
+
+aging data from the EMBARC clinical trial, along with advanced
+
+data augmentation and modality fusion techniques, the frame-
+
+work enhanced prediction performance and revealed neurobi

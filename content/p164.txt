@@ -1,0 +1,1772 @@
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+Journal Name
+Crossmark
+RECEIVED
+
+dd Month yyyy
+REVISED
+
+dd Month yyyy
+
+TOPICAL REVIEW
+
+Cross-Subject Generalization for EEG Decoding: A Survey of
+Deep Learning Methods
+Taida Li1 , Yujun Yan2 , Fei Dou3 , Wenzhan Song4
+
+and Xiang Zhang1,∗
+
+1 Department of Computer Science, University of North Carolina at Charlotte, Charlotte, United States
+2 Department of Computer Science, Dartmouth College, Hanover, United States
+3 School of Computing, University of Georgia, Athens, United States
+4 School of Electrical and Computer Engineering, University of Georgia, Athens, United States
+
+arXiv:2604.27033v2 [cs.LG] 1 May 2026
+
+∗ Author to whom any correspondence should be addressed.
+
+E-mail: xiang.zhang@charlotte.edu
+Keywords: deep learning, EEG, cross-subject, generalization
+
+Abstract
+Deep learning for cross-subject EEG decoding is hindered by high inter-subject variability,
+which introduces a severe domain shift between training and unseen test subjects. This
+survey presents a comprehensive review of deep learning methodologies specifically
+engineered to address this cross-subject generalization challenge. To ground this analysis,
+we formalize the cross-subject setting as a multi-source domain problem and delineate the
+rigorous, subject-independent evaluation protocols required for valid assessment. Central
+to this survey is a systematic taxonomy of the current literature into discrete
+methodological families, including feature alignment, adversarial learning, feature
+disentanglement, and contrastive learning. We conclude by examining three critical
+elements for advancing robust, real-world decoding: the theoretical limitations of current
+methodologies, the structural value of subject identity, and the emergence of EEG
+foundation models.
+1 Introduction
+The application of deep learning to electroencephalography (EEG) signal decoding has marked a
+significant paradigm shift in computational neuroscience and brain-computer interfaces (BCIs) [1].
+Due to their capacity for automatic feature extraction from high-dimensional time-series data, deep
+neural networks have emerged as a promising paradigm complementing traditional machine
+learning pipelines that rely on hand-crafted features. This has led to notable advancements in a
+variety of applications, including clinical diagnostics for conditions like epilepsy [2, 3], analysis of
+cognitive and affective states such as emotion recognition [4, 5], and the decoding of motor
+imagery [6]. A schematic of this end-to-end process is illustrated in Fig. 1, demonstrating how raw
+EEG recordings are mapped through neural network feature extractors to generate these diverse
+downstream predictions.
+Despite these successes, a fundamental obstacle hinders the translation of these models from
+laboratory settings to practical, real-world applications: the profound inter-subject variability of
+EEG signals [7, 8]. Individual variations in physiology, anatomy, and cognition manifest as distinct
+neural signatures, leading to significant inter-subject variability [8]. This high variability has two
+critical consequences for deep learning models. First, it creates a domain shift, where the data
+distribution of a new, unseen subject is significantly different from that of the subjects in the
+training set. Second, a high-capacity neural network is prone to overfitting to the salient,
+subject-specific features rather than learning the more subtle, task-relevant neural patterns. The
+combination of this domain shift and the model’s tendency to exploit subject-specific confounds
+leads to a catastrophic drop in performance when generalizing to a new user, which is the central
+cross-subject challenge. This situation presents a unique, two-sided problem. The challenge is
+rooted in the powerful, subject-specific biomarkers inherent in the EEG signals, to which models
+are prone to overfit. The opportunity, however, arises because this inter-subject variability is not
+random noise, but rather a structured phenomenon tied to the individual. Physiological datasets
+typically possess rich metadata—specifically the knowledge of which subject generated which
+
+1
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+Emotion Recognition Motor Imagery
+
+EEG Recordings
+
+Neural Network
+
+Disease Detection
+
+Decoding
+
+Figure 1: Deep Learning Pipeline for EEG Decoding.
+signals. This metadata allows researchers to design cross-subject methodologies that model, align,
+or disentangle the very variability that makes generalization difficult.
+The unique character and challenge of cross-subject generalization have led researchers to
+propose methodologies designed to explicitly address it, which forms the scope of this survey.
+These approaches directly confront inter-subject variability by strategically utilizing the structural
+information available in the dataset. Feature Alignment frameworks aim to minimize the
+distribution shift between source subjects and a specific target subject, often through statistical
+moment matching or geometric alignment. Adversarial Learning paradigms introduce a “minimax”
+game, training feature extractors to fool a subject discriminator, thereby enforcing the learning of
+subject-invariant representations. Feature Disentanglement approaches go a step further,
+mathematically decomposing the neural signal into distinct task-relevant and subject-specific
+components. Contrastive Learning methods leverage metadata to structure the embedding space,
+defining positive and negative pairs to either cluster data by task across subjects or explicitly
+separate subject identities. Meta-Learning reformulates the training process itself, using episodic
+training to simulate domain shift and optimize models for rapid adaptability. Invariant and Causal
+Representation Learning methods seek to discover stable causal mechanisms that remain constant
+across diverse patient environments, disregarding spurious subject-specific correlations. We provide
+a detailed categorization and in-depth analysis of these diverse methodological families in Section 3.
+In contrast, we consider works that adopt a subject-independent evaluation but do not contain
+a specific mechanism to leverage subject information as being outside the scope of this survey.
+Such approaches, which may include the design of more powerful pre-training methods [9] or more
+capable generic encoders [10, 11], are contributions to the general representation learning for
+medical time series rather than targeted solutions to the cross-subject generalization problem. This
+survey will proceed to categorize and analyze the families of methods that explicitly harness
+subject-level information to learn robust and generalizable representations from EEG signals.
+While previous reviews have recognized the challenge of cross-subject generalization, they
+typically restrict their focus to isolated application domains, such as emotion recognition [12] or
+seizure detection [13]. Furthermore, these existing reviews tend to provide a generalized overview
+encompassing both traditional machine learning and deep learning frameworks. The current survey
+distinguishes itself through a dual approach: we expand the application scope to encompass a
+diverse range of tasks, including emotion recognition, motor imagery, and broader disease
+detection, while simultaneously narrowing our technical lens exclusively to deep learning
+paradigms. By focusing exclusively on deep learning, this survey offers a more technical analysis,
+categorizing works by their core methodologies rather than general learning settings.
+2 Background
+To systematically survey the landscape of cross-subject methodologies, it is essential to first
+establish a clear definitional framework. This section will formalize the cross-subject generalization
+problem using machine learning terminology, clarify the terminology used throughout the field,
+define the principles of rigorous evaluation, and introduce the related research areas that provide
+the methodological toolkit for the techniques discussed later in this paper.
+2.1 Terminology
+The academic literature addresses the challenge of generalizing models to new individuals using a
+variety of terms. Phrases such as “cross-subject,” “cross-patient,” “subject-independent,” and
+“subject-invariant” are often used interchangeably to describe the same fundamental goal: creating
+a model that performs robustly on an individual whose data was not seen during training. For the
+sake of consistency and generality, this survey will adopt the term cross-subject to refer to this
+general problem and the methodologies designed to solve it.
+
+2
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+2.2 Inter-Subject Variability in EEG
+The fundamental challenge in cross-subject EEG decoding, which we formally define as a domain
+shift, stems from the “inter-subject variability.” This is the observation that EEG signals are not
+uniform across people, even when performing the same mental task. From a physiological
+perspective, this variability is expected; individual differences in brain anatomy, skull thickness,
+baseline neural rhythms, and even the cognitive strategies employed to perform a task all
+contribute to unique neural signatures.
+This hypothesis is strongly supported by empirical evidence from deep-learning-based EEG
+decoding. The presence of these unique signatures is so pronounced that they act as biometric
+identifiers. Several studies demonstrate that when a standard deep learning model is trained on a
+multi-subject dataset, it can learn to identify the subject with high accuracy. For instance,
+Özdenizci et al. [14] observed that a standard CNN could achieve subject identification accuracy as
+high as 62.6% on a 40-subject task (where chance is 2.5%). Zhang et al. [15] similarly showed that
+a normally-trained model’s ”Identity Accuracy” progressively increases during training, proving
+that the model actively learns these subject-specific features. This is also visually confirmed by
+Shen et al. [16], who showed that in an unaligned embedding space, EEG features cluster by subject
+rather than by emotional state. Empirical evidence confirms that the data distribution from one
+subject is significantly different from another.
+
+Subjects
+
+Distributions
+Training Set
+
+Test Set
+
+(a) Cross-subject Setup
+
+(b) SCPS vs. MCPS
+
+Figure 2: Problem formulation and task taxonomy for cross-subject EEG decoding. Panel (a) formalizes the cross-subject learning setting as a multi-source domain problem, illustrating the inherent
+distributional shift between the heterogeneous pool of training subjects and the disjoint, unseen
+target subject. Panel (b) categorizes classification tasks into Single-Class-Per-Subject (SCPS) and
+Multi-Class-Per-Subject (MCPS), demonstrating the structural differences in how clinical or cognitive labels map to individual subject identities.
+2.3 Problem Statement
+The cross-subject generalization challenge is fundamentally a problem of real-world domain shift.
+Let the input space of EEG signals be denoted by X and the label space of cognitive or clinical
+states be Y. We consider the data from each individual subject, i, as a distinct domain,
+characterized by a unique joint probability distribution Pi (x, y) over X × Y. Due to the high
+inter-subject variability in EEG, the data distributions for any two different subjects are not
+identical, meaning Pi ̸= Pj .
+The core objective is to learn a predictive function f : X → Y using data from a finite set of
+observed source subjects, Ssource , that minimizes the expected error on a novel, unobserved subject
+k∈
+/ Ssource .
+Crucially, the challenge of domain shift is not limited to the transition to the novel subject; it is
+intrinsic to the observed data itself. Because Ssource consists of multiple individuals, it cannot be
+modeled as a single coherent distribution. Instead, it is a collection of heterogeneous domains
+where Pi ̸= Pj for any distinct subjects i, j ∈ Ssource . This internal variability formally casts the
+cross-subject task as a multi-source domain problem, rather than a standard single-source transfer
+learning problem. This distinction provides the theoretical basis for applying advanced
+methodological frameworks, such as Multi-Source Domain Adaptation and Domain Generalization.
+2.4 Evaluation Protocols
+Validating a model’s ability to solve the cross-subject generalization problem requires an
+experimental protocol that accurately simulates the real-world application to an unseen subject. In
+
+3
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+the literature, experimental setups are broadly categorized into two types: Subject-Dependent
+and Subject-Independent [10, 17].
+2.4.1 Subject-Dependent Evaluation In a subject-dependent (or segment-based) evaluation, EEG
+signals from all subjects are pooled together, segmented into shorter windows, and randomly split
+into training and testing sets. Consequently, segments from the same subject appear in both the
+training and test splits. While common in general machine learning, this protocol is fundamentally
+flawed for clinical EEG applications because it fails to simulate a novel user and introduces severe
+data leakage. Because EEG signals contain strong subject-specific biometric signatures, a model
+can achieve high accuracy by memorizing the identity of the subject rather than learning the
+pathological patterns of the disease [18, 19]. Recent studies have demonstrated that models
+evaluated this way often suffer from massive performance inflation, dropping from near-perfect
+accuracy (e.g., > 95%) to much lower accuracy (e.g., 60%) when tested on unseen subjects [19].
+2.4.2 Subject-Independent Evaluation Subject-independent (or subject-based) evaluation is the
+experimental design that correctly mirrors the cross-subject generalization problem. It simulates
+the deployment to a novel domain by ensuring that the training and testing sets are strictly
+disjoint at the subject level. Let S be the set of all subjects in a given dataset. This protocol
+partitions the dataset such that the set of training subjects, Strain , and testing subjects, Stest ,
+satisfy Strain ∩ Stest = ∅.
+Under this protocol, training and test sets must remain strictly disjoint at the subject level. By
+withholding the target distribution during training, this evaluation exposes if a model relies on
+identity-based shortcuts that does not generalize to new subjects. Common implementations of the
+subject-independent evaluation protocol include Leave-One-Subject-Out (LOSO) cross-validation,
+group K-fold cross validation and fixed hold-out sets. Since it accurately simulates deployment to a
+novel domain, a subject-independent evaluation is not merely a rigorous testing mechanism, but a
+necessary structural reflection of the cross-subject problem itself. For clinical translation,
+subject-independent evaluation is the only valid metric of a model’s utility to unseen
+subjects [18, 19].
+2.5 Label Structure of Classification Tasks
+The nature of inter-subject variability manifests differently depending on the label structure of the
+classification task. As shown in Fig. 2b, we categorize EEG tasks into two distinct types based on
+the mapping between subjects and labels: Single-Class-Per-Subject (SCPS) and
+Multi-Class-Per-Subject (MCPS).
+2.5.1 Single-Class-Per-Subject (SCPS) In SCPS tasks, each subject is assigned a single, fixed
+label that does not change over time. This is typical for disease diagnosis tasks such as Alzheimer’s
+Disease (AD), Schizophrenia, or Major Depressive Disorder detection, where a subject is
+categorized as either “Healthy” or “Diseased” [18].
+Challenge: The Identity Shortcut. The primary challenge in SCPS tasks is the perfect
+correlation between Subject Identity and the Task Label within the training set. Since the label is
+constant for a given subject, identifying the subject and then memorizing that subject’s label is
+functionally equivalent to determining the label. Deep learning models, behaving as “lazy”
+learners, often exploit this by learning a trivial mapping from the subject’s strong biometric
+signature (identity features) to the label. This strategy relies purely on memorization;
+consequently, when the model encounters an unseen subject in the test set, it detects a novel
+identity signature for which it has established no correlation with any task label, causing this
+identity-based decision rule to fail. However, it is important to qualify that models rarely rely
+solely on this shortcut; empirical results on unseen subjects often exceed random chance, indicating
+that the model does capture and utilize some subject-invariant task features.
+2.5.2 Multi-Class-Per-Subject (MCPS) In MCPS tasks, a single subject experiences multiple
+class states over time. Examples include Seizure Prediction (where a subject transitions between
+inter-ictal and pre-ictal states), Emotion Recognition (transitioning between happy, sad, neutral),
+and Motor Imagery.
+Challenge: Distribution Shift. In MCPS, the identity shortcut is not available because
+knowing ”who” the subject is does not automatically reveal ”what” state they are in. Instead,
+these tasks still suffer heavily from the domain shift caused by inter-subject variability. The neural
+
+4
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+manifestation of a ”seizure” or ”happiness” varies significantly in topology, frequency, and
+amplitude from person to person. Consequently, a model trained on Source Subject A may learn a
+decision boundary that is misaligned for Target Subject B, leading to poor generalization even if
+the model is trying to learn task-relevant features [19]. While SCPS tasks struggle with spurious
+correlations (identity predicting label), MCPS tasks struggle with conditional distribution shifts
+(the expression of the label varying by identity).
+To ground these theoretical distinctions in empirical practice, Table 1 compiles the standard
+public EEG datasets utilized by the methodologies reviewed in this survey. By explicitly mapping
+each dataset to its corresponding SCPS or MCPS structure, the table illustrates how different
+clinical and cognitive applications inherently dictate the specific type of cross-subject challenge
+researchers must address.
+Task
+
+Motor Imagery
+
+Emotion Recognition
+
+Cognitive BCI
+Sleep Staging
+Seizure Detection
+
+Alzheimer Detection
+
+Multiple
+
+Dataset
+PhysioNet MI [20]
+BCI Competition IV 2b [22]
+GigaScience MI [24]
+OpenBMI [25]
+BCI Competition IV 2a [30, 31]
+Stieger2021 [36]
+Yi2014 [37]
+BCI Competition III IVa [38]
+OVPD-II [39]
+SEED-IV [41]
+SEED [44, 45], [42]
+DEAP [53]
+Hinss2021 [55]
+Covert Attention [56]
+Thinking Out Loud [58]
+Sleep-EDF Cassette [59]
+CHB-MIT [61, 62]
+PKU1st [65]
+TUSZ [66]
+Siena Scalp [70]
+ADFTD [71]
+AD-Auditory [73]
+BrainLat [74]
+P-ADIC [75]
+TDBRAIN [76, 77]
+TUEG [79]
+
+# Subj
+109
+9
+52
+54
+9
+62
+10
+5
+13
+15
+15
+32
+15
+8
+10
+78
+23
+19
+675
+14
+88
+35
+780
+249
+1274
+14,987
+
+Hz
+160
+250
+512
+1000
+250
+1000
+200
+1000
+250
+200
+200
+512
+250
+1000
+254
+100
+256
+500
+250
+512
+500
+250
+500
+500
+500
+250
+
+Ch
+64
+3
+64
+62
+22
+64
+60
+118
+28
+62
+62
+32
+62
+62
+128
+2
+23
+19
+19*
+29
+64
+19
+128
+19
+26
+64
+
+# Classes
+4
+2
+2
+2
+4
+2 or 4
+4
+2
+3
+4
+3
+9 or 5
+3
+6
+4
+5
+2
+2
+2 or 10
+2
+3
+2
+5
+5
+-
+
+Label Structure
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+MCPS
+SCPS
+SCPS
+SCPS
+SCPS
+-
+
+Methods
+[21],
+[21], [23]
+[21], [14]
+[26], [27], [28], [29]
+[32], [26], [27], [21], [33], [23], [34], [28], [29], [35]
+[27]
+[21]
+[32]
+[40]
+[42], [43]
+[46], [33], [47], [48], [49], [16], [43], [50], [51], [52]
+[46], [49], [43], [50], [51], [54]
+[27]
+[57]
+[29]
+[60]
+[63], [15], [64], [52]
+[15]
+[67], [68], [69]
+[63]
+[72]
+[72]
+[72]
+[72]
+[78]
+[16], [80]
+
+Table 1: Public EEG datasets Used in Surveyed Papers. The Label Structure indicates the mapping
+between subjects and classes, categorized as either Single-Class-Per-Subject (SCPS) or Multi-ClassPer-Subject (MCPS).
+2.6 Related Fields
+The solutions to the cross-subject generalization problem in EEG decoding draw heavily upon
+methodological frameworks developed in the broader machine learning community. The most
+relevant of these paradigms are Domain Adaptation and Domain Generalization, which are
+distinguished fundamentally by the availability of target subject data during the training phase.
+2.6.1 Domain Adaptation (DA) Domain Adaptation (DA) addresses the scenario where a model
+trained on a source domain DS performs poorly on a related but distinct target domain DT due to
+a distribution shift (i.e., P (XS , YS ) ̸= P (XT , YT )). The defining characteristic of DA is that it
+requires access to data from the specific target domain during the learning process. In cross-subject
+EEG decoding, this typically takes the form of Unsupervised Domain Adaptation, where the model
+has access to labeled data from source subjects and unlabeled data from the target subject. The
+objective is to minimize the discrepancy between the source and target distributions, often by
+aligning their marginal distributions P (X) or conditional distributions P (Y |X) in a shared feature
+space [23, 81].
+A critical distinction in EEG-based DA lies in how the source subjects are treated:
+• Single-Source Domain Adaptation: In this conventional approach, data from all
+available
+SNtraining subjects are pooled together into a single, monolithic source domain
+DS = i=1 Si . The algorithm then attempts to align this aggregated distribution with the
+target subject’s distribution [32]. While computationally simpler, this method often ignores
+the inherent non-stationarity and variability among source subjects. By forcibly merging
+diverse neural signatures, it risks averaging out discriminative patterns, potentially creating a
+”confused” source distribution that aligns poorly with the target [42, 43].
+• Multi-Source Domain Adaptation (MDA): MDA explicitly recognizes that the training
+data originates from N distinct domains (i.e., N different subjects). Instead of pooling them,
+the model treats each source subject Si as an independent domain. Techniques in this
+
+5
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+category, such as Multi-Source Associate Domain Adaptation (MS-ADA) [43] or the
+Fine-grained Mutual Learning Adaptation Network (FMLAN) [42], typically construct
+separate alignment branches for each source or learn to weigh source domains based on their
+similarity to the target. This granular approach allows the model to selectively leverage the
+most relevant subjects and avoid ”negative transfer” caused by source subjects that are
+physiologically dissimilar to the target [82].
+2.6.2 Domain Generalization (DG) Domain Generalization represents a more challenging and
+practically rigorous scenario where the target domain is completely unknown during training. Here,
+the model is trained on a set of source domains Strain = {S1 , S2 , ..., SK } with the goal of
+maximizing performance on an unseen target domain Dtest without accessing any of its samples.
+Unlike DA, which ”fixes” the shift for a specific target, DG aims to learn a model that is robust to
+the shift itself.
+Fundamentally, the core objective of Domain Generalization in broader machine learning is to
+learn predictive models that capture the invariant, underlying relationships between inputs and
+labels across multiple distinct source environments. It achieves this by extracting domain-invariant
+representations that represent the stable, often causal, mechanisms of a task while actively
+suppressing domain-specific spurious correlations that do not hold in unseen test
+environments [83, 84].
+Translating this paradigm to EEG decoding, the distinct ”domains” naturally correspond to
+individual subjects [60]. The invariant mechanisms DG seeks to isolate are the true, task-relevant
+neural signatures (e.g., the neural patterns of motor imagery), whereas the spurious correlations to
+be suppressed are the powerful, subject-specific characteristics—such as baseline offsets or unique
+physiological noise profiles—that vary wildly between individuals. By leveraging DG principles to
+enforce stability across a heterogeneous pool of source subjects, models are prevented from
+overfitting to these identity-based shortcuts, theoretically ensuring robust generalization to any
+future, unseen subject. This capability is particularly relevant for clinical deployment, where many
+EEG decoding applications benefit from zero-shot generalization. Because DG methodologies do
+not require any target data, they enable zero-calibration systems that can function immediately for
+a new patient without the need for collecting any new data.
+To stress the practical distinction between methodologies, we assign DA or DG to each surveyed
+method based on its specific data requirements prior to deployment on a new subject, as
+systematically displayed in Table 2. DA refers to methods that require access to data—typically
+unlabeled—from the specific test subject during the training or adaptation/calibration phase. In
+contrast, DG refers to methods where the target domains (i.e., test subjects) remain completely
+unseen during the training process. Because DG methodologies do not require any target data,
+they are designed to be evaluated directly on new users without any prior calibration.
+3
+11
+
+8
+
+3
+
+1
+
+Motor Imagery
+Emotion Recognition
+Cognitive BCI
+Sleep Staging
+Disease Detection
+Multiple
+
+1
+
+13
+
+1 3
+
+5
+
+17
+13
+
+(a) Task
+
+(b) Framework
+
+4
+
+DA
+DG
+SSL
+Others
+
+MCPS
+SCPS
+Both
+Others
+
+29
+
+(c) Label Structure
+
+Figure 3: Overview of methodology distributions.
+3 Methodological Taxonomy
+To address the challenge of cross-subject generalization in EEG decoding, the research community
+has developed diverse methodologies, from feature alignment to causal representation learning.
+This section provides a taxonomy of these approaches, categorized by their underlying strategies
+for mitigating inter-subject variability. Fig. 3 illustrates the macro-level distribution of the
+surveyed literature, highlighting the current research emphasis across different application tasks,
+learning frameworks, and classification structures. Notably, the literature focuses primarily on
+Multi-Class-Per-Subject (MCPS) tasks such as emotion recognition and motor imagery, alongside a
+heavy reliance on Domain Adaptation (DA) and Domain Generalization (DG) frameworks. To
+unpack the algorithmic nuances driving these broader trends, a comprehensive overview of this
+taxonomy is presented in Table 2. This table categorizes the literature into distinct methodological
+
+6
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+families—including Feature Alignment, Adversarial Learning, and Contrastive Learning—while
+detailing their specific mechanisms and settings (e.g., Domain Adaptation vs. Domain
+Generalization). The following subsections analyze each family in depth, elucidating how different
+methods aim to extract robust features from heterogeneous subject populations.
+Methodological Family
+
+Feature Alignment
+
+Adversarial Learning
+
+Feature Disentanglement
+
+Contrastive Learning
+
+Ensemble & Reweighting
+Subject-wise Normalization
+Transfer Learning
+Meta-Learning
+Data Augmentation
+Causal Learning
+
+Method / Framework
+DDAN [32]
+Sandwich [85]
+Cross-Subject MI [26]
+SPD-BatchNorm [27]
+OPS [21]
+MS-Manifold [46]
+Microstate STM [40]
+DS3TL [33]
+DANN/CDAN [63]
+TDANN [47]
+GAT [23]
+Adversarial Inf. [14]
+PANN [15]
+Confusing Loss [48]
+Deep Metric Adv [49]
+AR-Log [67]
+ManyDG [60]
+CLISA [16]
+CLOCS [86]
+COMET [78]
+LEAD [72]
+FAPEX [80]
+FMLAN [42]
+CANet [64]
+MS-ADA [43]
+BCM [28]
+InvBase [50]
+DMNet [68]
+CNN Fine-Tuning [57]
+Seegnificant [87]
+MTL [51]
+Subj-Indep Meta [29]
+SI-Sampling [54]
+FBGAN [35]
+mixEEG [52]
+Invariant Rep [69]
+BrainOOD [88]
+
+Setting
+DA
+DA
+DG
+DA
+DA
+DA
+DA
+DA
+DA
+DA
+DA
+DG
+DG
+DG
+DG
+DG
+DG
+SSL
+SSL
+SSL
+SSL
+SSL
+DA
+DA
+DA
+DA
+DA
+DG
+SDA
+SDA
+SDA
+DG
+DG
+DA
+DG/DA
+DG
+DG
+
+Core Mechanism
+Statistical Matching
+Statistical Matching
+Statistical Matching
+Geometric Alignment
+Geometric Alignment
+Geometric Alignment
+Prototype Alignment
+Distribution Alignment
+Domain Confusion
+Hybrid
+Hybrid
+Subject-invariance
+Subject-invariance
+Subject-invariance
+Hybrid
+Additive Decomposition
+Orthogonal Projection
+Subject-invariance
+Subject-discriminative
+Subject-discriminative
+Subject-discriminative
+Subject-discriminative
+Ensemble
+Sequential
+Reweighting
+Baseline Subtraction
+Spectral Filtering
+Self-Comparison
+Parameter Update
+Parameter Update
+Meta-Learning
+Optimization
+Sampling
+Generation
+Interpolation
+Causal Learning
+Causal Graph
+
+Specific Technique
+Maximum Mean Discrepancy (MMD)
+Federated MMD
+Correlation Alignment (CORAL)
+Riemannian Manifold Centering
+Online Riemannian Mean Update
+Grassmann Manifold Projection
+Style Transfer Mapping (Affine)
+Entropy Minimization + Pseudo-labeling
+Gradient Reversal Layer
+MMD + Domain Discriminator
+Adversarial + Center Loss
+Gradient Reversal Layer
+Patient-Adversarial Min-Max
+Randomized Subject Labels
+Adversarial + Semantic Metric Loss
+Two-stream Architecture
+Latent Space Orthogonality
+Task-level contrastive
+Subject-level contrastive
+Multi-level (Trial + subject) contrastive
+Sample- and subject-level contrastive
+Sample- and subject-level contrastive
+Teacher-Student Distillation
+Memory Replay (Seizure Bank)
+Source Selection via Similarity
+Resting-State Feature Subtraction
+Inverse Baseline Filtering
+Contextual/Temporal Differencing
+Supervised Fine-Tuning
+Shared Trunk + Subject Heads
+Gradient-based Adaptation
+Subject-invariant Initialization
+Subject-Independent Sampling
+Target-conditioned GAN
+Federated Mixup (Channel/Freq)
+Invariant Risk Minimization (IRM)
+Graph Information Bottleneck
+
+Table 2: Categorization of Cross-Subject Methodologies in EEG Decoding. The learning settings
+are denoted as follows: DA (Domain Adaptation), DG (Domain Generalization), SDA (Supervised
+Domain Adaptation), and SSL (Self-Supervised Learning).
+3.1 Feature Alignment
+The most direct approach to addressing cross-subject variability is to explicitly minimize the
+statistical discrepancy between source and target distributions in a shared feature space (see
+Fig. 4a). This methodology treats domain shift as a distributional mismatch that can be corrected
+by forcing the statistical moments (e.g., mean, covariance) or geometric structures of the source
+and target data to overlap.
+3.1.1 Statistical Moment Matching Common metrics for this alignment include Maximum Mean
+Discrepancy (MMD) [89] and Correlation Alignment (CORAL) [90]. MMD is a kernel-based
+statistical metric that measures the distance between the means of two distributions in a
+high-dimensional feature space to ensure their global statistics are indistinguishable. CORAL
+focuses on second-order statistics by aligning the covariance matrices of the source and target
+distributions to match the relationships between different feature dimensions. Hang et al. [32]
+propose the Deep Domain Adaptation Network (DDAN), which integrates MMD into a deep
+convolutional network to minimize the discrepancy of deep features between subjects. Similarly,
+Wei et al. [85] employ MMD within a federated “Sandwich” framework to align user-specific
+feature extractors with a shared central network. To capture mutually invariant representations
+across diverse source subjects, Zheng et al. [26] utilize CORAL to align the second-order statistics
+(covariance matrices) between every pair of source subdomains, ensuring the learned features are
+robust to the distribution shifts inherent between different individuals. Addressing the
+semi-supervised scenario, Jiang et al. [33] propose DS3TL, which employs an entropy-based domain
+adaptation module; by minimizing the prediction uncertainty (entropy) on the unlabeled target
+subject data, the model implicitly aligns the target distribution with the source decision
+boundaries.
+
+7
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+EEG
+Samples
+
+Training Set
+
+Encoder
+
+Latent
+Space
+Attracts
+
+Repulse
+
+Test Subject
+
+Alignment
+
+(a) Domain Alignment.
+
+(b) Subject-level Contrastive Objective.
+
+Figure 4: Domain alignment and subject-level contrast.
+3.1.2 Geometric and Prototype Alignment Beyond Euclidean statistics, alignment can be
+performed on geometric manifolds or via prototype matching. Kobler et al. [27] introduce
+domain-specific batch normalization on the Riemannian manifold of Symmetric Positive Definite
+(SPD) matrices to remove geometric bias. Xu et al. [21] extend this with an Online Pre-alignment
+Strategy (OPS), recursively updating the Riemannian mean using incoming test data. Manifold
+learning is also effective for granular alignment; She et al. [46] propose a framework that projects
+data onto a Grassmann manifold to preserve geometric structure during transfer. Furthermore,
+Zhang et al. [40] introduce a Style Transfer Mapping (STM) approach combined with microstate
+analysis; employing a Nearest Prototype Transfer strategy, they learn an affine mapping to align the
+source and target domains by minimizing the distance between their respective class prototypes.
+3.2 Adversarial Learning
+Adversarial learning is a powerful technique that uses a “minimax” game to learn robust
+representations. Beyond the famous Generative Adversarial Network (GAN) [91] for generative
+tasks, the Domain-Adversarial Neural Network (DANN) [92] adapts adversarial principles
+specifically for representation learning. The DANN framework is designed to learn features that are
+invariant (or agnostic) to a known nuisance variable—in this context, the subject identity.
+The goal is to train a feature extractor that minimizes task error while simultaneously
+maximizing the error of a subject discriminator. This competitive process forces the extractor to
+learn representations that are predictive of the task but contain no discernible subject-specific
+information. The most common implementation utilizes a Gradient Reversal Layer (GRL) [92],
+which inverts the gradients flowing from the subject discriminator during backpropagation (see
+Fig. 5).
+Several works utilize this framework to enforce systemic invariance to inter-subject variability.
+Özdenizci et al. [14] employ the standard GRL approach to purge subject-specific information from
+EEG features. Zhang et al. [15] propose the Patient-Adversarial Neural Network (PANN), which
+adopts an alternate strategy: explicitly training the extractor to minimize the negative of the
+identity classification loss. Similarly, Hwang et al. [48] introduce a “confusing loss,” training the
+discriminator on both real and randomized subject labels to actively prevent the model from
+learning subject-distinguishing features.
+Recent hybrid architectures combine adversarial learning with statistical or metric constraints.
+Jemal et al. [63] systematically evaluate Conditional Domain Adversarial Networks (CDAN) for
+seizure prediction, demonstrating that conditioning the discriminator on the class prediction helps
+align complex multimodal structures. Hybrid approaches often integrate statistical alignment; for
+instance, Bao et al. [47] propose a two-level network (TDANN) that first uses Maximum Mean
+Discrepancy (MMD) for coarse alignment before employing a domain discriminator for fine-grained
+confusion. Similarly, Song et al. [23] introduce the Global Adaptive Transformer (GAT), which
+couples an adversarial discriminator with an adaptive center loss to simultaneously align marginal
+and conditional distributions. Finally, Alameer et al. [49] augment the adversarial framework with
+Deep Metric Learning (DML), adding a “semantic embedding loss” that structures the embedding
+space by pulling same-class samples across subjects toward common proxies, ensuring that the
+learned invariant features remain semantically discriminative.
+3.3 Feature Disentanglement
+Feature Disentanglement aims to achieve generalization by explicitly isolating distinct components
+of the representation. Unlike DANN-based methods which aim to learn subject-agnostic
+representation, feature disentanglement frameworks attempt to actively learn and separate a single
+
+8
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+Label Predictor
+
+Encoder
+
+Ground Truth
+Subject Predictor
+GRL
+
+Foward Prop
+Backward Prop
+
+Grandient
+Reversal
+
+Figure 5: Domain Adversarial Neural Network.
+feature representation into distinct, isolated components. For the cross-subject problem, the goal is
+to learn a representation that is explicitly disentangled into a task-relevant (and subject-invariant)
+component and an identity (and subject-specific) component. The downstream classifier is then
+trained using only the task-relevant component, discarding the subject-specific information.
+A direct implementation is additive signal decomposition. Zhang et al. [67] propose a framework
+for seizure detection that models the raw EEG signal E as the composite of a seizure component S
+and a patient component P , such that E = S + P . To achieve this, the network employs two
+parallel encoders: one explicitly trained to minimize seizure classification error, and the other
+trained to minimize patient identification error. Unlike standard adversarial methods that simply
+confuse a discriminator, this approach enforces a reconstruction constraint where the sum of the
+decomposed latent representations must recreate the original input (E ′ = S + P ). This forces the
+model to isolate subject-specific features into the P branch, leaving the S branch as a pure,
+subject-invariant representation for diagnosis.
+Alternatively, Yang et al. attempt to disentangle the features in latent space. [60] introduce
+ManyDG, a framework that avoids separate encoders in favor of a unified feature vector v that is
+mathematically decomposed during training. The method identifies a latent domain direction z
+and projects the feature vector into two orthogonal components: v∥z (parallel to the domain factor)
+and v⊥z (orthogonal to the domain factor). The final task prediction is performed solely on v⊥z ,
+ensuring that the features used for decision-making are mathematically orthogonal to the patient
+identity. To guarantee that the factor z truly captures the patient identity rather than random
+noise, the model utilizes a mutual reconstruction objective: the domain factor from one sample and
+the label factor from a different sample (of the same subject) are combined to reconstruct the
+original features, thereby enforcing a strict structural disentanglement of subject identity from task
+content.
+3.4 Contrastive Learning
+Contrastive learning is a self-supervised paradigm that learns representations by structuring an
+embedding space to minimize the distance between “positive pairs” (semantically similar samples)
+while simultaneously maximizing the distance between “negative pairs” (dissimilar samples). In
+many common frameworks, such as SimCLR [93], a positive pair is simply created by applying two
+different augmentations to the same data sample, thereby training the model to be discriminative
+at the sample-level.
+For the cross-subject generalization problem, researchers have innovatively engineered this
+principle by moving beyond simple augmentations and leveraging the rich metadata unique to
+physiological datasets–specifically, the subject ID or the task labels. This adaptation allows for the
+creation of ”subject-aware” or ”task-aware” pairs to define the contrastive objective. These
+methods can typically be integrated into the Domain Generalization (DG) paradigm, as they learn
+a generalizable representation from a pool of source subjects without requiring access to the target
+subject’s data. Interestingly, this has led to two distinct and seemingly contradictory strategies for
+achieving the same goal.
+The first strategy aims to learn a representation that is explicitly subject-invariant by focusing
+on the shared task or stimulus. This approach is exemplified by Shen et al. [16] in their CLISA
+(Contrastive Learning for Inter-Subject Alignment) framework. Inspired by Inter-Subject
+Correlation (ISC)—a neuroscience concept that different subjects perceiving the same stimulus
+
+9
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+have correlated neural activity—they define a positive pair as two EEG segments from different
+subjects that were recorded during the same emotional stimulus (e.g., the same video segment). A
+negative pair consists of segments from different stimuli. By maximizing the similarity of these
+cross-subject, same-stimulus pairs, the model is forced to learn an embedding space that clusters
+representations based on the shared emotional task, effectively factoring out the subject-specific
+neural signatures.
+A second, counter-intuitive strategy aims to learn a representation that is explicitly
+subject-discriminative. This approach defines a positive pair as two samples from the same subject,
+and a negative pair as two samples from different subjects (see Fig. 4b). This creates an apparent
+paradox: to achieve cross-subject generalization, one might intuitively wish for the encoder to
+output a subject-invariant representation, as is the goal of the DANN methodologies. However, this
+subject-level contrastive objective does the opposite: it urges the model to learn subject-specific
+features in order to successfully distinguish between subjects in the embedding space. The resulting
+encoder is therefore explicitly subject-aware. This paradox suggests that a high-quality
+representation should isolate both subject and task features. By making subject identities explicit
+and well-separated, the model may allow downstream classifiers to more easily disentangle these
+’nuisance’ features from task-relevant patterns
+This subject-discriminative strategy is the core of the CLOCS framework, proposed by Kiyasseh
+et al. [86]. Here, a positive pair consists of two different segments (e.g., from different times or
+different channels/leads) that belong to the same patient. Consequently, segments from different
+patients are treated as negative pairs. The model is then trained with a patient-specific loss that
+explicitly pulls intra-patient representations closer together and pushes inter-patient
+representations further apart. Wang et al. [78] extend this concept by integrating the patient-level
+objective into a hierarchical framework called COMET. The innovation of COMET is that this
+patient-level contrastive loss (where same-patient samples are positive pairs) is one of four distinct
+contrastive losses optimized simultaneously. It is combined with a trial-level loss (same-trial
+samples are positive) and two standard, subject-agnostic objectives: sample-level and
+observation-level consistency.
+Recent frontier foundation models have scaled this subject-discriminative strategy by
+hybridizing it with standard sample-level objectives. Both LEAD [72] and FAPEX [80] adopt a
+dual-contrastive framework where the pre-training objective explicitly combines sample-level and
+subject-level contrastive losses. These approaches demonstrate that complementing instance
+discrimination with subject-level constraints effectively primes foundation models to extract
+generalized clinical biomarkers across diverse patient populations.
+3.5 Ensemble and Source-Reweighting Strategies
+Rather than forcing all subjects into a single aligned distribution, these methods explicitly
+acknowledge the heterogeneity of the training pool. They operate by training separate sub-models
+for distinct source domains (Ensembling) or by assigning importance weights to source samples
+based on their similarity to the target (Reweighting), thereby avoiding “negative transfer” from
+dissimilar subjects.
+Yu et al. [42] introduce the Fine-grained Mutual Learning Adaptation Network (FMLAN),
+which trains separate sub-networks for each source subject and distills their knowledge into a joint
+model via mutual learning. Addressing the temporal nature of BCI calibration, Zhang et al. [64]
+propose a continuous domain adaptation approach (CANet) that adapts to the target patient
+sequentially, using a “seizure bank” to replay similar historical samples and prevent catastrophic
+forgetting. Additionally, Feng et al. [34] propose an instance-level transfer approach using
+TrAdaBoost, which iteratively re-weights source samples based on their classification accuracy on
+the target calibration set, effectively pruning irrelevant source data from the training distribution.
+3.6 Subject-wise Normalization
+A specialized family of methodologies addresses cross-subject variability by shifting the learning
+objective from absolute signal representation to relative signal representation. These methods
+operate on the hypothesis that while the absolute characteristics of EEG signals (e.g., amplitude,
+power spectral density) vary wildly across subjects, the relative change between a subject’s “resting
+state” and “task state” remains consistent across the population . By explicitly conducting
+subject-wise normalization, i.e., comparing the target signal against a subject-specific reference,
+these approaches effectively subtract the subject-specific bias.
+The most common implementation of this paradigm is baseline correction, where a resting-state
+recording is used as a reference. Ahmed et al. [50] introduce the InvBase method, which utilizes the
+
+10
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+power spectrum of the subject’s resting-state EEG as an inverse filter; by dividing the task-state
+frequency spectrum by this baseline spectrum, they effectively “de-blur” the signal. Similarly,
+Kwak et al. [28] propose a Baseline Correction Module (BCM) within a deep neural network, where
+the network learns to explicitly estimate and subtract the subject-variant background feature using
+a paired resting-state input.
+Recent work has extended this concept to feature-level self-referencing. Tu et al. [68] propose
+DMNet, which replaces the separate baseline recording with a “self-comparison” mechanism using
+the signal’s own temporal context. By computing a Difference Matrix relative to neighboring
+segments, the model encodes the relative evolution of the signal rather than its absolute values.
+Finally, this approach can be applied at the statistical level through domain-specific normalization.
+Kobler et al. [27] propose Symmetric Positive Definite (SPD) Domain-Specific Momentum Batch
+Normalization on the Riemannian manifold. Rather than subtracting a baseline signal, this method
+centers every subject’s data at the Identity matrix on the manifold, effectively removing the
+“geometric bias” of the individual.
+3.7 Transfer Learning
+This category represents the classical supervised adaptation paradigm. A model is first pre-trained
+on a pool of source subjects to learn robust initial weights, then fine-tuned using a small amount of
+labeled calibration data from the target subject.
+Fahimi et al. [57] demonstrate that fine-tuning a pre-trained CNN with a small fraction of the
+target subject’s data significantly outperforms zero-shot application, establishing the baseline
+efficacy of parameter transfer in EEG. Recently, Mentzelopoulos et al. [87] demonstrated the
+scalability of this paradigm for stereotactic EEG (sEEG). They employ a Transformer-based
+“shared trunk” to extract global neural representations, followed by subject-specific regression
+heads that are fine-tuned to individual users. This separation of global and local parameters allows
+the model to handle the extreme heterogeneity of electrode placement in clinical settings, adapting
+to specific neural topographies without retraining the massive feature extractor.
+3.8 Meta-Learning
+Meta-Learning, often described as “learning to learn,” addresses the cross-subject challenge by
+restructuring the training process. Rather than minimizing the empirical risk over the training set,
+meta-learning methods simulate the test-time domain shift during the training phase. The core
+principle is episodic training: the model is trained on thousands of episodes where each task
+represents a different subject, and is optimized to maximize its ability to generalize to a new,
+held-out subject. This paradigm naturally supports both Domain Generalization, by learning a
+universally robust initialization, and Domain Adaptation, by learning parameters that are highly
+responsive to fine-tuning.
+One approach uses bi-level optimization to find model parameters that are robust to
+inter-subject variability. Ng and Guan [29] propose a subject-independent meta-learning framework
+that reformulates the training objective. Instead of treating tasks as different classification
+problems, they treat each subject as a distinct task while maintaining the same classification
+objective. Their method introduces a specialized meta-loss that minimizes the divergence between
+the global model parameters and the subject-specific optimal parameters. Crucially, they
+demonstrate that this framework is effective for both zero-calibration scenarios, where the
+meta-learned model is applied directly to unseen subjects, and few-shot scenarios, where the model
+is fine-tuned with minimal target data.
+Building on this optimization-based approach, Li et al. [51] integrate meta-learning with
+connectivity features in a framework termed Meta-Transfer Learning (MTL). To address the
+potential instability of meta-learning on complex physiological data, they introduce a warmup
+stage where the feature extractor is pre-trained on source data to learn shallow semantic features
+before the meta-training phase begins. During the meta-training stage, they employ a quadratic
+gradient update method to optimize a Multi-Scale Residual Network (MSRN). Unlike standard
+generalization approaches, this method is explicitly designed for adaptation, where the
+meta-learner is trained to adapt to a target subject using a support set, effectively bridging the
+individual difference gap through fast, gradient-based fine-tuning.
+Complementary to bi-level optimization, other approaches focus on how training episodes are
+constructed. Bhosale et al. [54] argue that the key to generalization lies in how the support and
+query sets are sampled during episodic training. They introduce a Subject-Independent (SI)
+sampling strategy, where the support and query samples in a training episode are strictly drawn
+from different subjects. This constraint forces the model to learn a metric space where samples
+
+11
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+cluster by semantic class (e.g., emotion state) rather than subject-specific biometric signatures.
+Their results demonstrate that this metric-learning approach can facilitate calibration-free
+decoding by relying solely on reference samples from a pool of other subjects, thereby achieving
+generalization without direct access to the target subject’s distribution.
+3.9 Data Augmentation
+Adaptation-focused augmentation aims to bridge the specific gap between source and target
+distributions by generating synthetic data that mimics the target subject’s characteristics,
+effectively “filling in” the void in the feature space between domains.
+Zhang et al. [35] propose a Filter Bank GAN (FBGAN) that generates high-quality synthetic
+EEG samples conditioned on the target subject’s distribution. By introducing these synthetic
+“target-like” samples into the training set, the classifier is forced to learn a decision boundary that
+naturally extends to encompass the real target subject. In the context of Federated Learning, Liu
+et al. [52] introduce “mixEEG,” a framework that employs tailored Mixup strategies, specifically
+Channel Mixup and Frequency Mixup, to generate synthetic EEG data. This approach provides
+clients with averaged, privacy-preserving unlabeled target-domain data and uses interpolation to
+bridge the distribution gap between decentralized source clients and the target subject.
+3.10 Causal Representation Learning
+Unlike statistical alignment methods that force feature distributions to look identical, Invariant
+and Causal Representation Learning aims to discover underlying mechanisms that remain stable
+across environments. It is important to clarify that within this framework, the term “causal” is
+used in the structural sense in machine learning, referring to subject-invariant features that
+maintain a stable functional relationship with the label across environments, rather than implying
+the identification of physical causal mechanisms in the neuroscientific or interventional sense.
+These methods typically assume that data is generated by both invariant (causal) factors and
+variant (spurious) factors. Instead of aligning all features, they seek to isolate the invariant factors
+such that the optimal classifier built upon them remains constant across all subjects.
+A primary approach in this category is Invariant Risk Minimization (IRM), which leverages
+environmental diversity to find stable features. Recent work [69] applies this principle to epilepsy
+diagnosis through a Spatiotemporal Invariant Risk Minimization (ST-IRM) framework. This
+method actively constructs diverse training environments by applying K-means clustering to
+partition the patient population into distinct groups. To extract stable features from these
+environments, the framework employs a learnable mask function that explicitly decomposes the
+EEG representation into invariant and variant components. The model is then optimized using a
+gradient variance penalty, which forces the predictor to perform consistently across all patient
+clusters, effectively filtering out subject-specific noise while retaining the robust spatiotemporal
+patterns of the seizure.
+Complementary to this is Causal Subgraph Extraction, which is particularly effective for
+graph-structured brain networks. Xu et al. [88] propose BrainOOD, a framework that addresses the
+challenge of out-of-distribution generalization by assuming that a stable causal subgraph exists
+within the noisy brain network. The method employs an improved Graph Information Bottleneck
+(GIB) objective to selectively filter out spurious connections and node features. By enforcing an
+alignment loss that encourages the selection of consistent functional connections across batches, the
+model recovers a sparse, causal subgraph that serves as a robust, subject-invariant biomarker for
+neurological disorder diagnosis.
+4 Discussion
+4.1 Practical Considerations for Method Selection
+In real-world deployment, the choice of a cross-subject EEG decoding model is primarily dictated
+by the practical data constraints of the specific application. While the algorithmic mechanisms
+detailed in Section 3 provide a structural overview of the methodology, a method’s suitability for a
+given constraint is best determined by its problem setting (e.g., DG, DA, SDA, or SSL), as
+categorized in Table 2. The following analysis offers guidance on how these settings align with
+different data requirements and constraints.
+As illustrated in Table 3, the practical utility of each methodological setting is largely
+determined by the type and amount of data available before deployment. When no data from the
+target subject can be collected, Domain Generalization (DG) is the most appropriate setting,
+as it is explicitly designed for zero-calibration deployment on unseen subjects. When unlabeled
+data from the target subject is available prior to inference, Domain Adaptation (DA) becomes
+
+12
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Framework
+Domain Adaptation (DA)
+Supervised DA (SDA)
+Domain Generalization (DG)
+Self-Supervised Learning (SSL)
+
+Author et al
+
+Best Use Case
+Known target subject;
+unlabeled target data available
+High-precision
+clinical tuning
+Zero-calibration;
+”Plug-and-play” deployment
+Large-scale pre-training;
+unlabeled repositories
+
+Data Access Requirements
+Requires fully labeled source datasets and a
+to unlabeled subset from the target subject.
+Requires fully labeled source datasets and a
+labeled subset from the target subject.
+Requires fully labeled source datasets
+and no access to target subject data.
+Does not require task labels; requires Subject-ID
+and often trial/temporal info.
+
+Primary Trade-off
+Subject-specific performance;
+requires target data prior to inference.
+High accuracy but practically limited
+by its dependence on labeled target data.
+Harder to optimize; must learn
+truly universal invariant features.
+Requires large batches and significant
+compute; features are task-agnostic.
+
+Table 3: Comparison of Methods in Problem Settings
+suitable because it can leverage this subject-specific information to reduce the distribution gap
+between source and target domains. In scenarios where a small amount of labeled target-subject
+data can be obtained, Supervised Domain Adaptation (SDA) is the most appropriate choice,
+particularly for applications that prioritize maximal subject-specific accuracy over deployment
+convenience. However, because collecting subject-specific target data is often costly and
+burdensome in real-world settings, methods that depend on such data may be less practical for
+broad deployment. From this perspective, DG methods remains the most viable, although also the
+most challenging in terms of performance, setting for real-world cross-subject EEG applications,
+since they must generalize to unseen subjects without access to target-subject data during training.
+Self-Supervised Learning (SSL) is valuable under a different set of data constraints. First,
+it is well suited to cases where task labels in the training set are limited, since self-supervised
+representation learning can be driven by auxiliary information such as subject identity or trial
+correspondence. Second, SSL is useful when the dataset for a specific EEG task is too small to
+support effective supervised training. In such cases, SSL enables models to leverage general neural
+representations learned from larger EEG repositories, potentially collected for different tasks, and
+then transfer these representations to the task of interest. In this sense, SSL provides a practical
+route for improving cross-subject decoding when labeled task-specific data is scarce but broader
+unlabeled EEG resources are available. This is precisely the strategy adopted by EEG foundation
+models, which pretrain on large, unlabeled EEG corpora to learn transferable representations
+before adaptation to downstream tasks; we discuss this trend further in Section 4.3.2.
+4.2 Current Limitations in Cross-Subject EEG Research
+Despite the progress reviewed in this survey, several important limitations continue to constrain the
+development of robust cross-subject EEG decoding systems. These limitations arise at two levels:
+first, from methodological formulations that may not fully match the heterogeneous multi-subject
+nature of EEG data, and second, from inconsistencies in benchmarking practice that make it
+difficult to compare reported performance across studies.
+4.2.1 The Misplacement of Single-Source Domain Adaptation While Domain Adaptation (DA)
+has been a dominant paradigm for addressing cross-subject variability, a critical examination of the
+literature suggests that the Single-Source DA framework, where all training subjects are pooled
+into a single domain DS to be aligned with the target DT , may be theoretically misplaced for
+cross-subject EEG decoding. This critique rests on the statistical reality of the inter-subject
+variability established in Section 2.2. The distribution shift is not merely a binary gap between
+“Training Data” and “Testing Data”; rather, it is a pervasive phenomenon that exists between any
+two individuals. Quantitatively, the distribution gap between a target subject and a source subject
+is not necessarily larger than the gap between two different subjects within the training set [18, 42].
+Consequently, the Single-Source assumption, that the training set represents a coherent, unified
+distribution P (XS ) that simply needs to be shifted to match the target P (XT ), is flawed. Some
+existing works pool diverse subjects into a single source [23, 32, 81]. Such Single-Source methods
+risk forcing the alignment of highly disparate subject distributions can inadvertently lead to
+negative transfer. Zhong et al. [94] demonstrated that such naive single-source alignment could
+actually decrease performance, whereas their multi-source DG framework, designed to capture
+invariant relationships across a heterogeneous pool of subjects, achieved superior results.
+Furthermore, This framing also exposes a paradox in the learning objective. If a feature encoder
+is powerful enough to handle the distribution shifts among heterogeneous source subjects (i.e.,
+mapping Subject A and Subject B into the same invariant feature space), it should in principle also
+be robust to the shift from source to target without explicit adaptation. The fact that these models
+still fail to generalize suggests that they are not truly resolving the internal distribution shifts of the
+source data. Instead, as recent evaluations on data leakage in SCPS tasks indicate [18, 19], models
+may be overfitting to subject-specific identities rather than learning robust invariant features.
+
+13
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+4.2.2 Lack of Standardized Benchmarking Pipelines While the taxonomy presented in Section 3
+organizes the methodological landscape of cross-subject generalization, rigorous quantitative
+comparison among these approaches remains difficult. A major obstacle is the lack of standardized
+benchmarking pipelines across studies. Even when researchers use the same public datasets,
+differences in preprocessing choices—such as artifact rejection thresholds, spectral filtering ranges,
+and subject exclusion criteria—as well as differences in evaluation design, including subject split
+strategies and validation protocols, can substantially alter the difficulty of the task and the
+resulting performance estimates. Consequently, reported accuracies do not always reflect only the
+intrinsic merits of a proposed method, but are also shaped by the specific experimental pipeline
+under which the method is evaluated.
+This problem is further compounded by the fact that many EEG datasets are small and noisy.
+Under such conditions, variations in preprocessing and evaluation pipelines can substantially affect
+reported performance, sometimes at a magnitude comparable to the gains attributed to newly
+proposed methods. Although comparisons against baselines within the same paper are typically
+conducted under a shared preprocessing and evaluation setup, this does not fully eliminate the
+problem: when performance is highly sensitive to these design choices, ad hoc pipeline selections
+can favor the proposed method, making its improvement over the baseline appear larger than it
+would under a different but equally plausible setup. The difficulty becomes even greater when
+comparing results across different papers, where preprocessing and evalution protocols often differ.
+As a result, both the reliability of reported gains within individual studies and the comparability of
+results across studies remain important concerns for the field.
+Addressing this limitation will require more systematic benchmarking efforts. In particular, the
+development of unified benchmark datasets or benchmark suites—with standardized preprocessing
+pipelines, fixed subject-independent splits, and transparent reporting protocols—would provide a
+more reliable basis for evaluating methodological advances. A useful recent example is the 2025
+EEG Foundation Challenge [95], which includes recordings from over 3,000 participants across six
+cognitive tasks. The challenge provides a common data format, downsampled releases, public
+starter kits, and a code-submission evaluation framework in which organizers run participant
+models for inference on the competition infrastructure, thereby reducing variation from ad hoc
+local evaluation setups and helping participants compete on a fairer common ground. Such
+benchmark efforts can help distinguish true algorithmic improvements from pipeline-dependent
+performance fluctuations and make comparisons across studies substantially more meaningful.
+4.3 Emerging Directions
+Beyond practical deployment considerations and current limitations, this survey also highlights
+several emerging directions that may shape the next stage of progress in cross-subject EEG
+research. These directions are not defined primarily by a single methodological family, but by
+broader conceptual shifts in how inter-subject variability is modeled and how transferable EEG
+representations are learned. In particular, recent work increasingly treats subject-level information
+not merely as a nuisance factor, but as useful structural metadata, while large-scale pretraining is
+opening new possibilities for learning general neural representations from diverse EEG corpora.
+Together, these trends point to several broader research directions for cross-subject EEG decoding,
+especially regarding the role of subject structure and data scale in EEG foundation models.
+4.3.1 Subject ID as Metadata An emerging direction in cross-subject EEG research is to treat
+Subject ID not merely as an indexing variable, but as structural metadata that can explicitly guide
+representation learning. In the context of EEG decoding, the mathematical formulation of
+inter-subject variability dictates that one subject is equivalent to one distinct domain (see
+Section 2.2, 2.3). Consequently, the Subject ID serves the exact same structural role as the domain
+label does in standard Domain Generalization (DG) frameworks. Both act as critical
+meta-information that explicitly partitions the dataset into heterogeneous generating distributions.
+In general machine learning, DG without explicit domain labels is widely recognized as a more
+challenging setting [83]. We infer that the same principle holds true for cross-subject
+generalization: actively incorporating available Subject IDs into the training process provides a
+distinct advantage to a model’s ability to learn robust, subject-invariant representations.
+The practical value of this perspective becomes especially apparent under the strict data
+governance common in clinical and physiological datasets. Ideally, researchers might wish to use
+detailed demographic, anatomical, or physiological profiles to help model inter-subject variability;
+however, such sensitive metadata is often removed to preserve privacy and anonymity. In contrast,
+the discrete, anonymized Subject ID is almost universally retained simply to separate data sources.
+
+14
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+Rather than treating this surviving meta-information as a mere indexing artifact, future methods
+can instead repurpose it as a structural prior for cross-subject generalization.
+Indeed, many of the dedicated cross-subject methodologies reviewed in this survey already
+harness Subject ID, predominantly by integrating it directly into the network’s loss functions. For
+instance, both Adversarial Learning (Section 3.2) and Feature Disentanglement (Section 3.3)
+frameworks typically formulate an auxiliary task of subject identification. They use Subject ID as
+the ground-truth label to either train a discriminator in a minimax game or explicitly segregate
+subject-specific biometric signatures into an isolated latent space. In subject-level contrastive
+methods (Section 3.4), Subject ID acts as the foundational heuristic for structuring the embedding
+space, dictating the construction of positive (intra-subject) and negative (inter-subject) sample
+pairs. Similarly, Meta-Learning frameworks (Section 3.8) rely on Subject ID to restructure the
+training process itself, defining each individual subject as a separate simulated learning task to
+optimize the model for rapid adaptability. Through these diverse mechanisms, Subject ID is
+elevated from a simple dataset index to a core algorithmic signal, and its more deliberate use may
+become an important direction for developing robust cross-subject EEG models.
+4.3.2 EEG Foundation Models Recent advancements have seen the emergence of EEG
+Foundation Models that achieve state-of-the-art performance on cross-subject benchmarks. We
+argue that these models represent a developmental path that is largely orthogonal to the domain
+adaptation and generalization methodologies discussed in this survey. While the methods reviewed
+in Section 3 focus on algorithmic innovations—designing specialized losses, alignment mechanisms,
+or architectures to handle distribution shifts with limited data—foundation models primarily drive
+performance through data scaling. By pretraining on massive, diverse corpora of EEG data
+(spanning thousands of subjects and multiple datasets), these models learn robust, transferable
+representations simply by observing the full breadth of inter-subject variability [72, 80].
+Within this paradigm, we observe two distinct pretraining strategies. The first relies on general,
+task-agnostic objectives, most notably Masked Patch Reconstruction [96, 97] (inspired by Masked
+Autoencoder [98] in Computer Vision). These models learn the intrinsic structure of neural
+dynamics by reconstructing missing segments of the EEG signal, implicitly capturing generalizable
+features without specific guidance on subject identity.
+The second strategy explicitly incorporates the methodologies analyzed in this survey, most
+notably the Subject-Level Contrastive Learning discussed in Section 3.4. Rather than treating
+subject identity solely as a nuisance variable to be discarded, models in this category actively utilize
+it as an organizational constraint. By integrating subject-discriminative objectives—such as
+minimizing the distance between samples from the same subject—into the pretraining phase, these
+foundation models construct a latent space characterized by distinct, well-defined subject
+clusters [78]. Recent evaluations indicate that this explicitly clustered structure empirically benefits
+the performance of downstream tasks. We anticipate that future advancements will stem from the
+convergence of these paradigms: integrating the subject-aware algorithmic constraints of Domain
+Generalization into large-scale Foundation Model pretraining.
+Parameter-Efficient Fine-Tuning. As EEG foundation models scale toward hundreds of
+millions of parameters, the traditional ”pre-train then fully fine-tune” paradigm becomes
+increasingly impractical for clinical settings with limited data. This has led to the emergence of
+Parameter-Efficient Fine-Tuning (PEFT) as a leading strategy for adapting large-scale models to
+new subjects with minimal calibration. Rather than updating the entire network, PEFT maintains
+a frozen ”shared trunk” of global neural representations and only optimizes a tiny fraction of
+subject-specific or task-specific parameters.
+Several specialized strategies are now defining this state-of-the-art in efficient adaptation.
+FORMED [99] exemplifies a modular repurposing strategy where the entire foundation backbone
+and a shared decoding attention module remain frozen; adaptation to a novel subject or task is
+achieved by updating only channel embeddings and label queries, allowing the model to handle
+diverse electrode configurations by training only 0.1% of the total parameters. Other PEFT
+techniques involve the use of Adapters and Low-Rank Adaptation (LoRA) to refine prior
+knowledge without altering base representations. For instance, the EEG-GraphAdapter [100]
+integrates a Graph Neural Network (GNN) module as an adapter into a frozen temporal backbone
+to capture spatial relationships between sensors. REVE [101] utilizes LoRA to adapt its versatile
+embeddings to various electrode arrangements and subject signatures. By leveraging these
+efficiency-driven strategies, the field is moving toward a hybrid paradigm: utilizing large-scale
+pre-training to achieve a robust ”universal” initialization, followed by rapid, minimal-parameter
+refinement for individual patients.
+
+15
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+5 Conclusion
+Cross-subject generalization remains a fundamental challenge in the application of deep learning to
+EEG decoding. In this survey, we review the landscape of cross-subject EEG decoding by
+discussing its underlying domain shift, task structures, and evaluation protocols. A primary
+contribution of this survey is the systematic taxonomy of existing deep learning methods, including
+feature alignment, adversarial learning, feature disentanglement, contrastive learning, and related
+paradigms. Alongside this taxonomy, we also emphasize a conceptual framing of cross-subject
+generalization as a multi-source domain shift problem and distinguish between
+Single-Class-Per-Subject and Multi-Class-Per-Subject tasks. Based on this analysis, we discuss
+current limitations and emerging directions in the field. In particular, our survey suggests that
+domain generalization settings are especially relevant for real-world deployment because they do
+not require access to target-subject data during training or adaptation, and therefore naturally
+support zero-calibration use cases. At the same time, these settings remain challenging, and
+continued progress will likely depend on both improved methodological design and more rigorous
+evaluation practices. We hope that this survey provides useful insights for researchers and helps
+support further advances toward robust and practical EEG decoding systems.
+References
+[1] A. Craik, Y. He, and J. L. Contreras-Vidal, “Deep learning for electroencephalogram (eeg)
+classification tasks: a review,” Journal of Neural Engineering, vol. 16, p. 031001, apr 2019.
+[2] U. R. Acharya, S. L. Oh, Y. Hagiwara, J. H. Tan, and H. Adeli, “Deep convolutional neural
+network for the automated detection and diagnosis of seizure using eeg signals,” Computers
+in Biology and Medicine, vol. 100, pp. 270–278, 2018.
+[3] H. u. R. Khan, M. Hussain, I. Ullah, and M. Lee, “Epileptic seizures detection using deep
+learning techniques: A review,” International Journal of Environmental Research and Public
+Health, vol. 18, p. 5780, May 2021.
+[4] W.-L. Zheng and B.-L. Lu, “Investigating critical frequency bands and channels for eeg-based
+emotion recognition with deep neural networks,” IEEE Transactions on Autonomous Mental
+Development, vol. 7, no. 3, pp. 162–175, 2015.
+[5] S. Wagh, G. Gore, S. Ghule, S. Patil, M. Bharti, A. Shukla, and S. Kadam, “Deep
+learning-based eeg emotion recognition: Current trends and future perspectives,” Frontiers in
+Psychology, vol. 14, p. 1126994, 2023.
+[6] V. J. Lawhern, A. J. Solon, N. R. Waytowich, S. M. Gordon, C. P. Hung, and B. J. Lance,
+“Eegnet: a compact convolutional neural network for eeg-based brain–computer interfaces,”
+Journal of Neural Engineering, vol. 15, p. 056013, jul 2018.
+[7] S. Haegens, H. Cousijn, G. Wallis, N. A. Harrison, and A. C. Nobre, “Inter- and
+intra-individual variability in alpha peak frequency,” NeuroImage, vol. 92, pp. 46–55, May
+2014.
+[8] S. Saha, K. A. Mamun, K. I. U. Ahmed, S. Mostafa, G. R. Naik, S. Darvishi, and A. H.
+Khandoker, “Intra- and inter-subject variability in eeg-based sensorimotor brain computer
+interface: A review,” Frontiers in Computational Neuroscience, vol. 13, p. 87, 2019.
+[9] X. Zhang, Z. Zhao, T. Tsiligkaridis, and M. Zitnik, “Self-supervised contrastive pre-training
+for time series via time-frequency consistency,” in Advances in Neural Information Processing
+Systems (NeurIPS), vol. 35, pp. 3988–4003, 2022.
+[10] Y. Wang, N. Huang, T. Li, Y. Yan, and X. Zhang, “Medformer: A multi-granularity patching
+transformer for medical time-series classification,” Advances in Neural Information
+Processing Systems, 2024.
+[11] W. Fan, J. Fei, D. Guo, K. Yi, X. Song, H. Xiang, H. Ye, and M. Li, “Medgnn: Towards
+multi-resolution spatiotemporal graph learning for medical time series classification,” 2025.
+[12] A. Apicella, P. Arpaia, G. D’Errico, D. Marocco, G. Mastrati, N. Moccaldi, and R. Prevete,
+“Toward cross-subject and cross-session generalization in eeg-based emotion recognition:
+Systematic review, taxonomy, and methods,” Neurocomputing, vol. 604, p. 128354, 2024.
+
+16
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+[13] S. Shafiezadeh, G. Marco Duma, M. Pozza, and A. Testolin, “A systematic review of
+cross-patient approaches for eeg epileptic seizure prediction,” Journal of Neural Engineering,
+vol. 21, no. 6, p. 061004, 2024.
+[14] O. Özdenizci, Y. Wang, T. Koike-Akino, and D. Erdoğmuş, “Learning invariant
+representations from eeg via adversarial inference,” IEEE Access, vol. 8, pp. 27074–27085,
+2020.
+[15] Z. Zhang, T. Ji, M. Xiao, W. Wang, G. Yu, T. Lin, Y. Jiang, X. Zhou, and Z. Lin,
+“Cross-patient automatic epileptic seizure detection using patient-adversarial neural networks
+with spatio-temporal eeg augmentation,” Biomedical Signal Processing and Control, vol. 89,
+p. 105664, 2024.
+[16] X. Shen, X. Liu, X. Hu, D. Zhang, and S. Song, “Contrastive learning of subject-invariant
+EEG representations for cross-subject emotion recognition,” IEEE Transactions on Affective
+Computing, vol. 14, no. 3, pp. 2496–2511, 2023.
+[17] S. Fazli, C. Grozea, M. Danoczy, B. Blankertz, F. Popescu, and K.-R. Müller, “Subject
+independent EEG-based BCI decoding,” in Advances in Neural Information Processing
+Systems (NIPS), vol. 22, pp. 513–521, 2009.
+[18] Y. Wang, T. Li, Y. Yan, W. Song, and X. Zhang, “How to evaluate your medical time series
+classification?,” 2024.
+[19] G. Brookshire, J. Kasper, N. M. Blauch, Y. C. Wu, R. M. Glatt, D. A. Merrill, S. Gerrol,
+K. J. Yoder, and C. Lucero, “Data leakage in deep learning studies of translational EEG,”
+Frontiers in Neuroscience, vol. 18, p. 1373515, 2024.
+[20] G. Schalk, D. J. McFarland, T. Hinterberger, N. Birbaumer, and J. R. Wolpaw, “Bci2000: a
+general-purpose brain-computer interface (bci) system,” IEEE Transactions on biomedical
+engineering, vol. 51, no. 6, pp. 1034–1043, 2004.
+[21] L. Xu, M. Xu, Y. Ke, X. An, S. Liu, and D. Ming, “Cross-dataset variability problem in EEG
+decoding with deep learning,” Frontiers in Human Neuroscience, vol. 14, p. 103, 2020.
+[22] R. Leeb, C. Brunner, G. Müller-Putz, A. Schlögl, and G. Pfurtscheller, “Bci competition
+2008–graz data set b,” Graz University of Technology, Austria, vol. 16, pp. 1–6, 2008.
+[23] Y. Song, Q. Zheng, Q. Wang, X. Gao, and P.-A. Heng, “Global adaptive transformer for
+cross-subject enhanced EEG classification,” IEEE Transactions on Neural Systems and
+Rehabilitation Engineering, vol. 31, pp. 2767–2777, 2023.
+[24] H. Cho, M. Ahn, S. Ahn, M. Kwon, and S. C. Jun, “Eeg datasets for motor imagery
+brain–computer interface,” GigaScience, vol. 6, no. 7, p. gix034, 2017.
+[25] M.-H. Lee, O.-Y. Kwon, Y.-J. Kim, H.-K. Kim, Y.-E. Lee, J. Williamson, S. Fazli, and S.-W.
+Lee, “Eeg dataset and openbmi toolbox for three bci paradigms: An investigation into bci
+illiteracy,” GigaScience, vol. 8, no. 5, p. giz002, 2019.
+[26] Y. Zheng, S. Wu, J. Chen, Q. Yao, and S. Zheng, “Cross-subject motor imagery
+electroencephalogram decoding with domain generalization,” Bioengineering, vol. 12, no. 5,
+p. 495, 2025.
+[27] R. J. Kobler, J.-i. Hirayama, Q. Zhao, and M. Kawanabe, “SPD domain-specific batch
+normalization to crack interpretable unsupervised domain adaptation in EEG,” in Advances
+in Neural Information Processing Systems (NeurIPS), vol. 35, pp. 10664–10677, 2022.
+[28] Y. Kwak, K. Kong, W. J. Song, and S.-E. Kim, “Subject-invariant deep neural networks
+based on baseline correction for EEG motor imagery BCI,” IEEE Journal of Biomedical and
+Health Informatics, vol. 27, no. 4, pp. 1801–1812, 2023.
+[29] H. W. Ng and C. Guan, “Subject-independent meta-learning framework towards optimal
+training of EEG-based classifiers,” Neural Networks, vol. 172, p. 106108, 2024.
+[30] C. Brunner, R. Leeb, G. Müller-Putz, A. Schlögl, and G. Pfurtscheller, “Bci competition
+2008–graz data set a,” Institute for knowledge discovery (laboratory of brain-computer
+interfaces), Graz University of Technology, vol. 16, no. 1-6, p. 34, 2008.
+
+17
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+[31] M. Tangermann, K.-R. Müller, A. Aertsen, N. Birbaumer, C. Braun, C. Brunner, R. Leeb,
+C. Mehring, K. J. Miller, G. R. Müller-Putz, et al., “Review of the bci competition iv,”
+Frontiers in neuroscience, vol. 6, p. 55, 2012.
+[32] W. Hang, W. Feng, R. Du, S. Liang, Y. Chen, Q. Wang, and X. Liu, “Cross-subject EEG
+signal recognition using deep domain adaptation network,” IEEE Access, vol. 7,
+pp. 128273–128282, 2019.
+[33] X. Jiang, L. Meng, Z. Wang, and D. Wu, “Deep source semi-supervised transfer learning
+(DS3TL) for cross-subject EEG classification,” IEEE Transactions on Biomedical
+Engineering, vol. 71, no. 4, pp. 1308–1318, 2024.
+[34] J. Feng, Y. Li, C. Jiang, Y. Liu, M. Li, and Q. Hu, “Classification of motor imagery
+electroencephalogram signals by using adaptive cross-subject transfer learning,” Frontiers in
+Human Neuroscience, vol. 16, p. 1068165, 2022.
+[35] H. Zhang, H. Ji, H. Yu, J. Li, Y. Jin, G. Liu, Y. Bai, and C. Ye, “Subject-independent EEG
+classification based on a hybrid neural network,” Frontiers in Neuroscience, vol. 17,
+p. 1124089, 2023.
+[36] J. R. Stieger, S. A. Engel, and B. He, “Continuous sensorimotor rhythm based brain
+computer interface learning in a large population,” Scientific Data, vol. 8, no. 1, p. 98, 2021.
+[37] Y. Weibo, “EEG data of simple and compound limb motor imagery,” 2014.
+[38] G. Dornhege, B. Blankertz, G. Curio, and K.-R. Muller, “Boosting bit rates in noninvasive
+eeg single-trial classifications by feature combination and multiclass paradigms,” IEEE
+transactions on biomedical engineering, vol. 51, no. 6, pp. 993–1002, 2004.
+[39] J. Xue, J. Wang, S. Hu, N. Bi, and Z. Lv, “Ovpd: Odor-video elicited physiological signal
+database for emotion recognition,” IEEE Transactions on Instrumentation and Measurement,
+vol. 71, pp. 1–12, 2022.
+[40] L. Zhang, D. Xiao, X. Guo, F. Li, W. Liang, and B. Zhou, “Cross-subject emotion EEG
+signal recognition based on source microstate analysis,” Frontiers in Neuroscience, vol. 17,
+p. 1288580, 2023.
+[41] W. Zheng, W. Liu, Y. Lu, B. Lu, and A. Cichocki, “Emotionmeter: A multimodal framework
+for recognizing human emotions,” IEEE Transactions on Cybernetics, pp. 1–13, 2018.
+[42] P. Yu, X. He, H. Li, H. Dou, Y. Tan, H. Wu, and B. Chen, “FMLAN: A novel framework for
+cross-subject and cross-session EEG emotion recognition,” Biomedical Signal Processing and
+Control, vol. 100, p. 106912, 2025.
+[43] Q. She, C. Zhang, F. Fang, Y. Ma, and Y. Zhang, “Multisource associate domain adaptation
+for cross-subject and cross-session EEG emotion recognition,” IEEE Transactions on
+Instrumentation and Measurement, vol. 72, pp. 1–12, 2023. Art. no. 2515512.
+[44] W.-L. Zheng and B.-L. Lu, “Investigating critical frequency bands and channels for
+EEG-based emotion recognition with deep neural networks,” IEEE Transactions on
+Autonomous Mental Development, vol. 7, no. 3, pp. 162–175, 2015.
+[45] R.-N. Duan, J.-Y. Zhu, and B.-L. Lu, “Differential entropy feature for EEG-based emotion
+classification,” in 6th International IEEE/EMBS Conference on Neural Engineering (NER),
+pp. 81–84, IEEE, 2013.
+[46] Q. She, X. Shi, F. Fang, Y. Ma, and Y. Zhang, “Cross-subject EEG emotion recognition
+using multi-source domain manifold feature selection,” Computers in Biology and Medicine,
+vol. 159, p. 106860, 2023.
+[47] G. Bao, N. Zhuang, L. Tong, B. Yan, J. Shu, L. Wang, Y. Zeng, and C. Shen, “Two-level
+domain adaptation neural network for EEG-based emotion recognition,” Frontiers in Human
+Neuroscience, vol. 14, p. 605246, 2021.
+[48] S. Hwang, M. Ki, K. Hong, and H. Byun, “Subject-independent EEG-based emotion
+recognition using adversarial learning,” in 2020 8th International Winter Conference on
+Brain-Computer Interface (BCI), pp. 1–4, IEEE, 2020.
+
+18
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+[49] H. R. A. Alameer, P. Salehpour, S. H. Aghdasi, and M.-R. Feizi-Derakhshi, “Cross-subject
+EEG-based emotion recognition using deep metric learning and adversarial training,” IEEE
+Access, vol. 12, pp. 130241–130252, 2024.
+[50] M. Z. I. Ahmed, N. Sinha, E. Ghaderpour, S. Phadikar, and R. Ghosh, “A novel baseline
+removal paradigm for subject-independent features in emotion classification using eeg,”
+Bioengineering, vol. 10, no. 1, p. 54, 2023.
+[51] J. Li, H. Hua, Z. Xu, L. Shu, X. Xu, F. Kuang, and S. Wu, “Cross-subject EEG emotion
+recognition combined with connectivity features and meta-transfer learning,” Computers in
+Biology and Medicine, vol. 145, p. 105519, 2022.
+[52] X.-H. Liu, B.-L. Lu, and W.-L. Zheng, “mixEEG: Enhancing EEG federated learning for
+cross-subject EEG classification with tailored mixup,” in Proceedings of the Annual Meeting
+of the Cognitive Science Society, vol. 47, 2025.
+[53] S. Koelstra, C. Muhl, M. Soleymani, J.-S. Lee, A. Yazdani, T. Ebrahimi, T. Pun, A. Nijholt,
+and I. Patras, “Deap: A database for emotion analysis; using physiological signals,” IEEE
+transactions on affective computing, vol. 3, no. 1, pp. 18–31, 2011.
+[54] S. Bhosale, R. Chakraborty, and S. K. Kopparapu, “Calibration free meta learning based
+approach for subject independent eeg emotion recognition,” Biomedical Signal Processing and
+Control, vol. 72, p. 103289, 2022.
+[55] M. F. Hinss, L. Darmet, B. Somon, E. Jahanpour, F. Lotte, S. Ladouce, and R. N. Roy, “An
+eeg dataset for cross-session mental workload estimation: passive bci competition of the
+neuroergonomics conference 2021,” (No Title), 2021.
+[56] M. S. Treder, A. Bahramisharif, N. M. Schmidt, M. A. Van Gerven, and B. Blankertz,
+“Brain-computer interfacing using modulations of alpha activity induced by covert shifts of
+attention,” Journal of neuroengineering and rehabilitation, vol. 8, no. 1, p. 24, 2011.
+[57] F. Fahimi, Z. Zhang, W. B. Goh, T.-S. Lee, K. K. Ang, and C. Guan, “Inter-subject transfer
+learning with an end-to-end deep convolutional neural network for EEG-based BCI,” Journal
+of Neural Engineering, vol. 16, no. 2, p. 026007, 2019.
+[58] N. Nieto, V. Peterson, H. L. Rufiner, J. E. Kamienkowski, and R. Spies, “Thinking out loud,
+an open-access eeg-based bci dataset for inner speech recognition,” Scientific data, vol. 9,
+no. 1, p. 52, 2022.
+[59] B. Kemp, “Sleep-edf database expanded (version 1.0.0).” PhysioNet, 2013.
+[60] C. Yang, M. B. Westover, and J. Sun, “ManyDG: Many-domain generalization for healthcare
+applications,” in The Eleventh International Conference on Learning Representations, 2023.
+[61] J. Guttag, “CHB-MIT Scalp EEG Database (version 1.0.0).” PhysioNet, 2010.
+RRID:SCR 007345.
+[62] A. H. Shoeb, Application of machine learning to epileptic seizure onset detection and
+treatment. PhD thesis, Massachusetts Institute of Technology, 2009.
+[63] I. Jemal, L. Abou-Abbas, K. Henni, A. Mitiche, and N. Mezghani, “Domain adaptation for
+EEG-based, cross-subject epileptic seizure prediction,” Frontiers in Neuroinformatics,
+vol. 18, p. 1303380, 2024.
+[64] Z. Zhang, A. Liu, Y. Gao, R. Qian, and X. Chen, “Cross-patient seizure prediction via
+continuous domain adaptation and similar sample replay,” Cognitive Neurodynamics, vol. 19,
+no. 1, p. 26, 2025.
+[65] N. Ke, T. Lin, Z. Lin, X. Zhou, and T. Ji, “Convolutional transformer networks for epileptic
+seizure detection,” in Proceedings of the 31st ACM International Conference on Information
+& Knowledge Management, Atlanta, GA, USA, October 17-21, 2022 (M. A. Hasan and
+L. Xiong, eds.), pp. 4109–4113, ACM, 2022.
+[66] H. Albaqami, G. M. Hassan, and A. Datta, “Dataset: Tuh eeg seizure corpus (tusz).”
+Dataset, 2025.
+
+19
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+[67] X. Zhang, L. Yao, M. Dong, Z. Liu, Y. Zhang, and Y. Li, “Adversarial representation
+learning for robust patient-independent epileptic seizure detection,” IEEE journal of
+biomedical and health informatics, vol. 24, no. 10, pp. 2852–2859, 2020.
+[68] S. Tu, L. Cao, D. Zhang, J. Chen, L. Ma, Y. Zhang, and Y. Yang, “DMNet: Self-comparison
+driven model for subject-independent seizure detection,” in Advances in Neural Information
+Processing Systems (NeurIPS), vol. 37, pp. 28254–28280, 2024.
+[69] Y. Wu, Y. Yang, J. S. Xiao, C. Zhou, H. Sui, and H. Li, “Invariant spatiotemporal
+representation learning for cross-patient seizure classification,” in NeurIPS 2024 Workshop
+on NeuroAI, 2024.
+[70] P. Detti, ““siena scalp eeg database (version 1.0.0)”,” 2020.
+[71] A. Miltiadous, K. D. Tzimourta, T. Afrantou, P. Ioannidis, N. Grigoriadis, D. G. Tsalikakis,
+P. Angelidis, M. G. Tsipouras, E. Glavas, N. Giannakeas, et al., “A dataset of scalp eeg
+recordings of alzheimer’s disease, frontotemporal dementia and healthy subjects from routine
+eeg,” Data, vol. 8, no. 6, p. 95, 2023.
+[72] Y. Wang, N. Huang, N. Mammone, M. Cecchi, and X. Zhang, “Lead: Large foundation
+model for eeg-based alzheimer’s disease detection,” arXiv preprint arXiv:2502.01678, 2025.
+[73] M. Lahijanian, H. Aghajan, and Z. Vahabi, “”40hz auditory entrainment”,” 2024.
+[74] P. Prado, V. Medel, R. Gonzalez-Gomez, A. Sainz-Ballesteros, V. Vidal,
+H. Santamarı́a-Garcı́a, S. Moguilner, J. Mejia, A. Slachevsky, M. I. Behrens, et al., “The
+brainlat project, a multimodal neuroimaging dataset of neurodegeneration from
+underrepresented backgrounds,” Scientific Data, vol. 10, no. 1, p. 889, 2023.
+[75] O. Shor, A. Glik, A. Yaniv-Rosenfeld, A. Valevski, A. Weizman, A. Khrennikov, and
+F. Benninger, “Eeg p-adic quantum potential accurately identifies depression, schizophrenia
+and cognitive decline,” Plos one, vol. 16, no. 8, p. e0255529, 2021.
+[76] H. van Dijk, G. van Wingen, D. Denys, S. Olbrich, R. van Ruth, and M. Arns, “The two
+decades brainclinics research archive for insights in neurophysiology (tdbrain) database,”
+Scientific Data, vol. 9, p. 333, 2022.
+[77] H. van Dijk, G. van Wingen, D. Denys, S. Olbrich, R. van Ruth, and M. Arns, “Two decades
+- brainclinics research archive for insights in neurophysiology (td-brain).” Dataset (Synapse),
+2021.
+[78] Y. Wang, Y. Han, H. Wang, and X. Zhang, “Contrast everything: A hierarchical contrastive
+framework for medical time-series,” in Advances in Neural Information Processing Systems
+(NeurIPS), vol. 36, pp. 64601–64624, 2023.
+[79] I. Obeid and J. Picone, “The temple university hospital eeg data corpus,” Frontiers in
+neuroscience, vol. 10, p. 196, 2016.
+[80] R. Zheng, L. Mao, D. Han, T. Luo, Y. Wang, J. Ding, and Y. Yu, “FAPEX: Fractional
+amplitude-phase expressor for robust cross-subject seizure prediction,” in Advances in Neural
+Information Processing Systems (NeurIPS), 2025. Spotlight.
+[81] J. Li, K. Zhang, S. Yang, Y. Wang, Q. Li, and K.-K. Ma, “Dynamic domain adaptation for
+class-aware cross-subject and cross-session EEG emotion recognition,” IEEE Transactions on
+Instrumentation and Measurement, vol. 71, pp. 5964–5973, 2022.
+[82] X. Shi, Q. She, F. Fang, M. Meng, T. Tan, and Y. Zhang, “Enhancing cross-subject EEG
+emotion recognition through multi-source manifold metric transfer learning,” Computers in
+Biology and Medicine, vol. 174, p. 108445, 2024.
+[83] K. Zhou, Z. Liu, Y. Qiao, T. Xiang, and C. C. Loy, “Domain generalization: A survey,” IEEE
+transactions on pattern analysis and machine intelligence, vol. 45, no. 4, pp. 4396–4415, 2022.
+[84] J. Wang, C. Lan, C. Liu, Y. Ouyang, T. Qin, W. Lu, Y. Chen, W. Zeng, and P. S. Yu,
+“Generalizing to unseen domains: A survey on domain generalization,” IEEE transactions on
+knowledge and data engineering, vol. 35, no. 8, pp. 8052–8072, 2022.
+
+20
+
+IOP Publishing
+
+Journal vv (yyyy) aaaaaa
+
+Author et al
+
+[85] X. Wei, J. Narayan, and A. A. Faisal, “The sandwich meta-framework for architecture
+agnostic deep privacy-preserving transfer learning for non-invasive brainwave decoding,”
+Journal of Neural Engineering, vol. 22, no. 1, p. 016014, 2025.
+[86] D. Kiyasseh, T. Zhu, and D. A. Clifton, “CLOCS: Contrastive learning of cardiac signals
+across space, time, and patients,” in Proceedings of the 38th International Conference on
+Machine Learning (ICML), vol. 139 of Proceedings of Machine Learning Research,
+pp. 5606–5615, PMLR, 2021.
+[87] G. Mentzelopoulos, E. Chatzipantazis, A. G. Ramayya, M. J. Hedlund, V. P. Buch,
+K. Daniilidis, K. P. Kording, and F. Vitale, “Neural decoding from stereotactic EEG:
+accounting for electrode variability across subjects,” in Advances in Neural Information
+Processing Systems (NeurIPS), vol. 37, pp. 108600–108624, 2024.
+[88] J. Xu, Y. Chen, X. Dong, M. Lan, T. Huang, Q. Bian, J. Cheng, and Y. Ke, “BrainOOD:
+Out-of-distribution generalizable brain network analysis,” in The Thirteenth International
+Conference on Learning Representations (ICLR), 2025.
+[89] M. Long, Y. Cao, J. Wang, and M. Jordan, “Learning transferable features with deep
+adaptation networks,” in International conference on machine learning, pp. 97–105, PMLR,
+2015.
+[90] B. Sun and K. Saenko, “Deep coral: Correlation alignment for deep domain adaptation,” in
+European conference on computer vision, pp. 443–450, Springer, 2016.
+[91] I. J. Goodfellow, J. Pouget-Abadie, M. Mirza, B. Xu, D. Warde-Farley, S. Ozair,
+A. Courville, and Y. Bengio, “Generative adversarial nets,” Advances in neural information
+processing systems, vol. 27, 2014.
+[92] Y. Ganin and V. Lempitsky, “Unsupervised domain adaptation by backpropagation,” in
+Proceedings of the 32nd International Conference on Machine Learning (ICML), vol. 37,
+pp. 1180–1189, 2015.
+[93] T. Chen, S. Kornblith, M. Norouzi, and G. Hinton, “A simple framework for contrastive
+learning of visual representations,” in International conference on machine learning,
+pp. 1597–1607, PmLR, 2020.
+[94] X.-C. Zhong, Q. Wang, D. Liu, Z. Chen, J.-X. Liao, J. Sun, Y. Zhang, and F.-L. Fan,
+“Eeg-dg: A multi-source domain generalization framework for motor imagery eeg
+classification,” IEEE Journal of Biomedical and Health Informatics, vol. 29, no. 4,
+pp. 2484–2495, 2024.
+[95] B. Aristimunha, D. Truong, P. Guetschel, S. Y. Shirazi, I. Guyon, A. R. Franco, M. P.
+Milham, A. Dotan, S. Makeig, A. Gramfort, et al., “Eeg foundation challenge: from
+cross-task to cross-subject eeg decoding,” arXiv preprint arXiv:2506.19141, 2025.
+[96] W.-B. Jiang, L.-M. Zhao, and B.-L. Lu, “Large brain model for learning generic
+representations with tremendous eeg data in bci,” The Twelfth International Conference on
+Learning Representations, 2024.
+[97] J. Wang, S. Zhao, Z. Luo, Y. Zhou, H. Jiang, S. Li, T. Li, and G. Pan, “Cbramod: A
+criss-cross brain foundation model for eeg decoding,” arXiv preprint arXiv:2412.07236, 2024.
+[98] K. He, X. Chen, S. Xie, Y. Li, P. Dollár, and R. Girshick, “Masked autoencoders are scalable
+vision learners,” in Proceedings of the IEEE/CVF conference on computer vision and pattern
+recognition, pp. 16000–16009, 2022.
+[99] N. Huang, H. Wang, Z. He, M. Zitnik, and X. Zhang, “Repurposing foundation model for
+generalizable medical time series classification,” in The Fourteenth International Conference
+on Learning Representations, 2026.
+[100] T. Suzumura, H. Kanezashi, and S. Akahori, “Graph adapter of eeg foundation models for
+parameter efficient fine tuning,” arXiv preprint arXiv:2411.16155, 2024.
+[101] Y. E. Ouahidi, J. Lys, P. Thölke, N. Farrugia, B. Pasdeloup, V. Gripon, K. Jerbi, and
+G. Lioi, “REVE: A foundation model for EEG - adapting to any setup with large-scale
+pretraining on 25,000 subjects,” in The Thirty-ninth Annual Conference on Neural
+Information Processing Systems, 2025.
+
+21
+
+

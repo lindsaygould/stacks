@@ -1,0 +1,2977 @@
+Sparse Graphical Modeling for Electrophysiological Phase-Based Connectivity Using Circular Statistics 
+
+|  |
+| :-: |
+| [**Page 1**]() |
+
+***REVIEW***
+
+**Communicated by Natalie Klein**
+
+**Sparse Graphical Modeling for Electrophysiological**
+
+**Phase-Based Connectivity Using Circular Statistics**
+
+**Issey Sukeda**
+
+*<sukeda-issei006@g.ecc.u-tokyo.ac.jp>*
+
+**Takeru Matsuda**
+
+*<matsuda@mist.i.u-tokyo.ac.jp>*
+
+*University of Tokyo, Tokyo, 113-8656, Japan; and RIKEN Center for Brain Science,*
+
+*Wako, Saitama, 351-0198, Japan*
+
+**Identifying phase coupling from electrophysiological signals recorded**
+
+**by multiple electrodes, such as electroencephalogram (EEG) and electro-**
+
+**corticography (ECoG), helps neuroscientists and clinicians understand**
+
+**underlying brain structures or mechanisms. From a statistical perspec-**
+
+**tive, these signals are multidimensional circular measurements that are**
+
+**correlated with one another and can be effectively modeled using a torus**
+
+**graph model designed for circular random variables. Using the torus**
+
+**graph model avoids the issue of detecting spurious correlations. How-**
+
+**ever, the naive estimation of this model tends to lead to a dense network**
+
+**structure that is difficult to interpret. Therefore, to enhance the inter-**
+
+**pretability of the brain network structure, this review proposes a sparse**
+
+**estimation method for the torus graph model using regularized score**
+
+**matching combined with information criteria. In numerical simulations,**
+
+**our method successfully recovered the true dependence structure from a**
+
+**synthetic data set. Furthermore, we present analyses of two real data sets,**
+
+**one involving human EEG and the other marmoset ECoG, demonstrating**
+
+**that our method can be widely applied to phase-coupling analysis across**
+
+**different types of neural data. We found that when we used our proposed**
+
+**method, the modularity of the estimated network structure revealed more**
+
+**resolved brain structures and demonstrated differences in trends among**
+
+**individuals.**
+
+**1 Introduction**
+
+Electrophysiological recordings such as electroencephalography (EEG)
+
+and electrocorticography (ECoG) provide signals that reflect neural ac-
+
+tivity with millisecond-level temporal resolution. These techniques have
+
+been widely used in both cognitive and clinical neuroscience to study the
+
+rapid dynamics of brain function, including sensory processing (Basar,
+
+[1988)](#42), attention (Liu et al., 2013), and electrical or pathological activities in
+
+*Neural Computation* **38, 1135–1179** (2026)
+
+[https://doi](https://doi.org/10.1162/NECO.a.1536)*[.](https://doi.org/10.1162/NECO.a.1536)*[org/10](https://doi.org/10.1162/NECO.a.1536)*[.](https://doi.org/10.1162/NECO.a.1536)*[1162/NECO](https://doi.org/10.1162/NECO.a.1536)*[.](https://doi.org/10.1162/NECO.a.1536)*[a](https://doi.org/10.1162/NECO.a.1536)*[.](https://doi.org/10.1162/NECO.a.1536)*[1536](https://doi.org/10.1162/NECO.a.1536)
+
+© 2026 Massachusetts Institute of Technology.
+
+Published under a Creative Commons
+
+Attribution 4.0 International (CC BY 4.0) license.
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 2**]() |
+
+1136
+
+I. Sukeda and T. Matsuda
+
+conditions such as epilepsy (Leocani & Comi,[ 1999](#44); Smith, 2005). Compared
+
+to hemodynamic-based imaging methods like fMRI, EEG and ECoG en-
+
+able the investigation of fast, transient neural interactions across spatially
+
+distributed brain areas. Among the various features that can be extracted
+
+from these recordings, oscillatory activity and its temporal properties have
+
+been shown to play a critical role in neural computation and communi-
+
+cation (Herrmann et al., [2016)](#43). In particular, increasing attention has been
+
+directed toward phase relationships between brain regions, as they are
+
+believed to mediate functional connectivity (Bettus et al.,[ 2008](#42); Khaleghi
+
+et al.[, 2024](#43)) and information transfer (Huang et al., 2015).
+
+Phase synchronization and phase locking, collectively referred to as
+
+phase-based connectivity, have been widely studied, as they are thought to
+
+underlie communication between neural networks (Singer et al., [1993; ](#45)Fries,
+
+[2005,](#43) 2009; Salinas & Sejnowski, 2001; Cohen, 2014). Thatcher et al. (2005)
+
+examined the relationship between EEG measures and intelligence and
+
+found that high IQ was associated with shorter frontal phase delays, longer
+
+posterior phase delays, and lower coherence, making these connectivity-
+
+related features key discriminators between high and low IQ individu-
+
+als. Busch et al.[ (2009](#42)) investigated the relationship between the phase
+
+oscillations and our visual perceptions, showing that oscillatory phase at
+
+stimulus onset can predict visual detection performance. Moreover, they
+
+have also become important from the perspective of research on brain dis-
+
+eases. For example, the early gamma band phase locking in schizophre-
+
+nia (Roach & Mathalon, [2008)](#44) and the phase synchronization of epilepsy
+
+participants (Mormann et al., [2000)](#44) have been reported. In addition, various
+
+metrics have been developed to quantitatively measure phase relationships,
+
+such as the phase locking value (PLV; Lachaux et al.,[ 1999](#44)) and the phase
+
+lag index (PLI; Stam et al.[, 2007](#45)). However, many of the these approaches
+
+are relatively simplistic or descriptive statistical methods that often fail to
+
+account for the full complexity of phase relationships.
+
+From a statistical perspective, phase data are inherently circular, as they
+
+lie on the unit circle. To handle such circular data effectively, specialized sta-
+
+tistical methods are required. Here, we introduce circular statistics, a branch
+
+of statistics specifically designed to analyze angular or circular data, to offer
+
+a robust framework for analyzing phase relationships (Mardia, [1975](#44); Mar-
+
+dia & Jupp, [2009;](#44) Ley & Verdebout, 2018). Circular statistics involves the
+
+application of circular distributions such as the von Mises distribution, a cir-
+
+cular analogue of the normal distribution, and techniques such as circular
+
+correlation and angular regression, which are well suited to analyzing an-
+
+gular data. Traditionally, these methods have been widely applied in fields
+
+such as meteorology and environmental sciences—for example, in the anal-
+
+ysis of wind direction (Carta et al.[, 2008](#42); Masseran et al., 2013). Although
+
+these methods are suitable for analyzing angular data, their application in
+
+electrophysiological phase analysis in neuroscience remains limited. One
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 3**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1137
+
+Figure 1: Overview of graphical modeling of EEG/ECoG phase data using a
+
+distribution on a torus.
+
+notable exception is Klein et al.[ (2020](#43)), who applied the torus graph, a high-
+
+dimensional circular model, to analyze local field potentials collected from
+
+the prefrontal cortex and hippocampus of a macaque monkey.
+
+This study applies circular statistics to enhance the analysis of phase de-
+
+pendencies in EEG data, addressing their underutilization in this context.
+
+Specifically, we apply a graphical modeling approach, which is a statistical
+
+tool that uses graphs to represent conditional independence among vari-
+
+ables; nodes correspond to variables, and edges indicate dependencies. We
+
+adopt this approach by statistically estimating the torus graph (Klein et al.,
+
+[2020](#43)), a graphical model designed to capture conditional dependencies
+
+among circular variables, such as phase angles derived from EEG/ECoG
+
+recordings. Our proposed method, summarized in Figure [1,](#3) simultaneously
+
+handles multiple phase signals and naturally yields a sparse, interpretable
+
+graph network structure without relying on arbitrary binarization or
+
+thresholding, common practices that often compromise result reliability
+
+in neuroscience. The resulting graph network can be interpreted as the
+
+brain’s functional connectivity. To analyze these structures, we examined
+
+key graph properties such as modularity and small-worldness. Our method
+
+is applied to both synthetic data and real-world electrophysiological data,
+
+including 61-dimensional human EEG and 96-dimensional marmoset
+
+ECoG, with a focus on modularity differences across participant groups
+
+and frequency bands. By utilizing circular statistical techniques, we hope
+
+to offer deeper insights into the phase dynamics of brain waves and their
+
+potential implications for understanding neural communication and brain
+
+function.
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 4**]() |
+
+1138
+
+I. Sukeda and T. Matsuda
+
+**2 Method**
+
+**2.1 Data Acquisition.** The data used in our review are all publicly avail-
+
+able data sets from existing studies, and we have not collected any new
+
+data independently. First, we used human EEG data with 91 measure-
+
+ment channels published by Chennu et al. ([2016)](#42) and extracted 61 chan-
+
+nels with a length of 25,000 (10 seconds at 250 Hz, repeated for 10 epochs)
+
+for analysis. According to Chennu et al. ([2016)](#42), these data were collected
+
+from 17 participants. Among those participants, seven were labeled as a
+
+“drowsy” group and the rest as a “responsive” group, depending on the
+
+perceptual hit rate after administration of propofol. Each participant’s EEG
+
+was recorded during four states: baseline, mild, moderate, and recovery.
+
+We also used two marmoset ECoG data sets provided by Komatsu & Ichi-
+
+nohe ([2020](#43), 2021) with all 96 measurement channels. The marmoset IDs
+
+are R03\_0024\_CM622M and R03\_0035\_CM814F. The types of conditions in
+
+these data were as follows: AD-Awake, AD-K10, AD-K30, and AD-K150,
+
+where K10, K30, and K150 mean 10, 30, and 150 minutes after ketamine
+
+administrations, respectively. We extracted each datum such that its length
+
+is 25,000 starting from the beginning. According to the original paper by
+
+Komatsu and Ichinohe ([2021)](#43), these data were collected from two mar-
+
+mosets (one from the left hemisphere and another from the right hemi-
+
+sphere of their brains).
+
+**2.2 Torus Graph Model for High-Dimensional Circular Data.** Klein
+
+et al.[ (2020](#43)) proposed the torus graph model,[1](#4) a high-dimensional circular
+
+distribution. It is named after the torus, a higher-dimensional generaliza-
+
+tion of the circle in mathematics and topology.
+
+Suppose *X* is a *d*-dimensional circular random vector. The torus graph
+
+model is defined by the following exponential family parameterized by *φ*:
+
+*p*(*x*;*φ*) ∝ exp
+
+⎛
+
+⎜
+
+⎜
+
+⎜
+
+⎜
+
+⎝
+
+*d*
+
+*i*=1
+
+*φ*
+
+*i*
+
+cos*xi*
+
+sin*xi*
+
+\+
+
+*j\<k*
+
+*φ*
+
+*jk*
+
+⎛
+
+⎜
+
+⎜
+
+⎜
+
+⎜
+
+⎝
+
+cos (*xj* − *xk*)
+
+sin (*xj* − *xk*)
+
+cos (*xj* + *xk*)
+
+sin (*xj* + *xk*)
+
+⎞
+
+⎟
+
+⎟
+
+⎟
+
+⎟
+
+⎠
+
+⎞
+
+⎟
+
+⎟
+
+⎟
+
+⎟
+
+⎠
+
+*,*
+
+(2.1)
+
+where *φ* = \[{*φi*}*i,* {*φjk*}( *j,k*) \]. We refer to this as the full torus graph model,
+
+in contrast to the submodels including the rotational model where *φjk* =
+
+(0*,* 0*,* ·*,* ·)
+
+and the reflectional model where *φjk* = (·*,* ·*,* 0*,* 0)
+
+(see Figure [2)](#5).
+
+This model is not a time-series model but an i.i.d. formulation. Within this
+
+1
+
+Note that the term *model* hereafter refers to the statistical model that expresses the data
+
+generation probability distribution, which is in contrast to mathematical models, which
+
+are typically described using differential equations.
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 5**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1139
+
+Figure 2: Submodels of torus graph model. For each submodel of the torus
+
+graph model, 1000 samples and the density function are plotted.
+
+framework, the observed samples are pooled across time for estimation,
+
+even though EEG/ECoG raw recordings are inherently time-series data.
+
+Our subsequent approach inherits this aspect in the same manner.
+
+Notably, the torus graph model is a parametric nonnormalized model,
+
+and its parameters can be easily estimated using score matching since it
+
+belongs to an exponential family by its definition (Hyvärinen, [2005](#43)). The
+
+model incorporates the interactions between different channels through
+
+pairwise terms, making it naturally adaptable to graphical modeling.
+
+Although the originally proposed torus graph model is quite flexible and
+
+applicable when applied to high-dimensional circular data, an estimated
+
+result by naive score matching yields a dense graph, which makes it chal-
+
+lenging to directly interpret the estimated functional connectivity among
+
+different brain regions.
+
+To understand which parts of the brain are relatively active or which
+
+connections are stronger than others, it is preferable to obtain a sparse
+
+graphical structure. We note that the assumption that the underlying graph
+
+is sparse is not essential but rather adopted for convenience, primarily
+
+because dense graphs are often considered uninterpretable, especially
+
+when visualization is the main scope. In practice, among neuroscience
+
+researchers, a common approach to obtaining a sparse graphical structure
+
+is to apply a threshold: the connections stronger than the threshold are
+
+retained, whereas weaker ones are discarded. However, this method in-
+
+troduces an arbitrary error into the final result, as the outcome is highly
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 6**]() |
+
+1140
+
+I. Sukeda and T. Matsuda
+
+sensitive to where the threshold levels are set. Such sensitivity can signif-
+
+icantly affect the final result, thereby reducing the reliability of the overall
+
+estimation. To address this issue, Klein et al. [(2020](#43)) performed statistical
+
+testing on each edge individually based on the dense estimator to deter-
+
+mine which edges should be retained, followed by Bonferroni correction
+
+to mitigate the effects of multiple testing. While such traditional edgewise
+
+testing with multiple-comparison correction provides a principled means
+
+to control false-positive rates, our regularization-based approach offers an
+
+alternative framework focused on model selection and network structure
+
+estimation, guided by information criteria rather than arbitrary thresholds.
+
+**2.3 Regularized Score Matching Method for the Torus Graph Model.**
+
+While these approaches rely on dense estimators, another direct approach
+
+is to allow the model to induce a sparse estimator, which includes many
+
+zero entries. Regularization is the typical method used to achieve this in
+
+machine learning. Here we propose to incorporate the regularization to the
+
+torus graph model (Klein et al., [2020)](#43).
+
+In the torus graph model, *φjk* = (0*,* 0*,* 0*,* 0)
+
+is equivalent to the condi-
+
+tional independence of *xj* and *xk*; *xj* and *xk* are independent given all other
+
+variables (corollary 2.1-2 of Klein et al[., 2020](#43)). Hence, this model can be used
+
+for graphical modeling. Suppose *G* = *G*(*V, E*)*,V* = {1*,*···*, d*}. The natural
+
+parameters in the torus graph model, equation 2.[1, ](#4)can be interpreted as fol-
+
+lows: *φi* is a two-dimensional vector corresponding to the node *i*, whereas
+
+*φjk* is a four-dimensional vector representing the interaction between the
+
+node *j* and *k*. Then the problem of identifying the dependence between dif-
+
+ferent nodes reduces to estimating the parameters *φ* statistically. Note that
+
+the normalization constant of equation 2[.1 is](#4) intractable, so the usual maxi-
+
+mum likelihood estimation is also intractable. In such cases, score matching
+
+estimation is known to be useful. Specifically, the score matching objective
+
+of the exponential family takes the quadratic form (Hyvärinen, [2005)](#43). For
+
+the torus graph model, the objective function is known to be
+
+*L*(*φ*) = E*x*∼*p*(*x*;*φ*)
+
+1
+
+2
+
+*φ* (*x*)*φ* − *φ*
+
+*H*(*x*)
+
+*,*
+
+where
+
+*S*1
+
+*j* (*x*) = \[cos*xj,*sin*xj*\]
+
+*S*2
+
+*jk* = \[cos (*xj* − *xk*)*,*sin (*xj* − *xk*)*,*cos (*xj* + *xk*)*,*sin (*xj* + *xk*)\]
+
+ *,*
+
+*S*(*x*) = \[*S*1 (*x*)*, S*2 (*x*)\]
+
+ *,*
+
+*H*(*x*) = \[*S*1 (*x*)*,* 2*S*2 (*x*)\]
+
+ ∈ R2 *d*2 *,*
+
+and
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 7**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1141
+
+(*x*) = {∇*xS*(*x*)}{∇*xS*(*x*)}
+
+ ∈ R2 *d*2×2 *d*2 *.*
+
+On the basis of above formula, the empirical objective function using *N*
+
+observed samples becomes
+
+˜*L*(*φ*) =
+
+1
+
+2
+
+*φ* ˆ*φ* − *φ* ˆ*H,*
+
+where
+
+ˆ =
+
+1
+
+*N*
+
+*N*
+
+*i*=1
+
+*x*(*i*)
+
+*,* ˆ*H* =
+
+1
+
+*N*
+
+*N*
+
+*i*=1
+
+*H*
+
+*x*(*i*)
+
+*.*
+
+As a result, the score matching estimator of *φ*, which is the minimizer of
+
+˜*L*(*φ*), is easily calculated by using the following formula:
+
+ˆ*φSM* = ˆ−1 ˆ*H.*
+
+(2.2)
+
+See Klein et al. [(2020](#43)) for the explicit expressions for ˆ and ˆ*H*.
+
+The approach for determining the graph structure via naive score match-
+
+ing of the torus graph model entails the issue of arbitrariness in binariza-
+
+tion. Since the full torus graph (resp. rotational model) assigns four (resp.
+
+two) estimated values for each of the *d*(*d* − 1)*/*2 edges, this approach tends
+
+to complicate the interpretation of the estimated results. Therefore, the bi-
+
+narization process is conducted to recover the underlying graph structure
+
+and make the results easier to interpret. The easiest method is to calculate
+
+the norm of estimated vectors corresponding to each edge and then pull
+
+an edge if only the norm surpasses a certain threshold. However, there re-
+
+mains an arbitrary choice of determining an exact threshold value. To avoid
+
+this issue, Klein et al[. (2020](#43)) conducted hypothesis testing that examines the
+
+null hypothesis *φjk* = 0 for each (*j, k*) to determine the dependence of each
+
+edge and recover an interpretable graph structure. Although this approach
+
+is statistically acceptable, the number of hypothetical tests grows exponen-
+
+tially under general settings. This issue was not a crucial problem in their
+
+work as they used the pregiven community structure of the network from
+
+the well-known domain knowledge; however, such prior knowledge is not
+
+always available.
+
+To address this issue, *l*1 -regularization methods can be applied, espe-
+
+cially for higher-dimensional problems, leading to a sparse solution.[2 ](#7)Simi-
+
+lar approaches for the general exponential families were studied by Lin et al.
+
+2
+
+Klein et al.[ (2020](#43)) has also mentioned adding a group *l*1 penalty in their paper; how-
+
+ever, practices were not presented.
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 8**]() |
+
+1142
+
+I. Sukeda and T. Matsuda
+
+[(2016)](#44). Following these studies, we propose the use of *l*1 -regularization for
+
+estimating the torus graph parameters by the score matching. In practice,
+
+we instead consider a variant known as Group LASSO (Yuan & Lin, [2006)](#45),
+
+in which regularization is applied group-wise only to the pairwise inter-
+
+action effects *φjk*s, while the single-node effects *φi*s are left unpenalized. In
+
+this case, the estimator becomes the minimizer of
+
+˜*Lλ*(*φ*) = ˜*L*(*φ*) + *λ*
+
+*j\<k*
+
+*cjk**φjk*2 *,*
+
+where *λ* is a tuning parameter that controls the sparsity of the resulting
+
+solution and *cjk* is a weight constant assigned to each edge between nodes
+
+*j* and *k*. For convenience, we set *cjk* = 1 for any corresponding edge (*j, k*).
+
+Hence, our modified objective function, which is required to be minimized
+
+with respect to *φ*, is
+
+˜*Lλ*(*φ*) =
+
+1
+
+2
+
+*φ* ˆ*φ* − *φ* ˆ*H* + *λ*
+
+*j\<k*
+
+*φjk*2 *.*
+
+Since this objective function is convex, we may use normal optimization
+
+methods, such as gradient descent. However, the solution may not remain
+
+sparse. Therefore, to address this, a LASSO algorithm (Tibshirani, [1996)](#45)
+
+such as LARS (Efron et al.[, 2004](#42)) can be implemented. Yet due to computa-
+
+tional efficiency, the alternating direction method of multipliers (ADMM) is
+
+a more generally accepted method (Boyd et al.[, 2011](#42)). In ADMM, we mini-
+
+mize ˜*Lλ*(*φ*) using the dual variable *z* by iterating the following three steps
+
+until convergence:
+
+*φk*+1 =
+
+*μI* + ˆ
+
+−1
+
+(*μ*(*zk* − *uk*) + ˆ*H*)*,*
+
+*z*
+
+*g*
+
+*k*+1 = *Rλ/μ*(*φg*
+
+*k* + *u*
+
+*g*
+
+*k*)*,*
+
+*uk*+1 = *uk* + *φk*+1 − *zk*+1 *.*
+
+In this process, *I* denotes the identity matrix, *zk* is the auxiliary parameter,
+
+and *μ* is the arbitrary constant. Note that the update of *zk* is group-wise,
+
+where *g*indicates the partition of parameters into groups—in our case, two-
+
+dimensional vectors for each node and four—dimensional vectors for each
+
+edge, and *Rt* (*x*) = (1 − *t*
+
+·2
+
+)+ *x* is a shrinkage operator. See appendix [A ](#32)for
+
+further details.
+
+One of the primary motivations for the use of LASSO algorithms is to
+
+obtain a regularization path (sometimes called the solution path), which
+
+is a sequence of solutions along with various *λ* values. Formally, the reg-
+
+ularization path is denoted as ˆ*φλ* = {argmin ˜*Lλ*(*φ*) | *λ* ∈ R≥0 }, or practi-
+
+cally ˆ*φλ* = {argmin ˜*Lλ*(*φ*) | *λ* ∈ } where  is the set of candidate values
+
+of *λ*. Note that the former becomes piecewise linear; that is, there exist
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 9**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1143
+
+the change points 0 = *λ*0 *\< λ*1 *\< . . . \< λR* = ∞ and *ξ*0 *,. . ., ξR*−1 such that
+
+*φλ* = *φλr* + (*λ* − *λr*)*ξr* for *λ* ∈ \[*λr, λr*+1 \], but the latter may not.
+
+**2.4 Model Selection with Score Matching Information Criteria**
+
+**(SMIC).** Although *l*1 -regularization is a useful method for edge selection in
+
+graphical modeling (or variable selection in regression as well), the tuning
+
+parameter *λ*is given arbitrarily. To choose an appropriate *λ*, cross-validation
+
+is widely used, but often it is time-consuming, especially when using leave-
+
+one-out cross-validation. An alternative method is to consider the informa-
+
+tion criteria, such as the Akaike information criteria (AIC) for the maximum
+
+likelihood estimator and select the model with the smallest AIC.[3](#9)
+
+In our problem, the score matching information criteria (SMIC) proposed
+
+by Matsuda et al. [(2021](#44)) can be used to decide the regularization parame-
+
+ter *λ* or, equivalently, the appropriate graph structure. The computation of
+
+SMIC requires the unregularized score matching estimator ˆ*φSM*, defined in
+
+equation [2.2.](#7) Since the torus graph model belongs to the exponential family,
+
+the SMIC is calculated as
+
+SMIC = 2*N* ˜*L*
+
+ˆ*φSM*
+
+\+ 2tr
+
+ˆ*I*ˆ*J*
+
+−1
+
+*,*
+
+ˆ*I* =
+
+1
+
+*N*
+
+*N*
+
+*i*=1
+
+*x*(*i*)
+
+ˆ*φSM* − *H*
+
+*x*(*i*)
+
+*x*(*i*)
+
+ˆ*φSM* − *H*
+
+*x*(*i*)
+
+*,*
+
+ˆ*J* =
+
+1
+
+*N*
+
+*N*
+
+*i*=1
+
+*x*(*i*)
+
+*.*
+
+(2.3)
+
+Briefly, the first term *N* ˜*L*( ˆ*φSM*) has the negative bias of tr(*I*(*φ*)*J*(*φ*)
+
+−1
+
+) as the
+
+estimator of the predictive distribution *L*(*φ*); thus, the bias correction is con-
+
+ducted by adding the second term. To perform model selection via SMIC
+
+minimization, we should calculate the value of SMIC for all candidate mod-
+
+els and finally select the one with minimum SMIC value. However, since
+
+*λ* can vary continuously, we discretize it and select a limited number of
+
+points in practice. To effectively identify the best *λ*, we first pick 10 equally
+
+spaced discrete points and select an interval that includes the minimum
+
+SMIC value. We then repeat the same calculation for this interval recur-
+
+sively. In each recursive iteration, parallel computing can be applied since
+
+the calculation of SMIC is independent for each choice of *λ*, which further
+
+accelerates the entire procedure.
+
+**2.5 Graphical Properties of the Estimated Network Structure.** Once
+
+the appropriate graphical model is specified, the representative graphical
+
+3
+
+The model with the minimum information criteria is generally considered to fit the
+
+data best while suppressing the model complexity. We do not argue the validity of the
+
+information criteria itself in this review.
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 10**]() |
+
+1144
+
+I. Sukeda and T. Matsuda
+
+properties can be observed. Indeed, we obtained the following four metrics:
+
+(1) number of edges, (2) average clustering coefficient, (3) average shortest
+
+path length, and (4) modularity.
+
+Average clustering (Schank & Wagner, [2005](#45)) measures how often the
+
+neighbors of a node are connected to each other. For an undirected, un-
+
+weighted graph *G* = (*V, E*), let *m*(*v*) = |{(*u, w*) ∈ *E* | (*v, w*) ∈ *E* and (*v, u*) ∈
+
+*E*}| and *t*(*v*) = *d*(*d*−1)
+
+2
+
+where *d* is the degree of node *v*. Then the average clus-
+
+tering coefficient is defined as
+
+*C* =
+
+1
+
+|*V* |
+
+*v*∈ *V*
+
+*m*(*v*)
+
+*t*(*v*)
+
+*,*
+
+where*V*
+
+is the set of nodes *v* with *d* ≥ 2. As the value of*C* (∈ \[0*,* 1\]) becomes
+
+larger, the more densely connected the network becomes.
+
+The average shortest path length measures the length of paths between
+
+any two nodes in the network. For a connected undirected unweighted
+
+graph *G* = (*V, E*),
+
+*L* =
+
+*s,t*∈ *V,s* = *t*
+
+*D*(*s,t*)
+
+|*V*|(|*V*| − 1)
+
+*,*
+
+where *D*(*s,t*) denotes the shortest path length between node *s* and *t*. The
+
+smaller *L* (≥ 1) is, the more densely connected the network is.
+
+In addition, community-detection-based measures are also considered
+
+useful. Newman and Girvan ([2004)](#44) introduced the modularity maximiza-
+
+tion problem for community detection. For an undirected, unweighted
+
+graph *G* = (*V, E*)*,* |*E*| = *m*, modularity is defined as
+
+max
+
+*C*
+
+*C*∈*C*
+
+*mC*
+
+*m*
+
+−
+
+*DC*
+
+2*m*
+
+2
+
+*,*
+
+where *C* is a clustering (a set of mutually exclusive sets of *V*), *C* denotes
+
+each cluster, *mC* denotes the number of edges in *C*, and *DC* denotes the
+
+sum of degree of nodes in *C*. The larger the modularity is, the denser the
+
+connections within each cluster becomes, and the sparser the connections
+
+become between the different clusters in the network. To overcome the
+
+drawbacks of the modularity (Fortunato & Barthelemy, [2007; ](#42)Good et al.,
+
+[2010](#43)), Li et al. (2008) proposed the modularity density maximization
+
+problem. Other groups have tested this method and have developed
+
+mathematical approaches to improve the computation burden and heuris-
+
+tic methods (Costa, [2015](#42); Sukeda et al., 2023). Among them, calculating
+
+modularity by the Louvain method (Blondel et al., [2008)](#42) is mostly useful
+
+in practice because it operates in time complexity *O*(|*V*|log|*V*|) (Chennu
+
+et al.[, 2017](#42); Lui et al., 2021); hence, we use it in the following experiments.
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 11**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1145
+
+**3 Simulation Results**
+
+In this section, we present simulation studies in which our proposed
+
+method is applied to synthetic data generated from a known torus graph
+
+model (see sections [3.1](#11) and 3.2) and in section 3.3, the Kuramoto model
+
+(Kuramoto, [1975)](#43).
+
+**3.1 Synthetic Data Generated from a Torus Graph.** To validate our pro-
+
+posed method, we performed it on synthetic data generated from a prespec-
+
+ified torus graph model containing 5, 19, and 61 dimensions. The purpose of
+
+these experiments is to confirm the obvious. The dimensions were chosen
+
+arbitrarily to represent different levels of granularity: a coarse, a moder-
+
+ate, and a finer resolution for analysis. First, we describe the procedure in
+
+the five-dimensional case; the same applies to other dimensions. To gen-
+
+erate synthetic data samples, we use rejection sampling (Von Neumann,
+
+[1951;](#45) Robert et al., 2010) with uniform proposal to generate 1000 data points
+
+from a torus graph model: draw *x* uniformly over the support and accept
+
+it with probability *p*(*x*;*φ*)*/M*, choosing *M* = exp (
+
+*d*
+
+*i*=1 *φi*+
+
+*j\<k* *φjk*).
+
+Its true graph structure here is set to *G* = *G*(*V, E*), *V* = {1*,* 2*,* 3*,* 4*,* 5}, and
+
+*E* = {(1*,* 3)*,* (1*,* 4)*,* (2*,* 4)*,* (2*,* 5)*,* (3*,* 5)}. Moreover, the true natural parameter
+
+*φ* of the torus graph model is set such that the corresponding parameters to
+
+*E* are all set to 0.3 and 0 otherwise. Then we applied our regularized score
+
+matching with various *λ* values. For each *λ*, we calculate SMIC, which is
+
+plotted in Figure [3](#12). As depicted in that figure, the behavior of SMIC clearly
+
+changes around an edge number of 5, which correctly corresponds to the
+
+true edge set *E*. Conversely, calculating the phase locking value of each
+
+edge pair overdetects the edge, suffering from false pseudo correlations (see
+
+Figure [4)](#13).
+
+Next, we generate synthetic data from a high-dimensional torus graph
+
+model. Because rejection sampling is computationally prohibitive, we em-
+
+ploy Gibbs sampling. Gibbs sampling is a Markov chain Monte Carlo
+
+(MCMC) method that draws from a joint distribution by iteratively sam-
+
+pling from its full conditionals. In our model, equation 2[.1,](#4) each full con-
+
+ditional *p*(*xk* | *x*−*k*;***φ***)*, k* = 1*,* 2*,. . ., d* is von Mises (see theorem 2.2 of Klein
+
+et al.[, 2020](#43), for the explicit derivation), which enables straightforward Gibbs
+
+updates. As in standard MCMC practice, we discard an initial burn-in pe-
+
+riod to allow the chain to approach stationarity.
+
+In this experimental setting, the true model parameter is set as fol-
+
+lows. First, we generate a random graph structure, the Erdös-Rényi model
+
+*G*(*V, E*) = *G*(|*V*|*, p*). In this model, each edge is included in the graph with
+
+probability *p* = 1
+
+2
+
+. Then we assign
+
+⎧
+
+⎪
+
+⎨
+
+⎪
+
+⎩
+
+*φi* = \[0*.*0*,* 0*.*0\]
+
+(*i* ∈ *V*)
+
+*φjk* = \[0*.*3*,* 0*.*3*,* 0*.*0*,* 0*.*0\] ((*j, k*) ∈ *E*)
+
+*φjk* = \[0*.*0*,* 0*.*0*,* 0*.*0*,* 0*.*0\] ((*j, k*) */*∈ *E*)
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 12**]() |
+
+1146
+
+I. Sukeda and T. Matsuda
+
+Figure 3: The recovery of graph structure with five-dimensional synthetic data.
+
+Axes are labeled with SMIC (*y*-axis) and the number of edges (*x*-axis). The num-
+
+ber of synthetic samples is set to 1000 here.
+
+as the ground truth. Note that since this distribution is not multimodal, the
+
+simple Gibbs sampling works well. The burn-in period was set to 10,000.
+
+As a result, we found that our method based on SMIC minimization
+
+tends to select a denser graph structure than the true one. Table[ 1](#13) and
+
+Figure [5 ](#14)show the results for *d* = 19 and *d* = 61, supported by a permu-
+
+tation test in appendix[ A.4](#35). This tendency is consistent with the precedent
+
+results, where the model selection methods based on AIC-alike informa-
+
+tion criteria (Zou et al.[, 2007](#45)) tend to increase the false-positive rates. Con-
+
+trarily, the decline in SMIC drastically changes around the true number of
+
+edges: 80 edges in a 19-dimensional example and around 889 edges in a
+
+61-dimensional example. To avoid arbitrariness, we do not adopt this ap-
+
+proach; however, selecting the “elbow” may be useful in practice. See ap-
+
+pendix A.5 for simulation-based empirical results.
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 13**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1147
+
+Figure 4: Results on five dimensional synthetic data sampled from a predefined
+
+torus graph model: (a) the ground truth structure, (b) the recovered structure
+
+by our method, and (c) the adjacency matrix representing phase-locking
+
+value (PLV) between nodes. While the naive phase-locking value calculation
+
+overdetects the edges, our proposed method correctly recovers the dependence
+
+structure.
+
+Table 1: Detection Probability for High-Dimensional Synthetic Data Set from a
+
+Random Graph Structure.
+
+*d*
+
+\# true edges
+
+\# estimated edges
+
+TP
+
+FP
+
+TN
+
+FN
+
+the best *λ*
+
+19
+
+80
+
+122
+
+80
+
+42
+
+49
+
+0
+
+0.034
+
+61
+
+889
+
+1263
+
+889
+
+374
+
+567
+
+0
+
+1.616
+
+Note: Example results for artificially generated data set sampled from a torus
+
+graph where the graph structures are randomly determined by the Erdös-Rényi
+
+random graph.
+
+**3.2 Comparison between SMIC and Cross-Validation.** We further
+
+compare the performance of SMIC minimization against the typical cross-
+
+validation method to select the regularization parameter *λ*. Here we use
+
+the leave-one-out-cross-validation (LOOCV). The counterpart of informa-
+
+tion criteria, which we call SMCV here, is calculated as follows:
+
+ˆ(−*i*) =
+
+1
+
+*N* − 1
+
+*j*∈{ 1 *,...,N*}\\{ *i*}
+
+(*x*( *j*) )*,*
+
+ˆ*H*(−*i*) =
+
+1
+
+*N* − 1
+
+*j*∈{ 1 *,...,N*}\\{ *i*}
+
+*H*(*x*( *j*) )*,*
+
+SMCV =
+
+*N*
+
+*i*=1
+
+1
+
+2
+
+ˆ*φ*
+
+*SM*
+
+ˆ(−*i*) ˆ*φSM* − ˆ*φ*
+
+*SM*
+
+ˆ*H*(−*i*) *.*
+
+Here, *i* denotes the index of the data, which is left out from the data
+
+set one by one. To compare the performance of SMIC minimization with
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 14**]() |
+
+1148
+
+I. Sukeda and T. Matsuda
+
+Figure 5: The number of edges versus SMIC for generated data set sampled
+
+from a torus graph. (Left: *d* = 19, right: *d* = 61.)
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 15**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1149
+
+Figure 6: Average computation times in seconds of 100 runs. On average, 8.41
+
+seconds for the SMCV calculation and 0.649 seconds for the SMIC calculation.
+
+SMCV minimization, we conducted two simulation experiments using
+
+three- and five-dimensional synthetic data, respectively. These simulations
+
+show that minimizing SMIC exhibits performance comparable to the stan-
+
+dard method of choosing the minimum SMCV model when measured by
+
+the edge detection probability while achieving a significant acceleration as
+
+shown in Figure [6.](#15)
+
+First, we sample *N* = 100 samples from three-dimensional torus graph
+
+using rejection sampling. Suppose the true graph structure is *G* =
+
+*G*(*V, E*)*,V* = {1*,* 2*,* 3} where *E* = {(1*,* 2)*,* (2*,* 3)} and *φ* = (0*,* 0*,* 0*,* 0*,* 0*,* 0*, c, c,*
+
+*c, c,* 0*,* 0*,* 0*,* 0*, c, c, c, c*)
+
+ *, c* ∈ R. Since *G* consists of three edges, the number
+
+of candidate models is 23 = 8. We select the model with minimum SMCV
+
+or SMIC as the optimal model. Table 2[ ](#16)shows the detection probabilities of
+
+each edge in the torus graph model for *N* = 100 when *c* = 0*.*1*,* 0*.*2*,* 0*.*3*,* 0*.*5.
+
+As shown in Table 3[,](#16) the similar experiment is also conducted for
+
+*φ* = (*c, c, c, c, c, c, c, c, c, c,* 0*,* 0*,* 0*,* 0*, c, c, c, c*)
+
+ *, c* ∈ R*.*
+
+In both cases, detection probabilities improve monotonically with increas-
+
+ing *c*, which is consistent with the intuition that stronger coupling leads to
+
+easier edge detection.
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 16**]() |
+
+1150
+
+I. Sukeda and T. Matsuda
+
+Table 2: Detection Probability under the Torus Graph Model without Node-
+
+Wise Terms.
+
+*c*
+
+edge
+
+Ground Truth
+
+SMCV
+
+SMIC
+
+0.1
+
+(1,2)
+
+true
+
+0.426
+
+0.430
+
+(1,3)
+
+false
+
+0.201
+
+0.203
+
+(2,3)
+
+true
+
+0.436
+
+0.437
+
+0.2
+
+(1,2)
+
+true
+
+0.680
+
+0.686
+
+(1,3)
+
+false
+
+0.080
+
+0.079
+
+(2,3)
+
+true
+
+0.686
+
+0.703
+
+0.3
+
+(1,2)
+
+true
+
+0.935
+
+0.938
+
+(1,3)
+
+false
+
+0.055
+
+0.057
+
+(2,3)
+
+true
+
+0.940
+
+0.948
+
+0.5
+
+(1,2)
+
+true
+
+1.000
+
+1.000
+
+(1,3)
+
+false
+
+0.043
+
+0.078
+
+(2,3)
+
+true
+
+1.000
+
+1.000
+
+Note: The three-dimensional synthetic data
+
+were sampled from the torus graph model with
+
+*φ* = (0*,* 0*,* 0*,* 0*,* 0*,* 0*, c, c, c, c,* 0*,* 0*,* 0*,* 0*, c, c, c, c*)
+
+*,*
+
+*c* ∈ {0*.*1*,* 0*.*2*,* 0*.*3*,* 0*.*5}.
+
+Table 3: Detection Probability under the Torus Graph Model with Node-Wise
+
+Terms.
+
+*c*
+
+edge
+
+Ground Truth
+
+SMCV
+
+SMIC
+
+0.1
+
+(1,2)
+
+true
+
+0.409
+
+0.415
+
+(1,3)
+
+false
+
+0.203
+
+0.202
+
+(2,3)
+
+true
+
+0.433
+
+0.434
+
+0.2
+
+(1,2)
+
+true
+
+0.667
+
+0.744
+
+(1,3)
+
+false
+
+0.067
+
+0.052
+
+(2,3)
+
+true
+
+0.606
+
+0.670
+
+0.3
+
+(1,2)
+
+true
+
+0.843
+
+0.950
+
+(1,3)
+
+false
+
+0.041
+
+0.060
+
+(2,3)
+
+true
+
+0.834
+
+0.952
+
+0.5
+
+(1,2)
+
+true
+
+0.922
+
+0.995
+
+(1,3)
+
+false
+
+0.030
+
+0.169
+
+(2,3)
+
+true
+
+0.929
+
+0.991
+
+Note: The three-dimensional synthetic data
+
+were sampled from the torus graph model with
+
+*φ* = (*c, c, c, c, c, c, c, c, c, c,* 0*,* 0*,* 0*,* 0*, c, c, c, c*)
+
+,
+
+*c* ∈ {0*.*1*,* 0*.*2*,* 0*.*3*,* 0*.*5}.
+
+Next, we sample *N* = 100 samples from five-dimensional torus graph
+
+using rejection sampling. Suppose the true graph structure is *G* =
+
+*G*(*V, E*)*,V* = {1*,* 2*,* 3*,* 4*,* 5}, *E* = {(1*,* 3)*,* (1*,* 4)*,* (2*,* 4)*,* (2*,* 5)*,* (3*,* 5)}. The true
+
+natural parameter *φ* of the torus graph model is set such that the
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 17**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1151
+
+Table 4: Detection Probability under the 5-Dimensional Torus Graph Model.
+
+Edge
+
+Ground Truth
+
+SMCV
+
+SMIC
+
+Edge
+
+Ground Truth
+
+SMCV
+
+SMIC
+
+(1,2)
+
+false
+
+0.04
+
+0.04
+
+(1,2)
+
+false
+
+0.05
+
+0.09
+
+(1,3)
+
+true
+
+0.11
+
+0.16
+
+(1,3)
+
+true
+
+0.83
+
+0.92
+
+(1,4)
+
+true
+
+0.16
+
+0.21
+
+(1,4)
+
+true
+
+0.85
+
+0.90
+
+(1,5)
+
+false
+
+0.04
+
+0.06
+
+(1,5)
+
+false
+
+0.05
+
+0.09
+
+(2,3)
+
+false
+
+0.07
+
+0.09
+
+(2,3)
+
+false
+
+0.06
+
+0.07
+
+(2,4)
+
+true
+
+0.27
+
+0.32
+
+(2,4)
+
+true
+
+0.86
+
+0.94
+
+(2,5)
+
+true
+
+0.15
+
+0.16
+
+(2,5)
+
+true
+
+0.90
+
+0.95
+
+(3,4)
+
+false
+
+0.07
+
+0.08
+
+(3,4)
+
+false
+
+0.04
+
+0.08
+
+(3,5)
+
+true
+
+0.13
+
+0.16
+
+(3,5)
+
+true
+
+0.80
+
+0.88
+
+(4,5)
+
+false
+
+0.06
+
+0.06
+
+(4,5)
+
+false
+
+0.05
+
+0.07
+
+Note: The 5-dimensional synthetic data were sampled from the torus graph model with
+
+*c* = 0*.*1 (left) and *c* = 0*.*3 (right).
+
+corresponding parameters to *E* are all set to 0.3 and 0 otherwise, in align
+
+with previous experiments. Since the number of full candidate models 210
+
+is too large to explore, we instead employ the group LASSO method to re-
+
+strict the candidate models into fewer than 100, which are automatically
+
+exploited as the regularization path. The model with least SMCV or SMIC
+
+is selected as the optimal model as well. As a result, Table[ ](#17)4 shows the de-
+
+tection probability of each edge.
+
+**3.3 Synthetic Data Generated from the Kuramoto Model.** Consecu-
+
+tively, we confirm the performance of our proposed method on synthetic
+
+data generated from the famous Kuramoto model (Kuramoto, [1975) ](#43)to de-
+
+scribe synchronization observed in the behavior of a large set of coupled
+
+oscillators such as neurons. To generate realistic synthetic data, we use the
+
+Kuramoto model with additional stochastic perturbations, involving five
+
+oscillators indexed by {1*,* 2*,* 3*,* 4*,* 5}:
+
+*θ*(*t*)
+
+*i*
+
+\= *θ*(*t*−1)
+
+*i*
+
+\+
+
+⎛
+
+⎝*wi* +
+
+1
+
+5
+
+5
+
+*j*=1
+
+*Kij* sin (*θj* − *θi*)
+
+⎞
+
+⎠*t* + (*t*)
+
+*i ,*
+
+where *t* denotes the time step, *t* denotes the time step size of discretiza-
+
+tion, *wi* ∼ *N*(11*.*5*,* 2) is the intrinsic natural frequency of the *i*th oscil-
+
+lator that simulates the *α*-band, and the symmetric off-diagonal square
+
+matrix *K* denoting the undirected coupling effect. Here, we define the
+
+true graph structure as *G* = *G*(*V, E*), where *V* = {1*,* 2*,* 3*,* 4*,* 5} and *E* =
+
+{(1*,* 3)*,* (1*,* 4)*,* (2*,* 4)*,* (2*,* 5)*,* (3*,* 5)}, as in the previous experiment. The corre-
+
+sponding matrix *K* is defined as follows:
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 18**]() |
+
+1152
+
+I. Sukeda and T. Matsuda
+
+Figure 7: Proposed method performed on synthetic data generated from the
+
+Kuramoto model with five oscillators. *k* in equation 3[.1 is](#18) set to 2.
+
+*K* = (*Kij* ) =
+
+⎛
+
+⎜
+
+⎜
+
+⎜
+
+⎜
+
+⎝
+
+0 0 *k k* 0
+
+0 0 0 *k k*
+
+*k* 0 0 0 *k*
+
+*k k* 0 0 0
+
+0 *k k* 0 0
+
+⎞
+
+⎟
+
+⎟
+
+⎟
+
+⎟
+
+⎠
+
+*, k* ∈ R*.*
+
+(3.1)
+
+In addition to the original Kuramoto model, we introduce an other noise
+
+term (*t*)
+
+*i*
+
+that is independently and identically distributed according to
+
+the von Mises distribution vM(0*,* 300), to make the generated data more
+
+realistic.
+
+Figure [7](#18) illustrates the successful performance of the proposed method
+
+in recovering the true graph structure, for example, in the case of *k* = 2. The
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 19**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1153
+
+number of synthetic data points was set to 25,000, with *t* = 0*.*01. In con-
+
+trast, the traditional approach—computing PLV pairwise between nodes,
+
+followed by thresholding—struggles to accurately extract the true structure
+
+in this example. In contrast, our proposed method successfully minimizes
+
+the SMIC at the true graph structure, recognizing it as the best-fitting model
+
+and thereby enabling automatic model selection.
+
+**4 Real Data Application**
+
+In this section, we present two real-data applications, primarily to illustrate
+
+the utility of the proposed method for EEG/ECoG phase-based connectiv-
+
+ity analysis.
+
+**4.1 Results on Human EEG.** By using a 61-dimensional human EEG
+
+data set (100 seconds) collected from 20 participants, with 7 labeled as the
+
+“drowsy” group and the rest as the “responsive” group based on their per-
+
+ceptual hit rate after administration of propofol, we investigated how dif-
+
+ferences in wakefulness modulate functional connectivity across different
+
+frequency bands. To investigate the dependence structures for each indi-
+
+vidual, we applied the rotational model with regularized score matching to
+
+each frequency band. This choice is supported by the experimental results
+
+that even when the full torus graph is applied to the real EEG data, the latter
+
+half of *φjk* in equation [2.1](#4) are always near zero, implying that the rotational
+
+model without these terms is sufficient for modeling these data. Figure [8](#20)
+
+shows one example. This is also similar to the model selection performed
+
+in the analyses using local field potentials as described by Klein et al. [(2020)](#43).
+
+The preprocessing is composed of the Hilbert transform and the band-
+
+pass filter extracting *α*-band (8Hz – 15Hz), *β*-band (12Hz – 25Hz), or *γ*-band
+
+(25Hz – 40Hz). These thresholds of frequency follow Chennu et al. ([2016)](#42),
+
+who collected the data set originally. In practice, the Hilbert transform is im-
+
+plemented by Python Scipy library. After the preprocessing (Hilbert trans-
+
+form and bandpass filtering), we merge 10 epochs (0∼9) together to prepare
+
+25,000 samples. Then we extract 61-dimensional data from it following the
+
+10-10 system of electrodes (Koessler et al., [2009)](#43). The final data result in the
+
+shape of (*N, d*) = (25,000,61).
+
+Figure [9](#21) displays one representative example from the drowsy group.
+
+The results are shown for the four participant state (baseline → mild →
+
+moderate → recovery), where the sparse solution is obtained for each
+
+state. For this participant, the number of edges varies at approximately
+
+400 to 600 edges, which is significantly smaller than the maximum edge
+
+number 61 × 60*/*2 = 1830. It is observed that the number of edges drops by
+
+the propofol injection between the baseline state and the mild state, while
+
+it recovers the network structure toward the recovery state gradually. To
+
+further enhance the interpretability of these networks, observing the un-
+
+derlying community structure of them is a useful approach. Here, the color
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 20**]() |
+
+1154
+
+I. Sukeda and T. Matsuda
+
+Figure 8: An example of the estimated values of ˆ*φ*. The left half shows the reg-
+
+ularized score matching with group LASSO, and the right half shows the naive
+
+score matching. In each figure, the first image depicts *φi*, 61 two-dimensional
+
+vectors, and the second image depicts *φjk*, 1830 four-dimensional vectors, col-
+
+umn by column.
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 21**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1155
+
+Figure 9: Change in reconstructed graph structures. Baseline → mild → mod-
+
+erate → recovery; participant\_ID = 7 from the drowsy group. Node colors rep-
+
+resent community structures identified through modularity maximization.
+
+of each node represents the optimal community structure obtained by the
+
+modularity maximization (Newman & Girvan, [2004),](#44) where the number of
+
+communities is not specified in advance but determined through the opti-
+
+mization process. Overall, it is observed that the close nodes form a cluster
+
+in general, while some clusters are dispersed among the whole brain (e.g.,
+
+the gray-colored cluster in the mild state). These community structures de-
+
+pict the occurrence of neural oscillations with richer information compared
+
+to the naive way of calculating the correlation between each node pair.
+
+For all participants, Tables 5 and 6 summarize the changes in the number
+
+of edges, modularity, average clustering coefficient, and average shortest
+
+path length for the recovered graph structures for each band of EEGs. The
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 22**]() |
+
+1156
+
+I. Sukeda and T. Matsuda
+
+Figure 9: Continued.
+
+Table 5: Summary of Graphical Properties (Number of Edges and Modularity).
+
+Participant
+
+Group
+
+Baseline
+
+Mild
+
+Moderate
+
+Recovery
+
+*α* band (8-15Hz)
+
+drowsy
+
+(762, 0.388)
+
+(855, 0.353)
+
+(749, 0.394)
+
+(863, 0.351)
+
+*α* band (8-15Hz)
+
+responsive
+
+(863, 0.364)
+
+(865, 0.346)
+
+(840, 0.358)
+
+(886, 0.348)
+
+*β* band (12-25Hz)
+
+drowsy
+
+(844, 0.411)
+
+(857, 0.393)
+
+(788, 0.421)
+
+(944, 0.376)
+
+*β* band (12-25Hz)
+
+responsive
+
+(870, 0.399)
+
+(980, 0.361)
+
+(967, 0.358)
+
+(953, 0.368)
+
+*γ* band (25-40Hz)
+
+drowsy
+
+(836, 0.424)
+
+(795, 0.423)
+
+(799, 0.428)
+
+(772, 0.444)
+
+*γ* band (25-40Hz)
+
+responsive
+
+(851, 0.402)
+
+(995, 0.359)
+
+(985, 0.353)
+
+(962, 0.366)
+
+Notes: The average is taken among all the participants in each participant group. Refer to
+
+appendix A[.4 ](#35)for full individual results.
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 23**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1157
+
+Figure 9: Continued.
+
+Table 6: Summary of Graphical Properties (Average Clustering Coefficient and
+
+Average Shortest Path Length).
+
+Participant
+
+Group
+
+Baseline
+
+Mild
+
+Moderate
+
+Recovery
+
+*α* band (8-15Hz)
+
+drowsy
+
+(0.427, 1.583) (0.272, 0.881) (0.156, 0.574) (0.125, 0.403)
+
+*α* band (8-15Hz)
+
+responsive (0.478, 1.529) (0.259, 0.823) (0.162, 0.535) (0.126, 0.389)
+
+*β* band (12-25Hz) drowsy
+
+(0.475, 1.539) (0.275, 0.876) (0.166, 0.565) (0.137, 0.391)
+
+*β* band (12-25Hz) responsive (0.487, 1.524) (0.289, 0.791) (0.185, 0.511) (0.136, 0.380)
+
+*γ* band (25-40Hz) drowsy
+
+(0.467, 1.544) (0.262, 0.894) (0.166, 0.564) (0.120, 0.421)
+
+*γ* band (25-40Hz) responsive (0.478, 1.535) (0.293, 0.787) (0.189, 0.507) (0.138, 0.378)
+
+Notes: The average is taken among all the participants in each participant group. Refer to
+
+appendix A[.4 ](#35)for full individual results.
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 24**]() |
+
+1158
+
+I. Sukeda and T. Matsuda
+
+Figure 9: Continued.
+
+ratios between the average clustering and the average shortest path length
+
+during each state are plotted across different patient states and frequency
+
+bands in Figure [10](#25), where the responsive group exhibited higher values in
+
+every frequency band analyzed.
+
+We also conduct a hypothesis test to evaluate whether the metrics dif-
+
+fer between the two groups (1: drowsy, 2: responsive) and the four states
+
+(1: baseline, 2: mild, 3: moderate, 4: recovery). Following standard practice,
+
+we performed a two-way ANOVA for each frequency band. Since ANOVA
+
+assumes gaussian-distributed data, the number of edges is transformed us-
+
+ing the Anscombe transform, which converts Poisson-distributed data into
+
+approximately gaussian data: *x* → 2
+
+*x* + 3
+
+8
+
+.
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 25**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1159
+
+Figure 10: The shift in graphical properties during each participant state. The
+
+ratios between the average clustering coefficient and the average shortest path
+
+length in each participant state are plotted.
+
+**Model**
+
+*yis* = *μ* + *ag*(*i*) + *bs* + (*ab*)*g*(*i*) *,s* + *ci* + *εis,*
+
+2
+
+*g*=1
+
+*ag* =
+
+4
+
+*s*=1
+
+*bs* =
+
+2
+
+*g*=1
+
+(*ab*)*gs* =
+
+4
+
+*s*=1
+
+(*ab*)*gs* =
+
+*g*(*i*)=1
+
+*ci* =
+
+*g*(*i*)=2
+
+*ci* = 0*,*
+
+where *g* = group, *s* = state, *i* = subject, and *γi* are subject fixed effects.
+
+**Null hypotheses**
+
+*H*
+
+group
+
+0
+
+: *a*1 = *a*2 *, H*state
+
+0
+
+: *b*1 = *b*2 = *b*3 = *b*4 *, H*int
+
+0 : (*ab*)*gs* = 0 ∀*g, s.*
+
+The Bonferroni-corrected *p*-values, adjusted by a factor of 12 to control the
+
+family-wise error rate across 12 ANOVAs (3 frequency bands × 4 network
+
+measures), are presented in Table 7[. ](#26)In the *α* band, no significant effects were
+
+observed for patient group, patient state, or their interaction across any net-
+
+work measure (Table 7a[).](#26) In contrast, in the *β* and *γ* bands, the null hypoth-
+
+esis for the patient group effect (*H*
+
+group
+
+0
+
+) was rejected (see Tables[ 7b](#26) and 7c).
+
+Specifically, compared to the responsive group, the drowsy group exhibited
+
+lower modularity and average clustering coefficient, as well as a higher
+
+average shortest path length. Given that a small-world network (Watts &
+
+Strogatz,[ 1998](#45); Muldoon et al., 2016) is primarily characterized by
+
+a larger average clustering coefficient and shorter average shortest
+
+path (Humphries & Gurney, [2008),](#43) we conclude that small-worldness
+
+is more pronounced in the *β* and *γ* connectivity of the responsive group.
+
+In addition, in both the *β* and *γ* bands, a significant main effect of patient
+
+state was observed only for modularity. This result is not aligned with the
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 26**]() |
+
+1160
+
+I. Sukeda and T. Matsuda
+
+Table 7: Results of the ANOVA (Bonferroni-Corrected *p*-Values) for Each Fre-
+
+quency Band.
+
+(a) *α* band
+
+Tested effect
+
+\#edges
+
+modularity
+
+acc.
+
+aspl.
+
+Patient group (drowsy, responsive)
+
+0.093
+
+0.090
+
+0.208
+
+0.112
+
+Patient state (baseline, *. . .*, recovery)
+
+1.000
+
+0.060
+
+0.549
+
+0.985
+
+Interaction (group × state)
+
+1.000
+
+1.000
+
+1.000
+
+1.000
+
+(b) *β* band
+
+Tested effect
+
+\#edges
+
+modularity
+
+acc.
+
+aspl.
+
+Patient group (drowsy, responsive)
+
+**0.007**
+
+**0.000**
+
+**0.035**
+
+**0.011**
+
+Patient state (baseline, *. . .*, recovery)
+
+0.563
+
+**0.011**
+
+0.542
+
+0.602
+
+Interaction (group × state)
+
+0.331
+
+0.064
+
+1.000
+
+0.421
+
+(c) *γ* band
+
+Tested effect
+
+\#edges
+
+modularity
+
+acc.
+
+aspl.
+
+Patient group (drowsy, responsive)
+
+**0.000**
+
+**0.000**
+
+**0.000**
+
+**0.000**
+
+Patient state (baseline, *. . .*, recovery)
+
+0.982
+
+**0.030**
+
+0.289
+
+1.000
+
+Interaction (group × state)
+
+0.129
+
+**0.042**
+
+0.465
+
+0.121
+
+Notes: “acc.” denotes the average clustering coefficient and “aspl.” denotes the
+
+average shortest path length. Bold values denote *p \<* 0*.*05.
+
+previous study on 10 healthy humans (Lee et al., [2013](#44)), which reported
+
+that propofol increased both of the average path length and clustering
+
+coefficient. This discrepancy could be due to several factors, including dif-
+
+ferences in the methodologies used, the specific experimental conditions,
+
+or the statistical method for reconstructing the graph network structure
+
+from the EEG data.
+
+Additionally, we observe the relationship between different frequency
+
+bands since the cross-frequency coupling has been crucial in EEG analy-
+
+sis. Figure[ 11](#27) shows pairwise scatter plots of modularity across frequency
+
+bands. For each EEG recording, we bandpass-filter the signal into the *α*,
+
+*β*, and *γ* bands, reconstruct a connectivity graph for each band using our
+
+method, and compute its modularity. Each point therefore corresponds to a
+
+single recording, with coordinates given by the modularity of the two bands
+
+being compared (e.g., *β* on the *x*-axis versus *γ* on the *y*-axis). Especially,
+
+the responsive group exhibits a stronger *β* − *γ* correlation (Spearman’s
+
+*ρ* = 0.94, *p*-value = 0*.*0013) compared to the drowsy group (Spearman’s
+
+*ρ* = 0.57, *p*-value = 0*.*0000). This difference in patterns may potentially serve
+
+as a feature for predicting the participant group solely from EEG recordings
+
+without the need to conduct the injection experiment.
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 27**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1161
+
+Figure 11: Pairplots of modularity from different frequency bands. From each
+
+EEG recording, *α*, *β*, and *γ* bands were extracted by bandpass filtering; a graph
+
+was recovered for each band and its modularity computed. Scatter plots are
+
+shown for *α*–*β*, *α*–*γ*, and *β*–*γ*; each dot represents one recording, positioned by
+
+the modularity values of the two bands. The blue points are from the drowsy
+
+group and the red points from the responsive group. The responsive group
+
+shows a markedly stronger *β*–*γ* correlation than the drowsy group.
+
+**4.2 Results on Marmoset ECoG.** To further apply the proposed method
+
+for visualizing the phase-based connectivity, we used the 96-dimensional
+
+ECoG series data of marmosets. According to the original paper (Komatsu
+
+& Ichinohe, [2021](#43)), these data were collected from two individuals—one
+
+recorded from the left cerebral hemisphere and the other from the right. For
+
+example, the *α* bands of resting-state ECoG from marmosets were extracted
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 28**]() |
+
+1162
+
+I. Sukeda and T. Matsuda
+
+Table 8: The Shift in the Recovered Network Structure from Marmoset ECoG.
+
+Marmoset ID
+
+R03\_0024\_CM622M
+
+R03\_0035\_CM814F
+
+Target brain
+
+left hemisphere
+
+right hemisphere
+
+Resting-state (*α* band)
+
+\#edge = 680,
+
+modularity = 0.634
+
+\#edge = 618,
+
+modularity = 0.594
+
+after 10 min. (*α* band)
+
+\#edge = 695,
+
+modularity = 0.600
+
+\#edge = 505,
+
+modularity = 0.622
+
+Resting-state (*β* band)
+
+\#edge = 435,
+
+modularity = 0.666
+
+\#edge = 379,
+
+modularity = 0.623
+
+after 10 min. (*β* band)
+
+\#edge = 798,
+
+modularity = 0.595
+
+\#edge = 368,
+
+modularity = 0.648
+
+Resting-state (*γ* band)
+
+\#edge = 370,
+
+modularity = 0.673
+
+\#edge = 360,
+
+modularity = 0.655
+
+after 10 min. (*γ* band)
+
+\#edge = 576,
+
+modularity = 0.631
+
+\#edge = 321,
+
+modularity = 0.657
+
+and depicted in Figure [12.](#29) For the data taken from the left hemisphere, the
+
+SMIC is minimized at the model with 680 edges. Contrarily, for the data
+
+taken from the right hemisphere, the SMIC is minimized at the model with
+
+618 edges. In both cases, considering that the maximum number of edges
+
+can be as high as 96 C2 = 4560, the edges in the resulting graph are kept rel-
+
+atively sparse. The color of nodes represents the optimal community struc-
+
+ture obtained by modularity maximization. Thus, due to the regularization
+
+effect of the proposed method, a sparse network structure with clearly de-
+
+fined community structure is obtained as a result.
+
+To observe the shift in the data between before and after the ketamine
+
+injection, the number of edges and modularity in each state are summa-
+
+rized in Table[ 8](#28). The network structure becomes less modular for the first
+
+marmoset, whereas the opposite is true for the second marmoset. These ob-
+
+servations, based on the comparison of network modularity, are interesting
+
+in the context of previous studies that have explored the effects of anesthet-
+
+ics, including ketamine, on brain network architecture.
+
+Many prior studies based on EEG signals in humans have consistently
+
+shown that from the awake to anesthetized state, the brain’s functional
+
+connectivity is reduced (Hudetz, [2012)](#43). In contrast, some ECoG studies in
+
+monkeys report that the overall functional connectivity shows an increasing
+
+trend in the anesthetized state (Xie et al.[, 2021](#45)). For instance, using phase-
+
+amplitude coupling to build functional connectivity, propofol-induced
+
+anesthesia enhances frontal and parietal interactions in monkeys (Ma et al.,
+
+[2019)](#44). These contrasting findings could reflect the complex and dynamic
+
+nature of ketamine’s interaction with neural networks, where individual
+
+differences in brain structure or the specific nature of the intervention
+
+could yield divergent outcomes in terms of network topology. However,
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 29**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1163
+
+Figure 12: Results of the proposed method applied to the *α* band of two resting-
+
+state marmoset ECoG data sets. Axes in blue graphs are labeled with SMIC (*y*-
+
+axis) and the number of edges (*x*-axis).
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 30**]() |
+
+1164
+
+I. Sukeda and T. Matsuda
+
+Figure 12: Continued.
+
+Downloaded from http://direct.mit.edu/neco/article-pdf/38/7/1135/2603762/neco.a.1536.pdf by guest on 06 July 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 31**]() |
+
+Sparse Circular Graphical Model for Phase-Based Connectivity
+
+1165
+
+compared to modularity analysis based on EEG signals (Kim et al., [2018)](#43),
+
+modularity analysis based on ECoG signals is still limited. This is an
+
+important area for future work, as the network topology outcomes could
+
+depend on the target animal and the type of signal used.
+
+The changes in network modularity we observed were consistent across
+
+all frequency bands, adding an important layer of insight. Previous studies
+
+(e.g., Yan et al[., 2022](#45)) have demonstrated that different frequency bands of
+
+ECoG in monkeys respond in opposite ways to acute ketamine injection.
+
+Our results, showing that the modularity changes occurred across all fre-
+
+quency bands, suggest that ketamine has a global effect on brain network
+
+topology, influencing both low- and high-frequency oscillations. This find-
+
+ing contrasts with previous research that has highlighted frequency-specific
+
+effects of ketamine, indicating that the drug’s impact on network dynamics
+
+m

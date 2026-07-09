@@ -1,0 +1,2253 @@
+DANCE: Detect and Classify Events in EEG 
+
+|  |
+| :-: |
+| [**Page 1**]() |
+
+DANCE: Detect and Classify Events in EEG
+
+Jarod Lévy1,2, Hubert Banville1, Jérémy Rapin1, Jean-Remi King1, Thomas Moreau2†, Stéphane d’Ascoli1†
+
+1Meta AI, 2Inria, Université Paris-Saclay, Palaiseau, France
+
+†These authors jointly supervised this work
+
+Event identification in continuous neural recordings is a critical task in neuroscience. Decoding in
+
+EEG is dominated by classifying windows aligned to known event onsets. However, while available in
+
+controlled experiments, such onsets are absent in continuous real-world monitoring. Here, we introduce
+
+DANCE, a deep learning pipeline that frames neural decoding as a set-prediction problem and jointly
+
+detects and classifies events directly from raw, unaligned signals. Evaluated separately on ten datasets
+
+curated from the literature with a wide variety of event types ranging from milliseconds to minutes in
+
+duration, our model outperforms existing methods on a broad range of cognitive, clinical and BCI
+
+tasks. This single architecture establishes a new state of the art in the competitive task of seizure
+
+monitoring and matches the accuracy of onset-informed models for BCI tasks. Overall, our method
+
+marks a step towards end-to-end asynchronous neural decoding models.
+
+Date: May 12, 2026
+
+Correspondence: <jarod@meta.com>
+
+1 Introduction
+
+Linear Readout
+
+Event-based
+
+D
+
+A
+
+N
+
+C
+
+E
+
+CNN
+
+Time Queries
+
+Perceiver
+
+Predictions
+
+Decoder
+
+Event Queries
+
+**Modalities**
+
+Typing Seizure Listening Motor
+
+Imagery
+
+P300
+
+Artifacts
+
+**Benchmark**
+
+**2.35M** events
+
+**10**
+
+datasets
+
+**7**
+
+models
+
+A
+
+FN
+
+FP
+
+FP
+
+TP
+
+FN
+
+FN
+
+Sample-based
+
+B
+
+Ground Truth
+
+S
+
+ta
+
+rt E
+
+n
+
+d
+
+C
+
+la
+
+s
+
+s
+
+\#
+
+S
+
+u
+
+b
+
+je
+
+c
+
+ts
+
+Recording Duration / Subject (s)
+
+BI2014b
+
+BI2013
+
+BI2014a
+
+TUAR
+
+TUSZ
+
+SparrKULee
+
+Pinet
+
+Broderick
+
+BNCI2015
+
+BNCI2014
+
+C
+
+Figure1 OurApproach. A. The DANCE model processes EEG time-series windows of fixed length through a CNN
+
+backbone, a Perceiver and a Decoder. B. DANCE predicts event instances of different classes (here, represented by
+
+different colors), which are evaluated against ground truth using both event-based and sample-based metrics. Dashed
+
+contours represent incorrect events according to the event-based metric. C. The model is trained separately on 10
+
+heterogeneous datasets comprising a total of 2.35 million events and is compared with 7 different models. The data
+
+spans six distinct modalities: Typing, Seizure, Listening (Speech), Motor Imagery, P300 and Artifacts, with varying
+
+subject counts and recording volumes.
+
+1
+
+arXiv:2605.10688v1 \[cs.LG\] 11 May 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 2**]() |
+
+2 Introduction
+
+Temporal events are the primary unit of analysis in experimental and clinical neuroscience. Experimental
+
+datasets typically rely on discrete, time-locked occurrences, such as motor-imagery trials ([Faller et al.](#11)[,](#11) [2012](#11);
+
+[Tangermann et al.](#13)[,](#13) [2012](#13)), visual stimuli ([Congedo et al.](#11)[,](#11) [2011](#11)[;](#11) [Korczowski et al.](#12)[,](#12) [2019a](#12),[b](#12)), or speech utterances
+
+([Accou et al.](#11)[,](#11) [2024](#11)[;](#11) [Broderick et al.](#11)[,](#11) [2018](#11)). In clinical contexts, this focus on temporally localized phenomena
+
+is equally central, for instance in the detection of transient events such as epileptic seizures ([Shah et al.](#13)[,](#13) [2018](#13)).
+
+Beyond controlled environments, real-world applications, including real-time neuroprosthetics ([Willett et al.](#13),
+
+[2021](#13)), continuous wheelchair control ([Zhang et al.](#13)[,](#13) [2024](#13)), and naturalistic neurofeedback ([Le Franc et al.](#12)[,](#12) [2022](#12)),
+
+require moving from discrete event analysis to asynchronous, continuous decoding. Bridging these settings
+
+therefore hinges on the ability to reliably detect and classify events under increasingly unconstrained conditions.
+
+Despite this need, decoding in EEG remains constrained by its inherently low signal-to-noise ratio (SNR)
+
+([Mak and Wolpaw](#12)[,](#12) [2009](#12)). To mitigate this, the dominant practice in event classification benchmarks is to
+
+evaluate models on pre-segmented windows time-locked to known event onsets, bypassing the detection task to
+
+focus purely on classification ([Chevallier et al.](#11)[,](#11) [2024](#11)[;](#11) [Défossez et al.](#11)[,](#11) [2023](#11)[;](#11) [Banville et al.](#11)[,](#11) [2025](#11)[;](#11) [Cheng et al.](#11),
+
+[2020](#11)[;](#11) [Saeed et al.](#13)[,](#13) [2021](#13)[;](#13) [Tang et al.](#13)[,](#13) [2022](#13)[;](#13) [Lévy et al.](#12)[,](#12) [2025](#12)[;](#12) [Tang et al.](#13)[,](#13) [2023](#13)). While useful for controlled
+
+comparisons, this onset-informed paradigm fails to reflect realistic settings where precise onset markers are
+
+unavailable. As a result, achieving robust asynchronous detection and classification in non-invasive settings
+
+remains an open challenge.
+
+There are two ways to frame event detection problems: as a dense (or sample-based) prediction task, where
+
+the objective is to predict whether an event is present for each time sample in a window, or as a sparse (or
+
+event-based) prediction task, where the objective is to predict directly the set of events occurring within the
+
+entire window. We illustrate these two types of approaches in [Figure 1](#1)B. In computer vision, significant
+
+advances have been achieved in object detection by switching from the dense view to the sparse view, via the
+
+introduction of detection architectures ([Girshick et al.](#11)[,](#11) [2014](#11)[;](#11) [Ren et al.](#12)[,](#12) [2015](#12)[;](#12) [Redmon et al.](#12)[,](#12) [2016](#12)) tailored
+
+for structured prediction and object-level metrics ([Maier-Hein et al.](#12)[,](#12) [2024](#12)) such as the Intersection over
+
+Union (IoU). Prior work reframed detection as a set-prediction problem, most notably with the DETR family
+
+of models ([Carion et al.](#11)[,](#11) [2020](#11)[;](#11) [Li et al.](#12)[,](#12) [2022](#12)[;](#12) [Zhao et al.](#14)[,](#14) [2024](#14)). Extending this paradigm, the Temporal
+
+Action Detection literature introduces hybrid strategies that combine set-based objectives with dense auxiliary
+
+supervision ([Zong et al.](#14)[,](#14) [2023](#14)[;](#14) [Wang et al.](#13)[,](#13) [2025b](#13)), leading to more stable and efficient training.
+
+Directly applying computer vision methods to scalp EEG fails due to low SNR, limited per-dataset sample
+
+size, and event durations spanning four orders of magnitude (from milliseconds to minutes). The asynchronous
+
+neural-decoding literature mostly relies on sliding-window classification. The most straightforward approaches
+
+apply a classifier to every window of the signal to get a per-timestep prediction ([Craik et al.](#11)[,](#11) [2019](#11)). More efficient
+
+methods utilize two-stage cascades first detect event presence, then classify positive windows ([Wu et al.](#13)[,](#13) [2024](#13)).
+
+Both have well-documented failure modes ([Dan et al.](#11)[,](#11) [2025](#11)[;](#11) [Chavelli et al.](#11)[,](#11) [2025](#11)): sliding windows produce
+
+fragmented predictions requiring post-processing, while cascades collapse when the no-event class dominates.
+
+Limited works now formulate event detection as a direct prediction task, deploying one-shot detectors for
+
+micro-sleep ([Chambon et al.](#11)[,](#11) [2019](#11)), transformer segmentation for eye-tracking ([Wolf et al.](#13)[,](#13) [2022](#13)), or sequence-
+
+to-sequence models for artefacts and seizures ([Seeuws et al.](#13)[,](#13) [2024](#13)). While these methods demonstrate the value
+
+of explicit event parameterization, each remains confined to a limited domain, with no simple way to adapt
+
+them for various settings. Therefore, a unified framework for asynchronous EEG decoding is still missing.
+
+To address this problem, we introduce DANCE, an end-to-end framework for detecting and classifying discrete
+
+events from raw EEG without relying on pre-aligned windows. DANCE can predict heterogeneous events
+
+thanks to a Perceiver-based latent resampling module ([Jaegle et al.](#12), [2021](#12)) that compresses each input window
+
+into a fixed-size latent grid. This Perceiver is combined with a decoder that performs direct set prediction.
+
+DANCE is evaluated on ten public datasets (1,154 participants, 2.35 M events across six task domains). It
+
+achieves a mean event-based F1 score three times higher than the strongest baseline, establishes a new state
+
+of the art on seizure monitoring, and matches onset-informed BCI accuracy without using onset information.
+
+This architecture constitutes the first asynchronous neural event identification pipeline that can be easily
+
+adapted to heterogeneous settings.
+
+2
+
+-----
+
+|  |
+| :-: |
+| [**Page 3**]() |
+
+3 Event Detection in Time Series
+
+Formally, we consider a segment of multi-channel EEG recording X ∈ RT ×C, where T denotes the number of
+
+time samples and C the number of channels. The temporal dimension is defined as T = fs · W, where fs is
+
+the sampling frequency and W the segment duration.
+
+Unlike window-based methods which assumes a single label for the entire window, our objective is to detect
+
+events. We aim to map the input segment X to the set of events it contains, E = {ei}N
+
+i=1. Each event is
+
+parameterized as a tuple ei = (bi,ci), where bi = (tstart,tend) ∈ \[0, 1\]2 denotes the normalized temporal
+
+boundaries relative to the segment duration W, and ci ∈ {0,...,K} denotes the class of the event, where K
+
+is the number of event classes and ci = 0 corresponds to the background class. Class definitions vary across
+
+datasets (see [Table B.1](#21)).
+
+There are two ways to evaluate event predictions: using sample-based metrics or using event based metrics.
+
+Sample-based Metrics In many prior studies, the event detection paradigm consists in a timepoint-wise
+
+classification task, and the most commonly used metric is the sample-level macro F1 score, called F1sample
+
+in this work. However, while this formulation aligns with the training objectives of dense predictors (e.g.,
+
+U-Net), it is unsuitable for quantifying event detection performance. This metric fails to penalize fragmented
+
+predictions, meaning that a single event predicted as multiple disjoint segments can yield a high F1sample
+
+despite failing to capture the event as a coherent unit. We report this metric to enable fair comparisons with
+
+prior works.
+
+Event-based Metric To assess the model’s ability to decode neural events, we introduce an event-level F1
+
+score, F1event, which simultaneously quantifies detection and classification performance. We define the set
+
+of ground-truth events as E = {ei}N
+
+i=1 and predicted events as P = {pj}M
+
+j=1. A prediction pj is matched to
+
+a ground truth ei using a sorted greedy matching strategy consistent with standard object-detection protocols
+
+([Lin et al.](#12)[,](#12) [2014](#12)). A match is considered a True Positive if and only if:
+
+IoU(pj,ei) \> 0.5 and class(pj) = class(ei)
+
+(1)
+
+where IoU denotes the Intersection over Union of the time intervals. Predictions are sorted by class confidence
+
+if the IoU with ground-truth exceeds the threshold. A match is accepted only if neither element has already
+
+been matched. Unmatched predictions are counted as false positives, and unmatched ground-truth events
+
+as false negatives. The final metric is the F1 score derived from these counts.
+
+F1event operates at the event level and is independent of window size. It reflects the number of correctly
+
+localized events across the dataset, jointly assessing detection, classification, and temporal precision, and
+
+rewarding only accurate matches to ground truth. It effectively penalizes fragmented or duplicated predictions.
+
+In this work, we explicitely target this metric, which better evaluate the method’s usability.
+
+4 Architecture
+
+We introduce DANCE, an architecture providing an end-to-end alternative to onset-informed EEG decoding
+
+by directly framing neural activity as an event-based prediction problem. As illustrated in [Figure 1](#1)A, the
+
+framework comprises three sequential modules: a convolutional backbone for local feature extraction, a
+
+Perceiver-based temporal resampling module for duration adaptation, and a transformer decoder for set-based
+
+event prediction.
+
+CNN Backbone: Local Feature Extraction The first stage processes the raw EEG input X ∈ RT ×C to
+
+extract a sequence of local latent representations for each timestep. For this, we use a modified convolutional
+
+architecture based on the work of [Défossez et al. ](#11)([2023](#11)).
+
+The first component is a spatial attention module that is aware of the positions of the sensors, which encodes
+
+the C channels to a hidden dimension D = 270. It is followed by a sequence of 5 convolutional blocks with a
+
+kernel size of 9, which keep the temporal and hidden dimensions unchanged but capture multi-scale temporal
+
+3
+
+-----
+
+|  |
+| :-: |
+| [**Page 4**]() |
+
+dynamics with a dilation factor that increases by a factor of 2 at each layer. Finally, we project the channel
+
+dimension from D down to H = 128. The output is a sequence of dense embeddings Zdense ∈ RT ×H.
+
+Perceiver: Temporal Resampling A core challenge in processing heterogeneous neural events is their timescales,
+
+spanning from millisecond-level phonemes for speech perception to seizure episodes lasting several minutes.
+
+To unify the framework across datasets, we employ a Perceiver module ([Jaegle et al.](#12)[,](#12) [2021](#12)), which translates
+
+the sequence of input embeddings of variable length T to a sequence of latents of fixed length NQtime .
+
+The Perceiver maps Zdense to a latent space of same dimension Zresamp ∈ RNQtime ×H, via cross-attention
+
+over a set of NQtime learnable latent queries Qtime ∈ RNQtime ×H, effectively acting as a learnable, non-linear
+
+downsampling operation. To preserve temporal order, we initialize Qtime using fixed sinusoidal positional
+
+encodings uniformly spaced across the time window.
+
+In our implementation, we set the latent length to NQtime = 256 and use a Perceiver depth of 6, configured
+
+with 2 attention heads for both the cross-attention and latent self-attention modules. Using a smaller NQtime
+
+(e.g., NQtime = 128) makes short events, e.g. phonemes, which are on the order of 0.1 s, impossible to discern
+
+from one another, while larger sequence lengths increase memory use quadratically for the downstream decoder.
+
+Across datasets, NQtime = 256 strikes the best trade-off between temporal resolution and efficiency.
+
+Due to the use of a fixed size perceiver, the input segment duration must be adapted for each dataset to strike
+
+a balance between coverage and resolution. It should be long enough to include the target events, yet short
+
+enough to allow accurate boundary regression for each event. Additional details on how to select the semgent
+
+size are provided in [Section A.3](#16).
+
+Decoder: Set Prediction The final stage decodes the Perceiver’s output to generate the final event predictions.
+
+We employ a standard transformer decoder as described in [Carion et al. ](#11)([2020](#11)) with 4 layers and 4 attention
+
+heads. The decoder transforms a set of NQevent object queries Qevent into a set of event predictions. Unlike the
+
+Perceiver queries, Qevent are initialized randomly. The inputs can be defined as Zsparse ∈ RNQevent ×H. After a
+
+linear readout, the decoder outputs a set of prediction vectors ˆY = {yi}
+
+NQevent
+
+i=1
+
+. Each prediction yi = (bi, ci)
+
+lies in the space \[0, 1\]2 × ∆K+1, concatenating the predicted temporal coordinates bi and the class probability
+
+distribution ci.
+
+We choose to predict event start and end times rather than center and duration, as this formulation consistently
+
+yields better performance. In particular, it naturally mitigates border effects when an event is truncated
+
+at the beginning or end of a window: the model can independently predict each boundary, allowing partial
+
+events to be handled correctly.
+
+Additional details on preprocessing and training procedures to ensure reproducibility, as well as baseline and
+
+ablation models, are provided in [Section B](#17). The full model code, along with the training and evaluation
+
+pipelines, will be released before the review process.
+
+5 Loss Formulation
+
+We train the model end-to-end using a loss L that enforces accuracy both at the dense signal level and the
+
+sparse event level, bridged by a consistency regularizer:
+
+L = Lsparse + Ldense + λconsLcons
+
+(2)
+
+In our experiments, we balance the contributions of these terms by setting λcons = 0.5.
+
+Set Prediction Loss (Lsparse) To evaluate the set prediction, we first define the pairwise matching cost
+
+between a ground truth element yi = (bi,ci) and a prediction yσ(i) = (bσ(i), pσ(i)) indexed by a permutation σ.
+
+Here, b and c represent the normalized temporal segments and class labels, respectively, while p is the output
+
+of the softmax of the classification head. The matching cost Lmatch is a linear combination of classification
+
+and localization errors. We use the cross-entropy loss Lcls and the IoU loss Liou to define it:
+
+Lmatch = λclsLcls(ci, pσ(i)) + λiouLiou(bi,bσ(i))
+
+(3)
+
+4
+
+-----
+
+|  |
+| :-: |
+| [**Page 5**]() |
+
+We set the balancing coefficients to λcls = 1 and λiou = 5. We include a sensitivity analysis of the loss weights
+
+in [Figure A.2](#17). The objective is to find a bipartite matching that minimizes the cost between the ground truth
+
+set Y and the predicted set ˆY. Consequently, the final set prediction loss Levent is defined as the minimum
+
+over the set of all possible permutations SNQevent :
+
+Lsparse =
+
+min
+
+σ∈SNQevent
+
+NQevent
+
+∑
+
+i=1
+
+Lmatch(yi, yσ(i))
+
+(4)
+
+This assignment problem is addressed using the Hungarian algorithm ([Kuhn](#12)[,](#12) [1955](#12)), ensuring that the loss
+
+is computed based on the optimal one-to-one correspondence between events and predictions. With this
+
+algorithm, the bipartite matching problem can be solved in O (N3
+
+Qevent).
+
+Dense Auxiliary Loss (Ldense) Dense supervision methods are typically easier to optimize and yield meaningful
+
+predictions earlier in the training process. To combine the strengths of dense and sparse paradigms, we
+
+additionally attach a linear probe to the output of the Perceiver Zresamp to predict the class for every timestep,
+
+giving an auxiliary cross-entropy loss:
+
+Ldense =
+
+1
+
+NQtime
+
+NQtime
+
+∑
+
+t=1
+
+Lce(yt,dense,yt,true)
+
+(5)
+
+Consistency Loss (Lcons) To enforce coherence between sample-based and event-based predictions, we project
+
+the discrete event-level predictions from the Decoder onto the temporal axis to create a reconstructed dense
+
+probability map Pevent. For each predicted event, its predicted class probability p is assigned uniformly onto
+
+the temporal interval defined by its predicted boundaries b. When multiple events overlap in time, their
+
+class probabilities are summed and normalized at each timestep to form a valid probability distribution.
+
+The consistency loss is defined as the Kullback–Leibler (KL) divergence between the reconstructed event
+
+distribution Pevent and the timestep-level probability distribution Pdense:
+
+Lcons = DKL (Pdense ∥ Pevent)
+
+(6)
+
+This auxiliary objective encourages event-level outputs to be coherent with the dense predictions. The
+
+complete projection procedure and additional details are provided in [Section B.3.3](#20).
+
+Table 1 Summary of experimental datasets. Mean values are displayed.
+
+Task Domain
+
+Dataset
+
+\# Events / Window
+
+Event Duration (s)
+
+Speech
+
+Broderick ([Broderick et al.](#11)[,](#11) [2018](#11))
+
+75.33 (Phonemes)
+
+0.08
+
+SparrKULee ([Accou et al.](#11)[,](#11) [2024](#11))
+
+19.5 (Words)
+
+0.3
+
+Typing
+
+Pinet ([Zhang et al.](#13)[,](#13) [2025a](#13))
+
+19.3
+
+0.11
+
+P300
+
+BI2013 ([Congedo et al.](#11)[,](#11) [2011](#11))
+
+60.1
+
+1
+
+BI2014a ([Korczowski et al.](#12)[,](#12) [2019a](#12))
+
+45.8
+
+1
+
+BI2014b ([Korczowski et al.](#12)[,](#12) [2019b](#12))
+
+9.9
+
+1
+
+Motor Imagery
+
+BNCI2014 ([Tangermann et al.](#13)[,](#13) [2012](#13))
+
+1.3
+
+4
+
+BNCI2015 ([Faller et al.](#11)[,](#11) [2012](#11))
+
+3.4
+
+5
+
+Artifacts
+
+TUAR (3.0.1) ([Hamid et al.](#11)[,](#11) [2020](#11))
+
+11.03
+
+9.04
+
+Seizure
+
+TUSZ (2.0.3) ([Shah et al.](#13)[,](#13) [2018](#13))
+
+0.25
+
+67.7
+
+6 Results
+
+To validate our model, we evaluate its performance on 10 datasets, described in [Figure 1](#1)C in terms of data
+
+volume and in [Table 1 ](#5)for key characteristics. To probe performance on fine-grained, high-frequency events,
+
+5
+
+-----
+
+|  |
+| :-: |
+| [**Page 6**]() |
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+**F1 Sample**
+
+***Baselines***
+
+\*\*\*
+
+\*\*
+
+\*
+
+Random ATCNet
+
+U-Net
+
+LaBraM
+
+REVE
+
+CBraMod**DANCE**
+
+**w/out Decoder**
+
+**DANCE**
+
+**w/out Hybrid**
+
+**DANCE**
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+**F1 Event**
+
+\*
+
+\*
+
+\*\*\*
+
+SparrKULee Broderick
+
+Pinet
+
+BNCI2014
+
+BNCI2015
+
+TUAR
+
+TUSZ
+
+BI2013
+
+BI2014a
+
+BI2014b
+
+**0.580.48**
+
+**0.69**
+
+**0.51**
+
+**0.73**
+
+**0.24**
+
+**0.25**
+
+**0.53**
+
+**0.65**
+
+**0.54**
+
+**F1 Sample**
+
+**MOTOR IMAGERY**
+
+**SPEECH**
+
+**ARTIFACTS**
+
+**SEIZURE**
+
+**P300**
+
+**TYPING**
+
+SparrKULee Broderick
+
+Pinet
+
+BNCI2014
+
+BNCI2015
+
+TUAR
+
+TUSZ
+
+BI2013
+
+BI2014a
+
+BI2014b
+
+**0.41**
+
+**0.45**
+
+**0.35**
+
+**0.40**
+
+**0.57**
+
+**0.14**
+
+**0.23**
+
+**0.50**
+
+**0.53**
+
+**0.39**
+
+**F1 Event**
+
+**MOTOR IMAGERY**
+
+**SPEECH**
+
+**ARTIFACTS**
+
+**SEIZURE**
+
+**P300**
+
+**TYPING**
+
+**A**
+
+**B**
+
+Random
+
+ATCNet
+
+U-Net
+
+LaBraM
+
+REVE
+
+CBraMod
+
+Random
+
+ATCNet
+
+U-Net
+
+LaBraM
+
+REVE
+
+CBraMod
+
+**DANCE**
+
+Figure 2 DANCE yields a threefold improvement in event-based F1 over all baselines.
+
+A. Performance averaged across subjects and datasets (Mean ± SEM) comparing baselines and ablations against the
+
+proposed DANCE model. Statistical significance via Linear Mixed-Effects Models (LMM; [Section B.4.2](#22)) is indicated as
+
+follows: ∗p \< 0.05, ∗∗p \< 0.01, and ∗∗∗p \< 0.001. B. Normalized radar profiles showing relative averaged performance
+
+per subject across individual datasets. Axes are normalized to the best-performing method for each dataset. Numeric
+
+annotations indicate the absolute score of DANCE at each vertex, and the outer ring groups datasets by task category.
+
+we include Speech (Broderick, SparrKULee) and Typing (Pinet) tasks, in which event durations are very
+
+short. We also include BCI datasets, with events ranging from 1 to 5 seconds. For the P300 paradigm from
+
+the Brain Invaders suite (BI2013, BI2014a, BI2014b), the number of events per window is high and we detect
+
+both target and non-target visual stimuli. For Motor Imagery datasets (BNCI2014, BNCI2015), events are
+
+scarcer and provide longer-duration events associated with endogenous cognitive processes. To assess DANCE
+
+capabilities on longer events, we include the Temple University Artifact corpus (TUAR) with overlapping
+
+long artifacts, and the Temple University Seizure (TUSZ) dataset—the largest open-source corpus for seizure
+
+monitoring—where precise end-to-end event identification is of critical diagnostic value.
+
+Preprocessing To ensure consistency across domains, we apply a unified preprocessing pipeline to all datasets,
+
+following the minimal protocol proposed by [Lévy et al. ](#12)([2025](#12)). Signals are first bandpass-filtered between 0.1
+
+and 100 Hz then resampled to a common rate of fs = 128 Hz. Subsequently, we apply robust normalization
+
+to each channel within each session. This is achieved using a RobustScaler ([Pedregosa et al.](#12)[,](#12) [2011](#12)), which
+
+subtracts the median and divides by the interquartile range, followed by a clamping operation to restrict
+
+values to the interval \[−16, 16\].
+
+Evaluation methods We employ a cross-subject splitting for all datasets. More implementation details for
+
+model training and evaluation can be found respectively in [Sections B.3 ](#19)and [B.4](#22).
+
+We first compare the overall performance of DANCE to six baseline approaches. First, a Random model
+
+informed by dataset statistics, which randomly samples k events from the total event pool, where k is the
+
+window duration multiplied by the mean event frequency. This is a strong baseline as it leverages real
+
+event distributions. Second, a modified window-based model: ATCNet ([Altaheri et al.](#11)[,](#11) [2023](#11)). Third, a
+
+segmentation-based model: USleep ([Perslev et al.](#12)[,](#12) [2021](#12)). Finally, three EEG foundation models: LaBraM
+
+([Jiang et al.](#12)[,](#12) [2024](#12)), CBraMod ([Wang et al.](#13)[,](#13) [2025a](#13)) and REVE ([El Ouahidi et al.](#11)[,](#11) [2025](#11)). We also compare
+
+DANCE against two ablations: DANCE w/out Decoder, to assess the benefit of the sparse view, and DANCE
+
+w/out Hybrid to evaluate the impact of our hybrid learning objective. A challenge for fair comparison is
+
+that most available models only report onset-informed performances. For both window-based and foundation
+
+models, we adapted them to the continuous setting by generating timestep-level predictions, in particular
+
+6
+
+-----
+
+|  |
+| :-: |
+| [**Page 7**]() |
+
+replacing the final classifier with a dense prediction layer for foundation models. More information on baselines,
+
+ablations, and tuning can be found in [Sections B.2](#17)[,](#17) [B.4.3 ](#22)and [B.4.4](#23).
+
+The evaluation reports two metrics: F1event and F1sample over the 10 datasets. [Figure 2 ](#6)summarizes these
+
+results, presenting both the aggregated performance distributions across datasets (A) and detailed per-dataset
+
+outcomes (B).
+
+Sample-based and event-based performance DANCE significantly outperforms every baseline on the event-
+
+based metric, reaching F1event = 0.397 ± 0.042 — a threefold improvement over the strongest baseline,
+
+CBraMod (0.126; p \< 10−6 with Linear Mixed-Effects Models). On the sample-based metric, results are
+
+closer: DANCE reaches F1sample = 0.521 ± 0.052, statistically tied with REVE and LaBraM and significantly
+
+above CBraMod (p = 0.006). The detailed performance breakdown is summarized via radar plots normalized
+
+by the highest performance ([Figure 2](#6)B). The results show that a model can achieve strong performance
+
+on sample-based metrics while performing poorly on event-based metrics. Notably, DANCE avoids the
+
+catastrophic failure modes observed in traditional attention or CNN approaches (e.g., ATCNet on BNCI2014
+
+or U-Net on BI2014b).
+
+Distance-based performance Additionally, we report a class-agnostic detection F1 (F1det) and a median
+
+center-point error (∆ctr, in seconds) to provide an interpretation of model performance in physical time units.
+
+([Figure A.1](#15)B and [Table A.1](#16)). DANCE dominates the best baseline on both axes on all 10 datasets, with
+
+median center localization staying within 25% of event duration in every case (e.g. 14 ms on 80 ms phonemes,
+
+78 ms on 4-second motor-imagery trials, and 4.5 s on multi-minute seizures). The best baseline meanwhile is 2
+
+to 19× less precise than DANCE on cognitive tasks and 3× on BCI motor imagery. The recall gap is very
+
+large on long events: DANCE retrieves 10× more seizures on TUSZ than the best baseline.
+
+Ablation experiments Finally, the ablation results show the benefit of our architectural choices. We observe
+
+a clear, statistically significant improvement for each block on the F1event metric. The base DANCE w/out
+
+Decoder model (0.161), using only dense predictions, is significantly outperformed by the DANCE w/out
+
+Hybrid variant (0.326, p = 0.015), confirming the critical role of the set-based prediction of events compared to
+
+dense approaches. Furthermore, the full DANCE model with its hybrid optimization also improves performance
+
+compared to the decoder-only configuration (0.398, p = 0.025), confirming that the modified learning objective
+
+is essential for optimal performance.
+
+**GT**
+
+DANCE
+
+**F1e: 0.91**
+
+**F1s: 0.96**
+
+CBraMod
+
+**F1e: 0.00**
+
+**F1s: 0.52**
+
+U-Net
+
+**F1e: 0.00**
+
+**F1s: 0.85**
+
+0s
+
+50s 100s 150s 200s 250s 300s 350s
+
+**Seizure**
+
+Focal Generalized
+
+Absence
+
+CT
+
+**F1e: 0.35**
+
+**F1s: 0.74**
+
+**F1e: 0.23**
+
+**F1s: 0.53**
+
+**F1e: 0.08**
+
+**F1s: 0.51**
+
+275s
+
+280s
+
+285s
+
+290s
+
+**Artifact**
+
+Eye M. Muscle
+
+Elec. Pop
+
+Chew
+
+Shiver
+
+**F1e: 0.39**
+
+**F1s: 0.74**
+
+**F1e: 0.01**
+
+**F1s: 0.10**
+
+**F1e: 0.07**
+
+**F1s: 0.31**
+
+150s 152s 154s 156s 158s 160s
+
+**P300**
+
+Non-Target
+
+Target
+
+Figure 3 DANCE yields qualitatively superior event predictions than baseline architectures. Visualization of selected session
+
+segments comparing three architectures: U-Net, CBraMod, and our proposed model. Ground truth (GT) events are
+
+depicted alongside predictions from the respective models. Solid outlines indicate true positives, while dashed outlines
+
+denote false positives with respect to F1event. Colors represent distinct classes. F1event (F1e) and F1sample (F1s) are
+
+shown on the right for each portion.
+
+Visualization of decoded events [Figure 3 ](#7)illustrates the temporal decoding capabilities of our model compared
+
+to the CBraMod and U-Net baselines. We selected three datasets (TUSZ, TUAR, BI2014b) to demonstrate
+
+the versatility of our architecture across diverse signal characteristics, protocols, and event durations.
+
+The left panel highlights performance on long-duration events, showing a 350-second window containing focal
+
+seizures (red). Our model successfully detects and classifies all five seizure events. Conversely, the baselines
+
+7
+
+-----
+
+|  |
+| :-: |
+| [**Page 8**]() |
+
+exhibit significant degradation; they detect the initial three events but fail to classify them correctly and
+
+completely miss the subsequent two seizures. Both CBraMod and U-Net yield fragmented predictions. In
+
+particular, F1sample fails to penalize U-Net while F1event does. It is worth noting that even with heuristic
+
+post-processing (e.g., gap-filling with varying thresholds), these fragmented outputs fail to improve the F1event
+
+metric. We detail the impact of post-processing methods in [Section B.2](#17).
+
+The middle panel shows a 15-second segment from the TUAR dataset. DANCE produces the most precise
+
+predictions, correctly distinguishing between different eye-movements and identifying an electrode-pop artifact.
+
+In contrast, the two baseline models fail to separate the artifacts types and both detect a muscle artifact that
+
+is not present in the signal.
+
+The right panel examines one of the Brain Invaders P300 dataset (BI2014b). This task involves distinguishing
+
+between non-target (orange) and target (blue) events lasting one second. Our model identifies the non-target
+
+events and provides an approximate localization of the target event. CBraMod fails to detect these events
+
+entirely. U-Net offers reasonable localization but struggles with class specificity, generating a false positive
+
+around the 158 s mark.
+
+These visualizations highlight the model’s ability to generate temporally coherent event proposals across
+
+a wide range of event durations, inter-event gaps, and signal complexities, without relying on additional
+
+post-processing. We show other examples on BCI datasets in [Figure A.4](#18).
+
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+60
+
+70
+
+**F1seizure (%) on TUSZ**
+
+EEGWaveNet
+
+DCRNN
+
+Zhu-Transformer
+
+EventNet
+
+DANCE w/out Hybrid
+
+DANCE w/out Decoder
+
+SeizureTransformer
+
+DANCE
+
+**10.9%**
+
+**19.2%**
+
+**42.6%**
+
+**48.3%**
+
+**53.2%**
+
+**53.6%**
+
+**58.0%**
+
+**62.1%**
+
+Literature
+
+This Work
+
+DANCE
+
+Benchmark avg DANCE Benchmark SOTA
+
+0
+
+20
+
+40
+
+60
+
+80
+
+100
+
+**Accuracy (%) on BNCI2014**
+
+**61.3%**
+
+**68.1%**
+
+**77.8%**
+
+Literature (onset-informed)
+
+**A**
+
+**B**
+
+Figure 4 DANCE establishes a new state-of-the-art for clinical seizure monitoring on the TUSZ dataset and matches onset-
+
+informed approaches on BNCI2014. A. Benchmarking of DANCE against existing literature and ablation baselines using
+
+the F1seizure metric. Scores are reported from [Wu et al. ](#13)([2025](#13)). DANCE is evaluated across 3 model seeds. TUSZ has
+
+a fixed test split. B. Intra-session performance on the BNCI2014 dataset for DANCE and the MOABB ([Chevallier](#11)
+
+[et al.](#11)[,](#11) [2024](#11)) benchmark. Standard deviation is reported.
+
+Seizure Monitoring We further validate our model in the context of seizure monitoring. We benchmark our
+
+approach against recent methods for event-based segmentation of seizures: SeizureTransformer ([Wu et al.](#13),
+
+[2025](#13)), EventNet ([Seeuws et al.](#13)[,](#13) [2024](#13)), ZhuTransformer ([Zhu and Wang](#14)[,](#14) [2023](#14)), DCRNN ([Tang et al.](#13)[,](#13) [2022](#13)),
+
+and EEGWaveNet ([Thuwajit et al.](#13)[,](#13) [2022](#13)). We report the mean performance across three runs with different
+
+seeds on the fixed test set in [Figure 4](#8)A. Our model outperforms these prior works on the F1seizure
+
+[1 ](#8)score,
+
+reaching 62.1% on the fixed test set vs. 58.0% for the second-best method. By increasing the confidence
+
+threshold to strongly suppress false alarms (threshold = 0.99), DANCE achieves 1.88 false positives per 24
+
+hours—a key clinical metric—while maintaining an F1seizure above 58.0%, highlighting its potential clinical
+
+relevance.
+
+DANCE versus Onset-informed Approaches How does our end-to-end approach compare to onset-informed
+
+pipelines? As established in the comprehensive benchmark by [Chevallier et al. ](#11)([2024](#11)), state-of-the-art
+
+methods on BNCI2014 achieve an average classification accuracy of 61.3% with intra-session splitting, with
+
+the best-performing model scoring 77.82%. We use the same protocol for comparison. We define accuracy
+
+1For the seizure detection task, we use the binary F1 score F1seizure to avoid over-reliance on the dominant background class,
+
+in line with recent recommendations ([Dan et al.](#11)[,](#11) [2025](#11)).
+
+8
+
+-----
+
+|  |
+| :-: |
+| [**Page 9**]() |
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+Q41
+
+Q120
+
+Q145
+
+Q132
+
+Q133
+
+Q37
+
+Q144
+
+Q114
+
+Q72
+
+Q88
+
+Query ID
+
+**P300**
+
+Non Target
+
+Target
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+Normalized Time
+
+Q38
+
+Q30
+
+Q26
+
+Q18
+
+Q32
+
+**Motor Imagery**
+
+Feet
+
+Right Hand
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+Q0
+
+Q11
+
+Q19
+
+Q12
+
+Q10
+
+Q3
+
+**Artifacts**
+
+Elpp
+
+Eye Mov
+
+Musc
+
+Figure 5 DANCE queries dynamically specialize in specific temporal regions and event classes. Visualization of the temporal
+
+distribution of predictions across selected queries. For each query row, the outer envelope corresponds to when the
+
+query activates. This is the total density of predictions. The colored bands indicate what it predicts. The stacked
+
+inner colored bands decompose this density by predicted class (most frequent at the base). A sharp, narrow envelope
+
+indicates temporal specialization, while a dominant color indicates class specialization.
+
+on match as the classification accuracy computed only over predictions that are temporally matched to a
+
+ground-truth event. Our model, which simultaneously detects and classifies, achieves an accuracy on match of
+
+68.14%, supported by a standard F1 score on all predictions of 96.57% (Recall = 98.55%, Precision = 94.69%;
+
+[Figure 4](#8)B). This result suggests that, on highly structured datasets like BNCI2014, competitive decoding
+
+performance can be achieved without onset information.
+
+Query Specialization By inspecting the learned queries, we can gain insights into how DANCE specializes
+
+across event classes and temporal localization. [Figure 5 ](#9)shows selected event queries across three datasets,
+
+where we visualize the distribution of predicted event centers: peaked distributions indicate temporal specializa-
+
+tion, with queries consistently attending to narrow regions of the time window, while color composition reflects
+
+class specialization, with monochromatic distributions indicating queries that exclusively detect a specific class.
+
+The results for the P300 task (BI2013) are displayed on the left, with 10 of the 150 queries shown. We observe
+
+both temporal and class specialization, consistent with findings in computer vision models ([Carion et al.](#11)[,](#11) [2020](#11)).
+
+Among queries sharing similar temporal localizations (e.g., Q145 and Q120), we observe specialization to
+
+different classes, indicating that queries effectively disentangle detection and classification. The middle panel
+
+shows Motor Imagery (BNCI2015), where temporal specialization remains clear but with broader distributions.
+
+Some queries are class-specific (Q30, Q18), while others attend to both classes (Q38). Finally, the right panel
+
+examines the Artifacts task: while some queries remain class-specialized (Q19, Q3), temporal distributions are
+
+more relaxed, with broad overlapping receptive fields rather than sharp localization, and some queries exhibit
+
+hybrid behavior by attending to multiple artifact types (Q10). Overall, these findings suggest that DANCE
+
+does not enforce a rigid template, but instead adapts its querying mechanism to the structure of each dataset.
+
+7 Discussion
+
+In this work, we introduce DANCE, an end-to-end model to jointly detect and classify events from neural
+
+time series. Thanks to its flexible architecture, DANCE can be readily applied to a variety of tasks and event
+
+types. The fact that DANCE achieves good performance without onsets and with a common architecture is
+
+an improvement over the current practices in EEG where specialized onset-based architectures are used for
+
+each task (e.g., SeizureTransformer ([Wu et al.](#13)[,](#13) [2025](#13)) for seizure or ATCNet ([Altaheri et al.](#11)[,](#11) [2023](#11)) for BCI.)
+
+By framing event detection as a set prediction problem, rather than as a timestep-wise classification task and
+
+adapting it to the noisy and heterogeneous EEG setting, we shift towards more realistic settings and show
+
+that time-locked scenarios are not a prerequisite for high-performance decoding.
+
+9
+
+-----
+
+|  |
+| :-: |
+| [**Page 10**]() |
+
+Limitations. While our model demonstrates capabilities in identifying temporal boundaries and classes
+
+of diverse events, specific challenges remain. First, for very short events, such as phonemes or keystrokes,
+
+we restrict the task to voice detection. Datasets with very short events are characterized by a high event
+
+density. In this context with low-SNR EEG, even onset-based approaches struggle to correctly classify events
+
+without including broader context ([Défossez et al.](#11)[,](#11) [2023](#11)), language priors ([Zhang et al.](#14)[,](#14) [2025b](#14)) or higher
+
+SNR modalities ([Sivakumar et al.](#13)[,](#13) [2024](#13)[;](#13) [Willett et al.](#13)[,](#13) [2021](#13)). Second, while our unified architecture can
+
+be adapted to a variety of tasks without any changes, we have not yet observed any improvements from
+
+jointly training across datasets, likely due to the heterogeneity and limited size of the datasets considered.
+
+Addressing this limitation constitutes a natural next research direction. However, our method paves the way
+
+towards large-scale pretraining for event detection — a task for which current EEG foundational models fall
+
+short, as evidenced by CBraMod ([Wang et al.](#13)[,](#13) [2025a](#13)), REVE ([El Ouahidi et al.](#11)[,](#11) [2025](#11)) and LaBraM ([Jiang](#12)
+
+[et al.](#12)[,](#12) [2024](#12)) which substantially underperform our pipeline.
+
+10
+
+-----
+
+|  |
+| :-: |
+| [**Page 11**]() |
+
+References
+
+S Abirami, M Kathiravan, Rajamanickam Yuvaraj, Ramshekhar N Menon, John Thomas, PA Karthick, A Amalin
+
+Prince, Jac Fredo Agastinose Ronickom, et al. Automated multi-class seizure-type classification system using EEG
+
+signals and machine learning algorithms. IEEE Access, 12:136524–136541, 2024.
+
+Bernd Accou, Lies Bollens, Marlies Gillis, Wendy Verheijen, Hugo Van Hamme, and Tom Francart. Sparrkulee: A
+
+speech-evoked auditory response repository from ku leuven, containing the EEG of 85 participants. Data, 9(8):94,
+
+2024\.
+
+Hamdi Altaheri, Ghulam Muhammad, and Mansour Alsulaiman. Physics-informed attention temporal convolutional
+
+network for EEG-based motor imagery classification. IEEE Transactions on Industrial Informatics, 19(2):2249–2258,
+
+2023\.
+
+Hubert Banville, Yohann Benchetrit, Stéphane d’Ascoli, Jérémy Rapin, and Jean-Rémi King. Scaling laws for decoding
+
+images from brain activity. preprint arXiv:2501.15322, 2025.
+
+Michael P Broderick, Andrew J Anderson, Giovanni M Di Liberto, Michael J Crosse, and Edmund C Lalor. Electro-
+
+physiological correlates of semantic dissimilarity reflect the comprehension of natural, narrative speech. Current
+
+Biology, 28(5):803–809, 2018.
+
+Nicolas Carion, Francisco Massa, Gabriel Synnaeve, Nicolas Usunier, Alexander Kirillov, and Sergey Zagoruyko.
+
+End-to-end object detection with transformers. In European Conference on Computer Vision (ECCV). Springer,
+
+2020\.
+
+Stanislas Chambon, Valentin Thorey, Pierrick J Arnal, Emmanuel Mignot, and Alexandre Gramfort. DOSED: A deep
+
+learning approach to detect multiple sleep micro-events in EEG signal. Journal of neuroscience methods, 321:64–78,
+
+2019\.
+
+Félix Chavelli, Paul Boniol, and Michaël Thomazo. Toward interpretable evaluation measures for time series
+
+segmentation. preprint arXiv:2510.23261, 2025.
+
+Joseph Y Cheng, Hanlin Goh, Kaan Dogrusoz, Oncel Tuzel, and Erdrin Azemi. Subject-aware contrastive learning for
+
+biosignals. preprint arXiv:2007.04871, 2020.
+
+Sylvain Chevallier, Igor Carrara, Bruno Aristimunha, Pierre Guetschel, Sara Sedlar, Bruna Lopes, Sébastien Velut,
+
+Salim Khazem, and Thomas Moreau. The largest EEG-based BCI reproducibility study for open science: the moabb
+
+benchmark. preprint arXiv:2404.15319, 2024.
+
+Marco Congedo, Matthieu Goyat, Nicolas Tarrin, Gelu Ionescu, Léo Varnet, Bertrand Rivet, Ronald Phlypo, Nisrine
+
+Jrad, Michaël Acquadro, and Christian Jutten. "Brain Invaders": a prototype of an open-source P300-based video
+
+game working with the openvibe platform. In International Brain-Computer Interface Conference (BCI), 2011.
+
+Alexander Craik, Yongtian He, and Jose L Contreras-Vidal. Deep learning for electroencephalogram (EEG) classification
+
+tasks: a review. Journal of neural engineering, 16(3):031001, 2019.
+
+Jonathan Dan, Amirhossein Shahbazinia, Christodoulos Kechris, and David Atienza. Szcore as a benchmark: report
+
+from the seizure detection challenge at the 2025 AI in epilepsy and neurological disorders conference. preprint
+
+arXiv:2505.18191, 2025.
+
+Alexandre Défossez, Charlotte Caucheteux, Jérémy Rapin, Ori Kabeli, and Jean-Rémi King. Decoding speech
+
+perception from non-invasive brain recordings. Nature Machine Intelligence, 5(10):1097–1107, 2023.
+
+Yassine El Ouahidi, Jonathan Lys, Philipp Thölke, Nicolas Farrugia, Bastien Pasdeloup, Vincent Gripon, Karim Jerbi,
+
+and Giulia Lioi. Reve: A foundation model for EEG – adapting to any setup with large-scale pretraining on 25,000
+
+subjects. In Advances in Neural Information Processing Systems, 2025.
+
+Josef Faller, Carmen Vidaurre, Teodoro Solis-Escalante, Christa Neuper, and Reinhold Scherer. Autocalibration
+
+and recurrent adaptation: Towards a plug and play online ERD-BCI. IEEE Transactions on Neural Systems and
+
+Rehabilitation Engineering, 20(3):313–319, 2012.
+
+Ross Girshick, Jeff Donahue, Trevor Darrell, and Jitendra Malik. Rich feature hierarchies for accurate object detection
+
+and semantic segmentation. In IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2014.
+
+Ahmed Hamid, Katherine Gagliano, Safwanur Rahman, Nikita Tulin, Vincent Tchiong, Iyad Obeid, and Joseph Picone.
+
+The temple university artifact corpus: An annotated corpus of EEG artifacts. In Signal Processing in Medicine and
+
+Biology Symposium (SPMB). IEEE, 2020.
+
+11
+
+-----
+
+|  |
+| :-: |
+| [**Page 12**]() |
+
+Geoffrey Hinton, Oriol Vinyals, and Jeff Dean. Distilling the knowledge in a neural network. preprint arXiv:1503.02531,
+
+2015\.
+
+Andrew Jaegle, Felix Gimeno, Andy Brock, Oriol Vinyals, Andrew Zisserman, and Joao Carreira. Perceiver: General
+
+perception with iterative attention. In International Conference on Machine Learning (ICML). PMLR, 2021.
+
+Weibang Jiang, Liming Zhao, and Bao liang Lu. Large brain model for learning generic representations with tremendous
+
+EEG data in BCI. In International Conference on Learning Representations (ICLR), 2024.
+
+Louis Korczowski, Ekaterina Ostaschenko, Anton Andreev, Grégoire Cattan, Pedro Luiz Coelho Rodrigues, Violette
+
+Gautheret, and Marco Congedo. Brain Invaders calibration-less P300-based BCI using dry EEG electrodes dataset
+
+(bi2014a). Technical report, GIPSA-lab, 2019a.
+
+Louis Korczowski, Ekaterina Ostaschenko, Anton Andreev, Grégoire Cattan, Pedro Luiz Coelho Rodrigues, Violette
+
+Gautheret, and Marco Congedo. Brain Invaders solo versus collaboration: Multi-user P300-based brain-computer
+
+interface dataset (bi2014b). Technical report, GIPSA-lab, 2019b.
+
+H. W. Kuhn. The Hungarian method for the assignment problem. Naval Research Logistics Quarterly, 2(1-2):83–97,
+
+1955\.
+
+Vernon J Lawhern, Amelia J Solon, Nicholas R Waytowich, Stephen M Gordon, Chou P Hung, and Brent J Lance.
+
+EEGNet: a compact convolutional neural network for EEG-based brain–computer interfaces. Journal of Neural
+
+Engineering (JNE), 15(5):056013, 2018.
+
+Salomé Le Franc, Gabriela Herrera Altamira, Maud Guillen, Simon Butet, Stéphanie Fleck, Anatole Lécuyer, Laurent
+
+Bougrain, and Isabelle Bonan. Toward an adapted neurofeedback for post-stroke motor rehabilitation: state of the
+
+art and perspectives. Frontiers in Human Neuroscience, 16:917909, 2022.
+
+Jarod Lévy, Mingfang Zhang, Svetlana Pinet, Jérémy Rapin, Hubert Banville, Stéphane d’Ascoli, and Jean-Rémi King.
+
+Brain-to-text decoding: A non-invasive approach via typing. preprint arXiv:2502.17480, 2025.
+
+Feng Li, Hao Zhang, Shilong Liu, Jian Guo, Lionel M Ni, and Lei Zhang. Dn-detr: Accelerate detr training by
+
+introducing query denoising. In IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR),
+
+2022\.
+
+Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays, Pietro Perona, Deva Ramanan, Piotr Dollár, and C Lawrence
+
+Zitnick. Microsoft COCO: Common objects in context. In European Conference on Computer Vision (ECCV).
+
+Springer, 2014.
+
+Ilya Loshchilov and Frank Hutter. Decoupled weight decay regularization. In International Conference on Learning
+
+Representations (ICLR), 2019.
+
+Lena Maier-Hein, Annika Reinke, Patrick Godau, Minu D Tizabi, Florian Buettner, Evangelia Christodoulou, Ben
+
+Glocker, Fabian Isensee, Jens Kleesiek, Michal Kozubek, et al. Metrics reloaded: recommendations for image analysis
+
+validation. Nature methods, 21(2):195–212, 2024.
+
+Joseph N Mak and Jonathan R Wolpaw. Clinical applications of brain-computer interfaces: current state and future
+
+prospects. IEEE reviews in biomedical engineering, 2:187–199, 2009.
+
+Fabian Pedregosa, Gaël Varoquaux, Alexandre Gramfort, Vincent Michel, Bertrand Thirion, Olivier Grisel, Mathieu
+
+Blondel, Peter Prettenhofer, Ron Weiss, Vincent Dubourg, et al. Scikit-learn: Machine learning in python. Journal
+
+of Machine Learning Research (JMLR), 12:2825–2830, 2011.
+
+Mathias Perslev, Sune Darkner, Lykke Kempfner, Miki Nikolic, Poul Jørgen Jennum, and Christian Igel. U-sleep:
+
+resilient high-frequency sleep staging. NPJ digital medicine, 4(1):72, 2021.
+
+Joseph Redmon, S Divvala, R Girshick, and Ali Farhadi. You only look once: Unified, real-time object detection. In
+
+IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2016.
+
+Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun. Faster r-cnn: Towards real-time object detection with region
+
+proposal networks. In Advances in Neural Information Processing Systems (NeurIPS), 2015.
+
+Hamid Rezatofighi, Nathan Tsoi, JunYoung Gwak, Amir Sadeghian, Ian Reid, and Silvio Savarese. Generalized
+
+intersection over union: A metric and a loss for bounding box regression. In Proceedings of the IEEE/CVF Conference
+
+on Computer Vision and Pattern Recognition (CVPR), pages 658–666, 2019.
+
+12
+
+-----
+
+|  |
+| :-: |
+| [**Page 13**]() |
+
+Aaqib Saeed, David Grangier, Olivier Pietquin, and Neil Zeghidour. Learning from heterogeneous EEG signals with
+
+differentiable channel reordering. In International Conference on Acoustics, Speech and Signal Processing (ICASSP).
+
+IEEE, 2021.
+
+Robin Tibor Schirrmeister, Jost Tobias Springenberg, Lukas Dominique Josef Fiederer, Martin Glasstetter, Katha-
+
+rina Eggensperger, Michael Tangermann, Frank Hutter, Wolfram Burgard, and Tonio Ball. Deep learning with
+
+convolutional neural networks for EEG decoding and visualization. Human brain mapping, 38(11):5391–5420, 2017.
+
+Skipper Seabold, Josef Perktold, et al. Statsmodels: econometric and statistical modeling with python. SciPy, 7(1):
+
+92–96, 2010.
+
+Nick Seeuws, Maarten De Vos, and Alexander Bertrand. Avoiding post-processing with event-based detection in
+
+biomedical signals. IEEE Transactions on Biomedical Engineering, 71(8):2442–2453, 2024.
+
+Vinit Shah, Eva Von Weltin, Silvia Lopez, James Riley McHugh, Lillian Veloso, Meysam Golmohammadi, Iyad Obeid,
+
+and Joseph Picone. The temple university hospital seizure detection corpus. Frontiers in neuroinformatics, 12:83,
+
+2018\.
+
+Viswanath Sivakumar, Jeffrey Seely, Alan Du, Sean Bittner, Adam Berenzweig, Anuoluwapo Bolarinwa, Alex Gramfort,
+
+and Michael Mandel. emg2qwerty: A large dataset with baselines for touch typing using surface electromyography.
+
+In Advances in Neural Information Processing Systems (NeurIPS), 2024.
+
+Leslie N Smith and Nicholay Topin. Super-convergence: Very fast training of neural networks using large learning
+
+rates. In Artificial intelligence and machine learning for multi-domain operations applications. SPIE, 2019.
+
+Siyi Tang, Jared A Dunnmon, Khaled Saab, Xuan Zhang, Qianying Huang, Florian Dubost, Daniel L Rubin, and
+
+Christopher Lee-Messer. Self-supervised graph neural networks for improved electroencephalographic seizure analysis.
+
+In International Conference on Learning Representations (ICLR), 2022.
+
+Siyi Tang, Jared A Dunnmon, Qu Liangqiong, Khaled K Saab, Tina Baykaner, Christopher Lee-Messer, and Daniel L
+
+Rubin. Modeling multivariate biosignals with graph neural networks and structured state space models. In Conference
+
+on health, inference, and learning. PMLR, 2023.
+
+Michael Tangermann, Klaus-Robert Müller, Ad Aertsen, Niels Birbaumer, Christoph Braun, Clemens Brunner, Robert
+
+Leeb, Carsten Mehring, Kai J Miller, Gernot R Müller-Putz, et al. Review of the BCI competition iv. Frontiers in
+
+neuroscience, 6:55, 2012.
+
+Punnawish Thuwajit, Phurin Rangpong, Phattarapong Sawangjai, Phairot Autthasan, Rattanaphon Chaisaen, Nan-
+
+napas Banluesombatkul, Puttaranun Boonchit, Nattasate Tatsaringkansakul, Thapanun Sudhawiyangkul, and
+
+Theerawit Wilaiprasitporn. EEGWaveNet: Multiscale CNN-based spatiotemporal feature extraction for EEG seizure
+
+detection. IEEE Transactions on Industrial Informatics, 18(8):5547–5557, 2022.
+
+Jiquan Wang, Sha Zhao, Zhiling Luo, Yangxuan Zhou, Haiteng Jiang, Shijian Li, Tao Li, and Gang Pan. CBramod: A
+
+criss-cross brain foundation model for EEG decoding. In International Conference on Learning Representations
+
+(ICLR), 2025a.
+
+Shuo Wang, Chunlong Xia, Feng Lv, et al. RT-DETRv3: Real-time end-to-end object detection with hierarchical
+
+dense positive supervision. In IEEE/CVF Winter Conference on Applications of Computer Vision (WACV), 2025b.
+
+Francis R Willett, Donald T Avansino, Leigh R Hochberg, Jaimie M Henderson, and Krishna V Shenoy. High-
+
+performance brain-to-text communication via handwriting. Nature, 593(7858):249–254, 2021.
+
+Lukas Wolf, Ard Kastrati, Martyna Beata Płomecka, Jie-Ming Li, Dustin Klebe, Alexander Veicht, Roger Wattenhofer,
+
+and Nicolas Langer. A deep learning approach for the segmentation of electroencephalography data in eye tracking
+
+applications. In International Conference on Machine Learning (ICML). PMLR, 2022.
+
+H. Wu, S. Li, and D. Wu. Motor imagery classification for asynchronous EEG-based brain–computer interfaces. IEEE
+
+Transactions on Neural Systems and Rehabilitation Engineering, 32:527–536, 2024.
+
+Kerui Wu, Ziyue Zhao, and Bülent Yener. Seizuretransformer: Scaling U-Net with transformer for simultaneous
+
+time-step level seizure detection from long EEG recordings. preprint arXiv:2504.00336, 2025.
+
+Mingfang Zhang, Jarod Lévy, Stéphane d’Ascoli, Jérémy Rapin, F Alario, Pierre Bourdillon, Svetlana Pinet, Jean-Rémi
+
+King, et al. From thought to action: How a hierarchy of neural dynamics supports language production. preprint
+
+arXiv:2502.07429, 2025a.
+
+Xun Zhang, Jiaxing Li, Ruijie Zhang, and Tao Liu. A brain-controlled and user-centered intelligent wheelchair: A
+
+feasibility study. Sensors, 24(10):3000, 2024.
+
+13
+
+-----
+
+|  |
+| :-: |
+| [**Page 14**]() |
+
+Yizi Zhang, Linyang He, Chaofei Fan, Tingkai Liu, Han Yu, Trung Le, Jingyuan Li, Scott Linderman, Lea Duncker,
+
+Francis R Willett, et al. Decoding inner speech with an end-to-end brain-to-text neural interface. arXiv preprint
+
+arXiv:2511.21740, 2025b.
+
+Yian Zhao, Wenyu Lv, Shangliang Xu, Jinman Wei, Guanzhong Wang, Qingqing Dang, Yi Liu, and Jie Chen. DETRs
+
+beat YOLOs on real-time object detection. In IEEE/CVF Conference on Computer Vision and Pattern Recognition
+
+(CVPR), 2024.
+
+Yuanda Zhu and May D Wang. Automated seizure detection using transformer models on multi-channel EEGs. In
+
+EMBS International Conference on Biomedical and Health Informatics (BHI). IEEE, 2023.
+
+Zhuofan Zong, Guanglu Song, and Yu Liu. DETRs with collaborative hybrid assignments training. In IEEE/CVF
+
+International Conference on Computer Vision (ICCV), 2023.
+
+14
+
+-----
+
+|  |
+| :-: |
+| [**Page 15**]() |
+
+A Complementary Analysis
+
+A.1 Metric robustness and decoupled analysis
+
+F1event groups three facets of a prediction: detection, classification, and temporal precision. We decouple it
+
+with two complementary physical-unit metrics:
+
+• F1det: class-agnostic detection at IoU ≥ 0.5, isolating detection from classification.
+
+• ∆ctr: median center-point error of matched true positives, in seconds, isolating temporal precision from
+
+detection and classification.
+
+0.1
+
+0.3
+
+0.5
+
+0.7
+
+0.9
+
+IoU threshold
+
+0.00
+
+0.10
+
+0.20
+
+0.30
+
+0.40
+
+0.50
+
+0.60
+
+0.70
+
+F1event
+
+**A. DANCE F1**event **sensitivity to IoU threshold**
+
+**BNCI2014**
+
+**BNCI2015**
+
+**SparrKULee**
+
+**Broderick**
+
+**Pinet**
+
+**TUAR**
+
+**BI2013**
+
+**BI2014a**
+
+**BI2014b**
+
+**TUSZ**
+
+0.10
+
+1.00
+
+Center prediction error (seconds, log scale better)
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+F1detect (
+
+better)
+
+**BI2013**
+
+*LaBraM*
+
+**BI2014a**
+
+*REVE*
+
+**BI2014b**
+
+*LaBraM*
+
+**BNCI2014**
+
+*REVE*
+
+**BNCI2015**
+
+*REVE*
+
+**Broderick**
+
+*CBraMod*
+
+**SparrKULee**
+
+*REVE*
+
+**TUAR**
+
+*CBraMod*
+
+**Pinet**
+
+*U-Net*
+
+**TUSZ**
+
+*REVE*
+
+**B. Detection vs localisation: DANCE vs best baseline**
+
+DANCE
+
+Best rival (per dataset)
+
+Improvement
+
+Figure A.1 A. F1event of DANCE as a function of the IoU acceptance threshold τ, one curve per dataset (coloured by
+
+task domain). B. Detection quality (F1det, class-agnostic, ↑ better) versus temporal precision (∆ctr, center-point error
+
+in seconds, log scale, ← better) for DANCE (coloured) against the best non-ablation rival (grey). If the arrow points
+
+to the upper left, it means DANCE dominates on both axes. The arrow runs from the best baseline to the DANCE
+
+model.
+
+Panel A shows that F1event decays monotonically and smoothly with τ on all ten datasets, with no cliff
+
+between the τ = 0.5 default and the stricter τ = 0.9 regime: the chosen operating point is not a knife-edge.
+
+Panel B and [Table A.1 ](#16)report the physical-unit picture per dataset: DANCE dominates the best rival on both
+
+axes on every one of the 10 datasets. In absolute terms, ∆ctr is 14–74 ms on speech (Broderick, SparrKULee),
+
+21 ms on typing (Pinet), ∼ 125 ms across the three P300 datasets, 78–170 ms on BCI motor-imagery, 261 ms
+
+on TUAR artifacts, and 4.5 s on TUSZ seizures. Relative to event duration, this amounts to 17–25% on
+
+sub-second speech and typing events, ∼ 12% on P300 stimuli, and ≤ 7% on every other dataset. This is
+
+consistent with the main reported results. The predicted event center sits well inside the true event’s temporal
+
+support, which is the precision required to time-lock a prediction to the underlying neural response for
+
+downstream analysis (ERP averaging, BCI feedback, clinical onset tagging). F1det is meanwhile 3× to 19×
+
+higher than the best rival on 6/10 datasets (e.g. BI2013: 0.64 vs. 0.03 for LaBraM), and exceeds it on every
+
+dataset, so this precision is achieved while retrieving strictly more events.
+
+15
+
+-----
+
+|  |
+| :-: |
+| [**Page 16**]() |
+
+Table A.1 Decoupled detection and localization metrics. F1detect measures class-agnostic detection (IoU≥0.5). F1event
+
+adds class awareness. ∆center is the mean temporal error of true positives in seconds. Best rival is the highest-scoring
+
+non-ablation baseline per dataset.
+
+DANCE
+
+Best Rival
+
+Dataset
+
+Rival
+
+F1det
+
+F1evt
+
+∆ctr (s) F1det
+
+F1evt
+
+∆ctr (s)
+
+BNCI2014
+
+REVE
+
+0.909 0.398
+
+0.078
+
+0.745 0.288
+
+0.241
+
+BNCI2015
+
+REVE
+
+0.843 0.573
+
+0.170
+
+0.459 0.257
+
+0.551
+
+SparrKULee REVE
+
+0.411 0.411
+
+0.074
+
+0.223 0.223
+
+0.787
+
+Broderick
+
+CBraMod 0.446 0.446
+
+0.014
+
+0.145 0.145
+
+0.260
+
+Pinet
+
+U-Net
+
+0.354 0.354
+
+0.021
+
+0.021 0.021
+
+0.038
+
+TUAR
+
+CBraMod 0.188 0.145
+
+0.261
+
+0.172 0.122
+
+0.377
+
+BI2013
+
+LaBraM
+
+0.639 0.500
+
+0.128
+
+0.034 0.027
+
+0.535
+
+BI2014a
+
+REVE
+
+0.704 0.530
+
+0.125
+
+0.060 0.055
+
+0.411
+
+BI2014b
+
+LaBraM
+
+0.529 0.392
+
+0.121
+
+0.138 0.122
+
+0.352
+
+TUSZ
+
+REVE
+
+0.353 0.210
+
+4.522
+
+0.034 0.020
+
+4.720
+
+A.2 Sensitivity to the DETR loss weights
+
+The DETR component of the hybrid loss balances temporal localization (λIoU) and event classification (λclass).
+
+We selected the default configuration (λIoU,λclass) = (5, 1) to bias optimisation toward precise temporal
+
+boundaries before refining the discrete classification of those bounded segments. To show that the model is
+
+robust to this choice, we re-trained DANCE on the four corners of the (λIoU,λclass) ∈ {1, 5}2 grid on three
+
+datasets (BI2014b, BNCI2014, Broderick), keeping every other hyperparameter fixed and using the same 5-fold
+
+cross-validation protocol as in the main experiments. Figure [A.2 ](#17)reports both F1sample and F1event averaged
+
+across the three datasets. The two metrics vary by less than 0.05 F1 across the swept range, confirming the
+
+robustness
+
+A.3 Window size is determined by architectural constraints
+
+The choice of the window size is fully determined by two architectural constraints:
+
+• Coverage (lower bound): W must be long enough to fully contain the target events. For example, the
+
+256 s window used on TUSZ is required because the average seizure duration is 67.7 s and routinely
+
+exceeds four minutes.
+
+• Resolution (upper bound): DANCE resamples every window to a fixed latent of NQtime = 256 tokens
+
+([Section B.3](#19)). Accurate boundary regression requires each event to be represented by at least three
+
+latent tokens, yielding the rule of thumb
+
+NQtime
+
+¯n
+
+\=
+
+256
+
+¯n
+
+≥ 3 ,
+
+where ¯n is the mean number of events per window.
+
+[Figure A.3 ](#18)validates this design on the phoneme case, the dataset closest to the resolution bound: at W = 8 s
+
+(3.4 tokens/event) DANCE is at its optimum, while doubling W pushes ¯n past the three-token cutoff and
+
+F1event collapses regardless of how queries are allocated. The fixed-NQevent baseline falls to 18%, and scaling
+
+NQevent in proportion to W drops further to ∼ 1%.
+
+[Table A.2 ](#19)shows that every other dataset sits comfortably inside the safe regime, with Tokens/Event ranging
+
+from 4.3 on BI2013 up to 1024 on TUSZ. This gives a clear heuristic on how to find the grid of valid
+
+(W, NQevent ).
+
+16
+
+-----
+
+|  |
+| :-: |
+| [**Page 17**]() |
+
+(1, 1)
+
+(1, 5)
+
+(5, 1)
+
+(5, 5)
+
+( IoU, class)
+
+0.0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+Score
+
+B. DETR Loss Weights Sensitivity
+
+*F*1 sample
+
+*F*1 event
+
+Figure A.2 DANCE is robust to the DETR loss weights. Mean F1sample (blue) and F1event (green) over BI2014b, BNCI2014
+
+and Broderick (5-fold CV per dataset) for four configurations of the DETR localization and classification loss weights
+
+(λIoU, λclass). Error bars are the SEM across datasets. The default configuration (5, 1) used in every other exp

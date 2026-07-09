@@ -1,0 +1,897 @@
+Leakage and the reproducibility crisis in machine-learning-based science 
+
+Article
+
+Leakage and the reproducibility crisis in machine- learning-based science
+
+Highlights d Data leakage is a flaw in machine learning that leads to
+
+overoptimistic results
+
+d Our survey of prior reviews shows leakage affects 294 papers
+
+across 17 scientific fields
+
+d We provide a taxonomy of leakage and introduce model info
+
+sheets to mitigate it
+
+d We show how leakage can lead to overoptimism with a case
+
+study on civil war prediction
+
+Authors
+
+Sayash Kapoor, Arvind Narayanan
+
+Correspondence sayashk@princeton.edu
+
+In brief Kapoor and Narayanan show that leakage is a widespread failure mode in machine- learning (ML)-based science. Based on a survey of past reviews, they find that it affects at least 294 papers across 17 disciplines. They provide a taxonomy of eight types of leakage and propose model info sheets to mitigate it. They show that leakage can lead to severe overoptimism through a case study of civil war prediction. Several papers claimed that ML models drastically outperform older regression models. This is no longer the case when leakage is fixed.
+
+Kapoor & Narayanan, 2023, Patterns 4, 100804 September 8, 2023 © 2023 The Author(s). https://doi.org/10.1016/j.patter.2023.100804 ll
+
+Article Leakage and the reproducibility crisis in machine-learning-based science
+
+Sayash Kapoor1,2,\* and Arvind Narayanan1 1Department of Computer Science and Center for Information Technology Policy, Princeton University, Princeton, NJ 08540, USA 2Lead contact \*Correspondence: sayashk@princeton.edu https://doi.org/10.1016/j.patter.2023.100804
+
+THE BIGGER PICTURE Machine learning (ML) is widely used across dozens of scientific fields. However, a common issue called ‘‘data leakage’’ can lead to errors in data analysis. We surveyed a variety of research that uses ML and found that data leakage affects at least 294 studies across 17 fields, leading to overopti- mistic findings. We classified these errors into eight different types. We propose a solution: model info sheets that can be used to identify and prevent each of these eight types of leakage. We also tested the reproducibility of ML in a specific field: predicting civil wars, where complex ML models were thought to outperform traditional statistical models. Interestingly, when we corrected for data leakage, the supposed superiority of ML models disappeared: they did not perform any better than older methods. Our work serves as a cautionary note against taking results in ML-based science at face value.
+
+Development/Pre-production: Data science output has been rolled out/validated across multiple domains/problems
+
+SUMMARY
+
+Machine-learning (ML) methods have gained prominence in the quantitative sciences. However, there are many known methodological pitfalls, including data leakage, in ML-based science. We systematically investigate reproducibility issues in ML-based science. Through a survey of literature in fields that have adopted ML methods, we find 17 fields where leakage has been found, collectively affecting 294 papers and, in some cases, leading to wildly overoptimistic conclusions. Based on our survey, we intro- duce a detailed taxonomy of eight types of leakage, ranging from textbook errors to open research prob- lems. We propose that researchers test for each type of leakage by filling out model info sheets, which we introduce. Finally, we conduct a reproducibility study of civil war prediction, where complex ML models are believed to vastly outperform traditional statistical models such as logistic regression (LR). When the errors are corrected, complex ML models do not perform substantively better than decades-old LR models.
+
+INTRODUCTION
+
+There has been a marked shift toward the paradigm of predictive modeling across quantitative science fields. This shift has been facilitated by the widespread use of machine learning (ML) methods. However, pitfalls in using ML methods have led to exaggerated claims about their performance. Such errors can lead to a feedback loop of overoptimism about the paradigm of prediction, especially because non-replicable publications tend to be cited more often than replicable ones.1 It is therefore important to examine the reproducibility of findings in commu- nities adopting ML methods.
+
+Scope. We focus on reproducibility issues in ML-based sci- ence, which involves making a scientific claim using the per- formance of the ML model as evidence. There is a better- known reproducibility crisis in research that uses traditional statistical methods.2 We also situate our work in contrast with other ML domains, such as methods research (creating and improving widely applicable ML methods), ethics research (studying the ethical implications of ML methods), engineering applications (building or improving a product or service), and modeling contests (improving predictive perfor- mance on a fixed dataset created by an independent third party). Investigating the validity of claims in all these areas is
+
+ll OPEN ACCESS
+
+Patterns 4, 100804, September 8, 2023 © 2023 The Author(s). 1 This is an open access article under the CC BY license (http://creativecommons.org/licenses/by/4.0/).
+
+ll OPEN ACCESS Article
+
+Figure 1. Survey of 22 papers that identify pitfalls in the adoption of ML methods across 17 fields, collectively affecting 294 papers In each field, papers adopting ML methods suffer from data leakage. The column headings for types of data leakage, shown in bold, are based on our taxonomy of data leakage. We also highlight other issues that are reported in the papers: (1) computational reproducibility (the lack of availability of code, data, and computing environment to reproduce the exact results reported in the paper); (2) data quality (e.g., small size or large amounts of missing data); (3) metric choice (using incorrect metrics for the task at hand, e.g., using accuracy for measuring model performance in the presence of heavy class imbalance); and (4) standard dataset use, where issues are found despite the use of standard datasets in a field.16–37
+
+important, and there is ongoing work to address reproduc- ibility issues in these domains.3–6
+
+We define a research finding as reproducible if the code and data used to obtain the finding are available and the data are correctly analyzed.4,7,8 This is a broader definition than computational reproducibility, when the results in a paper can be replicated using the exact code and dataset provided by the authors (see supplemental experimental procedures, section S1). Leakage. Data leakage is a spurious relationship between the independent variables and the target variable that arises as an artifact of the data collection, sampling, or pre-processing strat- egy. Because the spurious relationship will not be present in the distribution about which scientific claims are made, leakage usu- ally leads to inflated estimates of model performance.
+
+Data leakage has long been recognized as a leading cause of errors in ML applications.9 In formative work on leakage, Kauf- man et al.10 provide an overview of different types of error and give several recommendations for mitigating these errors. Since this paper was published, the ML community has investigated leakage in several engineering applications and modeling com- petitions.11–15 However, leakage occurring in ML-based science
+
+2 Patterns 4, 100804, September 8, 2023
+
+has not been comprehensively investigated. As a result, mitiga- tions for data leakage in scientific applications of ML remain understudied.
+
+In this paper, we systematically investigate reproducibility is- sues in ML-based science as a result of data leakage. Our main contributions are as follows:
+
+1\. A survey and taxonomy of reproducibility issues caused by leakage. We provide evidence for a growing reproducibility crisis in ML-based science. Through a survey of literature in research communities that adopted ML methods, we find 22 pa- pers across 17 fields where leakage has been found, collectively affecting 294 papers (Figure 1). We highlight that data leakage mitigation strategies developed for other ML applications, such as modeling contests and engineering applications, often do not translate to ML-based science. Based on our survey, we pre- sent a fine-grained taxonomy of eight types of leakage that range from textbook errors to open research problems.
+
+2\. Model info sheets to detect and prevent leakage.Current standards for reporting model performance in ML-based sci- ence often fall short in addressing issues caused by leakage. Specifically, checklists and model cards are one way to provide
+
+ll Article OPEN ACCESS standard best practices for reporting details about ML at the content of the papers and not the code and data pro- models.38–40 However, current efforts do not address issues
+
+vided with the papers to check for errors. This leads to un- arising because of leakage. Further, most checklists currently
+
+der-counting the number of affected papers, because the in use are not developed for ML-based science in general but
+
+code might have errors that are not apparent from reading rather for specific scientific or research communities.4,38 As a
+
+the papers. result, best practices for model reporting in ML-based science
+
+We find 22 papers from 17 fields that outline errors in are underspecified.
+
+ML-based science in their field, collectively affecting 294 papers. We introduce model info sheets to detect and prevent
+
+A prominent finding that emerges is that data leakage is a pitfall leakage in ML-based science. They are inspired by the model
+
+in every single case. Our findings present a worrying trend for the cards in Mitchell et al.40 Filling out a model info sheet requires
+
+reproducibility of ML-based science. the researcher to provide precise arguments to justify that
+
+Note that leakage is one of many causes of irreproducible re- models used for making scientific claims do not suffer from
+
+sults. Other factors, such as the lack of available code and data, leakage, by answering 21 questions based on our taxonomy
+
+can also lead to irreproducibility, and there are several studies of leakage.
+
+investigating these shortcomings.50,51 We discuss our choice 3. An empirical case study of leakage in civil war predic-
+
+of terminology in detail in the supplemental experimental pro- tion. For an in-depth look at the impact of reproducibility errors,
+
+cedures (section S1). we undertake a reproducibility study in civil war prediction, a
+
+The results from our survey are presented in Figure 1. Columns subfield of political science where ML models are believed to
+
+in bold represent different types of leakage. The last four col- vastly outperform older statistical models such as logistic
+
+umns represent other common trends in the papers we study. regression (LR). We perform a systematic review to find papers
+
+For systematic reviews, we report the number of papers re- on civil war prediction and find that all papers in our review claim-
+
+viewed. Each paper in our survey highlights issues with leakage, ing the superior performance of complex ML models compared
+
+with six papers highlighting the presence of multiple types of with KR models fail to reproduce because of data leakage.
+
+leakage in their field. Each of these papers was published in top political science
+
+Data leakage mitigations for other ML applications do journals. Leakage affects complex ML models, as well as simpler
+
+not apply to scientific research LR models. But when the errors caused by leakage are cor-
+
+Most previous research and writing on data leakage has focused rected, ML models no longer perform substantively better than
+
+on mitigating data leakage in engineering settings or predictive decades-old LR models.
+
+modeling competitions.10–12 However, the taxonomy of data leakage outlined in this body of work does not address all types RESULTS
+
+of leakage that we identify in our survey. In particular, we find that leakage can result from a difference between the distribution of Evidence of a reproducibility crisis
+
+the test set and the distribution of scientific interest. Robustness Many scientific fields have adopted ML methods and the para-
+
+to distribution shift is an area of ongoing research in ML methods digm of predictive modeling.41–46 We find at least three main
+
+and is as such an open problem.52 In addition, these settings are uses of ML models in scientific literature. First, models that are
+
+very different from scientific research, and mitigations for data better at prediction are thought to enable an improved under-
+
+leakage in modeling competitions, as well as engineering appli- standing of scientific phenomena.47 Second, especially when
+
+cations of ML, often do not translate into strategies for mitigating used in medical fields, models with higher predictive accuracy
+
+data leakage in ML-based science. can aid in research and development of better diagnostic tools.48
+
+Leakage in modeling competitions. In predictive modeling Finally, ML-based methods have also been used to investigate
+
+competitions, dataset creation and model evaluation are left to the inherent predictability of phenomena, especially for predict-
+
+impartial third parties who have the expertise and incentives to ing social outcomes.49The increased adoption of ML methods in
+
+avoid errors. Within this framework, none of the participants science motivates our investigation of reproducibility issues in
+
+have access to the held-out evaluation set before the competi- ML-based science.
+
+tion ends. In contrast, in most ML-based science, the researcher Data leakage causes irreproducible results
+
+has access to the entire dataset while creating the ML models. Researchers in many communities have already documented
+
+Leakage often occurs because of the researcher having access reproducibility failures in ML-based science within their fields.
+
+to the entire dataset during the modeling process. Here we conduct a cross-disciplinary analysis by building on
+
+Leakage in engineering applications. Leakage in real-world ap- these individual reviews. This enables us to highlight the scale
+
+plications has led to exaggerated performance estimates, even and scope of the crisis, identify common patterns, and make
+
+in consequential settings such as child maltreatment predic- progress toward a solution.
+
+tion.53 One of the most common recommendations for detecting When searching for past literature that documents reproduc-
+
+and mitigating leakage is to deploy the ML model at a limited ibility failures in ML-based science, we found that different
+
+scale in production. This advice is applicable only to engineering fields often use different terms to describe pitfalls and errors.
+
+applications of ML, where the end goal is not to gain insights This makes it difficult to conduct a systematic search to find
+
+about a particular process but rather to serve as a component papers with errors. Therefore, we do not present our results
+
+in a product. Often, a rough idea of model performance is as a systematic meta-review of leakage from a coherent sam-
+
+enough to decide whether a model is good enough to be de- ple of papers but rather as a lower bound of reproducibility is-
+
+ployed in a product. Contrarily, ML-based science involves mak- sues in ML-based science. In addition, most reviews look only
+
+ing a scientific claim using the performance of the ML model as
+
+Patterns 4, 100804, September 8, 2023 3
+
+ll OPEN ACCESS Article
+
+4 Patterns 4, 100804, September 8, 2023 evidence. In addition, engineering applications of ML often oper-
+
+sets leads to an imperfect separation between the training and ate in a rapidly changing context and have access to large data-
+
+test sets because data generated using oversampling from the sets, so small differences in performances are often not as
+
+training set will also be present in the test set. important, whereas scientific claims are sensitive to small perfor-
+
+\[L1.3\] Feature selection on training and test set. Feature mance differences between ML models.
+
+selection on the entire dataset results in using information about Why do we call it a reproducibility crisis?
+
+which feature performs well on the test set to make a decision We say that ML-based science is suffering from a reproducibility
+
+about which features should be included in the model. crisis for two related reasons. First, our results show that repro-
+
+\[L1.4\] Duplicates in datasets. If a dataset with duplicates is ducibility failures in ML-based science are systemic. In nearly
+
+used for the purposes of training and evaluating an ML model, every scientific field that has carried out a systematic study of
+
+the same data could exist in the training set and the test set. reproducibility issues, papers are plagued by common pitfalls.
+
+\[L2\] Model uses features that are not legitimate. If the In many systematic reviews, a majority of the papers reviewed
+
+model has access to features that should not be legitimately suffer from these pitfalls. Similar problems are likely to arise in
+
+available for use in the modeling exercise, this could result in many fields that are adopting ML methods. Second, despite
+
+leakage. One instance when this can happen is if a feature is a the urgency of addressing reproducibility failures, there are no
+
+proxy for the outcome variable.10 For example, Filho et al.55 systemic solutions that have been deployed for these failures.
+
+find that a recent study included the use of anti-hypertensive Scientific communities are discovering the same failure modes
+
+drugs as a feature for predicting hypertension. Such a feature across disciplines but have yet to converge on best practices
+
+could lead to leakage because the model would not have access for avoiding reproducibility failures.
+
+to this information when predicting the health outcome for a new Calling attention to and addressing these widespread failures
+
+patient. Further, if the fact that a patient uses anti-hypertensive is vital to maintaining public confidence in ML-based science.
+
+drugs is already known at prediction time, the prediction of hy- At the same time, the use of ML methods is still in its infancy
+
+pertension becomes a trivial task. in many scientific fields. Addressing reproducibility failures
+
+The judgment of whether the use of a given feature is legiti- pre-emptively in such fields can correct a lot of scientific
+
+mate for a modeling task requires domain knowledge and can research that would otherwise be flawed.
+
+be highly problem specific. As a result, we do not provide sub- categories for this sort of leakage. Instead, we suggest that re- Toward a solution: A taxonomy of data leakage
+
+searchers clearly specify which features are suitable for a We now provide our taxonomy of data leakage errors in ML-
+
+modeling task and justify their choice using domain expertise. based science. Such a taxonomy can enable a better under-
+
+\[L3\] Test set is not drawn from the distribution of scientific standing of why leakage occurs and inform potential solutions.
+
+interest. The distribution of data on which the performance of an Our taxonomy is comprehensive and addresses data leakage
+
+ML model is evaluated differs from the distribution of data about arising during the data collection, pre-processing, modeling,
+
+which the scientific claims are made. The performance of the and evaluation steps. In particular, our taxonomy addresses all
+
+model on the test set does not correspond to its performance cases of data leakage that we found in our survey (Figure 1).
+
+on data drawn from the distribution of scientific interest. Some of the categories in our taxonomy, e.g., sampling bias
+
+\[L3.1\] Temporal leakage. When an ML model is used to make \[L3.3\], were not considered types of leakage in prior work, but
+
+predictions about a future outcome of interest, the test set they have the same cause as other categories of leakage:
+
+should not contain any data from a date before the training set. spurious correlations between the outcome variables and the
+
+If the test set contains data from before the training set, the features. They also have the same effect: they lead to overesti-
+
+model is built using data ‘‘from the future’’ that it should not mates of model performance.
+
+have access to during training and can cause leakage. \[L1\] Lack of clean separation of training and test dataset. If
+
+\[L3.2\] Nonindependence between training and test sam- the training dataset is not separated from the test dataset during
+
+ples. Nonindependence between training and test samples con- all pre-processing, modeling, and evaluation steps, the model
+
+stitutes leakage, unless the scientific claim is about a distribution has access to information in the test set before its performance
+
+that has the same dependence structure. In the extreme (but un- is evaluated. Because the model has access to information from
+
+fortunately common) case, training and test samples come from the test set at training time, the model learns relationships be-
+
+the same people or units. For example, Oner et al.56 find that a tween the predictors and the outcome that would not be avail-
+
+recent study on histopathology uses different observations of able in additional data drawn from the distribution of interest.
+
+the same patient in the training and test sets. In this case, the sci- The performance of the model on these data therefore does
+
+entific claim is being made about the ability to predict gene mu- not reflect how well the model would perform on a new test set
+
+tations in new patients; however, it is evaluated on data from old drawn from the same distribution of data. This can happen in
+
+patients (i.e., data from patients in the training set), leading to a several ways, such as:
+
+mismatch between the test set distribution and the scientific \[L1.1\] No test set. Using the same dataset for training and
+
+claim. Similarly, for predicting protein function, the family of the testing the model is a textbook example of overfitting, which
+
+protein can lead to dependencies if proteins from the same fam- leads to overoptimistic performance estimates.54
+
+ily are split across the training and test sets.57 The train-test split \[L1.2\] Pre-processing on training and test set. Using the
+
+should account for the dependencies in the data to ensure cor- entire dataset for any pre-processing steps, such as imputation
+
+rect performance evaluation. Methods such as ‘‘block cross- or over/under sampling, results in leakage. For instance, using
+
+validation’’ can partition the dataset strategically so that the per- oversampling before splitting the data into training and test
+
+formance evaluation does not suffer from data leakage and
+
+ll Article OPEN ACCESS overoptimism.58,59 Handling nonindependence between the Metric choice issues. A mismatch between the metric used to training and test sets in general (i.e., without any assumptions
+
+evaluate performance and the scientific problem of interest leads about independence in the data) is a hard problem, because
+
+to issues with performance claims. For example, using accuracy we might not know the underlying dependency structure of the
+
+as the evaluation metric with a heavily imbalanced dataset leads task in many cases.60
+
+to overoptimistic results, because the model can get a high ac- \[L3.3\] Sampling bias in test distribution. Sampling bias in
+
+curacy score by always predicting the majority class. Four pa- the choice of test dataset can lead to data leakage. One example
+
+pers in our survey highlighted metric choice issues. of sampling bias is spatial bias, which refers to choosing the test
+
+Use of standard datasets. Reproducibility issues arose despite data from a geographic location but making claims about model
+
+the use of standard, widely used datasets, often because of the performance in other geographic locations. Another example is
+
+lack of standard modeling and evaluation procedures such as selection bias, which entails choosing a non-representative sub-
+
+fixing the train-test split and evaluation metric for the dataset. set of the dataset for evaluation. For example, Bone et al.61 high-
+
+Seven papers in our survey highlighted that issues arose despite light that in a study on predicting autism using ML models,
+
+the use of standard datasets. excluding the data corresponding to borderline cases of autism leads to leakage because the test set is no longer representative
+
+Model info sheets for detecting and preventing leakage of the general population about which claims are made. In addi-
+
+Our taxonomy of data leakage highlights several failure modes tion, borderline cases of autism are often the trickiest to diag-
+
+that are prevalent in ML-based science. To detect cases of nose, so excluding them from the evaluation set is likely to
+
+leakage, we provide a template for a model info sheet to accom- lead to overoptimistic results. Cases of leakage caused by sam- pling bias can often be subtle. For example, Zech et al.62find that
+
+pany scientific claims using predictive modeling as a supple- mental document (supplemental experimental procedures, sec- models for pneumonia prediction trained on images from one
+
+tion S4). The template consists of 21 questions that elicit precise hospital do not generalize to images from another hospital
+
+arguments needed to justify the absence of leakage. because of subtle differences in how images are generated in
+
+Prior work on model cards and reporting standards each hospital.
+
+Our proposal is inspired by prior work on model cards and A model may have leakage when the distribution about which
+
+checklists, which we now review. Mitchell et al.40 introduced the scientific claim is made does not match the distribution from
+
+model cards for reporting details about ML models, with a focus which the evaluation set is drawn. ML models may also suffer
+
+on precisely reporting the intended use cases of ML models. from a related but distinct limitation: the lack of generalization
+
+They also addressed fairness and transparency concerns: they when we try to apply a result about one population to another
+
+require that the performance of ML models on different groups similar but distinct population. Several issues with the general-
+
+of users (e.g., on the basis of race, gender, and age) is reported ization of ML models operating under a distribution shift have
+
+and documented transparently. These model cards complement been highlighted in ML methods research, such as fragility to- ward adversarial examples,63 image distortion and texture,64 and overinterpretation.65 Robustness to distribution shift is an
+
+the datasheets introduced by Gebru et al.69 to document details about datasets in a standard format.
+
+The use of checklists has also been impactful in improving re- ongoing area of work in ML methods research. Even slight shifts
+
+porting practices in the few fields that have adopted them.70 in the target distribution can cause performance estimates to change drastically.66 Despite ongoing work to create ML
+
+Although checklists and model cards provide concrete best practices for reporting standards,38–40,71 current efforts do not methods that are robust to distribution shift, best practices to
+
+address pitfalls arising because of leakage. Further, even though deal with distribution shift currently include testing the ML
+
+several scientific fields, especially those related to medicine, models on the data from the distribution we want to make claims about.52 In ML-based science, where the aim is to create gener-
+
+have adopted checklists to improve reporting standards, most checklists are developed for specific scientific or research com- alizable knowledge, we should take results that claim to gener-
+
+munities instead of ML-based science in general. alize to a different population from the one models were evalu-
+
+Scientific arguments to surface and prevent leakage ated on with caution.
+
+When ML models are used to make scientific claims, it is not Other issues identified in our survey
+
+enough to simply separate the training and test sets and report Computational reproducibility issues. Computational reproduc-
+
+performance metrics on the test set. Unlike research in ML ibility of a finding refers to sharing the complete code and data
+
+methods, where a model’s performance on a hypothetical task needed to reproduce the findings reported in a paper exactly.
+
+(i.e., one that is not linked to a specific scientific claim) is still of This is important to enable external researchers to reproduce re-
+
+interest to the researcher in some cases,72 in ML-based science, sults and verify their correctness. Five papers in our survey out-
+
+claims about a model’s performance need to be connected to lined the lack of computational reproducibility in their field.
+
+scientific claims using explicit arguments. The burden of proof Data quality issues. Access to good-quality data is essential for
+
+for ensuring the correctness of these arguments is on the creating ML models.67,68 Issues with the quality of the dataset
+
+researcher making the scientific claims.73 could affect the results of ML-based science. Ten papers in
+
+In our model info sheet, we ask researchers to answer 21 our survey highlighted data quality issues such as not addressing
+
+questions. These questions help them present three arguments missing values in the data, the small size of datasets compared
+
+that are essential for determining that scientific results that use with the number of predictors, and the outcome variable being a
+
+ML methods do not suffer from data leakage. Note that most poor proxy for the phenomenon being studied.
+
+ML-based science papers do not present any of the three
+
+Patterns 4, 100804, September 8, 2023 5
+
+ll OPEN ACCESS Article
+
+6 Patterns 4, 100804, September 8, 2023 arguments, although they sometimes partially address the first
+
+Limitations of model info sheets argument (clean train-test separation) by reporting out-of-sam-
+
+Although model info sheets can enable the detection of all types ple prediction performance. The arguments below are based
+
+of leakage we identify in our survey, they suffer from limitations on our taxonomy of data leakage issues and inform the main sec-
+
+owing to the lack of computational reproducibility of results in tions of the model info sheet.
+
+scientific research, incorrect claims made in model info sheets, \[L1\] Clean train-test separation. The researcher needs to
+
+and the lack of expertise of authors and reviewers. argue why the test set does not interact with training data during
+
+First, the claims made in model info sheets cannot be verified any of the pre-processing, modeling, or evaluation steps to
+
+in the absence of computational reproducibility. That is, unless ensure a clean train-test separation.
+
+the code, data, and computing environment required to repro- \[L2\] Each feature in the model is legitimate. The researcher
+
+duce the results in a paper are made available, there is no way needs to argue why each feature used in their model is legiti-
+
+to ascertain whether model info sheets are filled out correctly. mate, i.e., a claim made using each feature is of scientific inter-
+
+Ensuring the computational reproducibility of results therefore est. Note that some models might use hundreds of features. In
+
+remains an important goal for improving scientific research such cases, it is even more important to reason about the cor-
+
+standards. rectness of the features used, because the incorrect use of a
+
+Second, incorrect claims made in model info sheets might single feature in the model can cause leakage. That said, the
+
+provide false assurances to reviewers about the correctness of same argument for why a feature is legitimate can often apply
+
+the claims made in a paper. However, by requiring authors to to a whole set of features. For example, for a study using indi-
+
+precisely state details about their modeling process, model viduals’ location history as a feature vector, the use of the entire
+
+info sheets enable incorrect claims to be challenged more vector can be justified together. Note that we do not ask for the
+
+directly than in status quo, where details about the modeling pro- researcher to list each feature used in their model; rather, we
+
+cess are often left undisclosed. ask that the justification provided for the legitimacy of the fea-
+
+Filling out and evaluating model info sheets requires some tures used in their model should cover every feature used in
+
+expertise in ML. In fields where both authors and reviewers their model.
+
+lack any ML expertise, subtle cases of leakage might slip under \[L3\] Test set is drawn from the distribution of scientific in-
+
+the radar despite the use of model info sheets. In such cases, we terest. If the distribution about which the scientific claims are
+
+hope that model info sheets released publicly along with papers made is different from the one on which the model is tested,
+
+will enable discourse within scientific communities on the short- then any claims about the performance of an ML model on the
+
+comings of scientific models. evaluation step fall short. The researcher needs to justify that
+
+Finally, we acknowledge that our understanding of leakage the test set is drawn from the distribution of scientific interest
+
+may evolve, and model info sheets may need to evolve with it. and there is no selection or sampling bias in the data collection
+
+To that end, we have versioned model info sheets, and plan to process. This step can help clarify the distribution regarding which
+
+update them as we continue to better understand leakage in scientific claims are being made and detect temporal leakage.
+
+ML-based science. Model info sheets and our theory of change Model info sheets can influence research practices in two
+
+A case study of civil war prediction ways: first, researchers who introduce a scientific model
+
+To understand the impact of data leakage, we undertake a repro- alongside a paper can use model info sheets to detect and
+
+ducibility study in a field where ML models are believed to vastly prevent leakage in their models. These info sheets can be
+
+outperform older statistical models such as LR for predictive included as supplementary materials with their paper for
+
+modeling: civil war prediction. transparently reporting details about their models. In scientific
+
+Over the last few years, this field has switched to predictive fields where the use of ML methods is not yet widespread,
+
+modeling using complex ML models such as Random Forests using transparent reporting practices at an early stage
+
+and Adaboost instead of LR (see Figure 2), with several papers could enable easier adoption and more trust in ML methods.
+
+claiming near-perfect performance of these models for civil This would also help assuage reviewer concerns about
+
+war prediction.75–78 The goal of these papers is to predict civil reproducibility.
+
+war in a region and time period using features such as GDP, Second, journal submission guidelines could encourage or
+
+poverty rates, whether it is a democracy, etc. This is in contrast require authors to fill out model info sheets if a paper does
+
+with the field’s earlier focus on understanding and explaining not transparently report how the model was created. In this
+
+past conflicts. Table S6 gives an overview of the training data case, model info sheets can be used to start a conversation
+
+used for the papers we considered. For a detailed overview of between authors and reviewers about the details of the
+
+the recent turn to predictive modeling in this field, see Bara.79 models introduced in a paper. Current peer-review practices
+
+Although the literature we reviewed in our survey highlighted often do not require the authors to disclose any code or
+
+the pitfalls in adopting ML methods (Figure 1), we go further data during the review process.74 Even if the code and data
+
+than most previous research to investigate whether the claims are available to reviewers, reproducing results and spotting
+
+made in the reviewed studies survive once the errors are errors in code is a time-consuming process that often cannot
+
+corrected. be carried out under current peer-review practices. Model info
+
+Systematic search of predictive modeling literature in sheets offer a middle ground: they could enable a closer scru-
+
+civil war research tiny of methods without making the process onerous for
+
+We conducted a systematic search to find relevant literature reviewers.
+
+(detailed in supplemental experimental procedures, section
+
+ll Article OPEN ACCESS Figure 2. The sharp increase in civil war papers that use ML methods in the last few years The number of political science papers containing the terms ‘‘civil war’’ and ‘‘machine learning’’ in the dimensions database of academic research.104
+
+S2.1). This yielded 124 papers. We narrowed this list to the 12 papers that focused on predicting civil war, evaluated perfor- mance using a train-test split, and shared the complete code and data. For these 12, we attempted to identify errors and reproducibility issues from the text and by reviewing the code provided with the papers. When we identified errors, we re- analyzed the data with the errors corrected. Finding 1: Data leakage causes irreproducible results. We pre- sent our results in Figure 3. We found errors in 4 of the 12 pa- pers—exactly the 4 papers that claimed superior performance of complex ML models over baseline LR models for predicting civil war. Each paper suffered from different forms of leakage. All 4 papers were published in top-10 journals in the fields of political science and international relations.80 When the errors are corrected, complex ML models perform no better than baseline LR models in each case except Wang,77 where the dif- ference between the area under the curve (AUC) of the complex ML models and LR models drops from 0.14 to 0.01. This is despite the fact that the LR models were not trained to optimize predictive accuracy: they were conceived as explanatory models to understand past conflicts instead of predicting future ones.47,81,82
+
+We test our model info sheets on the four civil war prediction papers with errors and find that they would detect each type of leakage we identified in these papers (supplemental experi- mental procedures, section S3). Note that leakage affects both simple and complex models for civil war prediction. However, because of higher model capacity, complex ML models tend to over-fit to spurious correlations more easily in this case (sup- plemental experimental procedures, section S2.2).
+
+Beyond reproducibility, our results show that complex ML models are not substantively better at civil war prediction than decades-old LR models. This is consistent with similar sobering findings in other tasks involving predicting social outcomes, such as children’s life outcomes49 and recidivism.83 Although prior work has found that some fields will benefit from the use of ML methods,84 our findings suggest the need for tempering the optimism about predictive modeling in the field of civil war prediction and question the use of ML models in this field. We provide a detailed overview of our methodology for correcting the errors and show that our results hold under several robust- ness checks in the supplemental experimental procedures, sec- tion S2.
+
+Patterns 4, 100804, September 8, 2023 7
+
+Finding 2: No significance testing or uncertainty quantification. We found that 9 of the 12 papers for which complete code and data were available included no significance tests or uncertainty quantification for classifier performance com- parison (Table S6). Especially when sample sizes are small, significance testing and uncertainty quantification are impor- tant steps toward reproducibility.48,85 As an illustration, we examine this issue in detail in the case of Blair and Sam- banis86 because their test dataset has a particularly small number of instances of civil war onset (only 11). They propose a model of civil war onset that uses theoretically informed fea- tures and report that it outperforms other baseline models of civil war onset using the AUC metric on an out-of-sample da- taset. We find that the performance of their model is not significantly better than other baseline models for civil war prediction (Z = 0.64, 1.09, 0.42, and 0.67; p = 0.26, 0.14, 0.34, and 0.25 for a one-tailed significance test comparing the smoothed AUC performance of the model proposed in the paper—the escalation model—with other baseline models reported in their paper—quad, goldstein, cameo, and average, respectively). We implement the comparison test for smoothed receiver operating characteristic curves detailed by Robin et al.87 Note that we do not correct for mul- tiple comparisons; such a correction would further reduce the significance of the results. Further, all models have large con- fidence intervals for their out-of-sample performance. For instance, while the smoothed AUC performance reported by the authors is 0.85, the 95% confidence interval calculated using bootstrapped test set re-sampling is 0.66–0.95. Lack of standard reporting practices for ML-based science Our hypothesis for why leakage is prevalent is that current stan- dards for reporting model performance in ML-based science often fall short in addressing leakage. Specifically, checklists and model cards are one way to provide standard best practices for reporting details about ML models.38–40 However, current ef- forts do not address issues arising because of leakage. Further, most checklists currently in use are not developed for ML-based science in general but rather for specific scientific or research communities.4,38 As a result, best practices for model reporting in ML-based science are underspecified.
+
+DISCUSSION
+
+Beyond leakage: Perspectives on enhancing the reproducibility of ML-based science We found a number of other reproducibility issues in our survey not limited to leakage. Here, we present five diagnoses for repro- ducibility failures in fields adopting ML methods. Each of our di- agnoses is paired with a recommendation to address it.
+
+\[D1\] Lack of understanding of the limits to prediction. Recent research for predicting social outcomes has shown that even with complex models and large datasets, there are strong limits to predictive performance.49,83 However, results such as the better-than-human performance of ML models in perception tasks such as image classification88,89 give the impression of ML models surpassing human performance across tasks, which can confuse researchers about the perfor- mance they should realistically expect from ML models.
+
+ll OPEN ACCESS Article
+
+1.0
+
+Logistic Regression 1
+
+Logistic Regression Logistic Regression 2
+
+Random Forests 1 Logistic Regression 3
+
+Random Forests 2 0.9
+
+Random Forests
+
+0.8
+
+0.7
+
+AdaBoost
+
+AdaBoost
+
+0.6
+
+GBT
+
+Extratrees Logistic Regression 1
+
+Lasso Logistic Regression 2
+
+Logistic Regression Logistic Regression 3
+
+Random Forest 0.5
+
+Random Forests
+
+SVM
+
+Reported results Corrected results Reported results Corrected results Reported results Corrected results Reported results Corrected results (AUC) (AUC) (AUC) (AUC) (AUC) (AUC) (Accuracy) (Accuracy)
+
+Paper Muchlinski et al. Colaresi and Mahmood Wang Kaufman et al.
+
+Claim Random Forests model
+
+drastically outperforms Logistic regression models
+
+Figure 3. A comparison of reported and corrected results in civil war prediction papers published in top political science journals The main findings of each of these papers are invalid due to various forms of data leakage: Muchlinski et al.75 impute the training and test data together, Colaresi and Mahmood76 and Wang77 incorrectly reuse an imputed dataset, and Kaufman et al.78 use proxies for the target variable that cause data leakage. When we correct these errors, complex ML models (such as Adaboost and Random Forests) do not perform substantively better than decades-old logistic regression models for civil war prediction in each case. Each column in the table outlines the impact of leakage on the results of a paper. The figure above each column shows the difference in performance that results from fixing leakage.
+
+8 Patterns 4, 100804, September 8, 2023
+
+Adaboost outperforms other models
+
+Error \[L1.2\] Pre-proc. on train-test
+
+(Incorrect imputation)
+
+Random Forests models drastically
+
+Adaboost and Gradient Boosted outperform Logistic regression
+
+Trees (GBT) drastically outperform model
+
+other models
+
+\[L2\] Illegitimate features (Data leakage due to proxy variables) \[L3.1\] Temporal leakage (k-fold cross validation with temporal data) Impact Random Forests perform no
+
+better than Logistic Regression
+
+\[L1.2\] Pre-proc. on train-test
+
+\[L1.2\] Pre-proc. on train-test. (Incorrect reuse of an imputed
+
+(Incorrect reuse of an imputed dataset) dataset)
+
+\[L3.1\] Temporal leakage (k-fold cross validation with temporal data)
+
+Adaboost no longer outperforms Logistic Regression. None of the models outperform a baseline model that predicts the outcome of the previous year
+
+Discussion Impact of the incorrect
+
+imputation is severe since 95% of the out-of-sample dataset is missing and is filled in using the incorrect imputation method
+
+Random Forests perform no better
+
+Difference in AUC between Adaboost than Logistic Regression
+
+and Logistic Regression drops from 0.14 to 0.01
+
+Re-use the dataset provided by
+
+Re-use the dataset provided by
+
+Use several proxy variables for Muchlinski et al., which uses an
+
+Muchlinski et al., which uses an
+
+the outcome as predictors (e.g., incorrect imputation method
+
+incorrect imputation method
+
+colwars, cowwars, sdwars, all proxies for civil war), leading to near perfect accuracy
+
+\[R1\] Understand and communicate limits to prediction. A
+
+should look beyond headline performance numbers when as- research agenda that investigates the efficacy of ML models in
+
+sessing papers. tasks across scientific fields would increase our understanding
+
+\[D3\] Inadequate expertise. The rapid adoption of ML of the limits to prediction. This can alleviate the overoptimism
+
+methods in a scientific field can lead to errors. These can be that arises from confusing progress in one task (e.g., image clas-
+
+caused by the lack of expertise of domain experts in using ML sification) with another (e.g., predicting social outcomes). If we
+
+methods and vice versa. can identify upper bounds on the predictive accuracy of tasks
+
+\[R3\] Interdisciplinary collaborations and communication of (i.e., lower bound of the Bayes Error Rate for a task), then once
+
+best practices. Literature in the ML community should address the achievable accuracy has been reached, we can avoid a futile
+
+the different failure modes that arise during the modeling process. effort to increase it further and can apply increased skepticism
+
+Researchers with expertise in ML methods should clearly commu- toward results that claim to violate known bounds.
+
+nicate best practices in deploying ML for scientific research.94 \[D2\] Hype, overoptimism, and publication biases. The hype
+
+Having an interdisciplinary team consisting of researchers with about commercial AI applications can spill over into ML-based
+
+domain expertise and ML expertise can avoid errors. science, leading to overoptimism about their performance.
+
+\[D4\] Lack of standardization. Several applied ML fields, such Non-replicable findings are cited more than replicable ones,1
+
+as engineering applications and modeling contests, have adopted which can result in feedback loops of overoptimism in ML-based
+
+practices such as standardized train-test splits, evaluation met- science. Besides, publication biases that have been docu-
+
+rics, and modeling tasks to ensure the validity of the modeling mented in several scientific fields90,91 can also affect ML-based
+
+and evaluation process.95,96 However, these have not yet been science.92,93
+
+adopted widely in ML-based science. This leads to subtle errors \[R2\] Treat results from ML-based science as tentative.
+
+in the modeling process that can be hard to detect. When overoptimism is prevalent in a field, it is important to
+
+\[R4\] Adopt the common task framework when possible. engage with results emerging from the field critically. Until repro-
+
+The common task framework allows us to compare the perfor- ducibility issues in ML-based science are widely addressed and
+
+mance of competing ML models using an agreed-upon training resolved, results from this body of work should be treated with
+
+dataset and evaluation metrics, a secret holdout dataset, and a caution. Researchers, journal editors, and policymakers who
+
+public leaderboard.97,98 Dataset creation and model evaluation use scientific research to inform real-world policy decisions
+
+are left to impartial third parties who have the expertise and
+
+ll Article OPEN ACCESS incentives to avoid errors. However, one undesirable outcome who reviewed our code and provided helpful suggestions and corrections that has been observed in communities that have adopted the
+
+for ensuring the computational reproducibility of our own results, and to Angel- common task framework is a singular focus on optimizing a particular accuracy metric to the exclusion of other scientific and normatively desirable properties of models.67,85,99
+
+ina Wang, Orestis Papakyriakopolous, and Anne Kohlbrenner for their feed- back on model info sheets. This material is based upon work supported by the National Science Foundation under grant NSF IIS-1763642.
+
+\[D5\] Lack of computational reproducibility. The lack of
+
+AUTHOR CONTRIBUTIONS computational reproducibility hinders verification of results by in- dependent researchers. Although computational reproducibility
+
+S.K. and A.N. contributed to all aspects of this paper.
+
+does not mean that the code is error free, it can make the pro- cess of finding errors easier, because researchers attempting
+
+DECLARATION OF INTERESTS
+
+to reproduce results do not have to spend time getting the
+
+The authors declare no competing interests. code to run.
+
+\[R5\] Ensure computational reproducibility. Platforms such
+
+Received: March 3, 2023 as CodeOcean,100 a cloud computing platform that replicates the exact computational environment used to create the original results, can be used to ensure the long-term reproducibility of
+
+Revised: May 18, 2023 Accepted: July 5, 2023 Published: August 4, 2023
+
+results. We follow several academic journals and researchers
+
+REFERENCES in recommending that future research in fields using ML methods should use similar methods to ensure computational
+
+1\. Serra-Garcia, M., and Gneezy, U. (2021). Nonreplicable publications are reproducibility.74,101
+
+cited more than replicable ones. Sci. Adv. 7, eabd1705. Publisher: American Association for the Advancement of Science Section:
+
+Conclusions The attractiveness of adopting ML methods in scientific research is in part due to the widespread availability of off-the-shelf tools to create models without expertise in ML methods.102 However,
+
+Research Article.
+
+2\. (2015). Open Science Collaboration Estimating the reproducibility of psy- chological science. Science 349. Publisher: American Association for the Advancement of Science Section: Research Article. https://doi.org/10. 1126/science.aac4716. this laissez-faire approach leads to common pitfalls spreading to
+
+3\. Hullman, J., Kapoor, S., Nanayakkara, P., Gelman, A., and Narayanan, A. all scientific fields that use ML. So far, each research community
+
+(2022). The worst of both worlds: A comparative analysis of errors in has independently rediscovered these pitfalls. Without funda-
+
+learning from data in psychology and machine learning. Preprint at mental changes to research and reporting practices, we risk
+
+arXiv. https://doi.org/10.48550/arXiv.2203.06498. losing public trust because of the severity and prevalence of
+
+4\. Pineau, J.; Vincent-Lamarre, P.; Sinha, K.; Larivie\` re, V.; Beygelzimer, A.; the reproducibility crisis across disciplines. Our paper is a call for interdisciplinary efforts to address the crisis by developing and driving the adoption of best practices for ML-based science. Model info sheets for detecting and preventing leakage are a first step in that direction.
+
+d’Alche´-Buc, F.; Fox, E.; Larochelle, H. Improving Reproducibility in Machine Learning Research (A Report from the NeurIPS 2019 Reproducibility Program).Preprint at arXiv:https://doi.org/10.48550/ arXiv.2003.122062003.12206 \[cs, stat\] 2020, arXiv: 2003.12206.
+
+5\. Erik Gundersen, O. (2021). The fundamental principles of reproducibility. Philosophical Transactions of the Royal Society 379, 20200210. Publisher: Royal Society. EXPERIMENTAL PROCEDURES
+
+6\. Bell, S.J., and Kampman, O.P. (2021). Perspectives on Machine Learning
+
+from Psychology’s Reproducibility Crisis. Resource availability Lead contact Further information and requests for resources should be directed to and will be fulfilled by the lead contact, Sayash Kapoor (sayashk@princeton.edu). Materials availability This study did not generate new materials. Data and code availability The code and data required to reproduce our case study on civil war prediction have been uploaded to a CodeOcean capsule (CodeOcean: https://doi.org/
+
+7\. Hofman, J.M., Goldstein, D.G., Sen, S., Poursabzi-Sangdeh, F., Allen, J., Dong, L.L., Fried, B., Gaur, H., Hoq, A., Mbazor, E., et al. (2021). Expanding the scope of reproducibility research through data analysis replications. Organ. Behav. Hum. Decis. Process. 164, 192–202.
+
+8\. Leek, J.T., and Peng, R.D. (2015). Opinion: Reproducible research can still be wrong: Adopting a prevention approach. Proc. Natl. Acad. Sci. USA 112, 1645–1646. Publisher: National Academy of Sciences Section: Opinion.
+
+10.24433/CO.4899453.v1).103 The supplemental experimental procedures
+
+9\. Nisbet, R., Elder, J., and Miner, G. (2009). Handbook of Statistical (section S2) contains a detailed description of our methods and results from
+
+Analysis and Data Mining Applications (Elsevier). additional robustness checks.
+
+10\. Kaufman, S., Rosset, S., Perlich, C., and Stitelman, O. (2012). Leakage in data mining: Formulation, detection, and avoidance. ACM Trans. Knowl. SUPPLEMENTAL INFORMATION
+
+Discov. Data 6, 1–15.
+
+11\. Fraser, C. (2016). The Treachery of Leakage. en. Supplemental information can be found online at https://doi.org/10.1016/j. patter.2023.100804.
+
+12\. Ghani, R., Walsh, J., and Wang, J. (2020). Top 10 Ways Your Machine Learning Models May Have Leakage. en-US. http://www.rayidghani.
+
+ACKNOWLEDGMENTS
+
+com/2020/01/24/top-10-ways-your-machine-learning-models-may- have-leakage/).
+
+We are grateful to Jessica Hullman, Matthew J. Salganik, and Brandon Stewart
+
+13\. Becker, D. (2018) (Data Leakage), en.
+
+for their valuable feedback on drafts of this paper. We thank Robert Blair,
+
+14\. Brownlee, J. (2016). Data Leakage in Machine Learning. en-US.
+
+Aaron Kaufman, David Muchlinski, and Yu Wang for their quick and helpful re-
+
+15\. Collins-Thompson, K. Data Leakage - Module 4: Supervised Machine sponses to drafts of this paper. We are especially thankful to Matthew Sun,
+
+Learning - Part 2, en.
+
+Patterns 4, 100804, September 8, 2023 9
+
+ll OPEN ACCESS Article
+
+10 Patterns 4, 100804, September 8, 2023
+
+16\. Bouwmeester, W., Zuithoff, N.P.A., Mallett, S., Geerlings, M.I.,
+
+31\. Lyu, Y., Li, H., Sayagh, M., (Jack) Jiang, Z.M., and Hassan, A.E. (2021). Vergouwe, Y., Steyerberg, E.W., Altman, D.G., and Moons, K.G.M.
+
+An Empirical Study of the Impact of Data Splitting Decisions on the (2012). Reporting and Methods in Clinical Prediction Research: A
+
+Performance of AIOps Solutions. ACM Trans. Software Eng. Method. Systematic Review. PLOS Med. 9, e1001221. https://doi.org/10.1371/
+
+30, 1–38. https://doi.org/10.1145/3447876. journal.pmed.1001221.
+
+32\. Filho, A.C., Batista, A.F.D.M., and dos Santos, H.G. (2021). Data Leakage 17. Whelan, R., and Garavan, H. (2014). When Optimism Hurts: Inflated
+
+in Health Outcomes Prediction With Machine Learning. Comment on Predictions in Psychiatric Neuroimaging. Biol. Psychiatry 75, 746–748.
+
+‘‘Prediction of Incident Hypertension Within the Next Year: Prospective https://doi.org/10.1016/j.biopsych.2013.05.014.
+
+Study Using Statewide Electronic Health Records and Machine 18. Blagus, R., and Lusa, L. (2015). Joint Use of Over- and under-Sampling
+
+Learning. J. Med. Internet Res. 23, e10969. https://doi.org/10. Techniques and Cross-Validation for the Development and
+
+2196/10969. Assessment of Prediction Models. BMC Bioinformatics 16, 363.
+
+33\. Roberts, M., Driggs, D., Thorpe, M., Gilbey, J., Yeung, M., Ursprung, S., https://doi.org/10.1186/s12859-015-0784-9.
+
+Aviles-Rivero, A.I., Etmann, C., McCague, C., Beer, L., Weir-McCall, J.R., 19. Bone, D., Goodwin, M.S., Black, M.P., Lee, C.-C., Audhkhasi, K., and
+
+Teng, Z., Gkrania-Klotsas, E., Rudd, J.H.F., Sala, E., and Scho¨nlieb, Narayanan, S. (2015). Applying Machine Learning to Facilitate Autism
+
+C.-B. (2021). Common Pitfalls and Recommendations for Using Diagnostics: Pitfalls and Promises. J. Autism Dev. Disord. 45, 1121–
+
+Machine Learning to Detect and Prognosticate for COVID-19 Using 1136. https://doi.org/10.1007/s10803-014-2268-6.
+
+Chest Radiographs and CT Scans. Nat. Mach. Intell. 3, 199–217.
+
+20\. Ivanescu, A.E., Li, P., George, B., Brown, A.W., Keith, S.W., Raju, D., and
+
+https://doi.org/10.1038/s42256-021-00307-0.
+
+Allison, D.B. (2016). The Importance of Prediction Model Validation and
+
+34\. Shim, M., Lee, S.-H., and Hwang, H.-J. (2021). Inflated Prediction Assessment in Obesity and Nutrition Research. Int. J. Obes. 40,
+
+Accuracy of Neuropsychiatric Biomarkers Caused by Data Leakage in 887–894. https://doi.org/10.1038/ijo.2015.214.
+
+Feature Selection. Sci. Rep. 11, 7980. https://doi.org/10.1038/s41598-
+
+21\. Tu, F., Zhu, J., Zheng, Q., and Zhou, M. (2018). Be Careful of When: An
+
+021-87157-3.
+
+Empirical Study on Time-Related Misuse of Issue Tracking Data. In
+
+35\. Vandewiele, G., Dehaene, I., Kova´cs, G., Sterckx, L., Janssens, O., Proceedings of the 2018 26th ACM Joint Meeting on European
+
+Ongenae, F., De Backere, F., De Turck, F., Roelens, K., Decruyenaere, Software Engineering Conference and Symposium on the Foundations
+
+J., Van Hoecke, S., and Demeester, T. (2021). Overly Optimistic of Software Engineering (ACM: Lake Buena Vista FL USA),
+
+Prediction Results on Imbalanced Data: A Case Study of Flaws and pp. 307–318. https://doi.org/10.1145/3236024.3236054.
+
+Benefits When Applying over-Sampling. Artif. Intell. Med. 111, 101987.
+
+22\. Alves, V.M., Borba, J., Capuzzi, S.J., Muratov, E., Andrade, C.H., Rusyn,
+
+https://doi.org/10.1016/j.artmed.2020.101987.
+
+I., and Tropsha, A. (2019). Oy Vey\! A Comment on ‘‘Machine Learning of
+
+36\. Arp, D., Quiring, E., Pendlebury, F., Warnecke, A., Pierazzi, F., Toxicological Big Data Enables Read-Across Structure Activity
+
+Wressnegger, C., Cavallaro, L., and Rieck, K. (2022). Dos and Don’ts of Relationships Outperforming Animal Test Reproducibility. Toxicol. Sci.
+
+Machine Learning in Computer Security (USENIX Security Symposium). 167, 3–4. https://doi.org/10.1093/toxsci/kfy286.
+
+37\. Barnett, E., Onete, D., Salekin, A., and Faraone, S.V. (2022). Genomic 23. Christodoulou, E., Ma, J., Collins, G.S., Steyerberg, E.W., Verbakel, J.Y.,
+
+Machine Learning Meta-Regression: Insights on Associations of Study and Van Calster, B. (2019). A Systematic Review Shows No Performance
+
+Features with Reported Model Performance; techreport. medRxiv. Benefit of Machine Learning over Logistic Regression for Clinical
+
+2022.01.10.22268751. Prediction Models. J. Clin. Epidemiol. 110, 12–22. https://doi.org/10. 1016/j.jclinepi.2019.02.004.
+
+38\. Mongan, J., Moy, L., and Kahn, C.E. (2020). Checklist for Artificial Intelligence in Medical Imaging (CLAIM): A Guide for Authors and 24. Nalepa, J., Myller, M., and Kawulok, M. (2019). Validating Hyperspectral
+
+Reviewers. Radiology: Arti

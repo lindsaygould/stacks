@@ -1,0 +1,835 @@
+Characterizing emotion dynamics in remitted depression: A network approach using ecological momentary assessment 
+
+Available online 14 May 2026 2950-0044/© 2026 The Author(s). Published by Elsevier Inc. on behalf of Anxiety and Depression Association of America. This is an open access article under the CC BY-NC-ND license ( http://creativecommons.org/licenses/by-nc-nd/4.0/ ).
+
+Characterizing emotion dynamics in remitted depression: A network approach using ecological momentary assessment
+
+Emma H. Palermo a
+
+, Jacob M. Blank a, Claire Anderson a, Mario Bogdanov a,b
+
+, Grace W. Smith a, Christian A. Webb a,b
+
+a Center for Depression, Anxiety, and Stress Research, McLean Hospital, Belmont, MA, USA b Department of Psychiatry, Harvard Medical School, Cambridge, MA, USA c Noel Drury, M.D. Institute for Translational Depression Discoveries, University of California, Irvine, CA, USA
+
+A R T I C L E I N F O
+
+Keywords: Emotion Dynamics Remitted Depression Network Science Ecological Momentary Assessment Vulnerability
+
+A B S T R A C T
+
+Background: Maladaptive emotion dynamics and processes, such as emotional inflexibility and dominance of negative emotions, are characteristic of depression. The extent to which these abnormalities persist following depressive episodes, and represent a vulnerability factor for recurrent depressive episodes, remains unknown. The current study investigated whether emotion dynamics predict depressive symptoms in individuals with remitted depression (rMDD) and healthy controls (HC). Methods: 98 adults (HC: n = 50; rMDD: n = 48) completed a three-week ecological momentary assessment pro- tocol, in which they responded to two items probing positive emotions and three items probing negative emo- tions six times daily. Contemporaneous and temporal networks were constructed using multilevel vector autoregressive models. Density was calculated as a measure of emotional inflexibility and In- and Out-Expected Influence were calculated as measures of centrality. Linear regression models examined if density predicted clinical outcomes at the 6-month follow-up assessment. Results: Individuals with rMDD had significantly denser temporal emotional networks than HC participants. Groups also showed differential patterns of the most influential nodes in temporal and contemporaneous net- works. Greater temporal density and contemporaneous density was significantly associated with increased depressive symptoms at the 6-month follow-up, assessed through both clinician-rated and self-report measures. Conclusions: Abnormalities in emotion dynamics persist following remission from depression and can be used to predict future depressive symptoms, suggesting these may represent a vulnerability factor for depression. Future research should study if interventions based on emotion networks targeting maladaptive emotional processes are able to prevent future depression.
+
+1\. Introduction
+
+Major depressive disorder (MDD) is a prevalent and disabling mental condition characterized by abnormalities in emotion processing and emotion regulation (ER), with increased negative affect (e.g., sadness) and decreased positive affect (e.g., anhedonia) reflecting key symptoms \[1\]. Individuals with depression often show difficulties in flexibly adjusting their emotions to external circumstances, as manifested in a reduced ability to inhibit negative emotions \[2\] alongside a tendency to
+
+dampen positive emotions \[3–5\]. Further, this emotional inflexibility has been theorized to contribute to the development of depression \[4,6\]. Disturbances in emotion are thought to persist following remission and may increase vulnerability to future episodes \[7,8\]. Negative affect may be particularly important in remitted MDD (rMDD), with research identifying increased variability and intensity in negative, but not pos- itive, affect in individuals with rMDD \[9–12\]. Additionally, emotion dynamics may predict treatment response and remission, with negative affect levels predictive of both outcomes \[13\]. The abnormalities
+
+\* Correspondence to: Noel Drury, M.D. Institute for Translational Depression Discoveries, University of California, 5141 California Avenue, Irvine, CA 92617-3050, USA.E-mail address: dpizzaga@hs.uci.edu (D.A. Pizzagalli).
+
+\# Denotes shared senior authorship
+
+Journal of Mood & Anxiety Disorders 14 (2026) 100182
+
+https://doi.org/10.1016/j.xjmad.2026.100182 Received 24 February 2026; Received in revised form 5 May 2026; Accepted 11 May 2026
+
+Contents lists available at ScienceDirect
+
+Journal of Mood & Anxiety Disorders
+
+journal homepage: www.journals.elsevier.com/journal-of-mood-and-anxiety-disorders
+
+, David C. Steinberger a
+
+, Hadar Fisher a,b
+
+, Manuel Kuhn a,b,\#
+
+, Yinru Long a
+
+, Genevieve P. Nowicki a
+
+, Diego A. Pizzagalli a,b,c,\*,\#
+
+E.H. Palermo et al. Journal of Mood and Anxiety Disorders 14 (2026) 100182
+
+2 identified in rMDD may represent a “scar” of depression, referring to a
+
+examined emotional inflexibility in samples with rMDD, which might lasting mark of or change due to the depressive episode \[14\], as evi-
+
+provide key insights into whether increased inflexibility persists denced by changes in emotion dynamics following episodes. However,
+
+following depression and represents a vulnerability factor for future such disturbances may also represent a vulnerability factor, as evi-
+
+psychopathology. In light of evidence that individuals with rMDD tend denced by research suggesting that affect dynamics can predict the
+
+to experience greater emotional inertia \[9\] and exhibit maladaptive course and onset of future depressive episodes \[15,16\]. Given these two
+
+emotional patterns following a depressive episode \[11,12\], it is likely putative roles, abnormalities in emotional dynamics should be
+
+that such individuals also exhibit greater emotional rigidity. addressed to reduce depression recurrence.
+
+Further, it is also possible that individuals with rMDD exhibit dif- Previous research has often assessed emotional inflexibility using
+
+ferences in the structure of their emotional networks. Centrality, which emotional inertia, the extent to which an emotion predicts itself from
+
+measures the relative importance of a node and its influence \[25\], can be one timepoint to the next \[17\]; such studies generally conceptualize
+
+used to investigate the differential influence of specific emotions on the inertia as a form of emotional rigidity, with higher levels reflecting a
+
+emotional system. Expected influence (EI) is a centrality measure opti- tendency to become “stuck” in a particular emotional state. Studies have
+
+mally suited for networks that contain both positively and negatively shown that emotional inertia, especially in negative emotions such as
+
+valanced nodes \[26\]. In a temporal network, EI is separated into In-EI sadness, is elevated in currently depressed individuals compared to
+
+and Out-EI. In-EI measures the extent to which a node at timepoint t is healthy controls (HC) \[10\], predicts depression severity \[18\], and
+
+influenced by other nodes at timepoint t–1, whereas Out-EI measures the forecasts the onset of depression in adolescents \[15\]. While this
+
+extent to which a node at time t influences other nodes at time t + 1. As approach has advanced our understanding of maladaptive emotion dy-
+
+such, EI can be used to highlight which emotions are most impactful and namics in depression, the interpretation and applications of emotional
+
+impacted within an individual’s emotional system. Much of the current inertia and other traditional indices of emotion dynamics are limited
+
+research using centrality measures in depressed populations has focused and fall short in capturing the complexity of emotional processes and
+
+on examining DSM-derived symptoms of depression rather than affect their relationship to psychopathology \[19\]. Specifically, traditional
+
+\[27,28\]. While this research has sought to identify core symptoms of metrics overlook the fact that emotions interact dynamically, with each
+
+depression, identifying highly influential emotions may be important in emotion capable of predicting shifts in a range of other emotional states
+
+understanding depression trajectories. In addition, little is known about (e.g., anxiety giving rise to anger).
+
+whether or how the influence of emotions changes following remission One promising approach to overcome such limitations is network
+
+from depression. analysis, which maps the dynamic relationships among emotions. In a
+
+The current study used EMA data to assess facets of positive and network, variables such as emotions or symptoms are presented as
+
+negative emotions several times daily for three weeks. Our aims were to “nodes” with lines between nodes, or “edges” representing associations
+
+(1) use network analysis to characterize the affective networks of in- between variables. Within-subject networks can be used to demonstrate
+
+dividuals with rMDD and HCs, (2) compare emotional density and associations between emotions both at a singular point in time
+
+emotional centrality derived from these networks between rMDD and (contemporaneous networks) as well as over multiple consecutive
+
+HCs, and (3) predict future mood states at a 6-month follow-up session timepoints (temporal networks), enabling examination of emotional
+
+using both self-reported and clinician-rated measures of depressive and processes on multiple timescales. Once networks are constructed,
+
+anhedonic symptoms. various features can be extracted to aid in the interpretation of the re- sults. Two network features, density and centrality, have received
+
+2\. Methods particular attention in psychological research.
+
+Network density (or connectivity) assesses the strength of the con-
+
+2.1. Participants nections between different emotions and can be used within network analysis to reflect emotional inflexibility, capturing the persistence of
+
+137 participants aged 18–45 were recruited, including 56 partici- inter-emotional patterns through consistent emotional responses or
+
+pants with rMDD and 81 HC participants. Participants were recruited cyclical emotional states. In a temporal network, density measures how
+
+through online advertisements and flyers posted in the community. each emotion at time t is predicted by that emotion as well as all other
+
+Participants were screened by a masters or PhD-level clinician using the emotions in the network at time t–1 \[20\]. In a contemporaneous model,
+
+Structured Clinical Interview for DSM-5 Research Version (SCID-5-RV) network density represents the strength of the connections between
+
+\[29\]. Participants met criteria for rMDD if they had experienced at least emotions at any given point in time, which may be indicative of the
+
+one major depressive episode in the past five years and if their depres- nuance of an emotional network and the participant’s general ability to
+
+sion was in remission for at least two months prior to the screening differentiate between specific facets of positive and negative emotion
+
+session. In addition, clinical scores had to be below the following \[21\].thresholds: Beck Depression Inventory–II (BDI-II) \[30\] ≤ 9; Quick In-
+
+Network analysis becomes even more powerful when combined with
+
+ventory of Depression Symptomatology (QIDS) \[31\] ≤ 5; Hamilton ecologically valid mood assessment methods, such as ecological
+
+Depression Rating Scale (HDRS) \[32\] ≤ 7 as well as no more than two momentary assessment (EMA). Prior research using these methods has
+
+symptoms of depression reported to more than a mild degree found that density in emotion networks of MDD and HC participants
+
+\[SCID-5-RV rating of 2\] in the eight weeks prior to testing. Accordingly, differed primarily on negative affect density, with increased density in
+
+depressed mood and anhedonia symptoms had to be rated 1 on the SCID, participants with MDD, and no difference in positive affect density \[20\].
+
+excluding even subthreshold level of depressed mood and anhedonia for Investigating the predictive utility of density, Shin and colleagues \[22\]
+
+rMDD. All participants were unmedicated. Participants were classified found that the densities of both positive and negative affect networks
+
+as HC if they had no current or past psychiatric illness. Exclusion criteria predicted clinical group status above and beyond mean affect levels and
+
+for the full sample were current or past serious medical illness, current affective variability. Moreover, in single networks including both posi-
+
+comorbid psychiatric disorders, first-degree relatives with a history of a tive and negative affect, density was found to predict self-reported
+
+psychotic disorder or psychotic symptoms outside of the context of a depressive symptoms \[21\]. Thus far, most research that has been con-
+
+mood disorder, current use of psychoactive drugs, and more than 15 ducted using network density has focused on identifying differences
+
+alcohol-induced blackouts. between clinical and HC samples \[20,23\], or on associating
+
+Participants completed an EMA protocol as part of a larger neuro- network-derived affective characteristics with momentary mood fluc-
+
+imaging study. EMA data were collected from 119 participants. Partic- tuations \[22,24\], with little research conducted on the utility of emotion
+
+ipants were excluded from the analysis if they completed less than half density in predicting future mood \[21\]. Further, no research has
+
+of the EMA surveys, leading to a final sample of 98 participants (HC:
+
+E.H. Palermo et al. Journal of Mood and Anxiety Disorders 14 (2026) 100182
+
+Table 1
+
+sessions within a month of each other, they completed a short reas- Demographic and Clinical Characteristics of the Sample.
+
+sessment visit (mood module of the SCID-5-RV) prior to the neuro-
+
+HC rMDD
+
+imaging session to confirm their clinical status. (N = 50) (N = 48) t/χ2 (df) P-value
+
+Participants downloaded a mobile application (MetricWire, Inc.) on
+
+Age 27.52 (6.51)
+
+3 0.169
+
+their smartphone at the end of the neuroimaging session. They completed a brief survey to indicate their typical wake time, an example Gender
+
+survey, and were given an opportunity to ask the research team ques- Female 37
+
+(74.0%)
+
+tions about the procedure. The 21-day EMA period started the day following the neuroimaging session. Participants were prompted to complete surveys six times per day, for a maximum total of 126 surveys. Participants received one survey each morning at their designated wake time and five additional surveys randomly throughout the day between 10:30 am and 8 pm, with an interval of at least 1.5 h between times the surveys were sent. Surveys could be completed up until the next survey was sent, at which point it was counted as a missed signal. Each week, participants received an email reporting their compliance rate and compensation for the previous week. Compensation was given on a progressive schedule, where participants earned money for completing at least 70% of weekly surveys, with additional monetary bonuses for completing at least 80% of the surveys. The amount that participants were eligible to earn each week increased over the three-week EMA period.
+
+Participants completed a follow-up assessment at six months following the neuroimaging session, where they filled out the same online questionnaires assessing depressive symptoms and anhedonia completed at baseline and a clinical interview. A total of 87 participants (89% retention rate; HC: n = 45, rMDD: n = 42) who had usable EMA data at baseline also completed the 6-month follow-up session.
+
+2.3. Measures
+
+2.3.1. EMA Items
+
+The EMA protocol included measures of affect, anxiety, depression, and approach and avoidance behaviors. Given the study aims, the cur- rent analyses focused on the affect items, which were presented as grouped items: “cheerful/joyful/enthusiastic” (Cheerful), “calm/con- tent/relaxed” (Calm), “nervous/worried/afraid” (Nervous), “annoyed/ angry” (Annoyed), “sad/hopeless” (Sad). These items were grouped based on valence (positive: Cheerful, Calm; negative: Nervous, Annoyed, Sad) and arousal (high: Nervous, Annoyed; low: Cheerful, Calm, Sad) \[34\]. All items were preceded by the prompt: “For the next 5 questions, please answer them according to how you feel RIGHT BEFORE you started this survey.” Participants rated each item on a 0–100 scale, where 0 indi- cated low levels of the emotion.
+
+2.3.2. Baseline and Follow-Up Measures
+
+2.3.2.1. Hamilton Depression Rating Scale. The HDRS was used as a clinician-administered depression measure. The HDRS is a 17-item scale that assesses depressive symptoms through a structured interview. Items are scored on a scale of either 0–4 or 0–2 then summed to create a total score, with higher scores indicating increased depression severity. The internal consistency (assessed using Omega Total (ωt )) was relatively low at baseline (ωt = .52) and the 6-month follow-up (ωt = .66). These values are likely influenced by the low range in the sample since the rMDD sample was specifically recruited to be asymptomatic. Such floor effects reduce variability and inter-item correlations, which in turn deflate estimates of internal consistency.
+
+2.3.2.2. Beck Depression Inventory-II. Participants completed the BDI-II, a 21-item questionnaire measuring the prevalence and severity of depressive symptoms over the past two weeks. Items are rated on a 0–3 scale then summed, with higher scores indicating greater depression severity. The internal consistency of the scale was acceptable at baseline (ωt = .79) and at the 6-month follow-up (ωt = .87). 25.77
+
+1.39 (5.96)
+
+(96)
+
+1.33 (1) 0.250
+
+Male 13
+
+(26.0%)
+
+41 (85.4%) 7 (14.6%)
+
+RaceWhite 29
+
+(58.0%)
+
+0.0714
+
+Asian 14
+
+(28.0%)
+
+36 (75.0%) 10 (20.8%) American Indian/Alaskan Native
+
+1 (2.0%) 0 (0%)
+
+Black or African American 4 (8.0%) 0 (0%) More than one 0 (0%) 1 (2.1%) Income
+
+Less than $10,000 3 (6.0%) 3 (6.3%) 1.43 (5) 0.921 $10,000–25,000 2 (4.0%) 2 (4.2%) $25,000–50,000 7 (14.0%) 11
+
+(22.9%) $50,000–75,000 9 (18.0%) 9 (18.8%) $75,000–100,000 10
+
+(20.0%)
+
+9 (18.8%)
+
+More than $100,000 18
+
+(36.0%)
+
+14 (29.2%) Education
+
+High School 3 (6.0%) 0 (0%) 0.070 Some College 7 (14.0%) 15
+
+(31.3%) Junior College 1 (2.0%) 0 (0%) Four-Year College 13
+
+(26.0%)
+
+14 (29.2%) Graduate or Professional School
+
+26
+
+19 (52.0%)
+
+(39.6%) BDI-II Total Baseline 0.82 (1.67) 2.29 (2.87) –3.11
+
+(96)
+
+0.002
+
+BDI-II Total 6 M 1.58 (3.35) 4.43 (4.09) –3.57
+
+(85)
+
+\< 0.001
+
+SHAPS Total Baseline 19.21 (6.20)
+
+0.053
+
+SHAPS Total 6 M 19.87 (6.01)
+
+21.54
+
+–1.96 (6.04)
+
+(96) 19.76
+
+0.09
+
+0.925 (4.16)
+
+(85) HDRS Total Baseline 0.52 (0.84) 1.19 (1.38) –2.91
+
+(96)
+
+0.005
+
+HDRS Total 6 M 0.69 (1.56) 2.24 (2.13) –3.89
+
+(85)
+
+\< 0.001
+
+Note. Chi-square tests were conducted for categorical variables. For categorical variables in which there were cell counts of 0 or 1, Fisher’s Exact Test was conducted in place of the Chi-square test. Two Sample T-Tests were conducted for continuous variables. HC: Healthy Controls, rMDD: Euthymic individuals with remitted depression. BDI-II: Beck Depression Inventory, HDRS: Hamilton Depression Rating Scale, SHAPS: Snaith-Hamilton Pleasure Scale.
+
+n = 50, rMDD: n = 48). Demographics and baseline characteristics of the final sample are presented in Table 1.
+
+2.2. Procedure
+
+The study was approved by the Mass General Brigham (MGB) Insti- tutional Review Board (IRB), protocol numbers: 2014P001871 and 2018P000318, and participants provided written, informed consent after the procedures were explained. Participants first completed a screening session, consisting of informed consent, a clinical interview including the SCID-5-RV \[29\] and HDRS \[32\], and online questionnaires including the BDI-II \[30\] and Snaith-Hamilton Pleasure Scale (SHAPS) \[33\], a self-reported measure of anhedonia. Participants eligible following this screening visit were invited to complete the parent study’s neuroimaging visit of the session, which took place within a month after the screening visit. If participants were unable to complete the two
+
+E.H. Palermo et al. Journal of Mood and Anxiety Disorders 14 (2026) 100182
+
+4 2.3.2.3. Snaith-Hamilton Pleasure Scale. Anhedonia was assessed using
+
+3\. Results the SHAPS, a 14-item questionnaire measuring hedonic pleasure across four domains: interests, social interaction, sensory experience, and
+
+3.1. Attrition Analyses food/drink. Items are scored on a scale of 1 (“strongly agree”) to 4 (“strongly disagree”) and summed to create a total score, with higher
+
+Participants who did not complete at least half of the baseline EMA scores indicating greater anhedonia. The internal consistency was
+
+surveys and were thus excluded did not differ from included participants acceptable at baseline (ωt = .85) and at the 6-month follow-up
+
+in terms of their BDI (t(117) = 0.54, p = .589), HDRS (t(117) = 1.20, (ωt = .86).
+
+p = .235), or SHAPS (t(117) = –0.03, p = .974) scores. Additionally, participants who were included at baseline but did not complete the 6- 2.4. Statistical Analysis
+
+month follow-up did not differ from participants who completed the 6- month baseline based on BDI (t(96) = –0.01, p = .995), HDRS (t Network estimates using correlated effects were derived from
+
+(96) = 0.36, p = .723), or SHAPS (t(96) = 0.48, p = .632). multilevel vector autoregressive models (mlVAR), implemented through the mlVAR package in R \[35\]. The temporal and contemporaneous
+
+3.2. Descriptives networks were extracted from this model. In the temporal network, affect ratings at time t were regressed on the rating from the previous time-
+
+Demographic and clinical information regarding the groups is sum- point, time t–1. The value obtained for each represents the lagged as-
+
+marized in Table 1. Though there were significant between group dif- sociation between emotions from one timepoint to the next while
+
+ferences on the HDRS, SHAPS, and BDI, the mean levels for both groups accounting for the influence of all other emotions in the network \[36\].
+
+were remarkably low and well within the range of psychologically To ensure associations were captured within the same day, the lags from
+
+healthy individuals at both timepoints \[40,41\]. Groups did not differ on the last timepoint of the previous day to the first timepoint of the next
+
+the total number of surveys completed (HC: mean±SD=108.06 ± 16.38, day were excluded. The contemporaneous network was used to capture
+
+rMDD: 105.12 ± 15.82, t(96) = 0.90, p = .369). Using multivariate relationships between nodes at the same timepoint, controlling for the
+
+ANOVA, there was a significant group difference in average levels of temporal associations and concurrent (same timepoint) associations
+
+emotions throughout the EMA period (Wilks’ Λ=0.86, F(5,92)= 3.05, with the other nodes \[36\]. To statistically compare the temporal and
+
+p = .014). Follow-up t-tests revealed, on average, during the EMA contemporaneous networks of HC and rMDD participants, permutation
+
+period, HC participants reported higher levels of Cheerful (HC: testing set to 1000 permutations was implemented through the mnet
+
+65.70 ± 19.17; rMDD: 56.68 ± 20.48; t(96) = 2.25, p = .027) and Calm package in R \[37\].
+
+(HC: 66.83 ± 18.60; rMDD: 58.10 ± 20.60; t(96) = 2.20, p = .030) than Following previous research, density was calculated as the sum of the
+
+rMDD participants, whereas rMDD participants reported greater levels absolute values of each participant’s network effects \[20,21\]. Absolute
+
+of Nervous (HC: 8.06 ± 8.94; rMDD: 13.29 ± 11.33; t(96) = –2.54, value was used because of the focus on how closely related emotions
+
+p = .013) than HC participants. There were no differences in average were to each other, regardless of the direction of the association. For
+
+reported levels of Annoyed (HC: 6.52 ± 8.95; rMDD: 8.47 ± 7.64; t each participant, this yielded two values: a temporal network density
+
+(96) = –1.16, p = .249) or Sad (HC: 5.15 ± 8.78; rMDD: 5.68 ± 7.63; t and a contemporaneous network density. Greater temporal density in-
+
+(96) = –0.32, p = .752). Positive affect items were endorsed as present (i. dicates a more rigid, inflexible, resistant-to-change emotional network,
+
+e., non-zero) at nearly every timepoint (Cheerful: 98.89%; Calm: while greater contemporaneous density indicates increased connectivity
+
+98.83%). Negative affect items were endorsed as present less frequently between emotions in the moment, suggesting that emotions co-occur,
+
+(Nervous: 56.24%; Annoyed: 45.25%; Sad: 39.67%). fluctuate together, and may be less differentiated at a given moment.
+
+Centrality measures were extracted using the qgraph package in R
+
+3.3. Network Analyses \[38\]. This package provides estimates of multiple types of centrality measures, including In-EI and Out-EI. To derive these estimates, qgraph
+
+3.3.1. Contemporaneous networks network objects were computed separately for each group, then cen-
+
+The contemporaneous networks for rMDD and HC participants are trality measures were extracted for both the temporal and contempo-
+
+shown in Fig. 1A and Fig. 1B, respectively. The connections identified as raneous networks.
+
+significant between nodes were largely similar across groups. However, To predict 6-month follow-up outcomes, linear regression models
+
+the rMDD network included two significant connections that were ab- were used with density as the predictor. Separate models were con-
+
+sent in the HC network: Cheerful–Nervous (partial r = –0.074, p = .002) ducted to predict 6-month BDI, HDRS, and SHAPS scores. Due to low
+
+and Sad–Calm (partial r = –0.064, p = .026). However, permutation variance in these outcome measures at baseline, initial models did not
+
+testing identified a significant difference between groups only in the control for baseline scores. However, additional sensitivity analyses
+
+Cheerful-Nervous connection (Δ=0.09, p = .008). Full results from the were conducted using hierarchical linear models in two steps to control
+
+rMDD and HC contemporaneous models are presented in Table 2A and for baseline scores of the measures before predicting 6-month outcomes.
+
+Table 2B, respectively. Full results from the permutation testing are In step 1, a linear model was used to predict the 6-month follow-up score
+
+presented in Table 3A. from the baseline symptom score. The residuals of the model were then extracted and used as the outcome variable in step 2, where density
+
+3.3.2. Temporal networks (either temporal or contemporaneous) was used as the predictor. For
+
+The temporal networks for rMDD and HC participants are presented missing items on the baseline and follow-up clinical measures (BDI-II,
+
+in Fig. 1C and Fig. 1D, respectively. Both networks featured a signifi- SHAPS, and HDRS), multivariate imputation was performed using the
+
+cant, bidirectional relationship between Calm and Cheerful. However, mice package in R \[39\]. Imputation was not performed for participants
+
+the rMDD network presented an additional significant bidirectional who were lost to follow-up. Overall, there were little missing data: for
+
+relationship between Nervous and Sad (βNervous–Sad=0.062, the SHAPS baseline, two participants were each missing one item; for
+
+pNervous–Sad=.005; βSad–Nervous=0.085, pSad–Nervous=.006) and between the SHAPS 6-month follow-up, one participant was missing one item,
+
+Nervous and Calm (βNervous–Calm=–0.083, pNervous–Calm\<.001; and one participant was missing two items; and for the HDRS baseline,
+
+βCalm–Nervous=–0.089, pCalm–Nervous=.017). Permutation testing identi- one participant was missing one item.
+
+fied no statistically significant differences between groups. Full results from the temporal model for rMDD and HC participants are presented Table 4A and Table 4B, respectively. Full results from the permutation testing are presented in Table 3B.
+
+E.H. Palermo et al. Journal of Mood and Anxiety Disorders 14 (2026) 100182
+
+Fig. 1. A) Contemporaneous and C) Temporal networks for rMDD Participants and B) Contemporaneous and D) Temporal networks for HC participants. Only significant edges in each network are plotted on these graphs. Red edges indicate significant negative associations, and blue edges indicate significant positive associations. Greater line boldness indicates a greater strength of the association.
+
+Table 2 Contemporaneous network results. Partial correlations, correlations, and resulting p-values for edges in the A) rMDD and B) HC contemporaneous network.
+
+A) rMDD participants
+
+Variable 1 Variable 2 P 1→2 P 2→1 Partial r r
+
+Calm Cheerful \< 0.001 \< 0.001 0.351 0.502 Nervous Cheerful 0.002 \< 0.001 -0.073 -0.317 Nervous Calm \< 0.001 \< 0.001 -0.235 -0.395 Annoyed Cheerful \< 0.001 \< 0.001 -0.211 -0.404 Annoyed Calm \< 0.001 \< 0.001 -0.176 -0.390 Annoyed Nervous \< 0.001 \< 0.001 0.138 0.318 Sad Cheerful \< 0.001 \< 0.001 -0.175 -0.337 Sad Calm 0.026 0.073 -0.064 -0.286 Sad Nervous \< 0.001 \< 0.001 0.157 0.295 Sad Annoyed 0.002 0.001 0.131 0.295 B) HC participants Variable 1 Variable 2 P 1→2 P 2→1 Partial r r Calm Cheerful \< 0.001 \< 0.001 0.429 0.516 Nervous Cheerful 0.299 0.457 0.017 -0.213 Nervous Calm \< 0.001 \< 0.001 -0.238 -0.346 Annoyed Cheerful \< 0.001 \< 0.001 -0.141 -0.322 Annoyed Calm \< 0.001 \< 0.001 -0.126 -0.326 Annoyed Nervous \< 0.001 0.002 0.141 0.280 Sad Cheerful \< 0.001 0.001 -0.155 -0.305 Sad Calm 0.140 0.170 -0.049 -0.271 Sad Nervous \< 0.001 \< 0.001 0.151 0.271 Sad Annoyed \< 0.001 \< 0.001 0.235 0.352
+
+5
+
+Table 3 Empirical differences and resulting p-values from the mlVAR permutation test. Partial correlation differences and corresponding p-values of the A) contempo- raneous and B) temporal network permutation-based group comparison test.
+
+A) Contemporaneous network comparison
+
+Cheerful Calm Nervous Annoyed Sad
+
+Cheerful Calm 0.081 (.102) Nervous 0.092 (.008)
+
+–0.012 (.787) Annoyed 0.070 (.096)
+
+0.064 (.150)
+
+0.001 (.976) Sad 0.014 (.777)
+
+0.016 (.727)
+
+–0.001 (.996)
+
+0.118 (.074) B) Temporal network comparison
+
+Cheerful Calm Nervous Annoyed Sad Cheerful 0.048 (.356)
+
+–0.018 (.744)
+
+–0.009 (.796)
+
+0.044 (.131)
+
+0.005 (.879) Calm 0.039 (.365)
+
+0.026 (.567)
+
+0.051 (.125)
+
+0.027 (.316)
+
+–0.008 (.815) Nervous –0.009
+
+(.853)
+
+0.05 (.347)
+
+–0.044 (.358)
+
+0.021 (.500)
+
+–0.040 (.370) Annoyed 0.022 (.625)
+
+0.026 (.613)
+
+0.026 (.587)
+
+–0.030 (.543)
+
+–0.007 (.884) Sad 0.019 (.672)
+
+0.033 (.517)
+
+–0.051 (.071)
+
+0.024 (.544)
+
+–0.027 (.625)
+
+E.H. Palermo et al. Journal of Mood and Anxiety Disorders 14 (2026) 100182
+
+3.4. Density
+
+3.92 ± 0.82; t(85) = –1.77, p = .081).
+
+Density was computed for the full baseline sample as well as for the
+
+3.5. Emotional Density Predicting 6-Month Follow-Up Outcomes subsample of participants who completed both the baseline and 6-month follow-up measures. For the baseline sample, groups significantly
+
+3.5.1. Clinician-Rated Depression Symptoms (HDRS) differed on temporal density (HC: 2.16 ± 0.43; rMDD: 2.37 ± 0.47; t
+
+Greater temporal (β=1.13, p = .011) and contemporaneous (96) = –2.33, p = .022), such that participants in the rMDD group had
+
+(β=0.712, p = .010) densities significantly predicted higher HDRS denser networks than the HC group. Groups did not differ in contem-
+
+scores. Critically, in hierarchical regression models controlling for poraneous density (HC: 3.62 ± 0.68; rMDD: 3.83 ± 0.82; t(96) = –1.39,
+
+baseline HDRS scores, the effect of temporal (β=1.03, p = .019) and p = .167). Similarly, when restricting the sample to only participants
+
+contemporaneous (β=0.58, p = .035) density remained significant. with follow-up data, the temporal density was significantly higher in the rMDD sample (HC: 2.16 ± 0.45; rMDD: 2.38 ± 0.49; t(85) = –2.28,
+
+3.5.2. Self-Reported Depression Symptoms (BDI-II) p = .025) compared to the HC sample, and there was no significant
+
+Greater temporal (β=2.42, p = .006) and contemporaneous (β=1.30, difference in the contemporaneous density (HC: 3.63 ± 0.70; rMDD:
+
+p = .018) densities significantly predicted higher BDI-II scores. In hier- archical regression models controlling for baseline BDI-II scores, the
+
+Table 4 Temporal network results. Temporal network results for the A) rMDD partici-
+
+effects of temporal and contemporaneous density became insignificant (ps \>.096).
+
+pants and B) HC participants.
+
+A) rMDD participants
+
+3.5.3. Self-Reported Anhedonia Symptoms (SHAPS)
+
+Greater temporal (β=2.73, p = .018), but not contemporaneous From To β SE p
+
+(β=0.920, p = .225) densities significantly predicted increased SHAPS Cheerful Cheerful 0.277 0.032 \< .001
+
+scores. Controlling for baseline SHAPS scores in the hierarchical Cheerful Calm 0.113 0.027 \< .001
+
+regression model, the effects of temporal density and contemporaneous Cheerful Nervous -0.019 Cheerful Annoyed 0.004 0.029 0.030 0.511 0.891
+
+density were insignificant (ps \> .070).
+
+Cheerful Calm Sad -0.057 Cheerful 0.124 0.025 0.033 0.024
+
+\< .001
+
+3.6. Centrality Measures Calm Calm 0.242 0.039 \< .001 Calm Calm Calm Nervous Nervous Annoyed Sad Cheerful -0.089 0.038 -0.076 0.037 -0.024 0.035 -0.003 0.021 0.017 0.039 0.487 0.874
+
+Centrality measures (i.e., In-EI and Out-EI) were calculated sepa- rately for each group for both temporal and contemporaneous networks. In-EI and Out-EI measures for the temporal network for rMDD and HC Nervous Calm -0.083 0.019 \< .001
+
+participants are shown in Fig. 2A and Fig. 2B, respectively. EI values for Nervous Nervous 0.230 0.036 \< .001
+
+the contemporaneous network for rMDD and HC participants are shown Nervous Annoyed Nervous Sad Annoyed Cheerful Annoyed Calm 0.050 0.063 0.001 0.011 0.033 0.022 0.017 0.018 0.138 0.004 0.949 0.532
+
+in Fig. 2C.
+
+In the rMDD temporal network, Cheerful had the greatest In-EI (EI=0.12), indicating that cheerfulness was the most influenced by Annoyed Nervous -0.013 0.019 0.504
+
+emotions at the previous timepoint, and increased when these emotions Annoyed Annoyed Sad Sad Annoyed Sad Cheerful Calm 0.167 0.031 -0.030 0.022 0.034 0.022 0.019 0.021 \< .001 0.159 0.110 0.293
+
+increased, while Sad had the greatest Out-EI (EI=0.08), indicating that sadness most strongly influenced emotions at the following timepoint. In the rMDD contemporaneous network, Calm was the most influential Sad Nervous 0.085 0.031 0.006
+
+emotion (EI=–0.12), indicating that increases in other emotions in the Sad Annoyed 0.029 0.029 0.319
+
+network suppressed feelings of calmness, while increases in calmness Sad Sad 0.212 B) HC participants From To β Cheerful Cheerful 0.325 0.033 \< .001
+
+suppressed other emotions in the network.
+
+SE 0.038 p
+
+\< .001
+
+In the HC temporal network, Calm had the highest In-EI (EI=0.19), indicating that it was the most influenced by other emotions in the Cheerful Calm 0.152 0.025 \< .001
+
+network. Cheerful had the greatest Out-EI (EI=0.15), followed closely by Cheerful Cheerful Cheerful Calm Nervous -0.028 Annoyed 0.026 Sad -0.038 Cheerful 0.106 0.030 0.029 0.028 0.027 0.354 0.353 0.166 \< .001
+
+Annoyed (EI=0.14), indicating that increases in these emotions led to increases in other emotions in the network at the next timepoints. Notably, the In-EI for Nervous was 0, indicating that nervousness was not Calm Calm 0.268 0.031 \< .001
+
+impacted by other emotions in the network, and the Out-EI for Sad was Calm Nervous -0.039 0.030 0.190
+
+0, such that sadness at one timepoint did not have an impact on other Calm Annoyed Calm Sad Nervous Cheerful Nervous Calm -0.050 0.032 0.009 0.029 -0.012 0.023 -0.032 0.023 0.118 0.753 0.605 0.165
+
+emotions at the next timepoint. In the HC contemporaneous network, Sad was the most influential emotion (EI=0.23), suggesting that when sadness is experienced, it dominates the other emotions at that Nervous Nervous 0.186 0.027 \< .001
+
+timepoint. Nervous Annoyed 0.076 0.036 0.038 Nervous Sad 0.012 Annoyed Cheerful 0.045 0.018 0.019 0.509 0.018
+
+4\. Discussion
+
+Annoyed Calm 0.039 0.016 0.016 Annoyed Nervous 0.008 0.021 0.692
+
+In the current study, we used network analysis to characterize Annoyed Annoyed 0.137 0.031 \< .001
+
+emotion networks in rMDD and HC participants. Using density and ex- Annoyed Sad Sad Sad Sad Cheerful Calm Nervous 0.054 -0.025 0.014 0.045 0.025 0.020 0.021 0.024 0.027 0.204 0.500 0.063
+
+pected influence, we found that rMDD participants were characterized by a denser temporal emotional network than HC participants. More- over, both temporal and contemporaneous emotional densities pre- Sad Annoyed 0.022 0.028 0.445
+
+dicted future depressive and anhedonic symptoms, and the two groups Sad Sad 0.186 0.028 \< .001
+
+diverged in which emotions were most influential over concurrent and Beta values represent the strength of the connection between nodes. Significant
+
+future emotions. These findings have several important implications. values indicate that the edge significantly differs from 0.
+
+First, exploring the individual networks of the rMDD and HC
+
+6
+
+E.H. Palermo et al. Journal of Mood and Anxiety Disorders 14 (2026) 100182
+
+Fig. 2. A) In-Expected Influence, B) Out-Expected Influence, and C) Expected Influence values for temporal and contemporaneous networks for rMDD and HC participants. In-EI represents the amount to which a node is influenced by the other nodes at timepoint t – 1. Positive values mean that as the values of other nodes increase, the node’s values also increase, whereas negative values suggest that increases in other nodes cause a decrease in that node. B) Out-EI represents the extent to which a node influences other nodes in the network at timepoint t + 1. Positive values mean that the node causes increases in the other nodes, whereas negative values mean that the node causes decreases in the other nodes. C) In contemporaneous networks, EI measures the amount of influence a node has on other nodes, with positive values suggesting that it is related to increases in other nodes and negative values suggesting it is related to decreases in other nodes.
+
+7
+
+participants provided additional insight into the emotional dynamics of these groups. Although there was no overall difference between the rMDD and HC groups in contemporaneous density, there was a signifi- cant group difference in the Cheerful–Nervous edge in the contempora- neous networks, such that rMDD participants had a stronger inverse association between these emotions. Additionally, trends in other edges between positive and negative emotions (for example, Cheerful–Annoyed in the contemporaneous network) may suggest increased emotional polarization, the experience of positive and negative emotions as mutually exclusive \[42\]. Participants with rMDD also had an increased number of inverse correlations between positive and negative emotions, for example, Cheerful being negatively associated with Sad at the following timepoint in the temporal network. While network edges should be interpreted with caution given their instability \[43\], this re- sults may point toward an additional possibility for how emotion dy- namics are related to or could lead to future depression. In line with this conjecture, polarization of emotion has previously been associated with increased depressive symptomatology \[42\], and its presence in the rMDD network may suggest maladaptive emotional processes that could increase the likelihood of recurrence. The number of significant differ- ences between the contemporaneous and temporal networks was rela- tively low. This may be expected given that the rMDD sample was not currently experiencing an active depressive episode, with participants showing very low levels of depressive symptoms and negative affect at the time of the study. Individuals in remission function closer to a normative emotional baseline, and their momentary affective dynamics would therefore be expected to more closely resemble those of healthy controls than during an active episode.
+
+Second, rMDD participants had a significantly denser temporal emotional network than HC participants. Denser emotional networks are thought to represent maladaptive ER patterns, particularly, a reduced ability to update emotional states based on changes in the external environment, and therefore less flexible responding \[20\]. Increased emotional density has been shown to predict diagnostic status \[22\], and our findings extend previous studies by investigating this construct in individuals with rMDD, highlighting a persistence of this state following remission. Although prospective studies in at-risk samples will be needed for conclusive evidence, these findings raise the possibility that increased emotional density may be a “scar” of depression, such that an individual’s emotional experience is changed as a result of experiencing depression \[44\]. These findings suggest that even though individuals who remit from depression may no longer experience clinical symptoms of depression, underlying maladaptive emotional processes may persist, potentially increasing risk for future episodes. However, because the sample consisted of participants with rMDD, we cannot rule out the possibility that these emotional processes were a vulnerability factor, preceding the first episode of depression. The difference in density in the temporal network but not in the contemporaneous network may be driven by the relative importance of the interaction of emotions and their inertia over time having more relative influence on symptom- atology than within-moment emotional experiences. This is supported by previous research that emphasizes the importance of time-varying metrics, such as inertia and variability, over traditional metrics \[12, 45\]. By moving beyond metrics such as inertia that focus on a singular emotion, the use of network analysis allowed us to dissect important connections between emotions that would not have been captured by traditional metrics. Overall, these results underscore the importance of investigating both temporal and contemporaneous emotional dynamics in rMDD.
+
+Third, emotional density at baseline was associated with both clinician-rated and self-report depressive symptoms at the 6-month follow-up, though only clinician-rated depressive symptoms survived controlling for baseline symptoms, suggesting emotional density may be a vulnerability factor for future depressive symptoms. The increased strength of the association with the HDRS relative to the BDI and SHAPS aligns with previous research reporting higher effect sizes when using
+
+E.H. Palermo et al. Journal of Mood and Anxiety Disorders 14 (2026) 100182
+
+8 clinician-reported outcomes than self-report outcomes \[46\]. These
+
+estimates and centrality indices with low bias. The current study findings build on prior research in adolescents showing that greater
+
+included N = 98 participants and k = 5 emotion variables, yielding a emotional inertia predicts future depressive episodes \[15\] and extend it
+
+ratio of 19.6:1, which safely exceeds this recommended threshold. by investigating an adult, unmedicated, fully remitted sample and
+
+Third, although the emotions assessed covered both positive and quantifying the connectivity of the entire emotional network as a pre-
+
+negative valences and high and low arousal, emotions were presented as dictor rather than inertia of specific emotions. To our knowledge, this is
+
+grouped categories rather than individually, limiting our ability to the first study to use emotional density to prospectively predict
+
+detect more subtle nuances in emotional relationships. While this depressive symptoms in adults, although one study has found similar
+
+grouping did capture both positively and negatively valanced emotions results in an adolescent sample \[21\]. These findings suggest that tar-
+
+as well as high and low intensities \[34\], future studies should incorpo- geting maladaptive emotional processes may be a key area of inter-
+
+rate more emotional nodes with larger sample sizes to detect such dif- vention to prevent future depressive episodes, although further research
+
+ferences. Fourth, though no edges in the temporal network reached is needed to clarify whether emotional density is a scar of depressive
+
+significance, it is important to note that the permutation test used rea- episodes, a vulnerability factor, or both.
+
+ches peak performance with larger sample sizes and larger empirical Lastly, the centrality of emotions – as measured through EI – showed
+
+differences than those collected and observed in the present analysis. differing patterns for rMDD and HC participants, especially for the in-
+
+Therefore, future studies incorporating larger sample sizes may help fluence of Sad. Specifically, in the rMDD temporal network, Sad had the
+
+better elucidate potential differences between networks. Fifth, temporal strongest Out-EI, highlighting a pervasive impact on other emotions in
+
+network models assume equal spacing between observations. Although the network at future timepoints and suggesting that following remis-
+
+intervals varied slightly, assessments were administered within rela- sion from depression, sadness remains a core emotion. Additionally,
+
+tively constrained windows. Thus, estimates reflect average lagged as- since this association was positive, it shows that as sadness increases, the
+
+sociations across these intervals. Future work could apply intensities of other emotions in the network also increase, potentially
+
+continuous-time models (e.g., ctsem) to explicitly account for timing creating a negative feedback loop. However, it is also important to
+
+variability. Lastly, because our EMA protocol did not include any consider that these effects may be due to external events or stressors,
+
+contextual variables, it is unknown whether outside factors such as such that Sad is an initial emotion in response to an event, but that a
+
+stressful events contributed to the emotion dynamics observed in the situational factor may be responsible for the changing dynamics
+
+study. Including questions related to life events and stressors may be of following this emotion. Importantly, the impact of Sad as a temporally
+
+interest in interpreting emotion dynamics and understanding how influential emotion was unique to the rMDD participants. In the HC
+
+external events impact the persistence of emotional states. temporal network, the Out-EI of Sad was 0, indicating that it had no
+
+Taken together, our results highlight the importance of investigating impact on future emotional ratings. However, Sad remained an impor-
+
+emotion dynamics as both a consequence of and potential precursor to tant node in HC participants in the contemporaneous network, where
+
+psychopathology by demonstrating persistent alterations in emotion Sad had the greatest EI, suggesting it has a transient impact on the
+
+networks following remission from depression. Considering these al- network. One possible explanation for these results is that although Sad
+
+terations and continuing to investigate emotion dynamics is important may dominate the emotional network immediately, HCs may more
+
+for understanding how to prevent depression onset and recurrence. effectively cope with negative emotions and readily disengage from
+
+Importantly, our results highlight underlying affective mechanisms of them. While these results provide some insight into the relative impor-
+
+depression, and understanding these mechanisms can help us to choose tance of certain emotions, it is important to note that centrality measures
+
+more effective, efficient interventions and inform prevention efforts. For tend to be unstable except in very large sample sizes \[43\], so these re-
+
+example, individuals with denser emotional networks may benefit from sults should be interpreted with caution.
+
+interventions that target emotional rigidity and aim to increase flexi- While this study provides novel insights into emotion dynamics in
+
+bility. Techniques drawn from dialectical behavior therapy, such as rMDD and the predictive power of these dynamics, several limitations
+
+acceptance and ER skills, may be useful in increasing emotional flexi- should be noted. First, because our sample focused on individuals with
+
+bility, helping individuals modulate their emotional responses. In future rMDD and did not include currently depressed participants, there was
+
+work, it will be important to explore whether targeting emotional dy- little variability in baseline and follow-up levels of depressive symp-
+
+namics prior to the onset of depression prevents the occurrence of toms, limiting our ability to detect significant differences when con-
+
+depressive episodes and decreases the chance of relapse. trolling for baseline levels. Similarly, because very few individuals in our sample (6.90%) experienced either a first episode (HC participants) or a
+
+Funding recurrence (rMDD participants) of MDD between baseline and the 6- month follow-up, we lacked the power to predict depressive episode
+
+The present work was supported by the National Institute of Mental onset and instead focused on dimensional measures of symptoms.
+
+Health grants P50 MH119467 and R37 MH068376 to Diego Pizzagalli. Accordingly, future studies should replicate and extend our findings in
+
+Dr. Webb was partially supported by NIMH R01MH116969, NCCIH currently depressed individuals or individuals with subclinical depres-
+
+R01AT011002, the Tommy Fuss Fund and a Young Investigator Grant sive symptoms and use longer longitudinal timeframes to provide
+
+from the Brain & Behavior Research Foundation. The funders had no additional insight into the trajectories of emotion networks throughout
+
+role in study design, data collection and analysis. the course of MDD. Second, since the data for this study were drawn from a broader study utilizing neuroimaging techniques, participants
+
+Declaration of Competing Interest had to meet strict eligibility requirements regarding medical history and comorbidities. Such exclusions may limit the generalizability of the
+
+Over the past three years, Dr. Pizzagalli has received consulting fees presented results. Relatedly, data for the current analyses were drawn
+
+from Abbvie, Arrowhead Pharmaceuticals, Boehringer Ingelheim, Cir- from a larger neuroimaging study, which precluded the ability to
+
+cular Genomics, Compass Pathways, Engrail Therapeutics, Magnetic conduct prospective power analyses or modify sample size. Whereas
+
+Tides, N1 Biocorp, Neumora Therapeutics, Neurocrine Biosciences, calculating exact power for network models is highly complex and de-
+
+Neuroscience Software, Syntropic Medical, and Xenon Pharmaceuticals; pends heavily on specific edge weights \[47\], recent extensive simulation studies by Avalos-Tejeda ´& Calder´on \[48\] established the
+
+he has received honoraria from the American Psychological Association, Psychonomic Society and Springer (for editorial work) and from sample-to-variable ratio (n/k) as a practical heuristic for network re-
+
+Alkermes; he has received research funding from the BIRD Foundation, covery. Specifically, their simulations demonstrated that a minimum
+
+Brain and Behavior Research Foundation, Circular Genomics, DARPA, ratio of 10:1 serves as a robust threshold for obtaining reliable edge
+
+Millennium Pharmaceuticals, NIMH and Wellcome Leap MCPsych; he
+
+E.H. Palermo et al. Journal of Mood and Anxiety Disorders 14 (2026) 100182
+
+has received stock options from Ceretypes Neuromedicine, Compass Pathways, Engrail Therapeutics, Neumora Therapeutics, and Neurosci- ence Software. Dr. Webb receives consulting fees from King & Spalding law firm. No funding from these entities was used to support the current work, and all views expressed are solely those of the authors. The other authors declare no competing financial interests.
+
+References
+
+\[1\] Watson D, Clark LA, Carey G. Positive and Negative Affectivity and Their Relation
+
+to Anxiety and Depressive Disorders. J Abnorm Psychol 1988;97:346–53. \[2\] Joormann J, Gotlib IH. Emotion regulation in depression: Relation to cognitive
+
+inhibition. Cogn & Emot 2010;24:281–98. https://doi.org/10.1080/ 02699930903407948. \[3\] Bean CAL, Summers CB, Ciesla JA. Dampening of positive affect and depression: A
+
+meta-analysis of cross-sectional and longitudinal relationships. Behav Res Ther 2022;156:104153. https://doi.org/10.1016/j.brat.2022.104153. \[4\] Stange JP, Alloy LB, Fresco DM. Inflexibility as a Vulnerability to Depression: A Systematic Qualitative Review. Clin Psychol Sci Pr 2017;24:245–76. https://doi. org/10.1111/cpsp.12201. \[5\] Werner-Seidler A, Banks R, Dunn BD, Moulds ML. An investigation of the
+
+relationship between positive affect regulation and depression. Behav Res Ther 2013;51:46–56. https://doi.org/10.1016/j.brat.2012.11.001. \[6\] Leahy RL, Tirch DD, Melwani PS. Processes Underlying Depression: Risk Aversion, Emotional Schemas, and Psychological Flexibility. Int J Cogn Ther 2012;5:362–79. https://doi.org/10.1521/ijct.2012.5.4.362. \[7\] Berking M, Wirtz CM, Svaldi J, Hofmann SG. Emotion regulation predicts
+
+symptoms of depression over five years. Behav Res Ther 2014;57:13–20. https:// doi.org/10.1016/j.brat.2014.03.003. \[8\] Morris BH, Bylsma LM, Rottenberg J. Does emotion predict the course of major
+
+depressive disorder? A review of prospective studies. Br J Clin Psychol 2009;48: 255–73. https://doi.org/10.1348/014466508X396549. \[9\] Hawes MT, Klein DN. Emotion dynamics in current and remitted depression: an
+
+ecological momentary assessment study. Psychol Med 2024:1–8. https://doi.org/ 10.1017/s0033291724000369. \[10\] Nelson J, Klumparendt A, Doebler P, Ehring T. Everyday emotional dynamics in
+
+major depression. Emotion 2020;20:179–91. https://doi.org/10.1037/ emo0000541. \[11\] Schoevers RA, Van Borkulo CD, Lamers F, Servaas MN, Bastiaansen JA,
+
+Beekman ATF, et al. Affect fluctuations examined with ecological momentary assessment in patients with current or remitted depression and anxiety disorders. Psychol Med 2021;51:1906–15. https://doi.org/10.1017/s0033291720000689. \[12\] Thompson RJ, Bailen NH, English T. Everyday Emotional Experiences in Current
+
+and Remitted Major Depressive Disorder: An Experience-Sampling Study. Clin Psychol Sci 2021;9:866–78. https://doi.org/10.1177/2167702621992082. \[13\] Helmich MA, Wichers M, Peeters F, Snippe E. Daily dynamics of negative affect: indicators of rate of response to treatment and remission from depression? Cogn Emot 2022;36:1594–604. https://doi.org/10.1080/02699931.2022.2129593. \[14\] Lewinsohn PM, Steinmetz JL, Larson DW, Franklin J. Depression-Related
+
+Cognitions: Antecedent or Consequence? J Abnorm Psychol 1981;90:213–9. \[15\] Kuppens P, Sheeber LB, Yap MBH, Whittle S, Simmons JG, Allen NB. Emotional
+
+inertia prospectively predicts the onset of depressive disorder in adolescence. Emotion 2012;12:283–9. https://doi.org/10.1037/a0025046. \[16\] Panaite V, Rottenberg J, Bylsma LM. Daily Affective Dynamics Predict Depression Symptom Trajectories Among Adults with Major and Minor Depression. Affec Sci 2020;1:186–98. https://doi.org/10.1007/s42761-020-00014-w. \[17\] Koval P, Pe ML, Meers K, Kuppens P. Affect dynamics in relation to depressive symptoms: Variable, unstable or inert? Emotion 2013;13:1132–41. https://doi. org/10.1037/a0033579. \[18\] Koval P, Kuppens P, Allen NB, Sheeber L. Getting stuck in depression: The roles of
+
+rumination and emotional inertia. Cogn & Emot 2012;26:1412–27. https://doi. org/10.1080/02699931.2012.667392. \[19\] Dejonckheere E, Mestdagh M, Houben M, Rutten I, Sels L, Kuppens P, et al. Complex affect dynamics add limited information to the prediction of psychological well-being. Nat Hum Behav 2019;3:478–91. https://doi.org/ 10.1038/s41562-019-0555-0. \[20\] Pe ML, Kircanski K, Thompson RJ, Bringmann LF, Tuerlinckx F, Mestdagh M, et al. Emotion-Network Density in Major Depressive Disorder. Clin Psychol Sci 2015;3: 292–300. https://doi.org/10.1177/2167702614540645. \[21\] Fisher H, Pidvirny K, Jaffe NM, Tierney AO, Pizzagalli DA, Webb CA. Emot rigidity Adolesc Prospect Predicts Future Depress symptoms Assess via self-Rep Clin Interview 2024. https://doi.org/10.31234/osf.io/bhdy4. \[22\] Shin KE, Newman MG, Jacobson NC. Emotion network density is a potential
+
+clinical marker for anxiety and depression: Comparison of ecological momentary assessment and daily diary. Br J Clin Psychol 2022;61:31–50. https://doi.org/ 10.1111/bjc.12295. \[23\] De Vos S, Wardenaar KJ, Bos EH, Wit EC, Bouwmans MEJ, De Jonge P. An
+
+investigation of emotion dynamics in major depressive disorder patients and healthy persons using sparse longitudinal networks. PLoS ONE 2017;12:e0178586. https://doi.org/10.1371/journal.pone.0178586.
+
+9
+
+\[24\] Kelley SW, Fisher AJ, Lee CT, Gallagher E, Hanlon AK, Robertson IH, et al. Elevated
+
+emotion network connectivity is associated with fluctuations in depression. Proc Natl Acad Sci USA 2023;120:e2216499120. https://doi.org/10.1073/ pnas.2216499120. \[25\] Bringmann LF, Elmer T, Epskamp S, Krause RW, Schoch D, Wichers M, et al. What
+
+do centrality measures measure in psychological networks? J Abnorm Psychol 2019;128:892–903. https://doi.org/10.1037/abn0000446. \[26\] Robinaugh DJ, Millner AJ, McNally RJ. Identifying highly influential nodes in the complicated grief network. J Abnorm Psychol 2016;125:747–57. https://doi.org/ 10.1037/abn0000181. \[27\] Fried EI, Epskamp S, Nesse RM, Tuerlinckx F, Borsboom D. What are “good”
+
+depression symptoms? Comparing the centrality of DSM and non-DSM symptoms of depression in a network analysis. J Affect Disord 2016;189:314–20. https://doi. org/10.1016/j.jad.2015.09.005. \[28\] Malgaroli M, Calderon A, Bonanno GA. Networks of major depressive disorder: A
+
+systematic review. Clin Psychol Rev 2021;85:102000. https://doi.org/10.1016/j. cpr.2021.102000. \[29\] First MB, Williams JB, Karg RS, Spitzer RL. SCID-5-RV 2015. \[30\] Beck AT, Steer RA, Brown G. Beck Depression Inventory–II. PsycTESTS® 1996.
+
+https://doi.org/10.1037/t00742-000. \[31\] Rush AJ, Trivedi MH, Ibrahim HM, Carmody TJ, Arnow B, Klein DN, et al. The 16- Item quick inventory of depressive symptomatology (QIDS), clinician rating (QIDS- C), and self-report (QIDS-SR): a psychometric evaluation in patients with chronic major depression. Biol Psychiatry 2003;54:573–83. https://doi.org/10.1016/ s0006-3223(02)01866-8. \[32\] Hamilton M. A rating scale for depression. J Neurol Neurosurg Psychiatry 1960;23:
+
+56–62. https://doi.org/10.1136/jnnp.23.1.56. \[33\] Snaith RP, Hamilton M, Morley S, Humayan A, Hargreaves D, Trigwell P. A Scale
+
+for the Assessment of Hedonic Tone the Snaith–Hamilton Pleasure Scale. Br J Psychiatry 1995;167:99–103. https://doi.org/10.1192/bjp.167.1.99. \[34\] Hoyt LT, Craske MG, Mineka S, Adam EK. Positive and Negative Affect and
+
+Arousal: Cross-Sectional and Longitudinal Associations With Adolescent Cortisol Diurnal Rhythms. Psychosom Med 2015;77:392–401. https://doi.org/10.1097/ PSY.0000000000000178. \[35\] Epskamp S, van Borkulo CD, van der Veen DC, Servaas MN, Isvoranu A-M, Riese H,
+
+et al. Personalized Network Modeling in Psychopathology: The Importance of Contemporaneous and Temporal Connections. Clin Psychol Sci 2018;6:416–27. https://doi.org/10.1177/2167702617744325. \[36\] Epskamp S, Waldorp LJ, M˜ottus R, Borsboom D. The Gaussian Graphical Model in Cross-Sectional and Time-Series Data. Multivar Behav Res 2018;53:453–80. https://doi.org/10.1080/00273171.2018.1454823. \[37\] Haslbeck JMB, Epskamp S, Waldorp LJ. Testing for group differences in multilevel
+
+vector autoregressive models. Behav Res 2025;57:100. https://doi.org/10.3758/ s13428-024-02541-x. \[38\] Epskamp S, Cramer AOJ, Waldorp LJ, Schmittmann VD, Borsboom D. qgraph:
+
+Network Visualizations of Relationships in Psychometric Data. J Stat Soft 2012;48. https://doi.org/10.18637/jss.v048.i04. \[39\] Buuren SV, Groothuis-Oudshoorn K. mice: Multivariate Imputation by Chained
+
+Equations in R. J Stat Soft 2011;45. https://doi.org/10.18637/jss.v045.i03. \[40\] Trøstheim M, Eikemo M, Meir R, Hansen I, Paul E, Kroll SL, e

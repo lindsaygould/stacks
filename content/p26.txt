@@ -1,0 +1,2109 @@
+Bird’s Eye View of Artificial Intelligence in Neuroscience 
+
+|  |
+| :-: |
+| [**Page 1**]() |
+
+**REVIEW ARTICLE**
+
+Bird’s Eye View of Artificial Intelligence in Neuroscience
+
+Minerva H. Zhou, Emily Lin, Allen Q. Ye, Pratik Mukherjee, and Esther L. Yuh
+
+**Abstract**
+
+This review used a common bibliometric technique to identify areas of application of artificial intelli-
+
+gence (AI) in neuroscience research by analyzing citation patterns. Networks of related publications
+
+were constructed using bibliographic coupling, focusing on peer-reviewed research articles and review
+
+articles that included elements of both AI and neuroscience. The use of AI in neuroscience has experi-
+
+enced significant growth, with a doubling time of 4 to 5 years for AI-related neuroscience publications
+
+in the past decade. Convolutional neural networks (CNNs) and transformer-based large language models
+
+have been applied across an increasing range of neuroscience subdisciplines, with profound impact on
+
+cognitive, computational, systems, and clinical neuroscience.
+
+**Keywords:** bibliometric,brain–computerinterface,clinicalneurologyandneurosurgery,cognitiveneuroscience,
+
+computational neuroscience, neuroimaging
+
+**Introduction**
+
+This article is a survey of the use of artificial intelligence
+
+(AI) in different areas of neuroscience. The purpose is to
+
+explore the scope of the research literature and the relation-
+
+ships between subdisciplines within it. Unlike a systematic
+
+review, which aims to draw evidence-based conclusions
+
+regarding research questions through critical analysis of a
+
+body of literature compiled by exhaustive search, this over-
+
+view uses citation patterns to characterize growth in the
+
+field, to uncover commonalities across subdisciplines in
+
+the vast field of “neuroscience” that may identify opportu-
+
+nities for interaction and collaboration.[1](#24)
+
+AI and intelligence itself have no strict definitions.[2 ](#24)A
+
+narrower definition of AI might be machines that mimic
+
+or surpass proficiencies generally thought to be in the pur-
+
+view of humans. A broader definition of AI is machines
+
+that can “rapidly find an adequate solution in what
+
+appears a priori (to observers) to be an immense search
+
+space.”[3 ](#24)An even broader definition of AI that has been
+
+articulated,[4 ](#24)and the one that is assumed in this article, is
+
+any work in statistics, machine learning, or other fields
+
+that aims to build such “intelligent” machines.
+
+We identify several trends in publications at the nexus
+
+of AI and neuroscience in the past decade. The AI boom in
+
+the 2010s, driven mostly by computer scientists’ advance-
+
+ments in algorithms such as Convolutional neural networks
+
+(CNNs) and transformers, contributed to a more than five-
+
+fold increase in “AI”-related publications in neuroscience
+
+in the past decade. The effects have been diverse and pro-
+
+found across the neuroscience disciplines. For example, in
+
+cognitive neuroscience, CNNs and transformer-based large
+
+language models have been indispensable in making possi-
+
+ble the real-time “decoding” of neural signals from intra-
+
+cranial implants and from functional magnetic resonance
+
+imaging (fMRI) into fluent speech, images, and verbalized
+
+thoughts. In the study of circuits and systems, CNNs
+
+applied to millions of electron microscopic images were
+
+crucial in enabling the completion of the neuronal “wiring
+
+diagram” of the whole brain of *Drosophila* and a small part
+
+of the visual cortex in the mouse. In computational
+
+Department of Radiology and Biomedical Imaging, University of California at San Francisco, San Francisco, California, USA.
+
+Address correspondence to: Esther L. Yuh, Department of Radiology and Biomedical Imaging, University of California at San Francisco, 505 Parnassus Ave, San Francisco,
+
+CA 94143, USA, E-mail: <esther.yuh@ucsf.edu>
+
+**16**
+
+AI in Neuroscience
+
+Volume 1, Number 1, 2025
+
+© Mary Ann Liebert, Inc.
+
+DOI: [10.1089/ains.2024.0001](http://dx.doi.org/10.1089/ains.2024.0001)
+
+Open camera or QR reader and
+
+scan code to access this article
+
+and other resources online.
+
+-----
+
+|  |
+| :-: |
+| [**Page 2**]() |
+
+neuroscience, with the aid of recently developed mas-
+
+sively parallel neuronal recording techniques, research-
+
+ers showed that CNNs could partly explain the
+
+computational response of *biological* neurons in visual,
+
+auditory, and other language areas. In clinical neurol-
+
+ogy, AI-related publications surged more than 13-fold
+
+in the past decade, as AI tools gradually became more
+
+familiar and available to clinicians and clinically ori-
+
+ented researchers; these included the use of CNNs for
+
+classification, segmentation, enhancement, and accel-
+
+erated acquisition of medical images, as well as artifi-
+
+cial neural networks (ANNs) for improved diagnosis
+
+and prognostication in neurological and psychiatric
+
+diseases.
+
+**Methods**
+
+We used VOSViewer[5 ](#24)software to visualize patterns
+
+and relationships within research publications related to
+
+both neuroscience and AI. Specifically, we used VOS-
+
+Viewer algorithms to construct networks of publications
+
+and identify “clusters” of related articles, based on bibli-
+
+ographic coupling strength (similarity of articles’ cited
+
+reference lists). The bibliographic coupling strength
+
+between any pair of publications is determined by the
+
+degree of similarity in the two publications’ reference
+
+lists or bibliographies. It has been used to identify publi-
+
+cations likely to share similar concepts.[6 ](#24)Networks
+
+based on bibliographic coupling are like those based on
+
+co-citation. However, the former are based on similarity
+
+of articles’ cited references, while the latter are based on
+
+similarity of the articles’ citing references (i.e., two
+
+publications are “co-cited” if they are both cited by the
+
+same publication).
+
+The clustering algorithm in VOSViewer is unsuper-
+
+vised, and as is common in unsupervised learning, the
+
+user must choose a threshold that determines the reso-
+
+lution (granularity or “fineness”) of the clustering.
+
+Users who are “lumpers” would choose coarser resolu-
+
+tions, resulting in larger clusters of related publica-
+
+tions, while “splitters” would choose finer resolutions,
+
+resulting in a more granular characterization of the
+
+research literature.
+
+Three separate networks were constructed for articles
+
+published in 2016–2018, 2019–2021, and 2022–2024 to
+
+explore the growth of the use of “AI” and related key-
+
+words in neuroscience publications over the past decade.
+
+This approach has limitations (see section “Limitations”)
+
+but provides a rudimentary framework to identify some
+
+of the major areas of research related to both “AI” and
+
+neuroscience.
+
+For each network (covering 2016–2018, 2019–2021,
+
+*or* 2022–2024), articles found via three different types of
+
+searches were combined.
+
+(1) For each of the 3-year periods, all AI-related
+
+articles published in the top 25% impact “neuro”
+
+journals (*n* = 129 journals):
+
+(a) First, Journal Citation Reports (Clarivate, 2025)
+
+was used to identify journals in the categories
+
+Neurosciences, Clinical Neurology, and/or
+
+Neuroimaging.
+
+(b) This list of journals was then narrowed to
+
+those with a 2023 journal impact factor (JIF)
+
+in the top quartile (Q1) of journals (129 of 521
+
+journals) in the same subdiscipline.
+
+(c) Finally, a Web of Science Topic search was used
+
+to identify research or review articles published
+
+within the relevant 3-year period in these Q1
+
+journals with *both* a topic related to neuro-
+
+science AND a topic related to AI, machine
+
+learning or computational neuroscience (Search
+
+Query \#1 in the Supplementary Data S1).
+
+(2) Articles related to both “AI” and “neuro” that
+
+were published in the top 10% impact journals in
+
+the several multidisciplinary science categories
+
+including the top 10% impact journals in the
+
+Medicine, General & Internal and Experimental
+
+Medicine categories (*n* = 92 journals) and 4 of the
+
+top journals in the Psychiatry category (*n* = 4):
+
+(a) First, Journal Citation Reports (Clarivate, 2024)
+
+was used to identify journals in the multidisci-
+
+plinary science and medicine categories listed
+
+above.
+
+(b) This list was then narrowed to those with a
+
+2023 JIF in the top 10% of journals in the cate-
+
+gory (14 of 135 journals).
+
+(c) Journal Citation Reports (Clarivate, 2024) was
+
+used to identify four top journals in the cate-
+
+gory Psychiatry.
+
+(d) Finally, Web of Science Topic Search was used
+
+to identify research and review articles pub-
+
+lished within the relevant 3-year period in
+
+these journals with topics related to both neu-
+
+roscience and AI, machine learning, or com-
+
+putational neuroscience (Search Query \#2 in
+
+the Supplementary Data S1).
+
+(3) Top 1% cited articles related to both “AI” and
+
+“neuro” published in *any* Web of Science (WOS)-
+
+indexed journal:
+
+(a) First, Web of Science “topic” searches were used
+
+to identify articles published within the relevant
+
+3-year period with *both* a topic related to neuro-
+
+science AND a topic related to AI, machine
+
+learning, or computational neuroscience (Search
+
+Query \#3 in the Supplementary Data S1). Thus,
+
+these articles could have been published in *any*
+
+**AI IN NEUROSCIENCE**
+
+**17**
+
+-----
+
+|  |
+| :-: |
+| [**Page 3**]() |
+
+journal indexed in Web of Science, regardless of
+
+the journal’s WOS-assigned “subject category” or
+
+its JIF.
+
+(b) From this list, the 1% most “highly cited”
+
+articles (those in the top 1% by number of
+
+citations within the articles’ WOS subject
+
+category) were identified. To mitigate bias
+
+against recent publications, the “hot papers”
+
+flag in WOS was used to also include articles
+
+published in the past 2 years with a high rate
+
+of citation compared to articles of the same
+
+age.
+
+Of note, bibliographic coupling is not the only way to
+
+visualize networks of related publications. Other options
+
+include co-citation networks based on how often articles
+
+are cited together by another publication, co-authorship
+
+networks that identify groups of collaborating research-
+
+ers, and keyword co-occurrence networks that group
+
+articles by similarity of keyword lists.
+
+The current article cites mostly review articles, as cita-
+
+tion of individual research studies among the thousands
+
+of articles included in the networks was less practical. In
+
+addition, it must be emphasized that as the networks con-
+
+tained only those articles with explicit inclusion of AI-
+
+related words in the title, abstract, author keywords, and/
+
+or “Keyword Plus,” they represent only a small subset of
+
+neuroscience research. (“Keyword Plus” is a Web of Sci-
+
+ence computer-generated search field that consists of
+
+words that appear frequently in the titles of an article’s
+
+cited references.)
+
+In creating the networks, VOSViewer parameters were
+
+set to the “default” parameters: Method: Association
+
+strength. Clustering resolution: 1.00. Minimum cluster
+
+size: 1. Merge small clusters: Yes. Layout Attraction: 2.
+
+Layout Repulsion: 1. More detailed information about the
+
+VOSViewer algorithm is contained in the VOSViewer
+
+manual and articles describing its practical application to
+
+specific areas of research.[7](#24)–[9](#24)
+
+**Results**
+
+[Figure 1A ](#3)shows that from 2014 to 2024, the numbers of
+
+“AI”-related articles published in high-impact clinical
+
+neurology and nonclinical neuroscience/neuroimaging
+
+journals indexed in Web of Science have increased by
+
+more than 14-fold and 3-fold, respectively, and a more
+
+than 5-fold increase overall. [Figure 1B and C ](#3)shows the
+
+outcome of the bibliographic coupling network analysis.
+
+In [Figure 1B](#3), similar clusters across the different 3-year
+
+time periods were identified using the same color when
+
+possible. However, as described below, there was signifi-
+
+cant regrouping, merging, recharacterization, and/or divi-
+
+sion of some clusters over time.
+
+For example, in 2022–2024, Cluster 3 (purple)
+
+largely consisted of publications on AI in research on
+
+intracranial tumors, with many related to tumor seg-
+
+mentation using CNNs; however, in 2016–2018 and
+
+2019–2021, Cluster 3 included many publications on
+
+segmentation of other pathology on medical images, in
+
+addition to tumors, using CNNs. Thus, in earlier time
+
+periods, it was a “CNN segmentation” cluster rather
+
+than focusing solely on tumors. This is likely because
+
+tumors in general were among the earliest pathologies
+
+in medical images that were targeted by researchers for
+
+automated segmentation by CNNs.
+
+Additionally, by 2022–2024, fMRI and brain connec-
+
+tivity in the context of cognitive neuroscience had become
+
+a large, very well-defined cluster (Cluster 7, yellow–
+
+green). However, in earlier time periods, it was not well-
+
+defined, and fMRI publications were distributed among
+
+several other clusters including computational neuro-
+
+science and a psychiatry “sub-cluster” within the larger
+
+“clinical applications” cluster (Cluster 4, red).
+
+Another change was the merging of a “circuits and
+
+systems” (dark purple) cluster that appeared in the earlier
+
+time periods (2016–2018 and 2019–2021) into the com-
+
+putational neuroscience cluster (Cluster 1, dark blue) by
+
+the 2022–2024 time period. This may be related to factors
+
+such as the widespread availability of large-scale, high
+
+spatiotemporal-resolution neural recording techniques
+
+➤
+
+**Fig. 1.** Bibliometric maps of relationships among articles. **(A)** From 2014 to 2024, the numbers of “artificial
+
+intelligence (AI)”-related articles published in clinical neurology and nonclinical neuroscience/neuroimaging
+
+journals indexed in Web of Science have increased by more than 14-fold and 3-fold, respectively. **(B)** Networks
+
+based on bibliographic coupling of peer-reviewed “AI”-related neurology, neuroscience, and neuroimaging
+
+research articles and review articles published in 36-month periods from 2016 to 2018, 2019 to 2021, and 2022
+
+to 2024 (see text for details of article search method). The bibliographic coupling strength between any pair of
+
+publications is determined by the degree of similarity in the two publications’ reference lists (i.e., the number of
+
+references that are cited in the reference lists of both articles). Similar clusters across the different 3-year time
+
+periods were identified using the same color when possible. However, there was an arbitrary component to this,
+
+as there was substantial regrouping, merging, recharacterization, and/or division of some clusters over time.
+
+**(C)** Enlarged view of network for 2022–2024. Several major clusters are numbered in clockwise order along with
+
+the predominant subject matter of publications in the cluster.
+
+**18**
+
+**ZHOU ET AL.**
+
+-----
+
+|  |
+| :-: |
+| [**Page 4**]() |
+
+beginning in the early 2010s, allowing investigators to
+
+compare experimental recordings with computational
+
+models of neurons in an iterative process of model
+
+improvement, bringing the two fields closer together. In
+
+addition, high interest developed in the use of recurrent
+
+neural networks (RNNs) to leverage these large-scale neu-
+
+ral recordings in the study of neural population dynamics,
+
+and remarkable achievements were made in the past decade
+
+in synapse-level connectome mapping and accompanying
+
+functional recordings of the brains of organisms such as
+
+*Drosophila* and a portion of the mouse visual cortex, also
+
+tending to increase ties between the two subdisciplines.
+
+Cluster 2 (aqua) includes brain–computer interfaces
+
+(BCIs) and was present in all time periods in the past
+
+decade, although its character evolved over time from
+
+including a large proportion of articles on prosthetic limb
+
+robotics to including more electrocorticography (ECoG),
+
+EEG, and deep brain stimulation (DBS) studies.
+
+**AI IN NEUROSCIENCE**
+
+**19**
+
+-----
+
+|  |
+| :-: |
+| [**Page 5**]() |
+
+As shown in [Figure 1A and B](#3), another clear trend from
+
+2014 to 2024 was marked expansion of the use of AI in
+
+clinical applications (Cluster 4, red), driven early on by
+
+efforts to segment medical images using CNNs and later
+
+by efforts to use ANNs to improve diagnosis and prognos-
+
+tication in various neurological disorders over regression
+
+and other traditional machine learning techniques. There
+
+was also tremendous growth in the number of publications
+
+related to Alzheimer’s disease (Cluster 5, green), possibly
+
+related to large expansions in funding from the 2010s into
+
+the early 2020s.
+
+It is interesting to note that in 2022–2024 ([Fig. 1C](#3)),
+
+the Alzheimer’s disease cluster (Cluster 5, green) cuts a
+
+thick green swath through the clinical applications clus-
+
+ter (Cluster 4, red). It is reassuring that red Cluster 4 clin-
+
+ical publications below the green swath, closer to
+
+intracranial tumors (Cluster 3, purple), are largely
+
+articles describing segmentation of stroke, intracranial
+
+hemorrhage, and other intracranial lesions on brain
+
+images, while Cluster 3 (purple) publications above the
+
+green swath, located close to Cluster 7 (yellow–green,
+
+fMRI, brain connectivity, and cognitive neuroscience),
+
+are nearly all AI applications to psychiatry. In addition,
+
+the small “brain age” cluster (Cluster 6, black) is in close
+
+proximity to the Alzheimer’s disease cluster.
+
+Finally, we used the clusters defined in the most recent
+
+timeframe, 2022–2024 ([Fig. 1C](#3)), to provide a framework
+
+to summarize important and emerging areas of *AI in*
+
+*Neuroscience* research. Each section below describes the
+
+current landscape and some of the key topics in the pub-
+
+lication clusters.
+
+**Cluster 1 (Dark Blue): Computational**
+
+**Neuroscience, Circuits and Systems**
+
+Publications in this group build and study computational
+
+models of neural processes at the synapse and circuit
+
+level. These models range from detailed simulations of
+
+single neurons to large networks. They are used to study
+
+the brain mechanisms underlying memory, learning,
+
+decision-making, and processing sensory data.
+
+The fields of computational neuroscience and AI are
+
+inextricably linked, and the history of their relationship
+
+has been described.[4](#24),[10](#24)–[16](#24)
+
+Neurobiology was the inspira-
+
+tion for the first theoretical descriptions of ANNs in the
+
+1940s, as well as the development of reinforcement
+
+learning in the 1980s. The first physical implementation
+
+of an ANN, a 5 ton computer occupying an entire room
+
+and known as the Perceptron, in 1958 was touted as the
+
+progenitor to computers that could soon solve nearly any
+
+problem and could even ultimately attain a state of con-
+
+sciousness. This did not materialize, and an “AI winter”
+
+stretched from the early 1970s to 1980. Hopes were
+
+revived in the early 1980s with the demonstration of
+
+some useful “expert systems” in industry that solved
+
+very specific and narrow practical problems, along with
+
+the report of backpropagation in 1986 as a computational
+
+solution to training multilayer ANNs. However, a second
+
+AI winter extended from the late 1980s into the 1990s
+
+when high expectations created earlier in the decade
+
+around expert systems were not met.
+
+By the early 2010s, profound advances in computa-
+
+tional power and data storage capacity had occurred.
+
+This created conditions for the most recent AI “boom,”
+
+driven largely by computer scientists’ exploration and
+
+improvement of algorithms (e.g., CNNs, transformers,
+
+reinforcement learning) based on backpropagation, with
+
+inspiration from neurobiology playing relatively little
+
+role.[16](#24),[17 ](#24)However, it has been proposed that in order to
+
+make significant further progress toward more general
+
+AI, renewed closer interactions between computer sci-
+
+ence and neuroscience will be essential.[4](#24),[16 ](#24)It has also
+
+been suggested that the foundation for general AI will
+
+require first understanding the neural mechanisms underly-
+
+ing the most primitive abilities, such as sensorimotor
+
+abilities, rather than only the highest-level, most recently
+
+evolved human abilities (language, game-playing) ([Fig. 2](#5)).[16](#24)
+
+Continued advances in the past decade in experimental tech-
+
+niques to acquire parallel *in situ* neuronal recordings from
+
+the physical brain at unprecedented spatial and temporal
+
+scale are now available to facilitate and amplify two-way
+
+interactions between computer science and neuroscience
+
+([Fig. 3](#6)).[24](#24)
+
+**Fig. 2.** *Left*: The original Turing test as
+
+proposed by Alan Turing.[18 ](#24)If a human tester
+
+cannot determine whether their interlocutor is
+
+an artificial intelligence (AI) system or another
+
+human, the AI passes the test. Modern large
+
+language models have made substantial
+
+progress toward passing this test.[19 ](#24)*Right*: The
+
+embodied Turing test. An AI animal model—
+
+whether robotic or in simulation—passes the
+
+test if its behavior is indistinguishable from
+
+that of its living counterpart. No AI systems are
+
+close to passing this test. Here, an artificial
+
+beaver is tested on the species-specific
+
+behavior of dam construction. *(Fig. and caption*
+
+*reproduced from Zador* et al.[16](#24)).
+
+**20**
+
+**ZHOU ET AL.**
+
+-----
+
+|  |
+| :-: |
+| [**Page 6**]() |
+
+**Fig. 3. (A)** Artificial neural networks (ANNs) are providing neuroscientists with a rich set of models to
+
+explain neural activity in different brain areas, an important step toward understanding how complex
+
+functions such as face recognition are accomplished by the brain. Researchers can show a set of stimuli
+
+to an animal, record responses of neurons in that area, and then ask how well different ANNs capture
+
+the responses. One popular strategy is to model a neuron as a linear combination of ANN units and then
+
+ask how much variance in the neural response is explained by the linear model. **(B)** In both brains and
+
+ANNs, there are many possible synaptic paths leading from input to output. For example, here there are
+
+three possible paths and six possible synapses. This makes it challenging to know which synapses
+
+should change during learning, an issue known as the “credit assignment problem.” ANNs solve this
+
+problem by using the gradient of a loss function to determine how to change synapses. Recent work in
+
+computational neuroscience shows the brain has mechanisms that could enable approximations to
+
+gradient descent. *(Fig. reproduced from Richards* et al.[20](#24)).
+
+**21**
+
+-----
+
+|  |
+| :-: |
+| [**Page 7**]() |
+
+During the AI winter of the 1990s, computational neuro-
+
+science and AI increasingly diverged, with computational
+
+neuroscientists focused on scaling up biophysical modeling
+
+of the brain’s dynamics. This traditional approach to
+
+quantitative neural modeling began in the 1950s with
+
+the Hodgkin–Huxley differential equations for action
+
+potential propagation[21 ](#24)and progressed toward complex
+
+biophysical models incorporating linear and nonlinear
+
+dynamics among circuits, regions, and/or entire networks
+
+and systems. Modern examples of large-scale neural model-
+
+ing include mean field models,[22 ](#24)such as neural mass mod-
+
+els,[23 ](#24)that can simulate properties of electrophysiological
+
+signals (EEG, Magnetoencephalography \[MEG\], and
+
+ECoG) like oscillatory rhythms in terms of the intrinsic
+
+physiological parameters of their systems of differential
+
+equations and nonlinear activation functions. They are also
+
+used to investigate altered neural dynamics in disease proc-
+
+esses, for example, epilepsy and psychosis.
+
+Although differential equations have been the most
+
+common mathematical approach for describing neural
+
+processes, recurrent neural networks (RNNs) can not only
+
+emulate systems of differential equations but can also be
+
+trained directly on measured data. Due to massively par-
+
+allel neuron recording techniques that became widely
+
+available approximately a decade ago, many studies can
+
+now emphasize iterative feedback between computational
+
+models and experimental data—comparison of the output
+
+of new computational models to new experimental data in
+
+an iterative process of model validation and refinement,
+
+greatly accelerating progress in this area.[24 ](#24)As an exam-
+
+ple, a recent study uses a predictive autoencoder model to
+
+propose a new hypothesis about sequence learning in the
+
+hippocampus and compares directly to experimental neu-
+
+ron recordings in an animal model;[25 ](#24)such models of spik-
+
+ing RNNs are an example of computational models
+
+informing neurobiology rather than only drawing from
+
+them and are revealing the neural mechanisms underlying
+
+working memory.[25](#24),[26 ](#24)Neural population dynamics is
+
+another framework developed to understand how emer-
+
+gent properties arise from large groups of interconnected
+
+neurons. This approach analyzes brain-like RNNs as
+
+dynamical systems and has been successfully used to
+
+model the computations of single local areas in cognitive,
+
+timing, navigation, and motor tasks.[27](#24)–[30](#24)
+
+With the acceleration of AI research over the past dec-
+
+ade, the fields of computational neuroscience and AI
+
+have once more become increasingly linked. Publica-
+
+tions referring to both of these had already formed a dis-
+
+tinct cluster in the 2016–2018 literature ([Fig. 1B](#3)), unlike
+
+some other clusters that emerged more recently. This
+
+cluster of publications grew rapidly in the past decade.
+
+Most publications in this cluster seek to model the brain
+
+mechanisms underlying memory, learning, decision-
+
+making, and processing of sensory data. Examples are
+
+seen in the following sections.
+
+“Reverse engineering” primate vision
+
+By 2012, it was clear that ‘core object recognition’ was
+
+accomplished via a set of serial feedforward computa-
+
+tions, but the form of the computation was unknown.[31](#24)
+
+Fortunately, by that time, electrode arrays had been
+
+developed that could obtain thousands of simultaneous
+
+neural recordings across the visual cortex, ushering in a
+
+new era of investigations of visual system neurophysiol-
+
+ogy at unprecedentedly fine spatial and temporal resolu-
+
+tion.[32 ](#24)In 2014, CNNs trained for object recognition were
+
+shown to predict approximately 50% of the response of
+
+neurons in the inferior temporal cortex, the highest level
+
+of the ventral visual stream ([Figs. 3A ](#6)and [4](#8)). Monkeys
+
+were shown a set of images, and the responses of neurons
+
+in the different hierarchically arranged layers of the ven-
+
+tral visual system were recorded. CNNs were trained to
+
+perform image recognition using the same images.
+
+Remarkably, evaluation of a large number of candidate
+
+CNN models showed that the stronger a CNN model’s
+
+performance at the object recognition task, the more
+
+closely neurons in the CNN’s final layer matched neuro-
+
+nal activity in the inferior temporal cortex.[13](#24),[33](#24),[34 ](#24)Later,
+
+deep neural networks were also shown to model the com-
+
+putations neurons in other areas such as the auditory cor-
+
+tex,[35](#24),[36 ](#24)and language areas in the superior temporal
+
+cortex, parietal lobe and inferior frontal gyrus[37 ](#24)perform
+
+as they process data.
+
+Of note, those involved in this research have pointed out
+
+that despite the successes of these models, it is likely that
+
+the ANNs of today are still relatively simplistic and “do not
+
+yet come close to fully modeling the myriad of processes
+
+contributing to biological visual processing.” Modern
+
+ANNs do not incorporate the complexity of biological neu-
+
+rons’ different morphologies, neurotransmitters, and types
+
+of connections ([Fig. 5](#9)).[15 ](#24)MacPherson et al.[13 ](#24)point out,
+
+“‘\[S\]tatisticians have long stressed this importance of the
+
+distinction between explanatory and predictive model-
+
+ing.’[38 ](#24)Thus, if we intend to use AI systems to model and
+
+possibly inform our understanding of visual processing in
+
+the brain, it is important that we continue to increase the
+
+structural and mechanistic correspondence of AI models to
+
+their counterpart systems within the brain, as well as
+
+strengthening the ability of metrics to measure such
+
+correspondence.”
+
+Recent arguments in support of this distinction between
+
+explanatory and predictive modeling have appeared in the
+
+literature. For example, “brain scores” that quantify models’
+
+ability to predict brain activity and “brain hierarchy scores”
+
+that quantify the hierarchical homology between a model’s
+
+layers and those of the biological brain were reported to
+
+be somewhat diminished for the newest high-performing
+
+CNNs.[14](#24),[39 ](#24)This reversed an earlier trend showing that
+
+**22**
+
+**ZHOU ET AL.**
+
+-----
+
+|  |
+| :-: |
+| [**Page 8**]() |
+
+better performance of a new model was often associated
+
+with an increase in brain score. Along a separate line of
+
+investigation, it has been shown that core object recognition
+
+by humans, unlike today’s best-performing CNNs, is
+
+either unaffected or only mildly degraded by changes
+
+in 3D viewpoint ([Fig. 6A](#10)) or low-pass filtering and
+
+texture modification ([Fig. 6B](#10)), and furthermore that
+
+there is no known example of an adversarial image for
+
+humans, unlike for CNNs ([Fig. 6C](#10)).[47](#25)
+
+Reward and reinforcement learning. A prominent
+
+subset of this group of computational neuroscience articles
+
+**Fig. 4.** Hierarchical convolutional neural networks (HCNNs) as models of sensory cortex. **(A)** The basic
+
+framework in which sensory cortex is studied is one of encoding—the process by which stimuli are
+
+transformed into patterns of neural activity—and decoding—the process by which neural activity
+
+generates behavior. HCNNs have been used to make models of the encoding step; that is, they describe
+
+the mapping of stimuli to neural responses as measured in brain. **(B)** The ventral visual pathway is the
+
+most comprehensively studied sensory cascade. It consists of a series of connected cortical brain areas
+
+(macaque brain shown): PIT, CIT, AIT, RGC, LGN, DoG, T(&#15;). **(C)** HCNNs are multilayer neural networks,
+
+each of whose layers are made up of a LN combination of simple operations such as filtering,
+
+thresholding, pooling and normalization. The filter bank in each layer consists of a set of weights
+
+analogous to synaptic strengths. Each filter in the filter bank corresponds to a distinct template,
+
+analogous to Gabor wavelets with different frequencies and orientations; the image shows a model with
+
+four filters in layer 1, eight in layer 2, and so on. The operations within a layer are applied locally to
+
+spatial patches within the input, corresponding to simple, limited-size receptive fields (red boxes). The
+
+composition of multiple layers leads to a complex nonlinear transform of the original input stimulus. At
+
+each layer, retinotopy decreases, and effective receptive field size increases. HCNNs are good candidates
+
+for models of the ventral visual pathway. By definition, they are image computable, meaning that they
+
+generate responses for arbitrary input images; they are also mappable, meaning that they can be
+
+naturally identified in a component-wise fashion with observable structures in the ventral pathway; and,
+
+when their parameters are chosen correctly, they are predictive, meaning that layers within the network
+
+describe the neural response patterns to large classes of stimuli outside the domain on which the
+
+models were built. (*Fig. reproduced from Yamins* et al.[33](#24)). AIT, anterior; CIT, central; DoG, difference of
+
+Gaussians model; LGN, lateral geniculate nucleus; LN, linear–nonlinear; PIT, posterior inferior temporal
+
+cortex; RGC, retinal ganglion cell; T(&#15;), transformation.
+
+**AI IN NEUROSCIENCE**
+
+**23**
+
+-----
+
+|  |
+| :-: |
+| [**Page 9**]() |
+
+studies dopamine signaling and the neural mechanisms
+
+that underlie reward, prediction, learning, and decision-
+
+making; fear and anxiety; and social learning. Models are
+
+used to understand how the brain learns to associate
+
+actions with rewards or punishments and how this learn-
+
+ing leads to decision-making. A recent review presents
+
+an overview of the reward-prediction error hypothesis of
+
+time-dependent dopamine signaling, demonstrating its
+
+essential success in explaining some fundamental aspects
+
+of animal behavior when modified appropriately for dif-
+
+ferent brain systems, as well as summarizing outstanding
+
+questions.[51](#25)
+
+This subset of articles also includes studies on the neu-
+
+ral basis of social learning, and how social information is
+
+integrated into decision-making processes. Real-world
+
+behaviors, especially in humans, are influenced by numer-
+
+ous factors including emotions, social influences, and indi-
+
+vidual differences. Some studies in this cluster investigate
+
+how social factors, such as peer influence and the presence
+
+of others, affect learning and decision-making.
+
+The most common types of AI techniques in this sub-
+
+set of articles (aside from classical machine learning
+
+techniques) are reinforcement learning models to understand
+
+how the brain learns to associate actions with rewards or
+
+punishments; deep neural networks to analyze complex
+
+patterns in neural recordings or behavioral data; and
+
+Bayesian inference to explain how the brain makes deci-
+
+sions by updating beliefs based on new evidence. The
+
+most common types of data analyzed are behavioral data
+
+(measurements of animals’ choices, reaction times, and
+
+other observable behaviors) and electrophysiological data
+
+(recordings of electrical activity from individual neurons or
+
+groups of neurons) in animals.
+
+Looking toward the near future, one can envisage
+
+research that combines traditional computational approaches
+
+based on analytically solving differential equations, such as
+
+biophysically based neural mass models that describe the
+
+interaction dynamics of linked brain circuits, regions, net-
+
+works, or systems, with new ANN-based technology. This
+
+could leverage the advantages of ANNs for data-driven clas-
+
+sification, regression, and segmentation with the explanatory
+
+power of traditional neural models in terms of the brain’s
+
+underlying neurophysiology, given that the mechanistic
+
+interpretability of large-scale ANNs remains in its infancy.[54](#25)
+
+An example could be employing CNNs and/or transformer
+
+**Fig. 5.** Complex neural network. Connectivity in cortical networks includes rich sets of connections,
+
+including local and long-range lateral connectivity, and top-down connections from high to low levels of
+
+the hierarchy. Informed AI network. Biological innate connectivity patterns provide mechanisms that
+
+guide human cognitive learning. Discovering similar mechanisms, by machine learning or by mimicking
+
+the human brain, may prove crucial for future artificial systems with human-like cognitive abilities.
+
+(*Fig. reproduced from Ullman* et al.[15](#24)).
+
+**24**
+
+**ZHOU ET AL.**
+
+-----
+
+|  |
+| :-: |
+| [**Page 10**]() |
+
+networks as front-ends to a biophysical neural model for
+
+dimensionality reduction of images (vision), auditory
+
+sequences (hearing), text (language), or electrophysiologi-
+
+cal data such as spike trains, EEG, MEG, and ECoG. The
+
+neural model could thereby be more effectively trained to
+
+produce accurate outputs that are explainable in terms of
+
+its intrinsic physiological parameters, since fitting these
+
+many parameters remains a current challenge for biophysi-
+
+cal models of the human brain. Such an improved neural
+
+model could then be utilized to, for example, identify new
+
+therapeutic targets for neuropsychiatric disease.
+
+Connectome mapping
+
+As described, publications in this group build and study
+
+models of the nervous system, at scales from individual
+
+synapses to large networks of neurons, using mathematical
+
+equations and computer simulations. Accordingly, also
+
+appearing in this cluster are advancements in the efforts
+
+to understand the brain from a “bottom-up” approach—
+
+laying groundwork for understanding neural processes by
+
+mapping the connectome at the synapse level. A promise
+
+of connectome mapping of these organisms is the idea that
+
+understanding the “circuit motifs” underlying the most
+
+primitive abilities, such as sensorimotor integration, that
+
+are common to all organisms, rather than only the highest-
+
+level human abilities such as game-playing, operating
+
+motor vehicles, and language, is essential for further pro-
+
+gress toward more general AI.[4](#24),[16](#24)
+
+In 1986, the full connectome of *Caenorhabditis ele-*
+
+*gans*, constructed through manual annotation of approxi-
+
+mately 8,000 images, had been reported and was shown to
+
+be largely consistent across specimens, with 302 neurons
+
+with simple morphologies and few branches.[41 ](#24)In March
+
+2023, the larva of *Drosophila melanogaster* (3,000 neu-
+
+rons and half a million synapses) was reported, identifying
+
+93 different neuron types and the product of more than
+
+5 years of effort.[40](#24)
+
+In October 2024, publication of the whole-brain con-
+
+nectome of a female adult *D. melanogaster* (140,000
+
+neurons and 50 million synapses), based on approxi-
+
+mately 21 million images[42](#24),[43 ](#24)was a landmark achie-
+
+vement made possible only with advances in AI comput-
+
+ing ([Fig. 7](#12)). Furthermore, in addition to the mapping of
+
+the individual neurons and synapses, a “projectome,” or
+
+map of brain circuits and projections between different
+
+brain regions, providing large-scale information on the
+
+organization of the brain, was included. In this case,
+
+“AI” was not only the target of the research but also
+
+served as an essential practical tool, allowing reconstruc-
+
+tion of neural tissue from electron microscopy images,
+
+which contain gaps and other artifacts that could not
+
+practically be corrected without human oversight.
+
+Regarding mammalian brain connectome mapping,
+
+another milestone in the past year was the reconstruction
+
+of a cubic millimeter of mouse primary visual cortex
+
+(0.2% of the mouse brain) by the Machine Intelligence
+
+from Cortical Networks program.[41](#24),[44](#24),[45](#25),[60 ](#25)Again, CNN
+
+analysis of electron microscopy data was essential in
+
+order to fill in gaps and imperfections. The mapping
+
+included not only neurons, synapses, and glia, but also
+
+mitochondria and blood vessels.
+
+As connectome mapping of organisms proceeds, the
+
+terms “structural connectomics” and “functional connec-
+
+tomics” have been used, the former referring to the pure
+
+physical mapping of the connectome and the latter
+
+➤
+
+**Fig. 6. (A)** Visualization of 3D viewpoint dependence of deep neural network (DNN) object categorization.
+
+Column 1 shows the real images from natural viewpoints (correct classification; green-labeled below images).
+
+Column 2 shows the rendered images from a viewpoint optimized to lead to wrong classification (adversarial
+
+viewpoints). Columns 3 to 6 show real images that approximate the adversarial viewpoints of column 2 (wrong
+
+classification; red or orange labels depending on DNN confidence in classification). Figure adapted with permission
+
+from Dong et al.[46 ](#25)(Panel reproduced from Wichmann et al. with permission of Dr. R. Geirhos[47](#25)) **(B) (a)** Low-pass
+
+images are one of the remaining distortion types in which humans are currently still better than all 52 investigated
+
+diverse DNNs.[48 ](#25)Shown is a “dog” image at blur standard deviation = 7 pixels; human accuracy was 50%–60%, and
+
+DNN accuracy was 10%–40% averaged across many images at this blur level. Panel adapted with permission from
+
+Geirhos et al.[48 ](#25)**(b)** Shape bias is the tendency to classify images according to their global shape (“cat” in the
+
+example). Texture bias is the tendency to classify images according to their local texture-like characteristics
+
+(“elephant” in the example). Panel adapted with permission from Geirhos et al.[49 ](#25)**(C)** The crocodile conjecture:
+
+There are no adversarial examples for humans, i.e., it is impossible to make humans classify the bananas in the
+
+left image as a crocodile with a tiny perturbation. The original banana image (*left*) is adversarially modified (by
+
+adding tiny perturbations) such that a ResNet-50 then classifies the resulting perturbed adversarial images as a
+
+baseball, a power drill, or an African crocodile (depending on the perturbation). Results are based on the
+
+pretrained torchvision[50 ](#25)ResNet-50 implementation and the targeted *L*\` projected gradient descent attack with
+
+e = 0.01 implemented by Foolbox.[56 ](#25)Panel reproduced from Wichmann et al.[47](#25)
+
+**AI IN NEUROSCIENCE**
+
+**25**
+
+-----
+
+|  |
+| :-: |
+| [**Page 11**]() |
+
+referring to integration of the structural connectome with
+
+physiological experimental data. Along with the landmark
+
+structural connectome mapping of *Drosophila* and mouse
+
+primary visual cortex described above, functional infor-
+
+mation (such as in vivo multiphoton spectroscopy) was
+
+used to demonstrate the visual responses of a subset of
+
+pyramidal cells.[42](#24)
+
+In addition to efforts to map the synapse-level connec-
+
+tome of organisms, computational models continue to be
+
+used to bridge different scales of investigation, from sin-
+
+gle neurons to large-scale networks, by integrating data
+
+from different experimental modalities.[61](#25)
+
+Neuromorphic computing
+
+Articles in the field of neuromorphic computing also
+
+appear in this cluster. While computational neuroscience
+
+has been concerned primarily with developing computational
+
+**26**
+
+**ZHOU ET AL.**
+
+-----
+
+|  |
+| :-: |
+| [**Page 12**]() |
+
+principles that explain brain function, neuromorphic comput-
+
+ing is concerned with building “next-generation” computer
+
+hardware and software that are inspired by the biology of
+
+neurons and synapses. Neuromorphic systems use spiking
+
+neural networks with elements similar to biological neurons.
+
+Although neuroscience has had little role in the most recent
+
+AI “boom,”[16](#24),[17 ](#24)which has been driven mostly by computer
+
+scientists’ exploration of algorithms (e.g., transformers)
+
+based on backpropagation, these algorithms are approaching
+
+a “memory wall” or “von Neumann bottleneck” problem.[62](#25)
+
+It has been suggested that use of our understanding of neural
+
+mechanisms underlying cognition to inspire new “AI” com-
+
+putational paradigms will be needed.[14](#24),[16](#24)
+
+**Cluster 2 (Aqua): Brain**–**Computer Interfaces,**
+
+**Electroencephalography, Magnetoencephalography,**
+
+**Deep Brain Stimulation**
+
+This cluster includes articles concerned with technolo-
+
+gies that allow interaction of the nervous system with the
+
+**Fig. 7. (A)** All neuron morphologies reconstructed with FlyWire. All neurons in the central brain and
+
+both optic lobes were segmented and proofread. Note that image and dataset are mirror inverted
+
+relative to the native fly brain. **(B)** An overview of many of the FlyWire resources that are being made
+
+available. FlyWire leverages existing resources for electron microscopy imagery, synapse predictions, and
+
+neurotransmitter predictions. Annotations of the FlyWire brain dataset such as hemilineages, nerves and
+
+hierarchical classes are established in an accompanying article.[43 ](#24)**(C)** FlyWire uses CAVE[52 ](#25)for
+
+proofreading, data management and analysis back end. The data can be accessed programmatically, and
+
+static exports of the data are also available, as described in the original reference (Dorkenwald et al.[42](#24)).
+
+**(D)** The *Drosophila* brain can be divided into spatially defined regions based on neuropils (Extended Data
+
+[Fig. 1 ](#3)in[42](#24)). Neuropils for the lamina are not shown. D, dorsal; L, lateral; P, posterior. **(E)** Synaptic boutons in
+
+the fly brain are often polyadic such that there are multiple postsynaptic partners per presynaptic bouton.
+
+Each link between a pre- and a postsynaptic location is a synapse. **(F)** Neuron tracts, trachea, neuropil and
+
+cell bodies can be readily identified from the electron microscopy data acquired by Zheng et al.[53 ](#25)Scale bar,
+
+10lm. *(Fig. reproduced from Dorkenwald* et al.[42](#24)).
+
+**AI IN NEUROSCIENCE**
+
+**27**
+
+-----
+
+|  |
+| :-: |
+| [**Page 13**]() |
+
+outside world or that create artificial connections within
+
+the body. Most articles use electroencephalography,
+
+DBS, magnetoencephalography, or describe BCIs such
+
+as speech and motor prostheses for patients with brain or
+
+spinal cord injury. Some studies use functional near-
+
+infrared spectroscopy, or event-related potentials.
+
+BCIs use probes that record neural signals or stimulate
+
+neural tissue over different spatial scales. Microelectrode
+
+recordings and stimulation of individual neurons or small
+
+groups of neurons use probes of \*0.05 mm diameter
+
+and have a spatial resolution of \*0.1 mm. Examples are
+
+the Michigan probe or Neuropixels and Utah array, used
+
+routinely in animal research but not used clinically due to
+
+the complexity of operating and maintaining them.[63](#25)
+
+ECoG, consisting of a grid of subdural electrodes, 1–3 mm
+
+in diameter, with 3–10 mm spacing, has \*1 mm spatial
+
+resolution, sufficient to probe small areas within func-
+
+tional systems such as the visual, somatosensory, or
+
+auditory systems.[63 ](#25)DBS electrodes have as similar
+
+caliber and spatial resolution as ECoG but are used to
+
+access deep structures such as the subthalamic nuclei to
+
+treat movement disorders and are being investigated for
+
+treatment of psychiatric disorders such as depression and
+
+acquired brain injuries such as traumatic brain injury and
+
+stroke. In comparison, noninvasive techniques such as
+
+EEG record from “macroscale aggregates” of neurons
+
+with a spatial resolution of \*5 cm ([Fig. 8](#13)).[63](#25)
+
+A subset of BCIs is concerned with detecting signals
+
+from the brain and decoding these into computer-generated
+
+speech or signals to control robotic devices. Speech neuro-
+
+prostheses have garnered particular attention recently as
+
+they approach a stage of clinical viability.[55](#25),[57](#25)–[59](#25)
+
+These
+
+offer a solution for individuals with speech loss due to
+
+paralysis from stroke or neurodegenerative disease. Deep
+
+learning algorithms play a critical role in these speech pros-
+
+theses, by decoding the neural signals recorded by ECoG
+
+in real time and translating them into computer-generated
+
+speech. Recent advancements in this area are high-
+
+**Fig. 8.** Hardware interactions with the brain at different scales, and corresponding hardware. Top left,
+
+microcircuits and microelectrodes, recording activity from individual or small groups of neurons. Bottom left,
+
+functional system and ECoG electrodes, recording population-level activity. Top right, interregional circuit and
+
+deep brain/stereoencephalographic electrodes, recording activity from different functional systems. Bottom
+
+right, macroscale aggregate and EEG electrodes. DBS, deep brain stimulation; EEG, electroencephalography;
+
+ECoG, electrocorticography; TMS, transcranial magnetic stimulation. Image courtesy of Mayo Foundation for
+
+Medical Education and Research. *(Fig. and caption reproduced from Schalk* et al.[63](#25)).
+
+**28**
+
+**ZHOU ET AL.**
+
+-----
+
+|  |
+| :-: |
+| [**Page 14**]() |
+
+spatiotemporal-resolution neural recordings using more
+
+deeply placed microelectrodes and advancements in deep
+
+learning techniques to maintain highly accurate decoding
+
+with minimal training times.[55](#25)
+
+CNNs are used in other studies in this cluster, to facili-
+
+tate translation of EEG signals, for example, for emotion
+
+recognition, prognostication in coma patients subjected to
+
+auditory stimuli after cardiac arrest, and EEG denoising.
+
+Publications concerning control of robotic limb pros-
+
+thetics also appear in this cluster. This includes a wide
+
+range of devices such as soft robotic wearable devices,
+
+powered exoskeletons, as well as therapeutic approaches
+
+like spinal cord stimulation and AI-assisted rehabilita-
+
+tion. Applications in the field of rehabilitative medicine
+
+that use AI, such as gait analysis and fall risk assessment,
+
+also appear in this cluster.
+
+Progression in BCI development has also led to cau-
+
+tionary notes from the growing field of neuroethics.
+
+Issues such as as-yet poorly characterized side effects
+
+including gliosis, possible immune system and proto-
+
+oncogene activation, and “device abandonment” have
+
+been raised (Hofmann & Stieglitz, 2024).[65](#25),[66 ](#25)Other neu-
+
+roethics areas address issues of the right to privacy and
+
+freedom of thought and autonomy given the prospect of
+
+technologies that monitor and manipulate brain activity;
+
+consent and informed decision-making issues that may
+
+particularly affect vulnerable individuals or those incapa-
+
+ble of giving informed consent; the benefits and risks
+
+of using neurotechnologies to enhance human cognitive
+
+abilities; the potential for exacerbation of existing social
+
+inequalities based on access; and regulation and gover-
+
+nance of new neurotechnologies.[65](#25),[67](#25),[68](#25)
+
+**Cluster 3 (Purple): Intracranial Tumors**
+
+The most common studies were related to the prediction of
+
+survival in patients with gliomas or intracranial metastatic
+
+disease. Most of these used classical machine-learning
+
+techniques and/or radiomics,[69 ](#25)but at least one used
+
+transformer-based deep learning, based on the integration
+
+of clinical, MRI, and molecular-pathological data.[64](#25)
+
+Another large set of studies aimed to predict clinically
+
+relevant molecular subtypes of tumors (O6-methylgua-
+
+nine-DNA methyltransferase promoter methylation status,
+
+Isocitrate dehydrogenase 1 type, alpha-thalassemia/mental
+
+retardation, X-linked of gliomas including both brain and
+
+spinal cord ependymomas; meningioma grade; DNA
+
+methylation status of primary CNS lymphoma; and atypi-
+
+cal teratoid/rhabdoid tumor subtypes), to distinguish
+
+among H3 K27-altered and H3 K27 wild-type high-grade
+
+gliomas, diffuse midline gliomas, and/or primary CNS
+
+lymphoma, or to predict primary tumor type of brain
+
+metastases. Most of these studies used radiomics (extrac-
+
+tion of quantitative features such as morphology, signal
+
+characteristics, border characteristics, or texture), usually
+
+in conjunction with at least one classical machine-learning
+
+\[e.g., support vector machine, random forest, XGBoost,
+
+naive Bayes, regression\] to select the most relevant radio-
+
+mic features.[70](#25),[71 ](#25)At least one study used unsupervised
+
+learning to select the radiomic features.[72 ](#25)Another subset
+
+of studies did not use radiomics but rather used CNNs,
+
+including residual networks (ResNets), and in some cases
+
+3D CNNs, for whole-brain analysis, to learn features
+
+directly from MR images to predict tumor subtypes.[73](#25),[74](#25)
+
+Segmentation of brain tumors was the focus of several
+
+studies. One study showed that current state-of-the-art
+
+brain tumor CNN-based segmentation algorithms are now
+
+at a level that they demonstrate a high accuracy rate even
+
+on a large set of real-world multisite MRI data, using dif-
+
+ferent protocols and in some cases missing sequences.[75](#25)
+
+Synthetic data creation using deep learning appeared in a
+
+few articles. Generative Adversarial Networks were used in
+
+one case to create synthetic T2 FLAIR images when these
+
+were not acquired with other MRI sequences[76 ](#25)and in another
+
+to create super-resolution MR spectroscopic imaging to more
+
+clearly delineate tumor margins and heterogeneity.[77](#25)
+
+Several articles focused on “liquid biopsy”: CSF pro-
+
+teomics and CSF lipidomics were used, usually with clas-
+
+sical machine learning techniques, to determine glioma
+
+DNA methylation profiles, and serum or blood was used
+
+to noninvasively assess for the likelihood of meningioma
+
+recurrence after surgical resection.[78](#25),[79](#25)
+
+**Cluster 4 (Red): Clinical Neurology**
+
+**and Neurosurgery Applications**
+
+Cluster 4 was the largest cluster of publications using our
+
+analysis approach. AI for diagnosis and prognosis is the
+
+common theme in nearly all publications in this cluster.
+
+Common subjects are predicting outcomes for specific neu-
+
+rological disorders, most commonly stroke; effectiveness
+
+of different therapeutic interventions; and automated analy-
+
+sis of medical images. A relatively new line of investigation
+
+in recent years is the use of natural language processing to
+
+extract actionable information from free-text medical
+
+records, for example, for predicting readmissions or identi-
+
+fying high-risk patients. This large body of research will be
+
+reviewed in an article in an upcoming issue.
+
+**Clusters 5 and 6 (Green, Black): Alzheimer**’**s**
+
+**Disease, Brain Age**
+
+These clusters comprised a large number of publications,
+
+most of which addressed neurodegenerative disease, pri-
+
+marily Alzheimer’s disease (Cluster 5), with a small num-
+
+ber describing the use of imaging to determine effective
+
+“brain age” independent of chronological age (Cluster 6).
+
+In Cluster 5, most studies focused on the diagnosis of
+
+cognitive impairment and the prediction of cognitive
+
+decline in Alzheimer’s disease. Although ANNs and deep
+
+**AI IN NEUROSCIENCE**
+
+**29**
+
+-----
+
+|  |
+| :-: |
+| [**Page 15**]() |
+
+learning were used in some cases, most of these studies
+
+primarily employed traditional machine learning methods,
+
+including generalized linear models (linear regression,
+
+logistic regression, and Cox proportional hazards models)
+
+as well as ensemble learning techniques (including random
+
+forest, gradient boosting, and XGBoost), and other super-
+
+vised learning techniques such as support vector machines.
+
+However, CNNs excel at image classification and seg-
+
+mentation and continue to be widely used for segmenta-
+
+tion of brain regions on MRI and are now being used in
+
+pathology to quantify tau protein-containing neurofibril-
+
+lary tangles or amyloid-beta plaques in the temporal
+
+lobes on autopsy specimens. Several studies focused on
+
+fluid biomarkers, including plasma (including p-tau217,
+
+phosphorylated (P)-tau181, amyloid-beta (Abeta)42/40
+
+Glial Fibrillary Acidic Protein, Neurofilament light
+
+chain) or CSF biomarkers (patterns of CSF tau phospho-
+
+rylation) or urine proteomics as potential diagnostic
+
+or prognostic markers. A continuing trend is multi-
+
+modal models that combine increasing numbers of types
+
+of input data (MRI, PET, genotype, fluid biomarkers)
+
+for classification or prognostication in Axial diffusivity
+
+(AD) ([Fig. 9](#15)).[81 ](#25)Finally, several studies described super-
+
+vised machine learning techniques to analyze speech
+
+and language, most often for Alzheimer’s disease diagno-
+
+sis or prediction of clinical progression of cognitive
+
+impairment.
+
+**Cluster 7 (Yellow-Green): Cognitive**
+
+**and Behavioral Neuroscience, Brain Connectivity,**
+
+**Functional and Diffusion MRI**
+
+Studies in this cluster investigate how different brain regions
+
+are connected structurally and functionally, both in healthy
+
+individuals and in those with neurological or psychiatric dis-
+
+orders. Most use neuroimaging data to understand and pre-
+
+dict cognitive abilities or behavioral traits in healthy
+
+individuals; presence/absence of symptom severity of neuro-
+
+psychiatric disorders; or to investigate how the brain is
+
+organized at a systems level in healthy individuals.
+
+Study of cognitive abilities and behavioral traits. Many
+
+studies in this cluster use neuroimaging data (fMRI, DTI,
+
+structural MRI) to understand and predict cognitive abil-
+
+ities and behavioral traits. These studies attempt to identify
+
+patterns of neuroimaging data (e.g., activation patterns on
+
+fMRI) that are predictive of continuous-measure cognitive
+
+assessments (memory, attention, language, and executive
+
+function) or continuous-measure behavioral traits (trait
+
+anxiety, impulsivity, and craving).[82](#25)–[85](#25)
+
+In addition to
+
+behavioral data, articles in this cluster use other clinical
+
+and demographic covariates (age, sex) and sometimes
+
+genetic information. Connectome-based predictive model-
+
+ing (CBPM), posterior cerebral artery-Lasso, deep learn-
+
+ing, support vector regression, and random forest are some
+
+of the techniques utilized to extract the relevant brain con-
+
+nectivity patterns. CBPM, a commonly used technique, is
+
+**Fig. 9.** Types of data used in ML models of AD **(A)** Counts of various data types in four major ML-dementia
+
+applications. **(B)** Donut chart showing distribution of data types used in selected studies as described in.[80](#25)
+
+**(C)** Venn diagram of overlap of data types used *(Fig. reproduced from Wang* et al.[81](#25)).
+
+**30**
+
+**ZHOU ET AL.**
+
+-----
+
+|  |
+| :-: |
+| [**Page 16**]() |
+
+a framework with “built-in cross-validation” designed to
+
+improve extraction of the most relevant features from
+
+brain connectivity matrices for the purpose of prediction
+
+of a variable ([Fig. 10](#16)).[84](#25),[88 ](#25)Though developed in the con-
+
+text of fMRI, CBPM can be applied to analyze brain con-
+
+nectivity in other types of data (e.g., diffusion imaging,
+
+EEG).
+
+Neuropsychiatric disorders. Other studies in this clus-
+
+ter use similar analyses of neuroimaging data (fMRI,
+
+DTI, and structural MRI) to understand how different
+
+brain regions are connected structurally and functionally
+
+in neurological or psychiatric disorders, including autism,
+
+schizophrenia, depression, attention deficit hyperactivity
+
+disorder, and epilepsy. These articles are concerned with
+
+neuropsychiatric disease, rather than cognitive or behav-
+
+ioral traits in healthy populations. CBPM, though first
+
+demonstrated in the prediction of traits such as cognitive
+
+abilities such as memory, attention, and fluid intelligence
+
+in a normal (i.e., nonclinical) population based on fMRI
+
+data,[84](#25),[88 ](#25)has subsequently also been used to study contin-
+
+uous measures (e.g., symptom severity) of neuropsychiat-
+
+ric disorders in these clinical populations. ICA, a classic
+
+statistical method employed in this context to decompose
+
+the observed fMRI signals into a set of statistically inde-
+
+pendent components, each representing a spatially distinct
+
+pattern of coherent brain activity that corresponds to a
+
+functional network, is commonly used to examine group-
+
+level connectivity differences in these networks between
+
+patients and control subjects. In this set of articles, clinical
+
+assessments usually consist of questionnaires and scales
+
+assessing psychiatric symptoms and diagnostic criteria,
+
+other demographic and clinical information, and some-
+
+times include genetic information. This cluster has some
+
+overlap of subject matter with Cluster 4 (clinical
+
+applications, red); studies with more direct application
+
+to clinical psychiatry and relatively less technique
+
+development appear in Cluster 4; they appear in the
+
+upper right portion of Cluster 4 that is immediately adja-
+
+cent to Cluster 7. It has been emphasized that the wide
+
+variety of methodological choices makes it critical to
+
+understand the impact of these choices on results and
+
+interpretation ([Fig. 11](#18)).[89](#25)
+
+In the growing field of computational psychiatry, estab-
+
+lished in the last decade, studies are building computa-
+
+tional models of psychiatric disorders, such as addiction,
+
+depression, autism spectrum disorder, and schizophrenia,
+
+to improve understanding of these conditions and develop
+
+new treatments.[13](#24),[80](#25),[91](#25)–93
+
+Brain organization in healthy individuals. A third sub-
+
+group of studies in this cluster investigates how the brain
+
+is organized at a systems level in healthy individuals.
+
+Use of fMRI to reveal how the brain is organized has a
+
+background dating from its inception. By the early
+
+2000s, fMRI was used to demonstrate certain key aspects
+
+of the hierarchical and spatial layout of the visual cortex.
+
+fMRI measurements of Primary visual cortex were
+
+shown to reproduce low-level features, such as edge ori-
+
+entation, of images viewed by humans even without their
+
+conscious awareness.[94 ](#26)By the early 2010s, fMRI meas-
+
+urements were also shown to reproduce the semantic
+
+content of imagined images,[95 ](#26)demonstrating that both
+
+low-level and 

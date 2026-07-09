@@ -1,0 +1,1211 @@
+www.nature.com/scientificreports
+
+OPEN
+
+A whole‑brain model of the neural
+entropy increase elicited
+by psychedelic drugs
+Rubén Herzog 1*, Pedro A. M. Mediano 2,3, Fernando E. Rosas 4,5,6,16, Paul Lodder 7,
+Robin Carhart‑Harris 5,8, Yonatan Sanz Perl 9,10,11, Enzo Tagliazucchi 12,13 & Rodrigo Cofre 14,15
+Psychedelic drugs, including lysergic acid diethylamide (LSD) and other agonists of the serotonin
+2A receptor (5HT2A-R), induce drastic changes in subjective experience, and provide a unique
+opportunity to study the neurobiological basis of consciousness. One of the most notable
+neurophysiological signatures of psychedelics, increased entropy in spontaneous neural activity,
+is thought to be of relevance to the psychedelic experience, mediating both acute alterations in
+consciousness and long-term effects. However, no clear mechanistic explanation for this entropy
+increase has been put forward so far. We sought to do this here by building upon a recent whole-brain
+model of serotonergic neuromodulation, to study the entropic effects of 5HT2A-R activation. Our
+results reproduce the overall entropy increase observed in previous experiments in vivo, providing the
+first model-based explanation for this phenomenon. We also found that entropy changes were not
+uniform across the brain: entropy increased in all regions, but the larger effect were localised in visuooccipital regions. Interestingly, at the whole-brain level, this reconfiguration was not well explained
+by 5HT2A-R density, but related closely to the topological properties of the brain’s anatomical
+connectivity. These results help us understand the mechanisms underlying the psychedelic state and,
+more generally, the pharmacological modulation of whole-brain activity.
+Psychedelic drugs provide a privileged opportunity to study the mind-brain relationship, and promise to revolutionise some of our current mental health ­treatments1–3. While some aspects of the neurochemical action of
+psychedelics at the neuronal and sub-neuronal level are well ­known4,5, our current understanding of their action
+at the whole-brain level is still very limited. A deeper understanding of the mechanisms that trigger the changes
+in conscious experience produced by psychedelics would greatly advance our knowledge of human consciousness, as well as therapeutic development of psychedelics.
+At a subjective level, serotonergic psychedelics (including LSD, dimethyltryptamine [DMT] and psilocybin,
+among others) potentially modulate mood, cognition, perception and self-awareness. At a neurophysiological
+level, recent research has identified (among many) two particularly prominent signatures of the psychedelic
+state: an overall dysregulation of neural population activity, most clearly seen as suppression of spectral power
+in the alpha (8–12 Hz) ­band6–8; and an increase in the signal diversity of the neural activity, measured through
+the information-theoretic notion of ­entropy9. In particular, this acute entropy increase has been linked to both
+
+1
+
+Centro Interdisciplinario de Neurociencia de Valparaíso, Universidad de Valparaíso, Pje Harrington 287,
+2360103 Valparaíso, Chile. 2Department of Computing, Imperial College London, London SW7 2DD,
+UK. 3Department of Psychology, University of Cambridge, Cambridge CB2 3EB, UK. 4Department of Informatics,
+University of Sussex, Brighton BN1 9RH, UK. 5Centre for Psychedelic Research, Department of Brain Science,
+Imperial College London, London SW7 2DD, UK. 6Centre for Complexity Science, Imperial College London,
+London SW7 2AZ, UK. 7Informatics Institute, University of Amsterdam, P.O. Box 94323, 1090 GH Amsterdam,
+The Netherlands. 8Psychedelics Division, Neuroscape, University of California San Francisco, San Francisco,
+CA, USA. 9Computational Neuroscience Group, Center for Brain and Cognition, Department of Information and
+Communication Technologies, Universitat Pompeu Fabra, Barcelona, Catalonia, Spain. 10Universidad de San
+Andres, Buenos Aires, Argentina. 11Institut du Cerveau et de la Moelle épinière, ICM, Paris, France. 12Buenos Aires
+Physics Institute and Physics Department, University of Buenos Aires, Buenos Aires, Argentina. 13Latin American
+Brain Health Institute (BrainLat), Universidad Adolfo Ibáñez, Santiago, Chile. 14CIMFAV‑Ingemat, Facultad de
+Ingeniería, Universidad de Valparaíso, Valparaíso, Chile. 15Institute of Neuroscience (NeuroPSI), Paris-Saclay
+University, Centre National de la Recherche Scientifique (CNRS), Gif‑sur‑Yvette, France. 16Centre for Eudaimonia
+and Human Flourishing, University of Oxford, Oxford OX3 9BX, UK. *email: ruben.herzog@postgrado.uv.cl
+Scientific Reports |
+
+(2023) 13:6244
+
+| https://doi.org/10.1038/s41598-023-32649-7
+
+1
+Vol.:(0123456789)
+
+www.nature.com/scientificreports/
+short- and long-term effects of the psychedelic experience, including certain aspects of the reported subjective
+­experience9 and subsequent personality ­changes10.
+Interestingly, the opposite effects have been reported for states of loss of consciousness, where a strong
+decrease in brain entropy has been repeatedly observed. This seems to be a core feature of loss of consciousness,
+generalising across states such as deep ­sleep11, general ­anaesthesia12, and disorders of ­consciousness13. Together,
+these facts are yielding converging evidence that entropy and related measures offer simple and powerful indices
+of consciousness.
+Based on these findings, Carhart-Harris and colleagues have put forward the Entropic Brain Hypothesis (EBH)
+an entropy-based theory of conscious ­states1,14. The EBH proposes the simple, yet powerful idea that the variety
+of states of consciousness can be indexed by the entropy of key parameters of brain activity; or, in other words,
+that the richness of subjective experience is directly related to the richness of on-going neural activity, where
+richness can be defined most simply as diversity. Note that even when different states can be indexed by their
+corresponding diversity, we are not claiming that one state is more conscious than other. Therefore, investigating the neurobiological origins of such changes in brain activity is a key step in the study of altered states of
+consciousness.
+Multiple experiments in humans and animal models have established that the mind-altering effects of psychedelics depend on agonism specifically at the serotonin 2A receptor (5HT2A-R)15–17. A recent simulation study
+involving whole-brain computational modelling confirmed that the topographic distribution of 5HT2A-R in
+the human brain is critical to reproduce the functional connectivity dynamics (FCD) of human fMRI data
+recorded under the acute effects of ­LSD18. Here we build upon this model to characterise the interplay between
+the entropy of brain signals, the distribution of 5HT2A receptors, and structural connectivity properties of the
+brain, with the overarching goal of explaining the sources of entropic effects, and thus altered consciousness,
+elicited by psychedelic drugs.
+
+Results
+
+We simulated whole-brain activity using the Dynamic Mean-Field (DMF) model by Deco et al.19,20, using parameter values fit to reproduce the dynamics of fMRI recordings in humans during wakeful rest, as well as under
+the acute effects of LSD (see Supplementary Figure 1)18. The model consists of interacting pools of excitatory
+and inhibitory neural populations, coupled via long-range excitatory connections informed by the anatomical
+connectivity of the brain. The DMF model combines a theoretical model of neural and synaptic dynamics with
+two empirical sources of information about the human brain: the human connectome, i.e. DTI-estimated connectivity between the 90 regions of the ­AAL21 atlas; and average 5HT2A-R expression across the human brain
+obtained with Positron Emission Tomography (PET) ­scans22.
+Each simulation of the DMF model generates 90 time series of excitatory and inhibitory firing rates, one of
+them for each region of the AAL atlas (Fig. 1A). These firing rates have a non-linear dependency on the local
+inputs, determined by a frequency–current (F–I) curve. Given that 5HT2A-R seems to modulate the sensitivity
+of neurons rather than driving them towards excitation or ­inhibition4,23,24, we followed Deco et al.18 and modelled
+5HT2A-R activation as a response-gain ­modulation25 of this F–I curve dependent on the receptor density at a
+given region (Fig. 1B).
+We simulated the model in two conditions, with and without 5HT2A-R activation, which, in an analogy with
+neuroscientific terminology, we refer to as placebo (PLA) and 5HT2A-R conditions, respectively. In this way, we
+obtain 90 time series of excitatory firing rates for each condition, which we keep for further analysis.
+Finally, using these time series, we estimate Shannon’s differential entropy for each region under both conditions, yielding a topographical distribution of entropy values (Fig. 1C) that constitutes the main subject of analysis
+in this study. Further details about model specification and entropy estimation, as well as other methodological
+caveats, are presented in the Methods section at the end of this article.
+
+5HT2A‑R activation causes a heterogeneous, linear increase in the entropy of simulated brain
+activity. In our first analysis, we used the DMF model to test the main prediction of the EBH: that 5HT2A-R
+
+activation causes an increase in the overall entropy of neural signals (Fig. 2). In line with previous experimental
+findings with psychedelic ­drugs9, the model shows a significant increase in the brain’s entropy h due to 5HT2AR activation, with an average entropy of hPLA = 2.15 nat in the placebo condition, and h5HT2A = 2.25 nat
+in the 5HT2A-R condition (dashed vertical lines in Fig. 2B, Wilcoxon signed-rank test p < 10−6, Cohen’s
+d = 0.98 ± 0.05).
+A closer look at the distribution of entropy changes, however, reveals a more nuanced picture, entropy
+increases for all regions, but the effect is larger for visuo-occipital regions, compared to the rest of the regions
+(Fig. 2D, Supp. Fig. 2). This suggests that, according to the model, 5HT2A-R agonism might trigger a complex
+reconfiguration of the topographically specific distribution of entropy, and not a mere homogeneous overall
+increase.
+To investigate this reconfiguration, we analysed the local changes in entropy by plotting the entropy of the
+nth region in both PLA and 5HT2A conditions, denoted by h5HT2A
+and hPLA
+respectively (Fig. 2D). Our results
+n
+n
+show that 5HT2A-R activation affects local entropy in a non-uniform and linear manner, especially in regions
+with high baseline resting state entropy. In particular, in such regions the effect of 5HT2A-R activation show a
+different tendency than the rest of the regions, such that the local entropy in the 5HT2A-R condition could not
+always be determined by the region’s baseline entropy. This finding hints towards a more general theme: that local
+dynamical properties alone are not able to explain the local changes in activity induced by 5HT2A-R agonists
+like psychedelic drugs. We will explore this phenomenon in depth in the following sections.
+Next, we studied the effect of 5HT2A-R agonism on local entropy by considering the relative change scores,
+Scientific Reports |
+Vol:.(1234567890)
+
+(2023) 13:6244 |
+
+https://doi.org/10.1038/s41598-023-32649-7
+
+2
+
+www.nature.com/scientificreports/
+
+15
+
+PDF
+
+Firing
+Rate (Hz)
+
+0
+PDF
+
+Firing
+Rate (Hz)
+
+h(X) = 2.6125
+
+0.2
+
+0
+
+10
+10
+
+300
+
+1
+
+-4
+-6
+0
+
+0.4
+
+200
+100
+
+0
+
+15
+
+0
+h(X) = 2.0754
+
+0.2
+
+PDF
+
+Firing
+Rate (Hz)
+
+h(X) = 2.0301
+
+0
+-2
+
+Normalized 5HT2A
+Receptor Density
+
+0
+
+10
+
+400
+
+0.2
+
+15
+
+C
+
+10
+
+0
+
+15
+
+0
+0
+
+Receptor Density Dependent
+Response Gain Modulation
+
+Firing Rate (Hz)
+
+0
+
+B
+
+h(X) = 2.0438
+
+0.2
+
+PDF
+
+Firing
+Rate (Hz)
+
+A
+
+Whole-Brain Model of
+Resting State Activity
+
+0.5
+Time (s)
+
+1
+
+0
+
+0
+
+5
+10
+Firing Rate (Hz)
+
+0
+
+0.5
+1
+Current (nA)
+
+1.5
+
+15
+
+With 5HT2A-R Activation
+
+Without 5HT2A-R Activation
+
+Midsagittal View
+
+Region Entropy
+
+Figure 1.  Modelling the effect of 5HT2A-R activation on the whole-brain topographical distribution of entropy.
+(A) Resting state activity is simulated using the dynamic mean-Field (DMF) model, in which each region’s
+activity is represented by a time series of excitatory firing rates (constrained to 0–15 Hz for visualisation). The
+probability density function (PDF) and differential entropy (h(X)) of each region is then estimated, obtaining
+a topographical distribution of entropy values. (B) 5HT2A-R agonism is modelled as a receptor-densitydependent response gain modulation. Black line is the frequency–current (F–I) curve of a population without
+5HT2A-R agonism, and coloured curves show the resulting F–I curves of regions with increasing 5HT2A-R
+agonism. (C) 5HT2A-R activation changes the topographical distribution of entropy with respect to resting state
+activity, which constitutes the main subject of analysis in this study.
+
+hn =
+
+h5HT2A
+− hPLA
+n
+n
+.
+hPLA
+n
+
+Based on recent in vivo experiments with serotonergic psychedelics we expect to find localized entropy increases
+on occipital, cingulate and parietal ­regions9,10 as well as several changes on regions belonging to Resting State
+Networks (RSNs)7,26,27. Accordingly, we split brain regions by standard anatomical and functional groupings,
+and found that the effect were localised specially in occipital areas, together with some cingulate and parietal
+regions. (Fig. 2A, Supp. Fig. 1). Additionally, regions participating in the primary visual and Default Mode
+(DMN) RSNs—including occipital and cingulate areas, respectively—showed a marked tendency to increase
+their entropy, as well as regions participating in the Frontoparietal Executive Network (FPN). Further discussion
+about the relation between these results and recent in vivo experiments with psychedelic drugs is presented in
+the Discussion section.
+
+The topography of entropy changes is explained by local connectivity strength and 5HT2A‑R
+density. Given the results above, and given the potential clinical and neuroscientific relevance of entropy
+
+reconfiguration in the psychedelic state, our next task is to elucidate what neurobiological factors underlie such
+phenomenon. In this section we investigate which structural and dynamical features of the model are able to
+predict local entropy changes due to 5HT2A-R activation, and what we can learn about the large-scale action
+mechanism of psychedelic drugs and other 5HT2A-R agonists.
+To explain the effects of 5HT2A-R activation, the first natural step is to factor in the density of 5HT2A-R at
+each region. Somewhat surprisingly, at a whole-brain level, receptor density was a very poor predictor of the
+entropy change due to 5HT2A-R activation (Fig. 3A, R2 = 0.0053 ± 0.0014 ). In contrast, we found that the
+connectivity strength (based on the DTI human connectome), defined as the sum of all the weighted links connecting a given region, exhibited a moderate correlation with local entropy changes (Fig. 3B, R2 = 0.45 ± 0.14).
+By visual inspection, however, it is clear that the relationship between DTI-informed connectivity strength
+and hn is complex and can be split in two separate tendencies. To investigate this phenomenon, we implemented
+a simple optimisation algorithm to find the set of regions with the strongest relationship between strength and
+hn. This yielded a set of regions with a higher strength-hn correlation (S1 , R2 = 0.93 ± 0.0032, as opposed
+to R2 = 0.45 ± 0.14 for the whole-brain), and induced a partition of all brain regions into three groups: those
+
+Scientific Reports |
+
+(2023) 13:6244 |
+
+https://doi.org/10.1038/s41598-023-32649-7
+
+3
+Vol.:(0123456789)
+
+www.nature.com/scientificreports/
+
+Local
+Entropy Change ( h )
+
+A
+
+B
+
+0 0.02 0.04 0.06 0.08 0.1
+
+without 5HT2A-R Agonism
+with 5HT2A-R Agonism
+
+0.06
+Normalized Frequency
+
+Precentral
+Postcentral
+Front Mid
+SupraMarginal
+Front Inf Tri
+Front Inf Ope
+Parietal Inf
+Pallidum
+Paracentr Lob
+Caudate
+Heschl
+Angular
+Tempr Pol Mid
+Thalamus
+Tempr Pol Sup
+Rolandic Oper
+Front Mid Orb
+Supp Motor Ar
+Front Inf Orb
+Amygdala
+Temporal Sup
+Frontal Sup
+Insula
+Temporal Mid
+Olfactory
+ParaHippocamp
+Putamen
+Temporal Inf
+Front Med Orb
+Rectus
+Front Sup Orb
+Front Sup Med
+Cingulum Ant
+Parietal Sup
+Hippocampus
+Fusiform
+Cingulum Mid
+Occipital Inf
+Occipital Mid
+Lingual
+Occipital Sup
+Precuneus
+Cingulum Post
+Calcarine
+Cuneus
+
+C
+
+0.07
+
+0.05
+0.04
+0.03
+0.02
+0.01
+0
+
+D
+
+2
+
+2.1
+
+2.2
+2.3
+2.4
+2.5
+Local Entropy (nats)
+
+2.6
+
+2.7
+
+2
+
+2.1
+
+2.2
+2.3
+2.4
+Local Entropy without
+5HT2A-R Agonism
+
+2.5
+
+2.6
+
+2.6
+
+Local Entropy with
+5HT2A-R Agonism
+
+2.5
+2.4
+2.3
+2.2
+2.1
+2
+
+0
+
+Local
+Entropy Change ( h )
+
+0.1
+
+Figure 2.  Linear heterogeneous increase of entropy following 5HT2A-R activation. (A) Effect of 5HT2A-R
+agonism on the local entropy each of region in the AAL atlas. See Supplementary Table 1 for abbreviations. Bars
+indicate the (bilateral) average relative change in local entropy, hn, and error bars indicate 1 standard deviation
+across 1000 simulations. (B) Histograms of local entropy values for the condition with (red) and without (blue)
+5HT2A-R activation. 5HT2A-R activation increased both the average and the spread of the local entropy
+distribution. (C) Topographical map of entropy changes. Brain regions are coloured according to their hn
+values. (D) 5HT2A-R agonism changed the topographical distribution of entropy in linear manner. Each circle
+indicates the averages of each region across 1000 simulations.
+
+Figure 3.  Changes in local entropy are explained best by connectivity strength, then receptor density. (A)
+Changes in entropy were overall independent from receptor density, although (B) they were well predicted by
+the connectivity strength of each region. We split into strength (blue and gray), and receptor dependent groups
+(red). The S1 and S 2 groups showed no significant relationship with receptor density, while the R1 group were
+highly correlated with it. (C) Topographical localisation of the three groups, following the same colour code. S1
+were mainly located in occipital, parietal and cingulate regions, while the R1 ones were in temporal and frontal
+ones.
+Scientific Reports |
+Vol:.(1234567890)
+
+(2023) 13:6244 |
+
+https://doi.org/10.1038/s41598-023-32649-7
+
+4
+
+www.nature.com/scientificreports/
+highly dependent on strength (S1 , 27 regions, blue in Fig. 3A), those less dependent on strength (S 2 , 42 regions
+, gray), and those highly dependent on receptors (R1 , 11 regions, red).
+Building up on this partition, we studied the effect of receptor density on those regions where entropy change
+could not be predicted from connectivity strength—the R1 group. We found a strong relationship between receptor density and entropy changes for the R 1 group, which resulted in positive correlation ( R2 = 0.93 ± 0.0085).
+On the contrary, receptor density does not predict entropy changes for areas in the S 1 and S 2 . This shows a
+complementary role of density and strength in S 1 , S 2 , and R 1 regions: entropy changes in R 1 regions strongly
+depend on the receptor density, but not connectivity strength; while changes in S1 , S 2 regions depend on connectivity strength, but not receptor density.
+Overall, to assess the predictive power of connectivity strength and the receptor density on local entropy
+changes, we built a linear mixed model for hn using connectivity strength, 5HT2A-R density, and the aforementioned three-way separation of brain regions as the predictor variables. Together these variables explain
+94.5 ± 0.002% of the variance of hn, confirming that they provide an accurate model for predicting the entropic
+effects of 5HT2A-R activation. This suggests that psychedelic drugs and other 5HT2A-R agonists do not have a
+simple, localised effect on brain activity, but instead amplify the fundamentally collective, emergent properties
+of the brain as a complex system of interacting elements.
+
+The specific connectivity strength distribution explains relative changes in entropy. As a
+final analysis, we set out to investigate exactly which topological properties of the brain’s structural connectivity explain the observed changes in entropy. With this exercise, we aim to answer two questions: whether any
+property simpler than connectivity strength can explain the results; and whether any property more complicated
+than connectivity strength is needed to do so.
+To this end, we ran further simulations of the DMF model using suitable null network models of the human
+connectome (Fig. 4A), with the 5HT2A-R density map held fixed. In particular, we used three null models
+designed to test increasingly strict null hypotheses that preserved different network attributes of the original
+connectome: (1) the overall density and strength (RAND, Fig. 4B), (2) the degree distribution (degree-preserving
+randomisation [DPR], Fig. 4C); and (3) the strength distribution (strength-preserving randomisation, [DSPR],
+Fig. 4D). We simulated the DMF model in these surrogate networks, with and without neuromodulation, and
+computed the resulting entropy changes hn.
+Our first result is that random and degree-preserving surrogate networks are unable to reproduce the entropy
+changes observed in the human connectome: when compared against the hn values obtained from the unperturbed network, neither of them produce values close to the original (Fig. 4E,F). This result asserts the findings
+in the previous section, showing that indeed node strength plays an important role in shaping the global pattern
+
+A
+
+B
+
+Human
+
+E
+
+Rand
+
+0.1
+
+R = 0.020
+
+0.0046
+
+C
+
+DPR
+
+F
+
+R = 0.35
+
+0.0081
+
+D
+
+DSPR
+
+G
+
+R = 0.62
+
+0.014
+
+0.06
+0.04
+
+h DSPR
+
+h DPR
+
+h Rand
+
+0.08
+
+0.02
+0
+0
+
+0.02 0.04 0.06 0.08 0.1
+
+h Human
+
+0
+
+0.02 0.04 0.06 0.08 0.1
+
+h Human
+
+0
+
+0.02 0.04 0.06 0.08 0.1
+
+h Human
+
+Figure 4.  Relative changes in entropy are partially reproduced by a strength-preserving null model of the
+connectome. (A–D) Connectivity matrices used to control the role of local properties of the connectome on
+hn. See main text for the description of the matrices and randomisation algorithm. (E–G) Scatter plots of
+hn for the human connectome against the three null models. DSPR yielded a high but not perfect correlation
+showing that local network properties of human connectome are necessary but not sufficient to capture the
+effect of 5HT2A-R activation.
+Scientific Reports |
+
+(2023) 13:6244 |
+
+https://doi.org/10.1038/s41598-023-32649-7
+
+5
+Vol.:(0123456789)
+
+www.nature.com/scientificreports/
+of entropy change associated with the action of psychedelics and other 5HT2A-R agonists. Simpler topological
+features, like the degree distribution, are not enough to explain such changes.
+Perhaps more interestingly, the connectivity strength-preserving surrogate networks partially reproduced
+the entropy changes, suggesting that higher-order properties of the connectome are necessary (Fig. 4G). Furthermore, we repeated the analyses in the previous section trying to predict hn using other local connectivity
+measures (e.g. betweenness, eigenvector centrality), and none of them produced a model as accurate as strength
+(Supp. Fig. 2). Together, these results show that, once the receptor distribution is fixed, the network strength
+distribution is both necessary but not sufficient to explain the entropic effects of 5HT2A-R activation.
+As previously suggested, other topological network features are known to mediate transitions of consciousness in other ­contexts28, and investigating which network properties explain high-order dynamical ­signatures29
+of psychedelics remains an exciting avenue of future work.
+
+Discussion
+
+In this study, we investigated the brain entropy changes induced by serotonergic psychedelics by simulating
+whole-brain resting state activity with and without 5HT2A-R activation. In contrast to empirical studies, which
+usually only have access to coarse-grained fMRI or M/EEG data, our approach allows us to study firing rates of
+brain regions and hence to directly assess the effect of 5HT2A-R agonism at the level of neural population activity.
+In agreement with the Entropic Brain ­Hypothesis14, the model shows a significant increase of global brain
+entropy, with a inhomogeneous and linear reconfiguration. The diversity of effects stresses the importance of
+extending the scope of the EBH from a simple level-based approach towards a multi-dimensional perspective,
+which might better characterise the richness of 5HT2A-R activation effect both on the brain and consciousness.
+We propose a possible mechanism in the sense that the average increase in neural entropy induced by serotonergic psychedelic drugs can be explained (in statistical sense) in terms of quantities that provide a neurobiological
+interpretation about how this phenomena could occur in the brain. These results have important consequences
+for our understanding of consciousness, neurodynamics, and the psychedelic state. In the following, we highlight
+some of those implications, and propose possibilities for future work.
+
+5HT2A‑R‑induced entropy changes are regionally heterogeneous. Our main result in this study
+is a mechanistic explanation of the main prediction of the EBH that serotonergic psychedelics increase the
+entropy of brain activity. However, one of the main takeaways is that this overall increase is tied to a spatially
+heterogeneous reconfiguration, rather than a globally consistent increase, in entropy.
+Our simulation results show that 5HT2A-R activation triggers an entropy increase in sensory areas, as
+observed in occipital cortices, as well as the primary visual RSN (Supp. Fig. 2). This agrees with the increased
+perceptual ‘bandwidth’ that characterises the psychedelic ­state30, as higher entropy might be related to richer
+perceptual experience in a given moment of consciousness—potentially related to reduced gating. As a matter of
+fact, all the primary visual RSN regions are part of the S1 group, suggesting that the effect of psychedelics on perceptual experience might be directly related to the connectivity of those regions. The localisation of the entropy
+increases may relate to domain-specific changes in consciousness, which could be interpreted as consistent with
+a recent dimensions of consciousness characterisation of the psychedelic ­experience31.
+Comparison to in vivo experiments with psychedelic drugs. Throughout the paper, we have focused
+on one particular signature of 5HT2A-R agonists on the brain—a global increase in average entropy. But much
+more is known about the effect of psychedelics on the brain, and studying these more nuanced effects is key to
+understanding the rich phenomenology of the psychedelic state. In this section we deepen this connection by
+providing a more detailed comparison between the behaviour of the model and experimental results with psychedelic drugs.
+Our findings are in agreement with earlier studies where the effect of psychedelic drugs on the topographical
+distribution of entropy-related measures was correlated with subjective effects. For example, Schartner et al.9
+studied the effect of LSD, psilocybin, and ketamine on the entropy rate of binarized MEG signals, and found
+localised increases in entropy rate on occipital and parietal regions. Similarly, Lebedev et al.10 analysed the sample
+entropy of fMRI recordings of subjects under the effect of LSD, finding localized increases on frontoparietal,
+medial occipital, posterior and dorsal cingulate regions. Many of those regions showed a consistent increase of
+their entropy with 5HT2A-R agonism in our study (Fig. 2A).
+Moreover, many of those regions actually belong to the S1 group (c.f. Fig. 3), which suggests that their entropy
+increase in experimental data might be directly related to the connectivity in those regions.
+Together, these findings support the conclusion that the DMF model, once optimised, can reproduce not
+only functional ­connectivity18, but also some of the most salient localised entropy increases found on in vivo
+human studies up to date.
+Also, on a more fundamental level, our findings suggest that psychedelics disrupt the functional organisation
+of the brain with an especially focal and pronounced action on highly anatomically connected brain regions.
+In fact, experimental and modelling evidence points towards a key role of connector hubs on psychedelic and
+psychopatological ­states32,33.
+Perturbing the activity in these specific regions (via 5HT2A-R agonism) could have particularly profound
+implications for the regularity of brain activity and the quality of conscious experience. However, sub cortical
+regions may also play an important role on the modulation of brain activity, conscious experience, and the
+psychedelic ­state34.
+On a separate line of inquiry, there is strong evidence associating the DMN to high-level cognitive functions,
+including the sense of space, time and recognition of (self) boundaries.
+Scientific Reports |
+Vol:.(1234567890)
+
+(2023) 13:6244 |
+
+https://doi.org/10.1038/s41598-023-32649-7
+
+6
+
+www.nature.com/scientificreports/
+Disruptions to the DMN have been linked to fundamental changes in experience, such as ego ­dissolution14,35.
+Our simulation results show that 5HT2A-R activation increases the entropy of all DMN regions, which is consistent with the reported decrease in the DMN network ­integrity32 induced by psychedelic drugs. In contrast,
+low-level motor functions such as motor regulation remain largely unaffected during the psychedelic ­state36,
+which is consistent with the modest entropy changes observed in the lingual and superior motor areas.
+
+Current limitations and future research. The approach employed in this work presents certain limita-
+
+tions related to several aspects of the simulation and analysis. Acknowledging and understanding these limitations can help us extend and improve our approach, while introducing new questions in the field of psychedelic
+computational neuroscience.
+To our knowledge, the DMF model is the only whole-brain model that implements neuromodulation and
+is capable of reproducing neuroimaging data in the placebo and psychedelic states. Nonetheless, it makes some
+important simplifications that are worth discussing. At the network level, the DTI-based connectome used here
+is known to be incomplete, thus improvements could be made to the model parameters of brain ­connectivity37.
+At the dynamical level, the DMF model models neuronal populations as perfectly homogeneous within a given
+region, and it is known that finer-grained local structure of certain brain regions is likely to be key to explaining
+certain subjective effects of the psychedelic state (e.g. lattice structure in the visual cortex and geometric visual
+­hallucinations38). Additionally, the version of the DMF model used here only considers 5HT2A-R agonism,
+while classic serotonergic psychedelic drugs also have high binding affinities for other receptors (e.g. in the case
+of LSD, the D1 and D2 dopamine ­receptors39).
+These simplifications do not prevent the model from reproducing statistical features of brain signals under
+the placebo and 5HT2A-R conditions, but could result in an inability to reproduce finer aspects of the dynamics
+of the whole-brain activity in these conditions. Extending the model to reproduce other dynamical signatures of
+psychedelics (like alpha ­suppression8 or reduced directed functional ­connectivity40) constitutes a natural extension of this work, with the recent example of Kringelbach et al.41 where an extension of the DMF can reproduce
+dynamical features of the brain in placebo and in the psychedelic state
+Another potentially fruitful line of future work involves making more detailed comparisons with in vivo
+psychedelic neuroimaging data, and, potentially, subjective experience reports. For example, one natural option
+would be to use forward models of ­fMRI42 or M/EEG43 to bridge between the firing rates produced by the DMF
+model and other data modalities, to produce simulated data that is more directly comparable with available
+empirical data.
+Another exciting possibility is to explore model parameters to examine potential non-linearities and their
+implications for different relevant aspects of brain function. For example, there are reasons to believe that the
+dose-response relationship is non-linear for psychedelics and that over a certain threshold dosage (level of
+5HT2A-R stimulation) new subjective and global brain function properties can ­appear44.
+Most interestingly, a potentially very useful extension of this work would be to include individual subjectlevel connectome and receptor data to build personalised models of response to psychedelic drugs. This would
+enable a much more comprehensive modelling framework, capable of correlating structural brain features with
+subjective experience reports. Such a framework could potentially make individualised predictions of the action
+of serotonergic psychedelics on specific individuals, aiding patient stratification and treatment ­customisation2.
+Finally, it is worth noting that all our analyses here are based on the univariate statistics of individual brain
+regions, not including any correlation or information flow between them. However, it is known that some highlevel subjective effects of psychedelics (such as complex ­imagery7 and ego ­dissolution35) are related to network,
+as opposed to single region, dynamics. Therefore, building a richer statistical description of the brain’s dynamics
+using recent information-theoretic tools (such as multivariate extensions of mutual ­information29 or Integrated
+Information Theory, ­IIT45) remains an exciting open problem. In fact, recent attempts of unifying IIT and the
+EBH in a single framework to understand the effects of psychedelic ­drugs46 are helping to bridge the gap between
+the univariate EBH and the multivariate IIT.
+
+Final remarks. In this paper, we have provided the first mechanistic explanation of the neural entropy
+increase elicited by psychedelic drugs, using a whole-brain dynamical model with 5HT2A-R neuromodulation.
+Furthermore, we built a simple model able to predict a region’s relative change in entropy from its local 5HT2AR density and topological properties, showing that, somewhat paradoxically, at a whole-brain level receptor
+density is a poor predictor of 5HT2A-R activation effect.
+Key to developing this predictive model was a three-way partition of brain regions according to the dependency they exhibited with connectivity strength, suggesting a differentiated action mechanism of 5HT2A-R agonists that depends on the local topology of brain regions. In summary, our results suggest that the local changes
+in entropy, as well as the global entropy increase, induced by 5HT2A-R activation can be explained from a
+region-specific interplay between structural connectivity and receptor density. Finally, controlled experiments
+with null network models confirm that receptor density and connectivity strength are necessary, but not sufficient, to explain the entropic effects of 5HT2A-R activation.
+The spatially heterogeneous, complex nature of the observed effects of 5HT2A-R activation opens a challenging problem for understanding the clinical and scientific relevance of psychedelic drugs and their entropic
+effect. Furthermore, it stresses the necessity of moving beyond the current unidimensional approach to consciousness to a multi-dimensional one, that better captures the phenomenological and neurodynamical richness
+of psychedelic state.
+
+Scientific Reports |
+
+(2023) 13:6244 |
+
+https://doi.org/10.1038/s41598-023-32649-7
+
+7
+Vol.:(0123456789)
+
+www.nature.com/scientificreports/
+
+Methods
+
+Dynamic mean‑field model with 5HT2A‑R neuromodulation. The main computational tool used
+in this study is the Dynamic Mean-Field (DMF) model by Deco et al.18,19 which consists of a set of coupled differential equations modelling the average activity of one or more interacting brain regions. In this model, each
+brain region n is modelled as two reciprocally coupled neuronal masses, one excitatory and one inhibitory,
+and the excitatory and inhibitory synaptic currents I (E) and I (I) are mediated by NMDA and ­GABAA receptors
+respectively. Different brain regions are coupled via their excitatory populations only, and the structural connectivity is given by the matrix C.
+The full model, including the neuromodulatory effect described below, is given by
+In(E) = WE I0 + w+ JNMDA Sn(E) + GJNMDA
+
+N
+
+
+(E)
+
+Cnp Sp − JnFIC Sn(I)
+
+p
+
+In(I) = WI I0 + JNMDA Sn(E) − Sn(I)
+
+
+(E)
+(E)
+gnNM gE In − Ithr
+
+
+
+rn(E) = F In(E) =
+(E)
+(E)
+1 − exp −dE gnNM gE In − Ithr
+
+
+(I)
+(I)
+ 
+gnNM gI In − Ithr
+(I)
+(I)
+
+
+
+rn = F In =
+(I)
+1 − exp −dI gnNM gI In(I) − Ithr
+
+
+(E)
+
+
+
+(E)
+
+
+
+dSn (t)
+Sn
++ 1 − Sn(E) γ rn(E) + σ vn (t)
+=−
+dt
+τNMDA
+(I)
+Sn(I)
+dSn (t)
+=−
++ rn(I) + σ vn (t)
+dt
+τGABAA
+
+gnNM = 1 + sNM dnrec .
+(E,I)
+
+(E,I)
+
+(E,I)
+
+Above, for each excitatory (E) and inhibitory (I) neural mass, the quantities In , rn , and Sn represent its
+total input current (nA), firing rate (Hz) and synaptic gating variable, respectively. The function F(·) is the transfer
+function (or F–I curve), representing the non-linear relationship between the input current and the output firing
+rate of a neural population. Finally, JnFIC is the local feedback inhibitory control of region n, which is optimized
+to keep its average firing rate at approximately 3 Hz (Supp. Fig 1), and vn is uncorrelated Gaussian noise injected
+to region n. The interested reader is referred to the original publication for further ­details19.
+Key to this study is the recent extension of this model including neuromodulatory ­effects18. In the equations
+above, gnNM is a neuromodulatory scaling factor modulating the F–I curve of all brain regions in the model, which
+affects region n depending on its density of the receptor of interest, dnrec . Including neuromodulation, the free
+parameters of the model are G, the global coupling parameter, and sNM , the neuromodulatory gain, that are set to
+2.4 and 0.025, following our fitting procedure (Supp. Fig. 1). To simulate the expression of 5-HT2A receptor on
+the excitatory and inhibitory ­populations47, neuromodulation was applied to both populations. The model was
+simulated using a standard Euler-Maruyama integration ­method48, using the parameter values shown in Table 1.
+
+Parameter
+
+Symbol
+
+Value
+
+External current
+
+I0
+
+0.382 nA
+
+Excitatory scaling factor for I0
+
+WE
+
+1
+
+Inhibitory scaling factor for I0
+
+WI
+
+0.7
+
+Local excitatory recurrence
+
+w+
+
+1.4
+
+Excitatory synaptic coupling
+
+JNMDA
+
+0.15 nA
+
+(E)
+Threshold for F(In )
+
+0.403 nA
+
+Threshold for F(In )
+
+(E)
+Ithr
+(I)
+Ithr
+
+(E)
+Gain factor of F(In )
+
+gE
+
+310 nC−1
+
+(I)
+Gain factor of F(In )
+
+gI
+
+615 nC−1
+
+(I)
+
+0.288 nA
+
+dE
+
+0.16 s
+
+(I)
+(I)
+Shape of F(In ) around Ithr
+
+dI
+
+0.087 s
+
+Excitatory kinetic parameter
+
+γ
+
+0.641
+
+Amplitude of uncorrelated Gaussian noise vn
+
+σ
+
+0.01 nA
+
+Time constant of NMDA receptor
+
+τNMDA
+
+100 ms
+
+Time constant of GABA-A receptor
+
+τGABAA
+
+10 ms
+
+(E)
+
+(E)
+
+Shape of F(In ) around Ithr
+
+Table 1.  Dynamic mean field (DMF) model parameters.
+
+Scientific Reports |
+Vol:.(1234567890)
+
+(2023) 13:6244 |
+
+https://doi.org/10.1038/s41598-023-32649-7
+
+8
+
+www.nature.com/scientificreports/
+Parcellation, connectome, and 5HT2A receptor maps. In addition to the DMF equations above,
+to simulate whole-brain activity we need three more ingredients: a suitable parcellation of the cortex into welldefined regions, a structural connectivity matrix between those regions, and the density map of a receptor of
+interest—in our case, the serotonin 2A receptor. We clarify that all the empirical inputs of the model were produced elsewhere. For a detailed description of the procedure, please follow the corresponding references cited
+below.
+As a basis for our simulation, we used the Automated Anatomical Labelling (AAL) ­atlas21, a sulci-based
+parcellation of brain volume registered in MNI space. The AAL parcellation specifies a partition of the brain
+into 90 Regions Of Interest (ROIs), that provides sufficient level of detail to obtain a picture of the topographical
+distribution of entropy, while being suitable for computationally intensive simulations.
+Structural connectivity data between the 90 AAL ROIs was obtained from 16 healthy subjects (5 female)
+using diffusion Magnetic Resonance Imaging (dMRI), registered to the MNI space and parcellated according
+to the AAL atlas on the subject’s native space. Then, for each subject the histogram of fiber directions at each
+voxel was obtained, yielding an estimate of the number of fibers passing trough each voxel. The weight of the
+connection between regions i and j was defined as the proportion of fibers passing through region i that reach
+region j, which (since the directionality of connections cannot be determined using dMRI) yields a symmetric
+90 × 90 Structural Connectivity (SC) matrix. Finally, the SC matrix of each subject was thresholded, pruning
+any connection lower than 0.1%, and SC matrices of all subjects were averaged to obtain a single SC matrix used
+in all simulations. This average matrix was kindly provided by Deco et al.18 For a detailed description of these
+methods see or refer to the Supplementary Subsection 7.
+For the density map of 5HT2A receptors, we used the Positron Emission Tomography (PET) data made public
+by Beliveau et al.22, which can be combined with the AAL parcellation to obtain an estimate of receptor density
+in every AAL region. Further details can be found in the original ­publications18,22.
+Together with the DMF equations, these three elements fully specify our whole-brain model and allow us to
+(E)
+run simulations and obtain time series of excitatory firing rates, rn , which we save for further analysis.
+Estimating the differential entropy of firing rates. The result of each simulation is a set of 90 time
+(E)
+
+series representing the firing rate of each excitatory population (rn ), which we analysed to measure the entropy
+of the activity of each ROI. For a continuous random variable X with associated probability distribution p(x) and
+support X , its differential entropy is defined ­as49
+
+h(X) = −
+p(x) ln p(x) dx .
+X
+
+Estimating differential entropy from data is in general a hard problem, stemming (for the most part) from the
+difficulties in estimating a probability density from ­samples50. We found that the probability distributions of firing
+(E)
+rates rn were well approximated by a gamma distribution: goodness-of-fit, measured with a standard Kolmogorov–Smirnov statistic, was satisfactory and comparable across brain regions and conditions (see Supp. Fig. 3).
+This observation greatly simplifies the estimation of the differential entropy of each region, which is now
+reduced to estimating the shape and scale parameters of the gamma distribution, k and θ . Once these parameters
+are estimated (in our case by standard maximum likelihood estimation), the differential entropy of a gamma
+distribution can be computed analytically in closed form as
+
+h(X) = k + ln θ + ln Ŵ(k) + (1 − k)ψ(k),
+where Ŵ(·) and ψ(·) are the standard gamma and digamma functions, respectively.
+
+Linear models for hn and three‑way separation of AAL regions. To explain the changes in dif-
+
+ferential entropy across regions and conditions, we trained several linear mixed-effects ­models51 using different
+sets of covariates designed to test specific hypotheses about the relation between entropy, 5HT2A-R density, and
+network topology.
+First, we implemented a simple algorithm to find the group of regions where the change in entropy depends
+on region strength. The model was fit by maximum likelihood using off-the-shelf software, and explanatory
+power measured using R2. To do so, we designed an optimisation procedure to find the optimal fit between hn
+and connectivity strength, using all occipital regions of the AAL90 atlas as a prior for a quadratic fit (i.e. the S1
+group). The rest of the regions were used for a linear fit between hn and receptor density. Regions were assigned
+to the S 1 group if the residuals of the quadratic fit to strength were lower than the residuals for the linear fit to
+receptor density. An optimization algorithm randomly partitioned the remaining regions in two groups until a
+maximum in the R2 of a linear mixed-effects model with 3 grouping variables (i.e. S 1 , S 2 , and R 2 ) is obtained.
+The model used a quadratic fit for strength-dependent regions, and a linear one for receptor-dependent regions.
+This three-way separation of brain regions induces a model with 7 terms: a constant term and 2 fixed-effect
+terms for each group of regions: one for the connectivity strength and one for the receptor density.
+
+Null network models of the human connectome. Null network models of the human structural connectivity were used to evaluate the role of the local connectivity ­properties52,53 on the local changes in entropy
+induced by 5HT2A-R activation. To this end, we applied three different randomisation schemes to the structural
+connectivity in order to produce suitable surrogate networks. These surrogates were designed to preserve different network attributes of the original connectome: (1) the overall density and strength (RAND), (2) the degree
+
+Scientific Reports |
+
+(2023) 13:6244 |
+
+https://doi.org/10.1038/s41598-023-32649-7
+
+9
+Vol.:(0123456789)
+
+www.nature.com/scientificreports/
+distribution (degree-preserving randomisation [DPR]); and (3) the strength distribution (strength-preserving
+randomisation [DSPR])
+After randomisation, the DMF model was run with and without 5HT2A-R activation, and entropies estimated
+and analysed following the same procedure as in the rest of the article. Every surrogate model was run 120 times,
+and the results averaged across runs.
+In addition to the network surrogates, we computed several topological measures to include in the linear
+model reported in Fig. 3. These measures included betweenness, eigenvector centrality, closeness, communicability, PageRank index, and sub-graph centrality. All of these computations, including the surrogate networks
+and the topology measures, were performed using the Brain Connectivity ­Toolbox54.
+
+Code availability
+
+The codes and data used for this article are available in the GitHub repository https://​github.​com/​paulo​dder/​
+dmf_​entro​py.
+Received: 20 October 2022; Accepted: 30 March 2023
+
+References
+
+1. Carhart-Harris, R. L. et al. The entropic brain: A theory of conscious states informed by neuroimaging research with psychedelic
+drugs. Front. Hum. Neurosci. 8, 20. https://​doi.​org/​10.​3389/​fnhum.​2014.​00020 (2014).
+2. Scott, G. & Carhart-Harris, R. L. Psychedelics as a treatment for disorders of consciousness. Neurosci. Consciousnesshttps://​doi.​
+org/​10.​1093/​nc/​niz003 (2019).
+3. Carhart-Harris, R. L. et al. Psilocybin with psychological support for treatment-resistant depression: An open-label feasibility
+study. Lancet Psychiatry 3, 619–627. https://​doi.​org/​10.​1016/​S2215-​0366(16)​30065-7 (2016).
+4. Grasso, C., Volsi, G. L. & Barresi, M. Serotonin modifies the spontaneous spiking activity of gracile nucleus neurons in rats: Role
+of 5-HT1A and 5-HT2 receptors. Arch. Ital. Biol. 154, 39–49. https://​doi.​org/​10.​12871/​00039​82920​1621 (2016).
+5. Wacker, D. et al. Crystal structure of an LSD-bound human serotonin receptor. Cell 168, 377–389. https://​doi.​org/​10.​1016/j.​cell.​
+2016.​12.​033 (2017).
+6. Carhart-Harris, R. L. et al. Neural correlates of the psychedelic state as determined by fMRI studies with psilocybin. Proc. Natl.
+Acad. Sci. 109, 2138–2143. https://​doi.​org/​10.​1073/​pnas.​11195​98109 (2012).
+7. Carhart-Harris, R. L. et al. Neural correlates of the LSD experience revealed by multimodal neuroimaging. Proc. Natl. Acad. Sci.
+113, 201518377. https://​doi.​org/​10.​1073/​pnas.​15183​77113 (2016).
+8. Timmermann, C. et al. Neural correlates of the DMT experience assessed with multivariate EEG. Sci. Rep. 9, 16324. https://​doi.​
+org/​10.​1038/​s41598-​019-​51974-4 (2019).
+9. Schartner, M. M., Carhart-Harris, R. L., Barrett, A. B., Seth, A. K. & Muthukumaraswamy, S. D. Increased spontaneous MEG signal
+diversity for psychoactive doses of ketamine, LSD and psilocybin. Sci. Rep. 7, 46421. https://​doi.​org/​10.​1038/​srep4​6421 (2017).
+10. Lebedev, A. V. et al. LSD-induced entropic brain activity predicts subsequent personality change. Hum. Brain Mapp. 37, 3203–3213.
+https://​doi.​org/​10.​1002/​hbm.​23234 (2016).
+11. Schartner, M. M. et al. Global and local complexity of intracranial EEG decreases during NREM sleep. Neurosci. Consciousnesshttps://​doi.​org/​10.​1093/​nc/​niw022 (2017).
+12. Zhang, X.-S., Roy, R. J. & Jensen, E. W. EEG complexity as a measure of depth of anesthesia for patients. IEEE Trans. Biomed. Eng.
+48, 1424–1433. https://​doi.​org/​10.​1109/​10.​966601 (2001).
+13. Casali, A. G. et al. A theoretically based index of consciousness independent of sensory processing and behavior. Sci. Transl. Med.
+5, 198ra105. https://​doi.​org/​10.​1126/​scitr​anslm​ed.​30062​94 (2013).
+14. Carhart-Harris, R. L. The entropic brain—revisited. Neuropharmacology 142, 167–178. https://​doi.​org/​10.​1016/j.​neuro​pharm.​
+2018.​03.​010 (2018).
+15. Preller, K. H. et al. Changes in global and thalamic brain connectivity in LSD-induced altered states of consciousness are attributable to the 5-HT2A receptor. eLife 7, e35082. https://​doi.​org/​10.​7554/​eLife.​35082 (2018).
+16. Kraehenmann, R. et al. Dreamlike effects of LSD on waking imagery in humans depend on serotonin 2A receptor activation.
+Psychopharmacology 234, 2031–2046. https://​doi.​org/​10.​1007/​s00213-​017-​4610-0 (2017).
+17. Quednow, B., Kometer, M., Geyer, M. & Vollenweider, F. Psilocybin-induced deficits in automatic and controlled inhibition are
+attenuated by ketanserin in healthy human volunteers. Neuropsychopharmacology 37, 630–40. https://​doi.​org/​10.​1038/​npp.​2011.​
+228 (2011).
+18. Deco, G. et al. Whole-brain multimodal neuroimaging model using serotonin receptor maps explains non-linear functional effects
+of LSD. Curr. Biol.https://​doi.​org/​10.​1016/j.​cub.​2018.​07.​083 (2018).
+19. Deco, G., Hagmann, P., Romani, G. L., Mantini, D. & Corbetta, M. How local excitation–inhibition ratio impacts the whole brain
+dynamics. J. Neurosci. 34, 7886–7898. https://​doi.​org/​10.​1523/​JNEUR​OSCI.​5068-​13.​2014 (2014).
+20. Herzog, R. et al. Neural mass modelling for the masses: Democratising access to whole-brain biophysical modelling with fastdmf.
+Bioarxivhttps://​doi.​org/​10.​1101/​2022.​04.​11.​487903 (2021).
+21. Tzourio-Mazoyer, N. et al. Automated anatomical labeling of activations in SPM using a macroscopic anatomical parcellation of
+the MNI MRI single-subject brain. Neuroimage 15, 273–89. https://​doi.​org/​10.​1006/​nimg.​2001.​0978 (2002).
+22. Beliveau, V. et al. A high-resolution in vivo atlas of the human brain’s serotonin system. J. Neurosci. 37, 120–128. https://​doi.​org/​
+10.​1523/​jneur​osci.​2830-​16.​2017 (2017).
+23. Aghajanian, G. K. & Marek, G. J. Serotonin induces excitatory postsynaptic potentials in apical dendrites of neocortical pyramidal
+cells. Neuropharmacology 36, 589–599. https://​doi.​org/​10.​1016/​S0028-​3908(97)​00051-8 (1997).
+24. Licata, F., Volsi, G. L., Maugeri, G. & Santangelo, F. Excitatory and inhibitory effects of 5-hydroxytryptamine on the firing rate of
+medial vestibular nucleus neurons in the rat. Neurosci. Lett. 154, 195–198. https://​doi.​org/​10.​1016/​0304-​3940(93)​90205-Y (1993).
+25. Abbott, L. F. & Chance, F. S. Drivers and modulators from push-pull and balanced synaptic input. Prog. Brain Res. 149, 147–155.
+https://​doi.​org/​10.​1016/​S0079-​6123(05)​49011-1 (2005).
+26. Tagliazucchi, E., Carhart-Harris, R., Leech, R., Nutt, D. & Chialvo, D. R. Enhanced repertoire of brain dynamical states during the
+psychedelic experience. Hum. Brain Mapp. 35, 5442–5456. https://​doi.​org/​10.​1002/​hbm.​22562 (2014).
+27. Lord, L. D. et al. Dynamical exploration of the repertoire of brain networks at rest is modulated by psilocybin. Neuroimage 199,
+127–142. https://​doi.​org/​10.​1016/j.​neuro​image.​2019.​05.​060 (2019).
+28. Chennu, S., O’Connor, S., Adapa, R., Menon, D. K. & Bekinschtein, T. A. Brain connectivity dissociates responsiveness from drug
+exposure during propofol-induced transitions of consciousness. PLoS Comput. Biol. 12, e1004669. https://​doi.​org/​10.​1371/​journ​
+al.​pcbi.​10046​69 (2016).
+
+Scientific Reports |
+Vol:.(1234567890)
+
+(2023) 13:6244 |
+
+https://doi.org/10.1038/s41598-023-32649-7
+
+10
+
+www.nature.com/scientificreports/
+29. Rosas, F. E., Mediano, P. A. M., Gastpar, M. & Jensen, H. J. Quantifying high-order interdependencies via multivariate extensions
+of the mutual information. Phys. Rev. E 100, 032305. https://​doi.​org/​10.​1103/​PhysR​evE.​100.​032305 (2019).
+30. Bayne, T. & Carter, O. Dimensions of consciousness and the psychedelic state. Neurosci. Consciousnesshttps://​doi.​org/​10.​1093/​nc/​
+niy008 (2018).
+31. Bayne, T., Hohwy, J. & Owen, A. M. Are there levels of consciousness?. Trends Cogn. Sci. 20, 405–413. https://​doi.​org/​10.​1016/j.​
+tics.​2016.​03.​009 (2016).
+32. Muthukumaraswamy, S. D. et al. Broadband cortical desynchronization underlies the human psychedelic state. J. Neurosci. 33,
+15171–15183. https://​doi.​org/​10.​1523/​JNEUR​OSCI.​2063-​13.​2013 (2013).
+33. Müller, F., Dolder, P. C., Schmidt, A., Liechti, M. E. & Borgwardt, S. Altered network hub connectivity after acute LSD administration. NeuroImage Clin. 18, 694–701. https://​doi.​org/​10.​1016/j.​nicl.​2018.​03.​005 (2018).
+34. Barrett, F. S., Krimmel, S. R., Griffiths, R., Seminowicz, D. A. & Mathur, B. N. Psilocybin acutely alters the functional connectivity
+of the claustrum with brain networks that support perception, memory, and attention. NeuroImagehttps://​doi.​org/​10.​1016/j.​neuro​
+image.​2020.​116980 (2020).
+35. Tagliazucchi, E. et al. Increased global functional connectivity correlates with LSD-induced ego dissolution. Curr. Biol. 26, 1043–
+1050. https://​doi.​org/​10.​1016/j.​cub.​2016.​02.​010 (2016).
+36. Carhart-Harris, R. L. & Friston, K. J. REBUS and the anarchic brain: Toward a unified model of the brain action of psychedelics.
+Pharmacol. Rev. 71, 316–344. https://​doi.​org/​10.​1124/​pr.​118.​017160 (2019).
+37. Markov, N. T. et al. A weighted and directed interareal connectivity matrix for macaque cerebral cortex. Cereb. Cortex 24, 17–36.
+https://​doi.​org/​10.​1093/​cercor/​bhs270 (2014).
+38. Ermentrout, G. B. & Cowan, J. D. A mathematical theory of visual hallucination patterns. Biol. Cybern. 34, 137–150 (1979).
+39. Carhart-Harris, R. L. & Nutt, D. J. Serotonin and brain function: A tale of two receptors. J. Psychopharmacol. 31, 1091–1120. https://​
+doi.​org/​10.​1177/​02698​81117​725915 (2017).
+40. Barnett, L., Muthukumaraswamy, S. D., Carhart-Harris, R. L. & Seth, A. K. Decreased directed functional connectivity in the
+psychedelic state. Neuroimage 209, 116462. https://​doi.​org/​10.​1016/j.​neuro​image.​2019.​116462 (2020).
+41. Kringelbach, M. L. et al. Dynamic coupling of whole-brain neuronal and neurotransmitter systems. Proc. Natl. Acad. Sci. USA
+117, 9566–9576. https://​doi.​org/​10.​1073/​pnas.​19214​75117 (2020).
+42. Stephan, K. E., Weiskopf, N., Drysdale, P. M., Robinson, P. A. & Friston, K. J. Comparing hemodynamic models with DCM.
+Neuroimage 38, 387–401. https://​doi.​org/​10.​1016/j.​neuro​image.​2007.​07.​040 (2007).
+43. Mosher, J. C., Leahy, R. M. & Lewis, P. S. EEG and MEG: Forward solutions for inverse methods. IEEE Trans. Biomed. Eng. 46,
+245–259. https://​doi.​org/​10.​1109/​10.​748978 (1999).
+44. Madsen, M. K. et al. Psychedelic effects of psilocybin correlate with serotonin 2A receptor occupancy and plasma psilocin levels.
+Neuropsychopharmacology 44, 1328–1334. https://​doi.​org/​10.​1038/​s41386-​019-​0324-9 (2019).
+45. Balduzzi, D. & Tononi, G. Integrated information in discrete dynamical systems: Motivation and theoretical framework. PLoS
+Comput. Biol. 4, e1000091. https://​doi.​org/​10.​1371/​journ​al.​pcbi.​10000​91 (2008).
+46. Swanson, L. R. Unifying theories of psychedelic drug effects. Front. Pharmacol.https://​doi.​org/​10.​3389/​fphar.​2018.​00172 (2018).
+47. De Almeida, J. & Mengod, G. Quantitative analysis of glutamatergic and gabaergic neurons expressing 5-ht2a receptors in human
+and monkey prefrontal cortex. J. Neurochem. 103, 475–486. https://​doi.​org/​10.​1111/j.​1471-​4159.​2007.​04768.x (2007).
+48. Kloeden, P. E. & Platen, E. Numerical Solution of Stochastic Differential Equations Vol. 23 (Springer, 2013).
+49. Cover, T. M. & Thomas, J. A. Elements of Information Theory (Wiley, 2012).
+50. Lizier, J. T. JIDT: An information-theoretic toolkit for studying the dynamics of complex systems. Front. Robot. AI 1, 33. https://​
+doi.​org/​10.​3389/​frobt.​2014.​00011 (2014).
+51. McLean, R. A., Sanders, W. L. & Stroup, W. W. A unified approach to mixed linear models. Am. Stat. 45, 54–64. https://​doi.​org/​
+10.​2307/​26852​41 (1991).
+52. Rubinov, M. & Sporns, O. Weight-conserving characterization of complex functional brain networks. Neuroimage 56, 2068–2079.
+https://​doi.​org/​10.​1016/j.​neuro​image.​2011.​03.​069 (2011).
+53. Luppi, A. I. et al. Dynamical models to evaluate structure-function relationships in network neuroscience. Nat. Rev. Neurosci.https://​
+doi.​org/​10.​1038/​s41583-​022-​00646-w (2022).
+54. Rubinov, M. & Sporns, O. Complex network measures of brain connectivity: Uses and interpretations. Neuroimage 52, 1059–1069.
+https://​doi.​org/​10.​1016/j.​neuro​image.​2009.​10.​003 (2010).
+55. Herzog, R. et al. A mechanistic model of the neural entropy increase elicited by psychedelic drugs. Sci. Rep. 10, 1–12 (2020).
+56. Herzog, R. et al. Retraction note: A mechanistic model of the neural entropy increase elicited by psychedelic drugs. Sci. Rep. 12,
+1–1 (2022).
+
+Acknowledgements
+
+A previous version of this article was published in Scientific ­Reports55 but had to be ­retracted56 due to a typo
+in the formula used to compute the differential entropy from Gamma distribution parameters. In this version the formula was corrected. R.H. was funded by CONICYT scholarship CONICYT-PFCHA/Doctorado
+Nacional/2018-21180428. P.M. is funded by the Wellcome Trust (grant no. 210920/Z/18/Z). F.R. is supported
+by the Ad Astra Chandaria Foundation. R.C. was supported by the Human Brain Project, H2020-945539. E.T.
+is funded by ANID/FONDECYT Regular 1220995.
+
+Author contributions
+
+R.H. performed the numerical analysis and run the simulations. All the authors of this article conceptualized
+this research, design the methodology. All the authors carefully analysed the results, drafted and reviewed the
+manuscript.
+
+Competing interests
+
+The authors declare no competing interests.
+
+Additional information
+
+Supplementary Information The online version contains supplementary material available at https://​doi.​org/​
+10.​1038/​s41598-​023-​32649-7.
+Correspondence and requests for materials should be addressed to R.H.
+Reprints and permissions information is available at www.nature.com/reprints.
+
+Scientific Reports |
+
+(2023) 13:6244 |
+
+https://doi.org/10.1038/s41598-023-32649-7
+
+11
+Vol.:(0123456789)
+
+www.nature.com/scientificreports/
+Publisher’s note Springer Nature remains neutral with regard to jurisdictional claims in published maps and
+institutional affiliations.
+Open Access This article is licensed under a Creative Commons Attribution 4.0 International
+License, which permits use, sharing, adaptation, distribution and reproduction in any medium or
+format, as long as you give appropriate credit to the original author(s) and the source, provide a link to the
+Creative Commons licence, and indicate if changes were made. The images or other third party material in this
+article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the
+material. If material is not included in the article’s Creative Commons licence and your intended use is not
+permitted by statutory regulation or exceeds the permitted use, you will need to obtain permission directly from
+the copyright holder. To view a copy of this licence, visit http://​creat​iveco​mmons.​org/​licen​ses/​by/4.​0/.
+© The Author(s) 2023
+
+Scientific Reports |
+Vol:.(1234567890)
+
+(2023) 13:6244 |
+
+https://doi.org/10.1038/s41598-023-32649-7
+
+12
+
+

@@ -1,0 +1,9595 @@
+EEG-FM-Bench: A Comprehensive Benchmark for the Systematic Evaluation
+and Diagnostic Analyses of EEG Foundation Models
+
+Wei Xiong 1 Jiangtong Li 1 Jie Li 2 1 Kun Zhu 1 Changjun Jiang 1
+
+Abstract
+Overall Performance (Balanced Acc.)
+
+0.62
+
+arXiv:2508.17742v3 [eess.SP] 15 Jun 2026
+
+Electroencephalography foundation models
+(EEG-FMs) have advanced brain signal analysis,
+but the lack of standardized evaluation benchmarks impedes model comparison and scientific
+progress. Current evaluations rely on inconsistent
+protocols that render cross-model comparisons
+unreliable, while a lack of diagnostic analyses
+obscures the internal mechanisms driving transfer
+efficiency and scaling behaviors. To address this,
+we introduce EEG-FM-Bench, a unified system
+for the standardized evaluation of EEG-FMs.
+The benchmark integrates 14 datasets across 10
+paradigms and incorporates diverse experimental
+settings, including multiple fine-tuning strategies,
+task organizations, and classifier configurations,
+supported by tools for gradient and representation
+analysis. Our experiments and analysis reveal
+several critical insights: (1) multi-task learning
+often acts as a useful regularizer that mitigates
+overfitting in data-scarce EEG contexts, although
+negative transfer can arise under specific task
+paradigms; (2) pre-training efficiency is currently
+limited by gradient conflicts between reconstruction objectives and downstream tasks; (3) under
+released checkpoints and a matched downstream
+protocol, model or data scale alone does not fully
+explain transfer performance, while objective
+alignment, adaptation compatibility, and EEGspecific design appear to be important factors.
+This benchmark enables fair comparison and
+reproducible analysis, providing a step toward
+fairer comparison and more interpretable analysis
+of EEG-FMs. Code is available at https://
+github.com/xw1216/EEG-FM-Bench.
+
+0.60
+
+BENDR
+BIOT
+LABRAM
+EEGPT
+CBRAMOD
+CSBRAIN
+REVE
+MANTIS
+MOMENT
+
+69.19M
+25.29M
+8.86M
+4.92M
+
+0.57
+
+5.82M
+
+0.55
+
+3.97M
+
+3.19M
+8.1M
+
+0.52
+35.34M
+
+0.50
+101
+
+102
+
+103
+
+104
+
+Pretraining Data Size (GB, log scale)
+Figure 1. Scaling analysis: Performance vs. Data and Model
+Size. We plot the overall balanced accuracy against pre-training
+data size. Bubble size represents the model parameter count. The
+pretraining data storage volume is estimated based on the total
+duration of the raw data signal.
+
+1. Introduction
+Due to the high temporal resolution, non-invasiveness, and
+cost-effectiveness, EEG is widely used in neuroscience and
+clinical scenarios, ranging from cognition to pathology (Ramantani et al., 2016). Following the success of large-scale
+pre-training in CV (Radford et al., 2021) and NLP (Devlin
+et al., 2019), researchers have developed EEG foundation
+models (EEG-FM) (Jiang et al., 2024b) to learn general
+representations from large-scale unlabeled EEG datasets.
+These models aim to overcome major obstacles in EEG analysis, including high inter-subject and intra-subject variability, and the scarcity of expertly annotated datasets (Rashid
+et al., 2020). While early works adapted architectures
+from other domains like BENDR (Kostas et al., 2021), recent studies focus on designing structures and pre-training
+strategies tailored to EEG characteristics, exemplified by
+CBraMod (Wang et al., 2025a), CSBrain (Zhou et al., 2026),
+and REVE (El Ouahidi et al., 2026).
+
+1
+
+School of Computer Science and Technology, Tongji University, Shanghai, China 2 Translational Research Center, Shanghai
+Yangzhi Rehabilitation Hospital (Shanghai Sunshine Rehabilitation Center), China. Correspondence to: Jiangtong Li <jiangtongli@tongji.edu.cn>, Jie Li <jieli@tongji.edu.cn>.
+
+Despite the rapid progress of EEG-FMs, their evaluation
+practices remain fragmented. While foundation models aim for broad generalization among tasks and subjects, current evaluations often rely on task- or datasetspecific settings that contradict this goal. Existing studies
+benchmark models with inconsistent downstream datasets,
+
+Proceedings of the 43 rd International Conference on Machine
+Learning, Seoul, South Korea. PMLR 306, 2026. Copyright 2026
+by the author(s).
+
+1
+
+EEG-FM-Bench
+
+preprocessing pipelines, and evaluation protocols, rendering cross-architecture comparisons unreliable and masking
+true pre-training advances due to varying experimental setups (Lai et al., 2025). In practice, many methods compensate by introducing dataset-specific architectural and
+strategy tweaks, rather than learning representations that
+generalize across settings. For example, EEGPT (Wang
+et al., 2024) freezes the backbone with linear probe,
+REVE (El Ouahidi et al., 2026) employs two-stage finetuning, while CBraMod (Wang et al., 2025a) and CSBrain (Zhou et al., 2026) use fixed-size classifiers tailored to
+specific datasets. Moreover, existing evaluations rarely go
+beyond end-task metrics. Detailed technical analyses remain scarce, such as gradient relations across datasets, evolution of intermediate representations during fine-tuning,
+and identifying components that drive knowledge transfer.
+As a result, the mechanisms underlying pre-training efficacy
+remain unclear, particularly why scaling data often fails to
+yield proportional downstream gains (Jiang et al., 2024b).
+
+Mantis (Feofanov et al., 2025), and Moment (Goswami et al.,
+2024). To probe internal mechanisms, our benchmark employs visualization and quantitative tools, measuring model
+behavior and optimization dynamics through gradient cosine
+similarity, subspace affinity, Centered Kernel Alignment
+(CKA) (Kornblith et al., 2019), and Representational Similarity Analysis (RSA) (Kriegeskorte et al., 2008). This integrated design enables both standardized benchmarking and
+diagnostic analysis, helping diagnose where models succeed
+or fail across datasets and suggesting possible mechanisms
+behind these observed transfer behaviors.
+Our evaluation on EEG-FM-Bench yields several key observations: 1) Frozen-backbone transfer exhibits a substantial generalization gap, indicating that current pre-trained
+EEG representations are not yet sufficiently task-ready for
+direct downstream use. 2) Multi-task fine-tuning often improves robustness, consistent with a regularization effect
+and possible cross-task knowledge sharing, but it can also
+introduce negative transfer for certain paradigms, highlighting the need for better task grouping and conflict-aware
+optimization. 3) Richer classifier heads mainly benefit motor imagery tasks, whereas simpler pooling heads remain
+a more reliable default for most other paradigms alleviating overfitting issue. 4) Layer-wise analysis suggests that
+pre-training stabilizes the Transformer backbone and shifts
+a large part of the adaptation burden to the input embedding
+and normalization-related components. 5) Gradient analyses
+show weak alignment between reconstruction and classification objectives, suggesting that objective alignment and
+adaptation compatibility are important bottlenecks beyond
+nominal model or data scale. These findings motivate future
+EEG-FM development toward better pre-training objectives,
+more stable adaptation interfaces, and carefully designed
+multi-task learning rather than relying on scale alone. Our
+contributions can be summarized as:
+
+Recent studies have benchmarked subject transfer (Wu et al.,
+2025) and adaptation techniques like LoRA (Hu et al., 2022)
+for EEG-FMs (Lee et al., 2025). However, several important
+aspects remain underexplored, including multi-task capability, classifier configuration, pretraining efficiency, and
+internal model dynamics such as gradient flow and feature
+representations. Therefore, a unified benchmark is required
+to ensure fair comparison and provide diagnostic analyses,
+replacing fragmented results with interpretable insights.
+To address these issues, we introduce EEG-FM-Bench, a
+benchmark designed for the systematic and standardized
+evaluation of pretrained EEG-FMs. The benchmark integrates various downstream tasks, unified data processing pipelines, consistent evaluation protocols, and a
+rich set of analytical and visualization tools. All components are implemented within a unified open-source codebase to ensure reproducibility and fair comparison. Rather
+than optimizing for specific settings, this benchmark focuses on the general capabilities of EEG-FMs. Specifically,
+EEG-FM-Bench covers 14 datasets across 10 common EEG
+paradigms, including motor imagery, sleep staging, emotion recognition, disease diagnosis, and etc. It incorporates
+diverse configurations to assess pre-training quality and
+generalization: (1) three fine-tuning strategies (frozenbackbone, full-parameter, and LoRA (Hu et al., 2022)); (2)
+two task setups (single-task and multi-task); and (3) three
+classifier configuration (average pooling, attention pooling,
+and temporal-spatial-embedding dimension aggregation).
+
+• We introduce EEG-FM-Bench, an open-source evaluation suite for EEG-FMs, integrating standardized
+protocols, diverse tasks, and diagnostic tools for endto-end assessment.
+• We conduct an empirical study on SOTA EEG-FMs,
+establishing baselines to compare their performance
+and generalization across various fine-tuning strategies.
+• We analyze gradients and intermediate representations
+to identify potential pretraining bottlenecks and empirical architectural patterns that can inform future model
+and objective design.
+
+We evaluate seven pre-trained EEG-FMs and two general time-series models: BIOT (Yang et al., 2023),
+BENDR (Kostas et al., 2021), LaBraM (Jiang et al., 2024b),
+EEGPT (Wang et al., 2024), CBraMod (Wang et al., 2025a),
+CSBrain (Zhou et al., 2026), REVE (El Ouahidi et al., 2026),
+
+2. Related Works
+2.1. EEG Foundation Models
+Early efforts adapt techniques from other fields; for instance, BENDR (Kostas et al., 2021) applies contrastive
+2
+
+EEG-FM-Bench
+
+learning from speech processing, while others focus on
+masked signal modeling. These include BrainBERT (Wang
+et al., 2023), which operates on EEG spectrograms,
+and EEG2Rep (Mohammadi Foumani et al., 2024) and
+Brant (Zhang et al., 2023), which perform masking in the
+latent space. Regarding input tokenization, BIOT (Yang
+et al., 2023) introduces channel-independent methods for
+variable inputs, while LaBraM (Jiang et al., 2024b) and
+EEGFormer (Wan et al., 2023) utilize vector-quantized approaches for raw and frequency-domain signals. In terms of
+architecture, EEGPT (Wang et al., 2024) integrates spatiotemporal alignment, CBraMod (Wang et al., 2025a) uses
+criss-cross attention, and CSBrain (Zhou et al., 2026) proposes a cross-scale structure. REVE (El Ouahidi et al.,
+2026) scales up pre-training, refining objectives using layerwise features and employing 4D positional encodings. Furthermore, models like Brant-2 (Yuan et al., 2024) combine
+scalp with intracranial EEG, while LEAD (Wang et al.,
+2025b) targets clinical challenges such as Alzheimer’s disease. This rapid evolution complicates fair comparisons
+between approaches, highlighting the need for standardized
+benchmarks to evaluate and analyze progress.
+
+Raw
+EEG
+
+Configuration-based
+Multiple Model Adaptation
+
+Taska
+Taskb
+Taskc
+Frozen Backbone / LoRA
+Fine-tuning
+
+Standardized
+Data Preprocess
+LaBraM
+CBraMod
+…
+
+Classification Head
+Attention Pooling
+Large Compressing MLP
+
+General Time Series FM
+
+Multiple Support
+
+Multi-task Joint Training
+
+Qualitative Analysis
+
+Full-parameter Multi-task
+Fine-tuning
+
+Taska
+Taskb
+Taskc
+
+t-SNE
+
+Balanced Accuracy
+Weighted F1
+Cohen’s Kappa
+
+AUROC
+AUC-PR
+
+Optimization
+Dynamics
+
+Fair
+Comparison
+
+?
+From Scratch Training
+
+Taska
+Taskb
+Taskc
+Fine-tuning with Diff. Head Arch.
+
+Data
+
+Feature
+Discrimination
+
+Integ-Grads
+
+Taskb
+Taskc
+
+EEG
+FM
+
+Decision Basis
+
+Taska
+
+Evaluation Strategy
+
+Quantitative Analysis
+
+Analysis
+
+Figure 2. Overview of the EEG-FM-Bench framework. Data
+Management: A unified pipeline standardizes preprocessing
+across 14 datasets covering 10 canonical EEG paradigms. Configurable Evaluation: A configuration-based system facilitates
+flexible assessments by decoupling model backbones from decoder heads, supporting diverse fine-tuning strategies (e.g., frozenbackbone, LoRA, multi-task). Diagnostic Analyses: The platform
+provides both qualitative visualizations (e.g., decision basis, feature discrimination) and quantitative metrics to examine model
+performance and optimization dynamics.
+
+system comprises three core modules: Data Management,
+Configurable Evaluation, and Diagnostic Analyses. It
+employs a modular open-source structure with unified abstractions for datasets, backbones, classifiers, and training
+setups, ensuring that different EEG-FMs are evaluated under matched preprocessing and optimization conditions. Extending beyond downstream accuracy, the pipeline supports
+fine-tuning dynamics by coupling gradient-space geometry with representation-space similarity, enabling controlled
+comparisons across model initialization (scratch
+v.s. pre-trained), training phrase (pre-train v.s. finetune), training regime (single-task v.s. multi-task),
+and model component (patching v.s. transformer).
+
+2.2. EEG Benchmarks
+The BCI and broader EEG analysis communities contend
+with a reproducibility crisis, partly due to a lack of unifying
+standards. Early efforts, such as BCI competitions, provide
+public datasets and standardized metrics. Recent competitions continue this trend; for instance, BEETL (Wei et al.,
+2022) emphasizes transfer learning, while the EEG Foundation Challenge (Aristimunha et al., 2025) focuses on crosssubject cognitive tasks, though limited to the HBN dataset.
+MOABB (Jayaram & Barachant, 2018) offers an opensource evaluation platform, yet its scope restricts to specific
+paradigms like motor imagery, SSVEP, and P300. Other
+benchmarks target specific tasks or architectures, including
+denoising (EEGdenoiseNet (Zhang et al., 2021)), emotion
+recognition (LibEER (Liu et al., 2025)), Parkinson’s diagnosis (Avola et al., 2025), and GNNs (GNN4EEG (Zhang et al.,
+2024)). Specifically for EEG-FMs, AdaBrain-Bench (Wu
+et al., 2025) and Lee et al. (2025) benchmark subject transfer and adaptation techniques. However, these studies overlook critical aspects, including multi-task capability, classifier configuration, pre-training efficiency, and internal dynamics such as gradient flow. Consequently, a unified benchmark for current EEG-FMs is lacking. Such a resource is
+necessary to ensure reproducibility and provide a fair basis
+for comparing methodological innovations.
+
+3.1. Data Management
+Task and Dataset Curation. Our benchmark incorporates
+14 public datasets covering 10 canonical EEG paradigms,
+including motor imagery (BCIC-2a, PhysioMI, Mimul11), emotion recognition (SEED, SEED-V, SEED-VII),
+sleep stage classification (HMC), seizure detection (Siena),
+mental stress assessment (Workload), abnormal detection (TUAB), event type classification (TUEV), visual target
+detection (Things-EEG-2), Alzheimer’s Disease recognition (ADFTD), and slowing event classification (TUSL) (see
+Appx. A for more details). Through these diverse datasets,
+EEG-FM-Bench serves both as a ranking tool and a diagnostic instrument to identify architectural and representational
+weaknesses. The framework features an extensible API,
+enabling the integration of custom datasets and user-defined
+data assembly configurations.
+Standardized Data Processing. Since inconsistent processing leads to incomparable results, we implement a standardized pipeline applied across datasets. This pipeline
+comprises the following steps (see Appx. B.1 for details): 1.
+
+3. Benchmark Pipeline
+Fig. 2 provides an overview of the EEG-FM-Bench. Designed for fair, reproducible, and diagnostic evaluation, the
+3
+
+EEG-FM-Bench
+
+Selection: The system selects data based on specified event
+markers and channel sets. 2. Filtering: A band-pass filter
+(0.1–100 Hz) and a notch filter (50 or 60 Hz) remove noise
+while preserving signal information. 3. Resampling: Signals are downsampled to model-specific target rates based
+on their pretraining setting. 4. Segmentation: Continuous
+data is segmented into fixed-length windows (e.g., 4-second
+trials) and assigned to splits based on task-specific rules. 5.
+Splitting: Datasets are partitioned into three splits using a
+subject-independent strategy while preserving label distribution. For emotion recognition, a subject-dependent strategy
+aligns with common protocols. 6. Formatting: Processed
+samples are saved in efficient formats (“Parquet” for storage, “Arrow” for accelerated loading).
+Overlap-sensitive datasets. Some model-dataset pairs are
+overlap-sensitive because widely used downstream benchmarks may also appear in the pre-training corpora of released EEG-FMs. Specifically, LaBraM overlaps with
+SEED, while EEGPT overlaps with SEED and PhysioMI.
+We retain these datasets because they are standard reference
+points in the EEG literature and are important for continuity with prior work. However, we explicitly mark these
+overlap-sensitive cases in the results table and treat them as
+overlap-sensitive evidence rather than standalone evidence
+generalization. To avoid inflating aggregate comparisons,
+these overlapped model–dataset pairs are excluded from the
+overall performance calculation used in Fig. 1, and we avoid
+drawing conclusions from these subsets in isolation.
+
+• Multi-task setting. The model is fine-tuned on a mixture constructed from all downstream tasks, evaluating
+whether joint training improves generalization and benefits each paradigm. We employ resampling to mitigate
+dataset imbalance and stabilize optimization.
+Classifier heads. To decouple backbone capability from decoding inductive bias, we implement three classifier heads:
+• MLP with patch average pooling. We average pool
+patch-level features and apply an MLP classifier.
+• MLP with dimension compression. We apply a large
+MLP that reduces temporal, spatial, and embedding,
+testing whether a high-capacity improves performance.
+• MLP with attention pooling. We use attention pooling to aggregate patches into a global representation,
+enabling adaptive weighting and improving performance when discriminative features are sparse.
+3.3. Diagnostic Analyses
+We provide both standard performance evaluation and
+diagnostic analysis of fine-tuning dynamics.
+Performance Metrics. To address class imbalance, we
+select metrics including Balanced Accuracy, Weighted F1,
+AUROC, AUC-PR, and Cohen’s Kappa (see Appx. B.4 for
+detailed definition). Within our benchmark, Balanced Accuracy is used for all classification task, AUROC and AUC-PR
+are used for binary classification tasks, and Cohen’s Kappa
+and Weighted F1 are used to multi-class classification tasks.
+
+3.2. Configurable Evaluation
+
+Fine-tuning Dynamics Analysis. We analyze finetuning dynamics by linking gradient-space geometry
+with representation-space similarity across four settings:
+(1) initialization (scratch vs. pre-trained); (2)
+phase (pre-training vs. fine-tuning); (3) regime (singletask vs. multi-task); and (4) component (patching vs.
+transformer). At designated intervals, we collect parameter
+gradients and extract intermediate layer representations via
+forward hooks on fixed probe batches. To reduce memory
+overhead and ensure consistent comparisons, we compress
+gradients and features using CountSketch (Charikar et al.,
+2004) hashing projector with projection dimension 1024,
+followed by ℓ2 -normalization.
+
+We evaluate pre-trained EEG-FMs by structuring the design
+into three dimensions: fine-tuning strategy, task setup,
+and classifier head, which allows controlled ablations on
+adaptability, transfer, and decoding inductive bias, while
+keeping data processing and optimization across models.
+Fine-tuning strategies. We consider three strategies that
+probe different levels of parameter adaptation:
+• Frozen-backbone. Only the classifier head is trained
+while the backbone remains frozen. This evaluates the
+intrinsic quality of pre-trained representations.
+• Full-parameter. All model parameters are fine-tuned
+on downstream data, assessing how effectively pretrained features adapt to the target task distribution.
+• Parameter-efficient. The backbone is fine-tuned using LoRA, enabling efficient adaptation with fewer
+trainable parameters and reduced memory footprint.
+
+Gradient-space analysis. For each parameter group and
+each condition (initialization, dataset or training phrase), we
+compute alignment measures by cosine similarity between
+a ,gb ⟩
+projected gradient directions: cos(ga , gb ) = ∥g⟨g
+.
+a ∥2 ∥gb ∥2
+To capture the dominant subspace structure of optimization directions, we compute subspace affinity. For each
+condition, we construct a gradient matrix, apply PCA, and
+average the top singular values of the projection matrix
+Pk
+U ⊤ V : A = U ⊤ V, Affinity = k1 i=1 σi (A), where U
+and V denote the k-dimensional orthonormal bases for two
+conditions, and σi (·) is the i-th singular value. In detail,
+
+Task setups. To evaluate both within-task adaptation and
+cross-task knowledge sharing, each fine-tuning strategy can
+be instantiated under two task setups:
+• Single-task setting. The model is fine-tuned and evaluated on one downstream dataset at a time, reflecting
+the standard pre-training transfer protocol.
+4
+
+EEG-FM-Bench
+0.26
+±0.14
+
+TUAB
+
+0.15
+±0.11
+
+0.11
+±0.09
+
+0.20
+±0.09
+
+0.15
+±0.10
+
+ADFTD
+
+-0.01
+±0.02
+
+0.13
+±0.10
+
+0.42
+±0.16
+
+0.30
+±0.14
+
+TUEV
+
+0.01
+±0.02
+
+0.02
+±0.03
+
+0.13
+±0.10
+
+0.10
+±0.09
+
+SEED
+
+0.00
+±0.04
+
+0.06
+±0.05
+
+0.02
+±0.03
+
+HMC
+
+-0.00
+±0.03
+
+-0.01
+±0.03
+
+0.02
+±0.02
+
+-0.01
+±0.02
+
+PhysioMI
+
+0.02
+±0.02
+
+-0.02
+±0.02
+
+-0.01
+±0.02
+
+0.00
+±0.03
+
+ADFTD
+
+0.15
+±0.12
+
+TUEV
+
+0.35
+±0.16
+
+0.15
+±0.11
+
+SEED
+
+0.12
+±0.10
+
+0.11
+±0.09
+
+0.13
+±0.10
+
+HMC
+
+0.43
+±0.16
+
+0.20
+±0.09
+
+0.42
+±0.16
+
+0.13
+±0.10
+
+PhysioMI
+
+0.26
+±0.14
+
+0.15
+±0.10
+
+0.30
+±0.14
+
+0.10
+±0.09
+
+-0.01
+±0.02
+
+0.01
+±0.02
+
+0.00
+±0.04
+
+-0.00
+±0.03
+
+0.02
+±0.02
+
+TUAB
+
+0.39
+±0.12
+
+0.21
+±0.23
+
+0.02
+±0.03
+
+0.06
+±0.05
+
+-0.01
+±0.03
+
+-0.02
+±0.02
+
+ADFTD
+
+0.21
+±0.23
+
+0.02
+±0.03
+
+0.02
+±0.02
+
+-0.01
+±0.02
+
+TUEV
+
+0.56
+±0.26
+
+0.25
+±0.20
+
+-0.01
+±0.02
+
+0.00
+±0.03
+
+SEED
+
+0.09
+±0.20
+
+0.12
+±0.16
+
+0.11
+±0.19
+
+HMC
+
+0.70
+±0.21
+
+0.33
+±0.20
+
+0.67
+±0.22
+
+0.03
+±0.23
+
+PhysioMI
+
+0.50
+±0.21
+
+0.24
+±0.17
+
+0.56
+±0.23
+
+0.02
+±0.19
+
+-0.01
+±0.02
+
+0.56
+±0.26
+
+0.09
+±0.20
+
+0.70
+±0.21
+
+0.50
+±0.21
+
+TUAB
+
+0.25
+±0.20
+
+0.12
+±0.16
+
+0.33
+±0.20
+
+0.24
+±0.17
+
+ADFTD
+
+0.12
+±0.10
+
+0.11
+±0.19
+
+0.67
+±0.22
+
+0.56
+±0.23
+
+TUEV
+
+0.20
+±0.09
+
+0.10
+±0.10
+
+0.03
+±0.23
+
+0.02
+±0.19
+
+SEED
+
+0.04
+±0.09
+
+0.02
+±0.08
+
+0.05
+±0.09
+
+HMC
+
+0.24
+±0.11
+
+0.15
+±0.09
+
+0.24
+±0.11
+
+0.03
+±0.09
+
+PhysioMI
+
+0.08
+±0.10
+
+0.10
+±0.09
+
+0.22
+±0.11
+
+0.05
+±0.10
+
+0.66
+±0.19
+
+0.12
+±0.10
+
+0.20
+±0.09
+
+0.04
+±0.09
+
+0.24
+±0.11
+
+0.08
+±0.10
+
+TUAB
+
+0.10
+±0.10
+
+0.02
+±0.08
+
+0.15
+±0.09
+
+0.10
+±0.09
+
+ADFTD
+
+0.31
+±0.19
+
+0.05
+±0.09
+
+0.24
+±0.11
+
+0.22
+±0.11
+
+TUEV
+
+0.54
+±0.27
+
+0.35
+±0.22
+
+0.03
+±0.09
+
+0.05
+±0.10
+
+SEED
+
+0.34
+±0.21
+
+0.22
+±0.20
+
+0.31
+±0.20
+
+HMC
+
+0.69
+±0.20
+
+0.48
+±0.17
+
+0.69
+±0.23
+
+0.35
+±0.24
+
+PhysioMI
+
+0.53
+±0.23
+
+0.39
+±0.20
+
+0.58
+±0.26
+
+0.27
+±0.21
+
+TEMPORAL EMBED
+
+0.43
+±0.16
+
+POS EMBED
+
+0.12
+±0.10
+
+MLP
+
+ATTENTION
+
+0.35
+±0.16
+
+NORM
+
+0.15
+±0.12
+
+TUAB
+
+0.31
+±0.19
+
+0.54
+±0.27
+
+0.34
+±0.21
+
+0.69
+±0.20
+
+0.53
+±0.23
+
+0.35
+±0.22
+
+0.22
+±0.20
+
+0.48
+±0.17
+
+0.39
+±0.20
+
+0.31
+±0.20
+
+0.69
+±0.23
+
+0.58
+±0.26
+
+0.35
+±0.24
+
+0.27
+±0.21
+
+1.00
+0.75
+0.50
+0.25
+
+0.27
+±0.09
+
+0.72
+±0.20
+
+0.00
+−0.25
+
+0.72
+±0.20
+
+−0.75
+
+Ph
+
+ys
+
+H
+
+io
+
+M
+
+M
+
+I
+
+C
+
+ED
+
+EV
+
+D
+
+TU
+
+FT
+
+TU
+A
+
+A
+
+Ph
+
+SE
+
+B
+
+D
+
+I
+
+C
+
+M
+
+M
+H
+
+io
+
+EV
+
+ED
+
+0.27
+±0.09
+
+ys
+
+D
+
+TU
+
+FT
+
+TU
+A
+
+A
+
+Ph
+
+SE
+
+B
+
+D
+
+I
+
+C
+
+M
+
+M
+H
+
+io
+
+EV
+
+ED
+
+0.66
+±0.19
+
+ys
+
+D
+
+TU
+
+FT
+
+TU
+A
+
+A
+
+SE
+
+B
+
+D
+
+I
+
+C
+
+M
+
+M
+
+io
+
+H
+
+Ph
+
+ys
+
+EV
+
+-0.01
+±0.02
+
+ED
+SE
+
+TU
+
+B
+
+D
+FT
+D
+
+TU
+A
+
+A
+
+I
+M
+io
+Ph
+
+ys
+
+H
+
+M
+
+C
+
+ED
+SE
+
+TU
+
+B
+
+D
+FT
+D
+A
+
+TU
+A
+
+EV
+
+−0.50
+
+0.39
+±0.12
+
+Figure 3. Cross-task gradient correlation analysis. The heatmaps visualize the pairwise cosine similarity of gradients between different
+tasks across specific model components, revealing how tasks interact during optimization. Best viewed via zoom-in.
+
+0.14
+±0.05
+
+0.14
+±0.04
+
+0.12
+±0.04
+
+PhysioMI
+
+0.14
+±0.03
+
+0.16
+±0.04
+
+0.20
+±0.04
+
+0.25
+±0.05
+
+0.40
+±0.05
+
+0.19
+±0.04
+
+0.14
+±0.04
+
+0.20
+±0.04
+
+TUEV
+
+0.51
+±0.05
+
+0.43
+±0.04
+
+0.12
+±0.04
+
+0.25
+±0.05
+
+SEED
+
+0.48
+±0.04
+
+0.43
+±0.04
+
+0.47
+±0.04
+
+HMC
+
+0.53
+±0.06
+
+0.44
+±0.04
+
+0.53
+±0.06
+
+0.47
+±0.04
+
+PhysioMI
+
+0.51
+±0.05
+
+0.42
+±0.04
+
+0.52
+±0.05
+
+0.45
+±0.05
+
+0.13
+±0.05
+
+0.13
+±0.05
+
+0.47
+±0.04
+
+0.53
+±0.06
+
+0.52
+±0.05
+
+0.47
+±0.04
+
+0.45
+±0.05
+
+0.5
+
+0.4
+
+0.3
+
+0.55
+±0.05
+
+0.2
+
+0.1
+
+0.0
+
+0.55
+±0.05
+io
+M
+I
+
+0.14
+±0.03
+
+0.42
+±0.04
+
+ys
+
+HMC
+
+0.40
+±0.05
+
+0.44
+±0.04
+
+C
+
+0.19
+±0.04
+
+0.43
+±0.04
+
+0.6
+
+Ph
+
+C
+
+0.15
+±0.04
+
+0.43
+±0.04
+
+ED
+
+0.36
+±0.04
+
+M
+
+0.13
+±0.03
+
+0.51
+±0.05
+
+M
+
+0.40
+±0.05
+
+io
+M
+I
+
+SEED
+
+0.53
+±0.06
+
+H
+
+0.39
+±0.05
+
+H
+
+0.36
+±0.04
+
+0.48
+±0.04
+
+SE
+
+0.41
+±0.05
+
+ys
+
+0.43
+±0.08
+
+0.51
+±0.05
+
+EV
+
+PhysioMI
+
+Ph
+
+0.15
+±0.04
+
+TU
+
+0.43
+±0.08
+
+ED
+
+0.13
+±0.03
+
+D
+
+0.49
+±0.07
+
+EV
+
+TUEV
+
+FT
+
+0.44
+±0.08
+
+SE
+
+TU
+
+D
+FT
+
+A
+
+B
+D
+
+TU
+
+A
+
+C
+M
+
+io
+M
+I
+
+H
+
+Ph
+
+ys
+
+EV
+
+ED
+SE
+
+TU
+
+D
+
+A
+
+FT
+D
+
+TU
+
+A
+
+0.40
+±0.05
+
+D
+
+0.49
+±0.07
+
+0.01
+±0.00
+
+0.49
+±0.07
+
+A
+
+HMC
+
+0.43
+±0.05
+
+B
+
+0.47
+±0.09
+
+ADFTD
+
+A
+
+0.00
+±0.00
+
+0.09
+±0.04
+
+0.47
+±0.09
+
+0.43
+±0.05
+
+TU
+
+0.46
+±0.07
+
+0.16
+±0.04
+
+TEMPORAL EMBED
+
+0.47
+±0.06
+
+0.14
+±0.05
+
+C
+
+SEED
+
+0.15
+±0.04
+
+io
+M
+I
+
+0.00
+±0.00
+
+0.15
+±0.04
+
+ys
+
+0.01
+±0.00
+
+MLP
+
+0.48
+±0.09
+
+0.01
+±0.00
+
+0.14
+±0.03
+
+Ph
+
+0.00
+±0.00
+
+0.07
+±0.03
+
+0.51
+±0.08
+
+TUAB
+
+ED
+
+0.00
+±0.00
+
+0.09
+±0.03
+
+TUEV
+
+0.14
+±0.03
+
+M
+
+0.00
+±0.00
+
+0.06
+±0.03
+
+0.00
+±0.00
+
+0.14
+±0.03
+
+H
+
+PhysioMI
+
+0.08
+±0.04
+
+0.01
+±0.00
+
+0.13
+±0.03
+
+SE
+
+0.01
+±0.00
+
+PhysioMI
+
+0.01
+±0.00
+
+0.13
+±0.03
+
+EV
+
+0.01
+±0.00
+
+ADFTD
+
+TU
+
+0.01
+±0.00
+
+0.39
+±0.05
+
+D
+
+0.01
+±0.00
+
+0.44
+±0.08
+
+FT
+
+HMC
+
+0.46
+±0.07
+
+B
+
+0.09
+±0.04
+
+0.09
+±0.03
+
+0.48
+±0.09
+
+A
+
+0.01
+±0.00
+
+0.13
+±0.03
+
+0.50
+±0.07
+
+D
+
+0.02
+±0.01
+
+0.09
+±0.04
+
+ADFTD
+
+TU
+
+0.01
+±0.00
+
+0.14
+±0.04
+
+0.00
+±0.00
+
+0.14
+±0.03
+
+A
+
+SEED
+
+HMC
+
+0.01
+±0.00
+
+POS EMBED
+
+0.07
+±0.03
+
+0.09
+±0.03
+
+0.02
+±0.01
+
+C
+
+0.09
+±0.03
+
+0.09
+±0.03
+
+0.01
+±0.00
+
+io
+M
+I
+
+0.01
+±0.00
+
+TUAB
+
+ys
+
+0.01
+±0.00
+
+0.41
+±0.05
+
+Ph
+
+TUEV
+
+0.49
+±0.07
+
+ED
+
+0.09
+±0.03
+
+0.47
+±0.06
+
+M
+
+0.13
+±0.03
+
+0.51
+±0.08
+
+H
+
+0.09
+±0.03
+
+0.50
+±0.07
+
+EV
+
+0.01
+±0.00
+
+0.11
+±0.04
+
+TUAB
+
+SE
+
+ADFTD
+
+SEED
+
+0.00
+±0.00
+
+TU
+
+0.06
+±0.03
+
+0.08
+±0.03
+
+0.01
+±0.00
+
+D
+
+0.09
+±0.04
+
+0.12
+±0.04
+
+0.01
+±0.00
+
+FT
+
+0.09
+±0.03
+
+TUEV
+
+0.01
+±0.00
+
+B
+
+0.08
+±0.03
+
+0.10
+±0.04
+
+0.01
+±0.00
+
+A
+
+TUAB
+
+D
+
+0.08
+±0.04
+
+TU
+
+0.14
+±0.04
+
+A
+
+0.11
+±0.04
+
+ADFTD
+
+B
+
+ATTENTION
+
+0.12
+±0.04
+
+NORM
+
+0.10
+±0.04
+
+TUAB
+
+Figure 4. Cross-task subspace affinity analysis. This metric quantifies the geometric alignment of optimization subspaces among tasks,
+indicating the extent to which different tasks share a common optimization direction within each component. Best viewed via zoom-in.
+
+H = In − n1 1n 1⊤
+n (1n is an n-dimensional vector of ones):
+
+subspace affinity is computed from a rank-6 PCA basis, as
+rank 6 captures most variation in model-space affinity and
+higher ranks yield saturated estimates.
+We further quantify gradient conflicts using a metric inspired by PCGrad (Yu et al., 2020). For paired conditions,
+we compare gradients at aligned steps, identifying conflicts where the cosine similarity is negative: Conflict =
+I[cos(ga , gb ) < 0]. Conflict frequency is the empirical
+mean over samples, while the mean conflict angle is derived from these negative cosine values.
+We also analyze the distribution of gradient energy across
+parameter groups. The energy proportion Eaxis,G for a specific condition and parameter group G is defined as:
+(t)
+2
+t ∥gaxis,G ∥2
+,
+P
+(t)
+G′ ∈ G t∥gaxis,G′ ∥22
+
+HSIC(KX , KY ) =
+
+(2)
+
+where tr(·) denotes the matrix trace operator. CKA normalizes HSIC to achieve scale invariance:
+CKA(X,Y ) = p
+
+HSIC(KX ,KY )
+HSIC(KX ,KX )·HSIC(KY ,KY )
+
+. (3)
+
+RSA quantifies the similarity of representations from two
+models via representational dissimilarity matrices (RDMs).
+For a representation matrix X ∈ Rn×d , we compute the
+RDM using sample-wise Pearson correlation:
+
+P
+
+Eaxis,G = P
+
+1
+tr(KX HKY H),
+(n − 1)2
+
+RDMij = 1 − corrPear (xi , xj ).
+
+(1)
+
+(4)
+
+We extract the upper triangular elements of the RDMs and
+compute the Spearman correlation between them:
+
+where G is the set of all parameter groups, and t denotes the
+training step. This distribution highlights which parameter
+groups dominate the gradient updates.
+
+RSA(X,Y ) = CorrSpear (vec(RDMX ),vec(RDMY )) . (5)
+This provides a similarity metric for layer-wise or conditionaware feature evolvement comparison.
+
+Representation-space analysis. Representations are extracted from model layers using fixed probe batches, with
+their similarity quantified via Centered Kernel Alignment
+(CKA) and Representational Similarity Analysis (RSA).
+For CKA, we compute linear kernels KX = XX ⊤ and
+KY = Y Y ⊤ for representations X, Y ∈ Rn×d , where
+n is the sample size and d is the feature dimension. We
+then calculate the Hilbert-Schmidt Independence Criterion
+(HSIC) (Freiwald & Tsao, 2010) using the centering matrix
+
+Probing protocol. All analyses are conducted during finetuning with fixed budget. Every n steps, we probe gradients and representations using pre-sampled batches fixed
+throughout the run. This ensures consistent inputs for comparisons across optimization process and conditions (e.g.,
+scratch vs. pre-trained). We repeat the procedure across 10
+random seeds and report aggregated statistics.
+5
+
+EEG-FM-Bench
+SEED-VII
+
+SEED
+
+75%
+Workload
+29%
+62%
+72%
+27%
+57%
+46%
+77%
+68% 52%
+25%
+43%
+73%
+40% 23%65%47% 69%
+TUEV
+36%
+65%
+57%52%
+72%76%
+46%40%
+62%67%
+
+BCIC-2A
+ADFTD
+
+80%80%
+35%30%
+81%82%
+45%40%
+57%
+71%
+TUAB
+59% 44%72%74% 72%
+62% 46%
+72%
+78%
+76%
+65%
+73%
+48%
+82%
+80%
+THINGS
+50%
+86%
+HMC
+84%
+
+SEED-V
+
+EEG 2
+Mimul-11
+
+TUSL
+
+SEED-VII
+
+PhysioMI
+
+Siena
+
+SEED
+
+ADFTD
+
+80%80%
+35%30%
+81%82%
+45%40%
+57%
+71%
+TUAB
+59% 44%72%74% 72%
+62% 46%
+72%
+78%
+76%
+65%
+73%
+48%
+82%
+80%
+THINGS
+50%
+86%
+HMC
+84%
+
+TUSL
+
+CBRAMOD
+
+SEED
+
+SEED
+
+75%
+Workload
+29%
+62%
+72%
+27%
+57%
+46%
+77%
+68% 52%
+43% 25%
+73%
+ADFTD 57% 40%36%23%65%47%65%69% 76% TUEV
+52%46%
+72%
+40%
+62%67%
+80%80%
+35%30%
+81%82%
+45%40%
+57%
+71%
+SEED-V
+TUAB
+59% 44%72%74% 72%
+62% 46%
+78% 72%
+76%
+65%
+73%
+48%
+82%
+80%
+THINGS
+50%
+86%
+HMC
+84%
+
+BCIC-2A
+
+EEG 2
+Mimul-11
+
+TUSL
+
+SEED-VII
+
+PhysioMI
+
+Siena
+
+EEG 2
+Mimul-11
+
+Siena
+
+SEED-VII
+
+PhysioMI
+
+Single-Task Full-Parameter
+
+TUSL
+
+SEED
+
+77%
+Workload
+29%
+61%
+67%
+26%
+53%
+46%
+79%
+57% 45%
+42% 22%
+69%
+ADFTD 57% 37%32%19%47%36%49%59% 79% TUEV
+52%46%
+64%
+41%
+36%50%
+59%67%
+34%28%
+75%84%
+45%39%
+53%
+37%
+SEED-V
+TUAB
+56% 37%53%61% 50%
+59% 40%
+63%
+70%
+64%
+61%
+76%
+43%
+78%
+75%
+THINGS
+46%
+87%
+HMC
+86%
+
+EEG 2
+Mimul-11
+
+TUSL
+
+Siena
+
+EEG 2
+Mimul-11
+
+REVE
+
+SEED-VII
+
+SEED
+
+PhysioMI
+
+BCIC-2A
+
+77%
+Workload
+29%
+61%
+67%
+26%
+53%
+46%
+79%
+57% 45%
+42% 22%
+69%
+ADFTD 57% 37%32%19%47%36%49%59% 79% TUEV
+52%46%
+64%
+41%
+36%50%
+59%67%
+34%28%
+75%84%
+45%39%
+53%
+37%
+SEED-V
+TUAB
+56% 37%53%61% 50%
+59% 40%
+63%
+70%
+64%
+61%
+76%
+43%
+78%
+75%
+THINGS
+46%
+87%
+HMC
+86%
+
+EEG 2
+Mimul-11
+
+Finetune from Scratch
+Finetune from Pretrained
+
+Multi-Task Full-Parameter
+
+Siena
+
+TUSL
+
+CBRAMOD
+
+CSBRAIN
+
+Siena
+
+PhysioMI
+
+77%
+Workload
+29%
+61%
+67%
+26%
+53%
+46%
+79%
+57% 45%
+42% 22%
+69%
+ADFTD 57% 37%32%19%47%36%49%59% 79% TUEV
+52%46%
+64%
+41%
+36%50%
+59%67%
+34%28%
+75%84%
+45%39%
+53%
+37%
+SEED-V
+TUAB
+56% 37%53%61% 50%
+59% 40%
+63%
+64% 70%
+61%
+76%
+43%
+78%
+75%
+THINGS
+46%
+87%
+HMC
+86%
+
+PhysioMI
+
+BCIC-2A
+
+75%
+Workload
+29%
+62%
+72%
+27%
+57%
+46%
+77%
+68% 52%
+43% 25%
+73%
+ADFTD 57% 40%36%23%65%47%65%69% 76% TUEV
+52%46%
+72%
+40%
+62%67%
+80%80%
+35%30%
+81%82%
+45%40%
+57%
+71%
+SEED-V
+TUAB
+59% 44%72%74% 72%
+62% 46%
+78% 72%
+76%
+65%
+73%
+48%
+82%
+80%
+THINGS
+50%
+86%
+HMC
+84%
+
+CSBRAIN
+
+Siena
+
+SEED
+
+BCIC-2A
+
+LABRAM
+
+BCIC-2A
+
+EEG 2
+Mimul-11
+
+TUSL
+
+SEED-VII
+
+PhysioMI
+
+77%
+Workload
+29%
+61%
+67%
+26%
+53%
+46%
+79%
+57% 45%
+42% 22%
+69%
+ADFTD 57% 37%32%19%47%36%49%59% 79% TUEV
+52%46%
+64%
+41%
+36%50%
+59%67%
+34%28%
+75%84%
+45%39%
+53%
+37%
+SEED-V
+TUAB
+56% 37%53%61% 50%
+59% 40%
+63%
+64% 70%
+61%
+76%
+43%
+78%
+75%
+THINGS
+46%
+87%
+HMC
+86%
+
+SEED-V
+
+EEG 2
+Mimul-11
+
+SEED
+
+BCIC-2A
+
+75%
+Workload
+29%
+62%
+72%
+27%
+57%
+46%
+77%
+68% 52%
+25%
+43%
+73%
+40% 23%65%47% 69%
+TUEV
+36%
+65%
+57%52%
+72%76%
+46%40%
+62%67%
+
+BCIC-2A
+
+LABRAM
+SEED-VII
+
+SEED-VII
+
+PhysioMI
+
+TUSL
+
+Siena
+
+REVE
+Mantis
+Moment
+
+Figure 6. Performance comparison between fine-tuning from
+scratch (red) and from pre-trained model (blue). General timeseries models are included for reference. Best viewed via zoom-in.
+
+Figure 5. Performance comparison between single-task and multitask fine-tuning on 14 downstream tasks. Best viewed via zoom-in.
+
+4. Experiment and Analysis
+(e.g., PhysioMI and BCIC-2A) and visual target detection
+(THINGS-EEG2), where single-task baselines can occasionally outperform joint training. These results suggest that
+multi-task supervision is a useful regularizer, but its benefit
+depends on task compatibility and may require task balancing or conflict-aware optimization.
+Mechanism Analysis: Gradient and Subspace Dynamics. We examine optimization dynamics via gradient alignment and feature space geometry to explain the multi-task
+generalizability. Using LaBraM (others in Appx. D) as
+a case, we compute inter-task gradient Correlation and
+Subspace Affinity across model components. Figures 3
+and 4 show that Normalization and Temporal Embedding layers exhibit consistently high gradient correlations.
+This suggests these components learn task-agnostic temporal dynamics shared across datasets. Conversely, MLP
+and Attention layers show lower affinity, implying they
+capture task-specific patterns. High correlation in shared
+components aligns optimization of fundamental extractors,
+preventing the model from collapsing into task-specific local minima. Thus, we recommend multi-task joint training
+as a strong default when tasks are compatible and labeled
+datasets can be pooled, while treating task grouping and
+conflict mitigation as important under large discrepancies.
+
+4.1. Experiment Setup
+All models are evaluated within the EEG-FM-Bench framework. For each experiment, a classifier head is attached to
+the EEG-FM for downstream tasks. We report the mean and
+standard deviation across five independent runs with different random seeds. For analysis, we use 32 fixed batches to
+probe gradients and intermediate representations throughout
+the training budget. Unless otherwise mentioned, all the results are reported under multi-task, full-parameter, average
+pooling decoder with pretrained EEG-FMs. See Appx. B
+for implementation details; Appx. C, D for detailed results and analysis; Appx. E for detailed visualization.
+4.2. Impact of Task Organization
+Performance Comparison. Standard fine-tuning isolates
+downstream datasets, often missing cross-task knowledge
+sharing. Therefore, we compare two strategies: (1) SingleTask, where models are fine-tuned on each dataset individually; and (2) Multi-Task, where models are fine-tuned
+jointly on a mixture of all tasks. Fig. 5 presents the performance comparison across four representative models using
+radar charts. First, multi-task learning (blue) improves many
+model-dataset pairs and is especially helpful for small or
+unstable datasets (e.g., ADFTD), where isolated single-task
+optimization is more prone to variance and overfitting. However, the improvement is not uniform. Negative transfer
+appears in specific paradigms, particularly motor imagery
+
+4.3. Impact of Pre-training
+Performance Benchmarking: EEG-FMs vs. TimeFMs. We evaluate pre-training utility by comparing three
+6
+
+EEG-FM-Bench
+
+0 .4
+
+5
+6
+
+0 .3
+
+7
+0 .2
+
+8
+
+0 .1
+
+10
+
+POS EMBED
+
+TEMPORAL EMBED
+
+ATTENTION
+
+MLP
+
+NORM
+
+5
+
+0.2
+
+6
+7
+
+0.0
+
+8
+
+−0.2
+
+10
+
+Step
+
+4
+
+0
+
+2
+51
+
+46
+
+2
+
+40
+
+8
+
+35
+
+24
+
+16
+
+2
+
+4
+
+51
+
+46
+
+0
+
+2
+
+40
+
+35
+
+0
+
+8
+28
+
+6
+
+HEAD
+
+0
+
+11
+
+11
+
+500
+
+24
+
+400
+
+8
+
+Step
+
+300
+
+17
+
+200
+
+12
+
+100
+
+64
+
+0
+
+16
+
+0.0
+
+0.4
+
+4
+
+9
+
+9
+
+0.2
+
+3
+
+28
+
+0.4
+
+4
+
+0.6
+
+2
+
+8
+
+0.6
+
+0 .5
+
+3
+
+6
+
+0.8
+
+2
+
+12
+
+0.0
+1.0
+
+1
+
+17
+
+0.4
+
+0
+0 .6
+
+64
+
+0.6
+
+1
+
+Transformer Layer
+
+0
+
+Transformer Layer
+
+Scratch
+
+0.8
+
+0.2
+
+Pretrained
+
+RSA Layer × Step Representation Alignment
+
+CKA Layer × Step Representation Alignment
+
+1.0
+
+Step
+
+Figure 7. Evolution of optimization dynamics during fine-tuning. Left: Relative gradient norm intensity across modules for Scratch vs.
+Pre-trained settings. Mid and Right: Layer-wise CKA and RSA between Scratch and Pre-trained models over training steps, showing
+representational convergence. Best viewed via zoom-in.
+ADFTD
+
+-0.01
+±0.03
+
+0.01
+±0.03
+
+0.08
+±0.16
+
+0.01
+±0.05
+
+0.08
+±0.12
+
+HMC
+
+-0.01
+±0.04
+
+-0.00
+±0.03
+
+0.01
+±0.24
+
+0.01
+±0.10
+
+-0.04
+±0.19
+
+PhysioMI
+
+0.00
+±0.03
+
+0.00
+±0.02
+
+0.01
+±0.18
+
+-0.01
+±0.04
+
+0.01
+±0.16
+
+ADFTD
+
+0.56
+±0.25
+
+0.34
+±0.24
+
+0.44
+±0.25
+
+0.44
+±0.25
+
+0.41
+±0.25
+
+HMC
+
+0.69
+±0.23
+
+0.50
+±0.25
+
+0.47
+±0.25
+
+0.53
+±0.25
+
+0.59
+±0.25
+
+PhysioMI
+
+0.34
+±0.24
+
+0.53
+±0.25
+
+0.53
+±0.25
+
+0.59
+±0.25
+
+0.50
+±0.25
+
+0.47
+±0.25
+
+0.34
+±0.24
+
+0.50
+±0.25
+
+0.47
+±0.25
+
+0.44
+±0.25
+
+0.50
+
+SEED
+
+TUAB
+
+0.53
+±0.25
+
+0.59
+±0.25
+
+0.41
+±0.25
+
+0.56
+±0.25
+
+0.38
+±0.24
+
+0.40
+
+TUEV
+
+0.38
+±0.24
+
+0.56
+±0.25
+
+0.50
+±0.25
+
+0.44
+±0.25
+
+0.41
+±0.25
+
+0.08
+0.06
+
+SEED-VII
+
+0.70
+
+76%
+Workload
+29%
+61%
+69%
+26%
+53%
+46%
+78%
+61% 45%
+24%
+42%
+71%
+ADFTD 57% 38%33%21%54%37%57%64% 78% TUEV
+52%48%
+67%
+43%
+46%57%
+76%78%
+34%28%
+80%82%
+45%39%
+53%
+53%
+SEED-V
+TUAB
+56% 38%49%61% 60%
+59% 41%
+67%
+62% 70%
+61%
+74%
+44%
+78%
+74%
+THINGS
+46%
+87%
+HMC
+87%
+
+0.35
+
+D
+
+EEG 2
+Mimul-11
+
+BE
+EM
+L
+
+AT
+T
+
+EN
+TI
+
+O
+
+D
+
+D
+BE
+
+BE
+
+EM
+
+EM
+L
+
+TE
+
+M
+
+PO
+
+RA
+
+PO
+
+S
+
+O
+N
+
+O
+TI
+EN
+AT
+T
+
+Parameter Group
+
+−0.04
+
+D
+
+0.07
+±0.16
+
+BE
+
+0.02
+±0.07
+
+RA
+
+0.03
+±0.18
+
+PO
+
+-0.00
+±0.02
+
+0.45
+
+M
+
+TUEV
+
+0.01
+±0.03
+
+−0.02
+
+O
+RM
+
+0.05
+±0.15
+
+EM
+
+0.00
+±0.04
+
+PO
+S
+
+0.03
+±0.17
+
+0.55
+
+Parameter Group
+
+SEED-VII
+
+Figure 8. Gradient alignment between pre-training and downstream tasks. Left: Cosine similarity of gradients derived from
+Reconstruction and Classification losses. Right: Probability of
+gradient conflicts (sign disagreement). Best viewed via zoom-in.
+
+SEED
+
+EEG 2
+Mimul-11
+
+SEED-VII
+
+76%
+Workload
+29%
+61%
+69%
+26%
+53%
+46%
+78%
+61% 45%
+24%
+42%
+71%
+ADFTD 57% 38%33%21%54%37%57%64% 78% TUEV
+52%48%
+67%
+43%
+46%57%
+76%78%
+34%28%
+80%82%
+45%39%
+53%
+53%
+SEED-V
+TUAB
+56% 38%49%61% 60%
+59% 41%
+67%
+62% 70%
+61%
+74%
+44%
+78%
+74%
+THINGS
+46%
+87%
+HMC
+87%
+
+paradigms: scratch, pre-trained checkpoints, and general
+time-series models (Mantis, Moment). As shown in Fig. 6,
+pre-training (blue) generally outperforms training from
+scratch (red), especially on complex tasks such as SEED-V
+and BCIC-2A, indicating that pre-trained EEG-FMs usually
+provide a stronger initialization. However, the performance
+gap varies across datasets and can be narrow in selected
+cases, suggesting that the learned representations are not
+uniformly task-ready. Moreover, general time-series models achieve competitive performance on some tasks despite
+being trained on non-EEG data, indicating that part of the
+transferable structure may come from generic temporal modeling rather than EEG-specific pre-training alone.
+Optimization Dynamics. We visualize LaBraM’s training
+dynamics to explain pre-training advantages. We monitor gradient norms and representational similarity every 16
+steps on a controlled fine-tuning subset. Fig. 7 (left) shows
+the gradient norm intensity. In Pre-trained settings, optimization focuses on the Temporal Embedding (green area),
+while the backbone (Attention, MLP, Norm) remains stable. In contrast, Scratch requires intensive optimization
+across all components. This indicates pre-training stabilizes
+the Transformer backbone for sequence modeling. Therefore, fine-tuning primarily adapts the Temporal Embedding
+to bridge the gap between raw signals and latent space.
+Figs. 7 (mid) and (right) track representational evolution
+via CKA and RSA, showing progressively increasing align-
+
+EEG 2
+Mimul-11
+
+TUSL
+
+Siena
+
+SEED
+
+PhysioMI
+
+76%
+Workload
+29%
+61%
+69%
+26%
+53%
+46%
+78%
+61% 45%
+24%
+42%
+71%
+ADFTD 57% 38%33%21%54%37%57%64% 78% TUEV
+52%48%
+67%
+43%
+46%57%
+76%78%
+34%28%
+80%82%
+45%39%
+53%
+53%
+SEED-V
+TUAB
+56% 38%49%61% 60%
+59% 41%
+67%
+62% 70%
+61%
+74%
+44%
+78%
+74%
+THINGS
+46%
+87%
+HMC
+87%
+
+Siena
+
+CSBRAIN
+Frozen
+
+TUSL
+
+CBRAMOD
+
+PhysioMI
+
+BCIC-2A
+
+PhysioMI
+
+76%
+Workload
+29%
+61%
+69%
+26%
+53%
+46%
+78%
+61% 45%
+24%
+42%
+71%
+ADFTD 57% 38%33%21%54%37%57%64% 78% TUEV
+52%48%
+67%
+43%
+46%57%
+76%78%
+34%28%
+80%82%
+45%39%
+53%
+53%
+SEED-V
+TUAB
+56% 38%49%61% 60%
+59% 41%
+67%
+62% 70%
+61%
+74%
+44%
+78%
+74%
+THINGS
+46%
+87%
+HMC
+87%
+
+Siena
+
+TUSL
+
+SEED
+
+BCIC-2A
+
+LABRAM
+
+TE
+
+-0.01
+±0.03
+
+N
+
+-0.01
+±0.03
+
+N
+
+TUAB
+
+0.00
+
+LP
+
+0.02
+±0.17
+
+M
+
+-0.02
+±0.08
+
+Dataset
+
+-0.04
+±0.19
+
+LP
+
+0.00
+±0.03
+
+RM
+
+0.00
+±0.04
+
+N
+
+SEED
+
+M
+
+Dataset
+
+0.02
+
+SEED-VII
+
+PhysioMI
+
+BCIC-2A
+
+0.65
+0.60
+
+0.04
+
+SEED
+
+BCIC-2A
+
+EEG 2
+Mimul-11
+
+TUSL
+
+Siena
+
+REVE
+LoRA
+
+Full-parameter
+
+Figure 9. Performance comparison among fine-tuning strategies.
+
+ment scores among fine-tuning. CKA shows strengthening
+structural correspondence, while RSA indicates converging
+sample geometry. Therefore, the multi-task fine-tuning acts
+as a attractor, guiding the scratch model to align representations with the pre-trained model, validating the robustness
+of the learned features. Notably, CSBrain tends to collapse
+under the scratch setting (see Appx. D for detailed analysis).
+Inefficiency in Pre-training: Gradient Analysis. Performance gains of EEG-FMs are often not proportional
+to the pre-training data scale. We investigate this inefficiency by analyzing gradient alignment between pretraining (Masked Reconstruction, MSE) and downstream
+(Classification, Cross-Entropy) objectives on identical samples. To enable scalable comparison, we project gradients
+to a CountSketch space with dimension (d = 1024) before computing correlations; this projection dimension is
+distinct from the rank-6 PCA basis used later for subspaceaffinity analysis. Fig. 8 (left) shows near-zero or negative
+7
+
+EEG-FM-Bench
+SEED-VII
+
+SEED
+
+SEED-VII
+
+PhysioMI
+
+75%
+Workload
+31%
+64%
+72%
+29%
+58%
+61%
+79%
+70% 52%
+55% 27%
+74%
+48% 26%67%45% 70%
+TUEV
+42%
+65%
+56%54%
+73%76%
+52%49%
+65%69%
+
+BCIC-2A
+ADFTD
+
+80%81%
+38%35%
+82%83%
+44%41%
+56%
+70%
+SEED-V
+TUAB
+59% 44%71%66% 71%
+63% 46%
+72%
+76% 73%
+66%
+73%
+48%
+80%
+80%
+THINGS
+50%
+87%
+HMC
+84%
+
+EEG 2
+Mimul-11
+
+TUSL
+SEED
+
+ADFTD
+
+EEG 2
+Mimul-11
+
+Siena
+
+80%81%
+38%35%
+82%83%
+44%41%
+56%
+70%
+SEED-V
+TUAB
+59% 44%71%66% 71%
+63% 46%
+72%
+73%
+76%
+66%
+73%
+48%
+80%
+80%
+THINGS
+50%
+87%
+HMC
+84%
+
+TUSL
+
+ADFTD
+
+Siena
+
+75%
+
+67%
+
+TUEV
+
+45% 39%
+
+Mimul-11
+
+Siena
+
+REVE
+Large Compressing MLP
+
+Workload
+
+53%
+
+79% 80%
+34% 29%
+81% 82%
+55%
+67%
+SEED-V
+TUAB
+44%
+72%
+58%
+69%
+73%
+61%
+71%
+47%
+76%
+76%
+64%
+73%
+50%
+80%
+THINGS
+79%
+HMC
+EEG 2
+53%
+84%
+81%
+
+PhysioMI
+
+80%81%
+38%35%
+82%83%
+44%41%
+56%
+70%
+TUAB
+59% 44%71%66% 71%
+63% 46%
+72%
+73%
+76%
+66%
+73%
+48%
+80%
+80%
+THINGS
+50%
+87%
+HMC
+84%
+
+TUSL
+
+61%
+
+46%
+72%
+22% 63% 38% 69%
+ADFTD
+34%
+66%
+56% 54%
+72% 75%
+53% 51%
+66% 69%
+
+75%
+Workload
+31%
+64%
+72%
+29%
+58%
+61%
+79%
+70% 52%
+55% 27%
+74%
+48% 26%67%45% 70%
+TUEV
+42%
+65%
+56%54%
+73%76%
+52%49%
+65%69%
+
+EEG 2
+Mimul-11
+
+70%
+
+37%
+
+SEED-V
+
+Siena
+
+24%
+
+40%
+
+BCIC-2A
+
+CSBRAIN
+Average Pooling
+
+SEED
+
+26%
+
+43%
+
+PhysioMI
+
+73%
+
+28%
+
+BCIC-2A
+
+CBRAMOD
+SEED-VII
+
+PhysioMI
+
+75%
+Workload
+31%
+64%
+72%
+29%
+58%
+61%
+79%
+70% 52%
+55% 27%
+74%
+48% 26%67%45% 70%
+TUEV
+42%
+65%
+56%54%
+73%76%
+52%49%
+65%69%
+
+EEG 2
+Mimul-11
+
+TUSL
+
+SEED
+
+SEED-VII
+
+80%81%
+38%35%
+82%83%
+44%41%
+56%
+70%
+SEED-V
+TUAB
+59% 44%71%66% 71%
+63% 46%
+72%
+76% 73%
+66%
+73%
+48%
+80%
+80%
+THINGS
+50%
+87%
+HMC
+84%
+
+BCIC-2A
+ADFTD
+
+PhysioMI
+
+75%
+Workload
+31%
+64%
+72%
+29%
+58%
+61%
+79%
+70% 52%
+55% 27%
+74%
+48% 26%67%45% 70%
+TUEV
+42%
+65%
+56%54%
+73%76%
+52%49%
+65%69%
+
+BCIC-2A
+
+LABRAM
+SEED-VII
+
+SEED
+
+TUSL
+
+Siena
+
+Overall Performance
+
+Attention Pooling
+
+Figure 10. Performance comparison among classifier heads.
+
+BENDR
+BIOT
+LABRAM
+
+gradient correlations across most datasets. Furthermore,
+Fig. 8 (right) reveals a high probability of gradient conflict (blue blocks). The high variance and misalignment
+imply that reconstruction optimization is disjoint or conflicting with semantic classification. Current pre-training
+functions primarily as a “time-series aware initialization”
+rather than effective knowledge transfer. Given EEG’s low
+signal-to-noise ratio, scaling reconstruction objectives alone
+may yield diminishing downstream returns when objective
+alignment remains weak; thus, developing objectives that
+capture discriminative task-relevant features is critical.
+
+EEGPT
+CBRAMOD
+CSBRAIN
+
+REVE
+MANTIS
+MOMENT
+
+Figure 11. Holistic performance comparison of seven EEG-FMs
+and two Time-FMs across 14 datasets. Best viewed via zoom-in.
+
+capacity-stability trade-off. Average Pooling (red) delivers
+the most balanced performance; its simplicity acts as regularization, mitigating overfitting to noisy EEG data. Conversely, high-capacity decoders like Attention Pooling and
+MLP show higher variance and a tendency to overfit on simpler tasks. However, the Large Compressing MLP (blue)
+excels in Motor Imagery tasks (e.g., PhysioMI, BCIC-2A).
+This suggests preserving high-dimensional embeddings captures fine-grained signal fluctuations and temporal dynamics
+smoothed by global pooling. Therefore, richer heads should
+be treated as task-specific tools rather than universal improvements. Future research should prioritize refining the
+foundation model and adaptation interface so performance
+depends less on high-capacity task-specific decoders.
+
+4.4. Impact of Fine-tuning Strategies
+We compare three adaptation strategies, Frozen, LoRA, and
+Full-parameter, across four EEG-FMs (Fig. 9). First, Fullparameter fine-tuning (green) consistently yields the highest
+performance in most of datasets, establishing the upper
+bound for adaptation. Second, the Frozen backbone (red)
+suffers from a severe generalization gap; the sharp drop indicates fixed representations lack sufficient discriminability
+for direct transfer. Third, LoRA (blue) offers an efficient alternative but performance varies by base model. We observe
+that LoRA performs competitively in models where pretraining demonstrates a significant advantage over scratch
+(e.g., CBraMod and REVE), whereas it struggles in weaker
+baselines. This implies parameter-efficient tuning relies
+heavily on the backbone’s quality.
+
+4.6. Overall Benchmarking and Analysis
+We synthesize the performance of seven EEG-FMs and
+two general time-series models in Fig. 11 and Fig. 1. The
+comparative analysis yields a more nuanced picture of the
+relationship between scale, inductive bias, and transfer performance. REVE achieves the strongest average balanced
+accuracy under the matched full-parameter multi-task protocol, which is consistent with a benefit from large-scale pretraining, although this comparison also reflects differences
+in objectives, architectures, and checkpoint compatibility.
+However, this advantage is not uniform across datasets:
+REVE does not dominate every downstream task (e.g.,
+ADFTD, THINGS-EEG2, Mimul-11), and compact EEGspecific models such as EEGPT, CSBrain, and CBraMod
+
+4.5. Impact of Classifier Head
+We examine the decoder head by comparing three configurations: Average Pooling, Large Compressing MLP, and
+Attention Pooling (Fig. 10). The comparison reveals a
+8
+
+EEG-FM-Bench
+
+still achieve competitive results with substantially fewer
+parameters and much smaller pre-training corpora.
+
+tive bias as key factors for EEG-FM performance beyond
+scaling. Multi-task learning often mitigates overfitting and
+improves robustness, but can induce negative transfer under
+certain paradigms, motivating future work on task grouping
+and conflict-aware optimization.
+
+Diagnose analysis indicate that nominal model size and
+pre-training data scale alone are insufficient to explain
+downstream transfer, and that architectural design (e.g.,
+EEGPT’s cascade structure or CBraMod’s dual-branch design), objective alignment, and task compatibility are plausible contributors to the observed transfer differences. Moreover, REVE already leverages a large collection of OpenNeuro (Markiewicz et al., 2021) datasets for pre-training,
+which highlights a practical bottleneck for further scaling
+that the existing stock of publicly available EEG data may
+not be sufficient to support another order-of-magnitude increase in foundation-model pre-training demand. Thus,
+while scaling remains useful, future progress in EEG-FMs
+should not rely solely on larger corpora or parameter counts,
+but should also prioritize more data-efficient objectives, better adaptation interfaces, and EEG-specific model design.
+Furthermore, under our adaptation protocol, specialized
+EEG-FMs often outperform the two general time-series
+baselines, suggesting that domain-specific preprocessing
+and model design remain beneficial for EEG transfer.
+
+Based on these findings, we propose three directions for
+future research. First, rethinking pre-training objectives
+is necessary to resolve the gradient conflict between reconstruction and downstream classification, moving towards methods that capture discriminative semantic features. Second, developing neuro-informed architectures
+that incorporate neurophysiological constraints and brainconnectivity priors is a promising direction for learning
+more generalizable representations. Finally, multi-task
+learning remain promising for improving data utilization
+and integrating complementary signals, but future work
+should consider task compatibility, adaptive task weighting,
+and conflict-aware optimization to avoid negative transfer.
+
+6. Limitations and Maintenance
+The current benchmark focuses on several public datasets,
+released checkpoints, and classification-oriented downstream tasks, and therefore does not fully cover more EEG
+datasets and settings, closed-source clinical systems, or
+deployment-specific constraints. Moreover, our evaluation
+protocol is designed to improve comparability, but it also
+introduces unavoidable model-specific adaptation choices,
+such as checkpoint-compatible preprocessing and channel
+handling. In addition, the current implementation uses a
+shared optimization strategy across tasks. This may be suboptimal when datasets differ substantially in signal quality,
+montage configuration or optimization objectives. Finally,
+EEG foundation models are evolving rapidly in architecture,
+pre-training objectives, data scale, and adaptation interfaces,
+making any static benchmark a moving target. We view
+EEG-FM-Bench as a maintainable infrastructure and future
+updates should continuously integrate new datasets, models,
+protocols, and diagnostic tools.
+
+The detailed results in Appx. C further show that the overall
+comparison should be interpreted as protocol-conditioned
+rather than as a protocol-independent model ranking. Modeldataset gaps change when switching from single-task to
+multi-task fine-tuning (Tabs. 2 and 3), and the apparent advantage of a checkpoint also depends on the allowed adaptation capacity, as shown by the frozen-backbone, LoRA,
+full-parameter, and from-scratch settings (Tabs. 4, 5, 3,
+and 6). Decoder capacity is another non-negligible factor: the average-pooling, attention-pooling, and large-MLP
+variants lead to different task-level trade-offs (Tabs. 3, 7,
+and 8). Finally, the general time-series baselines provide
+a reference point for separating EEG-specific gains from
+generic temporal modeling effects (Tab. 9).
+
+5. Conclusion and Future Perspectives
+In this work, we introduce EEG-FM-Bench, a standardized benchmark for EEG-FMs, establishing baselines for
+seven EEG-FMs and two general time-series models across
+14 datasets and 10 paradigms. We identify a significant
+generalization gap in frozen-backbone settings, indicating
+that current reconstruction objectives at pretraining stage
+do not yield sufficiently discriminative representations for
+downstream tasks. Our results show that nominal scale
+alone does not reliably explain downstream transfer under released checkpoints and a matched protocol. REVE
+achieves the strongest average performance, while compact
+EEG-specific architectures remain competitive. Together
+with diagnostic analyses, these results highlight objective
+alignment, transfer compatibility, and EEG-specific induc-
+
+Acknowledgments
+This work is supported by the Discipline Breakthrough Pilot
+Project of the Ministry of Education of the People’s Republic of China (No. JYB2025XDXM122) and National
+Natural Science Foundation of China (No. 62472319).
+
+Impact Statement
+This paper presents work whose goal is to advance the field
+of machine learning. There are many potential societal
+consequences of our work, none of which we feel must be
+specifically highlighted here.
+
+9
+
+EEG-FM-Bench
+
+References
+
+Gramfort, A., Luessi, M., Larson, E., Engemann, D. A.,
+Strohmeier, D., Brodbeck, C., Goj, R., Jas, M., Brooks,
+T., Parkkonen, L., and Hämäläinen, M. Meg and eeg data
+analysis with mne-python. Frontiers in Neuroscience, 7,
+2013.
+
+Alvarez-Estevez, D. and Rijsman, R. M. Inter-database
+validation of a deep learning approach for automatic sleep
+scoring. PLOS ONE, 16(8):1–27, 08 2021.
+Aristimunha, B., Truong, D., Guetschel, P., Shirazi, S. Y.,
+Guyon, I., Franco, A. R., Milham, M. P., Dotan, A.,
+Makeig, S., Gramfort, A., et al. Eeg foundation challenge:
+From cross-task to cross-subject eeg decoding. arXiv
+preprint arXiv:2506.19141, 2025.
+
+Harati, A., Golmohammadi, M., Lopez, S., Obeid, I., and Picone, J. Improved eeg event classification using differential energy. In 2015 IEEE Signal Processing in Medicine
+and Biology Symposium (SPMB), pp. 1–4. IEEE, 2015.
+Hu, E. J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang,
+S., Wang, L., Chen, W., et al. Lora: Low-rank adaptation
+of large language models. ICLR, 1(2):3, 2022.
+
+Avola, D., Bernardini, A., Crocetti, G., Ladogana, A.,
+Lezoche, M., Mancini, M., Pannone, D., and Ranaldi,
+A. Benchmarking of eeg analysis techniques for parkinson’s disease diagnosis: A comparison between traditional ml methods and foundation dl methods. arXiv
+preprint arXiv:2507.13716, 2025.
+
+Jayaram, V. and Barachant, A. Moabb: trustworthy algorithm benchmarking for bcis. Journal of neural engineering, 15(6):066011, 2018.
+
+Charikar, M., Chen, K., and Farach-Colton, M. Finding
+frequent items in data streams. Theoretical Computer
+Science, 312(1):3–15, 2004. ISSN 0304-3975. Automata,
+Languages and Programming.
+
+Jeong, J.-H., Cho, J.-H., Shim, K.-H., Kwon, B.-H., Lee,
+B.-H., Lee, D.-Y., Lee, D.-H., and Lee, S.-W. Multimodal
+signal dataset for 11 intuitive movement tasks from single upper extremity during multiple recording sessions.
+GigaScience, 9(10):giaa098, 2020.
+
+Detti, P., Vatti, G., and Zabalo Manrique de Lara, G. Eeg
+synchronization analysis for seizure prediction: A study
+on data of noninvasive recordings. Processes, 8(7), 2020.
+
+Jiang, W.-B., Liu, X.-H., Zheng, W.-L., and Lu, B.-L. Seedvii: A multimodal dataset of six basic emotions with
+continuous labels for emotion recognition. IEEE Transactions on Affective Computing, 2024a.
+
+Devlin, J., Chang, M.-W., Lee, K., and Toutanova, K. Bert:
+Pre-training of deep bidirectional transformers for language understanding. In NAACL, pp. 4171–4186, 2019.
+
+Jiang, W.-B., Zhao, L., and Lu, B.-L. Large brain model
+for learning generic representations with tremendous eeg
+data in bci. In International Conference on Learning
+Representations, volume 2024, pp. 16405–16426, 2024b.
+
+El Ouahidi, Y., Lys, J., Thölke, P., Farrugia, N., Pasdeloup,
+B., Gripon, V., Jerbi, K., and Lioi, G. Reve: A foundation model for eeg-adapting to any setup with large-scale
+pretraining on 25,000 subjects. Advances in Neural Information Processing Systems, 38:22541–22577, 2026.
+
+Kornblith, S., Norouzi, M., Lee, H., and Hinton, G. Similarity of neural network representations revisited. In
+International conference on machine learning, pp. 3519–
+3529. PMlR, 2019.
+
+Feofanov, V., Wen, S., Alonso, M., Ilbert, R., Guo,
+H., Tiomoko, M., Pan, L., Zhang, J., and Redko, I.
+Mantis: Lightweight calibrated foundation model for
+user-friendly time series classification. arXiv preprint
+arXiv:2502.15637, 2025.
+
+Kostas, D., Aroca-Ouellette, S., and Rudzicz, F. Bendr: Using transformers and a contrastive self-supervised learning task to learn from massive amounts of eeg data. Frontiers in Human Neuroscience, 15:653659, 2021.
+
+Freiwald, W. A. and Tsao, D. Y. Functional compartmentalization and viewpoint generalization within the macaque
+face-processing system. Science, 330(6005):845–851,
+2010.
+
+Kriegeskorte, N., Mur, M., and Bandettini, P. A. Representational similarity analysis - connecting the branches of
+systems neuroscience. Frontiers in Systems Neuroscience,
+2:249, 2008. ISSN 1662-5137.
+
+Gifford, A. T., Dwivedi, K., Roig, G., and Cichy, R. M.
+A large and rich eeg dataset for modeling human visual
+object recognition. NeuroImage, 264:119754, 2022.
+
+Lai, J., Wei, J., Yao, L., and Wang, Y. A simple review
+of eeg foundation models: Datasets, advancements and
+future perspectives. arXiv preprint arXiv:2504.20069,
+2025.
+
+Goswami, M., Szafer, K., Choudhry, A., Cai, Y., Li, S.,
+and Dubrawski, A. Moment: A family of open timeseries foundation models. In International Conference
+on Machine Learning, pp. 16115–16152. PMLR, 2024.
+
+Lee, N., Barmpas, K., Panagakis, Y., Adamos, D., Laskaris,
+N., and Zafeiriou, S. Are large brainwave foundation
+10
+
+EEG-FM-Bench
+
+models capable yet? insights from fine-tuning. In International Conference on Machine Learning, pp. 32878–
+32888. PMLR, 2025.
+
+Schalk, G., McFarland, D., Hinterberger, T., Birbaumer,
+N., and Wolpaw, J. Bci2000: a general-purpose braincomputer interface (bci) system. IEEE TBE, 51(6):1034–
+1043, 2004.
+
+Liu, H., Yang, S., Zhang, Y., Wang, M., Gong, F., Xie,
+C., Liu, G., Liu, Z., Liu, Y.-J., Lu, B.-L., et al. Libeer:
+A comprehensive benchmark and algorithm library for
+eeg-based emotion recognition. IEEE Transactions on
+Affective Computing, 2025.
+
+Sundararajan, M., Taly, A., and Yan, Q. Axiomatic attribution for deep networks. In International conference on
+machine learning, pp. 3319–3328. PMLR, 2017.
+Van Den Oord, A., Vinyals, O., et al. Neural discrete representation learning. In NeurIPS, 2017.
+
+Liu, W., Qiu, J.-L., Zheng, W.-L., and Lu, B.-L. Comparing
+recognition performance and robustness of multimodal
+deep learning models for multimodal emotion recognition.
+IEEE TCDS, 14(2):715–729, 2022.
+
+von Weltin, E., Ahsan, T., Shah, V., Jamshed, D., Golmohammadi, M., Obeid, I., and Picone, J. Electroencephalographic slowing: A primary source of error in automatic
+seizure detection. In 2017 IEEE signal processing in
+medicine and biology symposium (SPMB), pp. 1–5. IEEE,
+2017.
+
+Lopez, S., Suarez, G., Jungreis, D., Obeid, I., and Picone,
+J. Automated identification of abnormal adult eegs. In
+2015 IEEE signal processing in medicine and biology
+symposium (SPMB), pp. 1–5. IEEE, 2015.
+
+Wan, Z., Li, M., Liu, S., Huang, J., Tan, H., and Duan, W.
+Eegformer: A transformer–based brain activity classification method using eeg signal. Frontiers in neuroscience,
+17:1148855, 2023.
+
+Maaten, L. v. d. and Hinton, G. Visualizing data using
+t-sne. Journal of machine learning research, 9(Nov):
+2579–2605, 2008.
+Markiewicz, C. J., Gorgolewski, K. J., Feingold, F., Blair,
+R., Halchenko, Y. O., Miller, E., Hardcastle, N., Wexler,
+J., Esteban, O., Goncavles, M., et al. The openneuro resource for sharing of neuroscience data. Elife, 10:e71774,
+2021.
+
+Wang, C., Subramaniam, V., Yaari, A. U., Kreiman, G.,
+Katz, B., Cases, I., and Barbu, A. Brainbert: Selfsupervised representation learning for intracranial recordings. arXiv preprint arXiv:2302.14367, 2023.
+
+Miltiadous, A., Tzimourta, K. D., Afrantou, T., Ioannidis, P., Grigoriadis, N., Tsalikakis, D. G., Angelidis, P.,
+Tsipouras, M. G., Glavas, E., Giannakeas, N., et al. A
+dataset of scalp eeg recordings of alzheimer’s disease,
+frontotemporal dementia and healthy subjects from routine eeg. Data, 8(6):95, 2023.
+
+Wang, G., Liu, W., He, Y., Xu, C., Ma, L., and Li, H. Eegpt:
+Pretrained transformer for universal and reliable representation of eeg signals. Advances in Neural Information
+Processing Systems, 37:39249–39280, 2024.
+Wang, J., Zhao, S., Luo, Z., Zhou, Y., Jiang, H., Li, S., Li,
+T., and Pan, G. Cbramod: A criss-cross brain foundation
+model for eeg decoding. In International conference on
+learning representations, volume 2025, pp. 75310–75346,
+2025a.
+
+Mohammadi Foumani, N., Mackellar, G., Ghane, S., Irtza,
+S., Nguyen, N., and Salehi, M. Eeg2rep: Enhancing
+self-supervised eeg representation through informative
+masked inputs. In Proceedings of the 30th ACM SIGKDD
+Conference on Knowledge Discovery and Data Mining,
+KDD ’24, pp. 5544–5555. Association for Computing
+Machinery, 2024.
+
+Wang, Y., Huang, N., Mammone, N., Cecchi, M., and
+Zhang, X. Lead: Large foundation model for eegbased alzheimer’s disease detection. arXiv preprint
+arXiv:2502.01678, 2025b.
+
+Radford, A., Kim, J. W., Hallacy, C., Ramesh, A., Goh, G.,
+Agarwal, S., Sastry, G., Askell, A., Mishkin, P., Clark, J.,
+et al. Learning transferable visual models from natural
+language supervision. In International conference on
+machine learning, pp. 8748–8763. PmLR, 2021.
+Ramantani, G., Maillard, L., and Koessler, L. Correlation of
+invasive eeg and scalp eeg. Seizure, 41:196–200, 2016.
+
+Wei, X., Faisal, A. A., Grosse-Wentrup, M., Gramfort, A.,
+Chevallier, S., Jayaram, V., Jeunet, C., Bakas, S., Ludwig,
+S., Barmpas, K., et al. 2021 beetl competition: Advancing
+transfer learning for subject independence and heterogenous eeg data sets. In NeurIPS 2021 Competitions and
+Demonstrations Track, pp. 205–219. PMLR, 2022.
+
+Rashid, M., Sulaiman, N., PP Abdul Majeed, A., Musa,
+R. M., Ab. Nasir, A. F., Bari, B. S., and Khatun, S. Current status, challenges, and possible solutions of eegbased brain-computer interface: a comprehensive review.
+Frontiers in neurorobotics, 14:25, 2020.
+
+Wu, J., Ren, Z., Wang, J., Zhu, P., Song, Y., Liu, M.,
+Zheng, Q., Bai, L., Ouyang, W., and Song, C. Adabrainbench: Benchmarking brain foundation models for braincomputer interface applications. ArXiv, abs/2507.09882,
+2025.
+11
+
+EEG-FM-Bench
+
+Yang, C., Westover, M., and Sun, J. Biot: Biosignal transformer for cross-data learning in the wild. Advances
+in Neural Information Processing Systems, 36:78240–
+78260, 2023.
+Yu, T., Kumar, S., Gupta, A., Levine, S., Hausman, K.,
+and Finn, C. Gradient surgery for multi-task learning.
+Advances in neural information processing systems, 33:
+5824–5836, 2020.
+Yuan, Z., Zhang, D., Chen, J., Gu, G., and Yang, Y. Brant-2:
+Foundation model for brain signals. CoRR, 2024.
+Zhang, D., Yuan, Z., Yang, Y., Chen, J., Wang, J., and Li,
+Y. Brant: Foundation model for intracranial neural signal.
+Advances in Neural Information Processing Systems, 36:
+26304–26321, 2023.
+Zhang, H., Zhao, M., Wei, C., Mantini, D., Li, Z., and
+Liu, Q. Eegdenoisenet: a benchmark dataset for deep
+learning solutions of eeg denoising. Journal of Neural
+Engineering, 18(5):056057, 2021.
+Zhang, K., Ye, Z., Ai, Q., Xie, X., and Liu, Y. Gnn4eeg: A
+benchmark and toolkit for electroencephalography classification with graph neural network. In Companion of the
+2024 on ACM International Joint Conference on Pervasive and Ubiquitous Computing, pp. 612–617, 2024.
+Zheng, W.-L. and Lu, B.-L. Investigating critical frequency
+bands and channels for eeg-based emotion recognition
+with deep neural networks. IEEE TAMD, 7(3):162–175,
+2015.
+Zhou, Y., Wu, J., Ren, Z., Yao, Z., Lu, W., Peng, K., Zheng,
+Q., Song, C., Ouyang, W., and Gou, C. Csbrain: A
+cross-scale spatiotemporal brain foundation model for eeg
+decoding. Advances in Neural Information Processing
+Systems, 38:87150–87195, 2026.
+Zyma, I., Tukaev, S., Seleznov, I., Kiyono, K., Popov, A.,
+Chernykh, M., and Shpenkov, O. Electroencephalograms
+during mental arithmetic task performance. Data, 4(1),
+2019.
+
+12
+
+EEG-FM-Bench
+
+This appendix provides additional implementation details, analyses, and experiments to support our main findings. The
+contents are organized as follows:
+• Appx. A and B provides detailed descriptions of the datasets used for fine-tuning, along with our complete experimental
+settings.
+• Appx. C presents the detailed experimental data of all 9 models on the 14 benchmark datasets that are not included in
+the main text due to space limitations.
+• Appx. D and E contains further analysis on the training dynamics and visualizations of the EEG classification behavior.
+• Appx. F concludes with a discussion of the limitations of the current work and outlines promising directions for future
+research.
+
+A. Datasets Description
+Detailed information for the evaluation datasets is in Tab. 1:
+1. Seizure Detection: Siena (Detti et al., 2020) (binary classification with seizure or healthy);
+2. Emotion Recognition: SEED (Zheng & Lu, 2015) (3-class classification with sad, neutral or happy), SEED-V (Liu
+et al., 2022) (5-class classification with disgust, fear, sad, neutral or happy), SEED-VII (Jiang et al., 2024a) (7-class
+classification with disgust, fear, sad, neutral, happy, anger or surprise);
+3. Motor Imagery: PhysioMI (Schalk et al., 2004) (4-class classification with left fist, right fist, both fists or feet),
+Mimul-11 (Jeong et al., 2020) (3-class classification with reaching, grasping or twisting), BCIC-2a (Rashid et al.,
+2020) (4-class classification with left hand, right hand, feet or tongue;
+4. Mental Stress: Workload (Zyma et al., 2019) (binary-class classification with arithmetic calculation or resting);
+5. Sleep Staging: HMC (Alvarez-Estevez & Rijsman, 2021) (5-class classification with wake, REM, N1, N2 or N3);
+6. Anomalous Event Detection: TUEV (Harati et al., 2015) (6-class classification with spike and slow wave, generalized
+periodic epileptiform discharge, periodic lateralized epileptiform dischage, eye movement artifact or background);
+7. Abnormal Classification: TUAB (Lopez et al., 2015) (binary-class classification with abnormal or normal);
+8. Visual Target Detection: Things-EEG-2 (Gifford et al., 2022) (binary-class classification with target or non-target);
+9. Alzheimer’s Disease Identification: ADFTD (Miltiadous et al., 2023) (3-class classification with Alzheimer’s Disease,
+Frontotemporal Dementia or healthy);
+10. Slowing Event Classification: TUSL (von Weltin et al., 2017) (3-class classification with seizure, slow wave or
+background).
+
+B. Experimental Setup
+B.1. Data pre-processing
+Our dataset pre-processing pipeline follows a systematic procedure to process EEG data from multiple sources, implemented
+using MNE-Python (Gramfort et al., 2013). The process begins by resampling the data to a uniform sampling rate based
+on the pretraining setting of each model, which allows for consistent patch division. To eliminate low-frequency noise,
+we apply a high-pass Finite Impulse Response (FIR) filter that uses an overlap-add method, a technique chosen for its
+effectiveness on signals of variable or short durations. Moreover, power-line interference is suppressed using a notch filter
+at either 50 Hz or 60 Hz; the specific frequency is chosen by manually inspecting each dataset’s power spectrum or its
+geographical origin. Prior to model input, channels not supported by the model are discarded. The remaining channels
+from each dataset are then mapped to the standard 10-10 electrode montage based on their names. The data units are then
+converted from micro-volts (µV) to Volts to align with the MNE-Python standard. For optimized data management, the
+13
+
+EEG-FM-Bench
+
+Dataset
+TUAB
+TUEV
+TUSL
+SEED
+SEED-V
+SEED-VII
+HMC
+Workload
+Siena
+Mimul-11
+PhysioMI
+BCIC-2a
+Things-EEG-2
+ADFTD
+
+Category
+
+#Channel
+
+Duration
+
+#Train
+
+#Valid
+
+#Test
+
+Task
+
+Abnormal Classification
+23
+30
+247728 12315
+Anomalous Event Detection
+21
+5
+87834
+12473
+Slowing Event Classification
+21,22
+10
+210
+43
+Emotion Recognition
+60
+10
+22455
+7875
+Emotion Recognition
+60
+10
+3552
+4638
+Emotion Recognition
+60
+15
+15536
+1942
+Sleep Staging
+4
+30
+91681
+22804
+Mental Stress
+19
+10
+1537
+300
+Seizure Detection
+29
+10
+41631
+5592
+Motor Imagery
+60
+5
+31398
+5000
+Motor Imagery
+64
+4
+6210
+1734
+Motor Imagery
+22
+4
+2784
+1152
+Visual Target Detection
+63
+5
+24915
+8324
+Alzheimer’s Disease
+19
+10
+4743
+1115
+Identification
+Table 1. Detailed information about evaluation datasets.
+
+12277
+13046
+37
+7560
+4128
+1942
+22440
+297
+3607
+4949
+1803
+1152
+8331
+
+Binary Classification
+6-class Classification
+3-class Classification
+3-class Classification
+5-class Classification
+7-class Classification
+5-class Classification
+Binary Classification
+Binary Classification
+3-class Classification
+4-class Classification
+4-class Classification
+2-class Classification
+
+1155
+
+3-class Classification
+
+processed EEG signals are serialized into either the Parquet format with Zstandard compression for storage efficiency or
+the Arrow format to accelerate data loading and computation. The pipeline also supports large-scale distributed training by
+accessing datasets directly from remote storage via the S3 protocol. The entire implementation is built on parallel processing
+to efficiently handle the terabytes of data in the pre-training corpus.
+B.2. Comparing Foundation Models
+Our analysis contrasts seven state-of-the-art EEG Foundation Models: BENDR (Kostas et al., 2021), BIOT (Yang et al.,
+2023), LaBraM (Jiang et al., 2024b), EEGPT (Wang et al., 2024), CBraMod (Wang et al., 2025a), CSBrain (Zhou et al., 2026)
+and REVE (El Ouahidi et al., 2026). For comparison, we also incorporated two general temporal models Mantis (Feofanov
+et al., 2025) and Moment (Goswami et al., 2024). BENDR (Kostas et al., 2021) employs a BERT-style objective on a large
+clinical EEG corpus. To manage data heterogeneity, BIOT (Yang et al., 2023) tokenizes different biosignals into a single,
+sentence-like format. LaBraM undergoes pre-training on 2,500 hours of data with VQ-VAE (Van Den Oord et al., 2017)
+modules for dual-domain (frequency/phase) mask learning. EEGPT (Wang et al., 2024) merges dual self-supervised learning
+with stabilization mechanisms and supports multi-task evaluation by applying different linear probes to its frozen pre-trained
+backbone. CBraMod (Wang et al., 2025a) uses criss-cross attention to capture spatial and temporal features separately
+in the same transformer layer, which refines its representational ability. CSBrain (Zhou et al., 2026) employs cross-scale
+spatiotemporal tokenization and structured sparse attention to obtain robust EEG representations. REVE (El Ouahidi et al.,
+2026) is characterized by the use of the largest pre-training dataset available and 4D Fourier positional encoding, which is
+paired with an improved MAE reconstruction objective. Mantis (Feofanov et al., 2025) and Moment (Goswami et al., 2024)
+are recently proposed, well-performing general-purpose pre-trained models for time series.We include these models in our
+benchmark as their parameter counts are comparable to current EEG foundation models. Additionally, their high-quality
+open-source implementations facilitate fair reproduction. In our experiments, we reproduce these models by the benchmark
+framework on 14 downstream tasks.
+B.3. Evaluation Partition
+For most datasets, we partition the data using a subject-level split. In line with common practice, a subject-dependent strategy
+is adopted for the SEED, SEED-V, SEED-VII datasets to ensure that our metrics are comparable with other baselines.
+Moreover, we use a greedy, multi-label stratified splitting algorithm to maintain balanced label distributions across the
+training, validation, and test partitions according to predefined ratios:
+• Siena: Subject 0-7, 9-13, 16-17 are assigned to the training, validation, test set correspondingly;
+• SEED: Following prior research, the 15 trials are divided into three sets in a 9:3:3 ratio, and all sessions are merged
+together thereafter;
+14
+
+EEG-FM-Bench
+
+• SEED-V: Following prior research, the 15 trials are divided into three sets in a 1:1:1 ratio;
+• SEED-VII: Subjects are randomly split into training, validation, and test sets at a ratio of 8:1:1;
+• PhysioMI: Subject 1-69,70-88, 89-110 are assigned to the training set, valid set, test set correspondingly;
+• Mimul-11: Stratified splitting is employed to achieve approximate ratios of 0.76, 0.12, and 0.12 for training, validating,
+and testing;
+• BCIC-2a: Subject 1-5,6-7, 8-9 are assigned to the training set, valid set, test set correspondingly;
+• Workload: Stratified splitting is employed to achieve approximate ratios of 0.72, 0.14, and 0.14 for training, validating,
+and testing;
+• HMC: Subjects are randomly split into training, validation, and test sets at a ratio of 103:24:24;
+• TUEV and TUSL: Owing to the highly imbalanced label distribution in these datasets, the stratified splitting function
+is employed to create three splits from all the data, approximately aligning with predefined ratios of 0.8, 0.1, and 0.1;
+• TUAB: The validation and test sets are obtained by equally splitting the original evaluation set by subject, while the
+training set remains unchanged;
+• Things-EEG-2: Split by subject with predefined ratios of 0.6, 0.2, and 0.2;
+• ADFTD: Stratified splitting is employed to achieve approximate ratios of 0.70, 0.15, and 0.15 for training, validating,
+and testing.
+B.4. Evaluation Metrics
+To address the class imbalance in downstream datasets, the following evaluation metrics are adopted for comparison:
+• Balanced Accuracy: the arithmetic mean of recall (sensitivity) across all classes, mitigating the impact of imbalanced
+class distributions. It is effective for evaluating classification models on datasets with significant disparities in class
+proportions, which is formulated as:
+C
+
+B-Acc =
+
+T Pi
+1 X
+,
+C i=1 T Pi + F Ni
+
+(6)
+
+where C is the number of classes, T Pi and F Ni denote true positives and false negatives for class i.
+• Weighted F1: a harmonic mean of precision and recall, weighted by the number of true instances in each class. This
+metric accounts for class imbalance by assigning higher importance to classes with larger sample sizes, ensuring a
+more representative evaluation of model effectiveness, which can be formulated as
+T Pi
+T Pi
+, Reci =
+,
+T Pi + F Pi
+T Pi + F Ni
+C
+X
+2 · Prei · Reci
+W-F1 =
+wi ·
+,
+Prei + Reci
+i=1
+Prei =
+
+(7)
+(8)
+
+where F Pi denotes false positives for class i, and wi is the weight of class i based on its support.
+• AUROC: area under the ROC curve. It reflects the model’s ability to discriminate between classes across all possible
+decision boundaries, which is formulated as
+TP
+FP
+, FPR =
+,
+TP + FN
+FP + TN
+Z 1
+AUROC =
+TPR(f ) df, f = FPR.
+
+TPR =
+
+0
+
+15
+
+(9)
+(10)
+
+EEG-FM-Bench
+
+• AUC-PR: area under the precision-recall curve. It provides a holistic evaluation of model performance under class
+imbalance, which can be formulated as
+Z 1
+AUC-PR =
+Pre(r) dr, r = Rec.
+(11)
+0
+
+• Cohen’s Kappa: the agreement level between predicted and true labels by comparing observed and expected
+frequencies along the diagonal of a confusion matrix. It is particularly suited for multi-class classification scenarios,
+which can be formulated as
+κ=
+
+po − pe
+,
+1 − pe
+
+(12)
+
+where po is the observed agreement and pe is the expected agreement.
+Among these metrics, AUROC and AUC-PR are used to evaluate binary classification tasks, while Cohen’s Kappa and
+Weighted F1 are applied to multi-category classification. Together, these metrics provide a robust evaluation framework
+under class imbalance.
+B.5. Training Settings
+To facilitate data loading, all samples in the datasets are transformed into an Arrow dataset after pre-processing, thus
+speeding up distributed computing and leveraging the GPU’s direct data access functionality. All experiments are conducted
+using Python 3.11.13, PyTorch 2.7.1, and CUDA 12.8 on one A800 GPU. We enable autonomous mixed precision in the
+bfloat16 data type to improve GPU memory utilization and introduce GradScaler to prevent gradient explosion. We
+employ the AdamW and a two-phase learning rate scheduler, which combines linear warm-up with cosine annealing. The
+warm-up learning rate factor is set to 0.5. The total training duration is 30 epochs, including 3 warm-up epochs. The
+gradient clipping value is 1.0. For EEGPT, we adopt the OneCycle scheduler according to the original paper. To ensure
+consistency, we adopt the procedure from the REVE paper and apply a freezing warmup epoch for optimal classification
+head initialization. Weight decay is set to 0.01 except CBraMod for 0.05 to enhance the regularization. Batch size is
+128. During downstream fine-tuning, we first set the maximum learning rate following the corresponding open-source
+implementations. On this basis, we performed a grid search over the learning rate and the hidden dimension of the averagepooling classification head. All experiments were repeated across 5 different random seeds for reliability. We also adopted
+a differential-learning-rate strategy, configuring the backbone’s learning rate to a fraction (e.g., one-tenth, one-fifth, or
+one-half) of that assigned to the classifier. The final model for each task is selected based on its validation set performance,
+with results reported on the held-out test set.
+B.6. Model Configurations
+Because several pre-trained architectures were optimized for training with additional information or fixed input montage,
+they cannot directly accommodate the default setting used in our pipeline. We therefore applied model-specific adaptation
+strategies:
+• BENDR and BIOT: A dynamic-routing convolutional block was inserted ahead of the backbone. This block employs
+several Conv1dwithConstraint layers that project the input recordings onto the channel configuration expected by
+the pre-trained weights, thereby harmonizing mismatched channel counts.
+• EEGPT: As EEGPT already covers almost all electrodes in the ‘EasyCap-M1’ montage provided by MNE, performance
+loss due to the slightly sparser 10-10 layout is negligible. We thus implemented an Adapter that simply removes the
+electrodes unsupported by the model.
+• LaBraM and CBraMod: For these models, the original spatial channel layout was flattened into a one-dimensional
+ordering compatible with their input format.
+• CSBrain: We aligned the input of all benchmark datasets with the CSBrain’s specification by reordering channels
+according to their brain region labels, as per its open-source implementation.
+16
+
+EEG-FM-Bench
+
+• REVE relies on a fixed, predefined 4D positional encoding scheme. We load the official released positional encoding
+checkpoint in the adapter.
+EEG-FM-Bench preserves checkpoint compatibility through model-specific preprocessing and adapters. Concretely, BENDR
+follows the original per-sequence min-max scaling convention, where each EEG sequence is linearly scaled to [−1, 1], BIOT
+keeps its 95th-percentile-based amplitude normalization; EEGPT follows its mV-scale convention; LaBraM, CBraMod,
+and CSBrain use the 100 µV-style scaling in their released implementations; and REVE is evaluated with the closest
+checkpoint-compatible preprocessing variant exposed by the released implementation. For REVE, we use a window-level
+z-score approximation rather than exact session-level statistics to avoid leakage from test-session statistics. These adaptations
+allow each model to ingest the full breadth of our dataset while preserving compatibility with their pre-trained parameters.
+
+C. Detailed Results
+This section presents the complete quantitative results for the 14 datasets not included in the main text due to space
+limitations. We analyze performance variations across different fine-tuning strategies (Full-Parameter, Frozen, LoRA), task
+setups (Single-Task vs. Multi-Task), and classifier head architectures. Tab. 2- 9 compares all 9 models across the benchmark
+tasks under different fine-tuning strategies. Specifically:
+• Tab. 2 reports full-parameter single-task fine-tuning results;
+• Tab. 3 reports full-parameter multi-task fine-tuning results;
+• Tab. 4 reports frozen-backbone multi-task results;
+• Tab. 5 reports LoRA multi-task fine-tuning results;
+• Tab. 6 multi-task training from scratch (randomly initialized backbone) to isolate the benefit of pre-training.
+• Tab. 7 and Tab. 8 study the role of classifier head design under multi-task fine-tuning;
+• Tab. 9 reports the performance of two general time-series foundation models (adapted to EEG inputs) to contextualize
+the advantage of EEG-specific inductive biases.
+
+SEED-VII
+
+SEED
+
+75%
+BCIC-2A
+Workload
+29%
+62%
+71%
+26%
+55%
+48%
+78%
+68% 49%
+44% 23%
+71%
+ADFTD 61% 40%35%21%64%42%58%65% 77% TUEV
+55%48%
+71%
+42%
+60%66%
+80%81%
+34%28%
+82%83%
+45%39%
+58%
+70%
+TUAB
+64% 44%58%74% 71%
+69% 48%
+72%
+67% 78%
+74%
+73%
+51%
+82%
+76%
+THINGS
+55%
+86%
+HMC
+85%
+EEG 2
+
+SEED-V
+
+Mimul-11
+
+SEED
+
+SEED-VII
+
+PhysioMI
+
+75%
+BCIC-2A
+Workload
+29%
+62%
+71%
+26%
+55%
+48%
+78%
+68% 49%
+44% 23%
+71%
+ADFTD 61% 40%35%21%64%42%58%65% 77% TUEV
+55%48%
+71%
+42%
+60%66%
+80%81%
+34%28%
+82%83%
+45%39%
+58%
+70%
+TUAB
+64% 44%58%74% 71%
+69% 48%
+72%
+67% 78%
+74%
+73%
+51%
+82%
+76%
+THINGS
+55%
+86%
+HMC
+85%
+EEG 2
+
+Mimul-11
+
+TUSL
+
+SEED
+
+80%81%
+34%28%
+82%83%
+45%39%
+58%
+70%
+TUAB
+64% 44%58%74% 71%
+69% 48%
+72%
+67% 78%
+74%
+73%
+51%
+82%
+76%
+THINGS
+55%
+86%
+HMC
+85%
+EEG 2
+
+SEED-V
+
+Siena
+
+Mimul-11
+
+TUSL
+
+Siena
+
+BENDR
+
+BIOT
+
+LABRAM
+
+SEED
+
+SEED
+
+SEED
+
+SEED-VII
+
+80%81%
+34%28%
+82%83%
+45%39%
+58%
+70%
+TUAB
+64% 44%58%74% 71%
+69% 48%
+72%
+78%
+67%
+74%
+73%
+51%
+82%
+76%
+THINGS
+55%
+86%
+HMC
+85%
+EEG 2
+
+SEED-V
+
+Mimul-11
+
+TUSL
+
+SEED-VII
+
+PhysioMI
+
+75%
+Workload
+29%
+62%
+71%
+26%
+55%
+48%
+78%
+68% 49%
+23%
+44%
+71%
+40% 21%64%42% 65%
+TUEV
+35%
+58%
+61%55%
+71%77%
+48%42%
+60%66%
+
+Siena
+
+CBRAMOD
+
+SEED-VII
+
+PhysioMI
+
+75%
+Workload
+29%
+62%
+71%
+26%
+55%
+48%
+78%
+68% 49%
+23%
+44%
+71%
+40% 21%64%42% 65%
+TUEV
+35%
+58%
+61%55%
+71%77%
+48%42%
+60%66%
+
+BCIC-2A
+ADFTD
+
+ADFTD
+
+80%81%
+34%28%
+82%83%
+45%39%
+58%
+70%
+TUAB
+64% 44%58%74% 71%
+69% 48%
+72%
+78%
+67%
+74%
+73%
+51%
+82%
+76%
+THINGS
+55%
+86%
+HMC
+85%
+EEG 2
+
+TUSL
+
+SEED
+
+80%81%
+34%28%
+82%83%
+45%39%
+58%
+70%
+TUAB
+64% 44%58%74% 71%
+69% 48%
+72%
+67% 78%
+74%
+73%
+51%
+82%
+76%
+THINGS
+55%
+86%
+HMC
+85%
+EEG 2
+
+SEED-V
+
+Mimul-11
+
+TUSL
+
+EEGPT
+
+PhysioMI
+
+75%
+Workload
+29%
+62%
+71%
+26%
+55%
+48%
+78%
+68% 49%
+23%
+44%
+71%
+40% 21%64%42% 65%
+TUEV
+35%
+58%
+61%55%
+71%77%
+48%42%
+60%66%
+
+80%81%
+34%28%
+82%83%
+45%39%
+58%
+70%
+TUAB
+64% 44%58%74% 71%
+69% 48%
+72%
+78%
+67%
+74%
+73%
+51%
+82%
+76%
+THINGS
+55%
+86%
+HMC
+85%
+EEG 2
+
+SEED-V
+
+Siena
+
+Mimul-11
+
+CSBRAIN
+
+TUSL
+
+Siena
+
+REVE
+
+Single-Task Full-Parameter
+
+Multi-Task Full-Parameter
+
+Figure 12. Performance comparison between single-task and multi-task fine-tuning for all 7 EEG-FMs.
+
+17
+
+PhysioMI
+
+75%
+BCIC-2A
+Workload
+29%
+62%
+71%
+26%
+55%
+48%
+78%
+68% 49%
+44% 23%
+71%
+ADFTD 61% 40%35%21%64%42%58%65% 77% TUEV
+55%48%
+71%
+42%
+60%66%
+
+BCIC-2A
+
+SEED-V
+
+Mimul-11
+
+SEED-VII
+
+PhysioMI
+
+75%
+BCIC-2A
+Workload
+29%
+62%
+71%
+26%
+55%
+48%
+78%
+68% 49%
+44% 23%
+71%
+ADFTD 61% 40%35%21%64%42%58%65% 77% TUEV
+55%48%
+71%
+42%
+60%66%
+
+SEED-V
+
+Siena
+
+TUSL
+
+BCIC-2A
+ADFTD
+
+SEED-VII
+
+PhysioMI
+
+Siena
+
+EEG-FM-Bench
+SEED-VII
+
+SEED
+
+77%
+Workload
+31%
+61%
+67%
+27%
+53%
+46%
+79%
+57% 45%
+23%
+41%
+72%
+36% 20%47%36% 65%
+TUEV
+32%
+57%
+61%55%
+64%79%
+48%42%
+36%50%
+
+BCIC-2A
+ADFTD
+
+70%75%
+33%28%
+80%86%
+45%39%
+55%
+37%
+TUAB
+59% 40%49%61% 50%
+62% 45%
+63%
+70%
+62%
+66%
+76%
+50%
+79%
+74%
+THINGS
+55%
+87%
+HMC
+87%
+EEG 2
+
+SEED-V
+
+Mimul-11
+
+SEED-VII
+
+PhysioMI
+
+Siena
+
+TUSL
+
+SEED
+
+SEED-VII
+
+PhysioMI
+
+77%
+Workload
+31%
+61%
+67%
+27%
+53%
+46%
+79%
+57% 45%
+23%
+41%
+72%
+36% 20%47%36% 65%
+TUEV
+32%
+57%
+61%55%
+64%79%
+48%42%
+36%50%
+
+BCIC-2A
+ADFTD
+
+ADFTD
+
+70%75%
+33%28%
+80%86%
+45%39%
+55%
+37%
+TUAB
+59% 40%49%61% 50%
+62% 45%
+63%
+70%
+62%
+66%
+76%
+50%
+79%
+74%
+THINGS
+55%
+87%
+HMC
+87%
+EEG 2
+
+77%
+Workload
+31%
+61%
+67%
+27%
+53%
+46%
+79%
+57% 45%
+23%
+41%
+72%
+36% 20%47%36% 65%
+TUEV
+32%
+57%
+61%55%
+64%79%
+48%42%
+36%50%
+
+70%75%
+33%28%
+80%86%
+45%39%
+55%
+37%
+TUAB
+59% 40%49%61% 50%
+62% 45%
+63%
+70%
+62%
+66%
+76%
+50%
+79%
+74%
+THINGS
+55%
+87%
+HMC
+87%
+EEG 2
+
+SEED-V
+
+Siena
+
+TUSL
+
+Mimul-11
+
+TUSL
+
+BIOT
+
+LABRAM
+
+SEED
+
+SEED
+
+SEED
+
+SEED-VII
+
+PhysioMI
+
+77%
+Workload
+31%
+61%
+67%
+27%
+53%
+46%
+79%
+57% 45%
+41% 23%
+72%
+ADFTD 61% 36%32%20%47%36%57%65% 79% TUEV
+55%48%
+64%
+42%
+36%50%
+70%75%
+33%28%
+80%86%
+45%39%
+55%
+37%
+SEED-V
+TUAB
+59% 40%49%61% 50%
+62% 45%
+70% 63%
+62%
+66%
+76%
+50%
+79%
+74%
+THINGS
+55%
+87%
+HMC
+87%
+EEG 2
+
+Mimul-11
+
+TUSL
+
+Siena
+
+SEED-VII
+
+TUSL
+
+Frozen
+
+ADFTD
+
+70%75%
+33%28%
+80%86%
+45%39%
+55%
+37%
+TUAB
+59% 40%49%61% 50%
+62% 45%
+63%
+70%
+62%
+66%
+76%
+50%
+79%
+74%
+THINGS
+55%
+87%
+HMC
+87%
+EEG 2
+
+SEED-V
+
+Mimul-11
+
+TUSL
+
+Siena
+
+EEGPT
+
+PhysioMI
+
+BCIC-2A
+
+Siena
+
+CSBRAIN
+
+PhysioMI
+
+77%
+Workload
+31%
+61%
+67%
+27%
+53%
+46%
+79%
+57% 45%
+23%
+41%
+72%
+36% 20%47%36% 65%
+TUEV
+32%
+57%
+61%55%
+64%79%
+48%42%
+36%50%
+
+77%
+Workload
+31%
+61%
+67%
+27%
+53%
+46%
+79%
+57% 45%
+41% 23%
+72%
+ADFTD 61% 36%32%20%47%36%57%65% 79% TUEV
+55%48%
+64%
+42%
+36%50%
+70%75%
+33%28%
+80%86%
+45%39%
+55%
+37%
+SEED-V
+TUAB
+59% 40%49%61% 50%
+62% 45%
+70% 63%
+62%
+66%
+76%
+50%
+79%
+74%
+THINGS
+55%
+87%
+HMC
+87%
+EEG 2
+
+BCIC-2A
+
+Mimul-11
+
+CBRAMOD
+
+SEED-VII
+
+PhysioMI
+
+77%
+Workload
+31%
+61%
+67%
+27%
+53%
+46%
+79%
+57% 45%
+41% 23%
+72%
+ADFTD 61% 36%32%20%47%36%57%65% 79% TUEV
+55%48%
+64%
+42%
+36%50%
+70%75%
+33%28%
+80%86%
+45%39%
+55%
+37%
+SEED-V
+TUAB
+59% 40%49%61% 50%
+62% 45%
+70% 63%
+62%
+66%
+76%
+50%
+79%
+74%
+THINGS
+55%
+87%
+HMC
+87%
+EEG 2
+
+SEED
+
+BCIC-2A
+
+Siena
+
+BENDR
+BCIC-2A
+
+SEED-VII
+
+PhysioMI
+
+BCIC-2A
+
+SEED-V
+
+Mimul-11
+
+SEED
+
+Mimul-11
+
+LoRA
+
+TUSL
+
+Siena
+
+REVE
+
+Full-parameter
+
+Figure 13. Performance comparison among fine-tuning strategies for all 7 EEG-FMs.
+
+C.1. Overlap-sensitive cases
+Some downstream datasets, such as SEED and PhysioMI, are widely used public EEG benchmarks and may overlap with
+the pre-training corpora of some released EEG-FMs. We retain these datasets for comparability with the existing literature,
+but we explicitly treat them as overlap-sensitive. Related results are marked in detailed tables and excluded from calculating
+overall performance for LaBraM and EEGPT.
+C.2. Key patterns across fine-tuning strategies
+Single-task vs. multi-task. Comparing Tab. 2 (single-task) and Tab. 3 (multi-task), multi-task learning often acts as a
+regularizer that mitigates overfitting and improves robustness on several datasets, but can also introduce negative transfer
+for certain paradigms. This motivates the diagnostic analyses in Appx. D and highlights the need for better multi-task
+optimization (e.g., task balancing and conflict-aware updates).
+Frozen backbone vs. LoRA adaptation. Tab. 4 shows that freezing the backbone can lead to a generalization gap,
+suggesting that pre-trained representations are not always directly usable without adaptation. Tab. 5 demonstrates that LoRA
+provides a parameter-efficient alternative that can close part of this gap on many tasks, while still being limited by task
+conflicts and representation mismatch in hard-transfer settings.
+Fine-tune from checkpoint vs. training from scratch. Tab. 6 shows that while from-scratch training generally lags
+behind pre-trained models, the gap is often narrow, and in some cases it even achieves comparable or slightly better results.
+This suggests that the current pre-training paradigm may not be fully efficient, as the architectural capacity itself can
+approach similar performance without extensive pre-training.
+C.3. Classifier head ablations
+Tab. 7, 8 show that stronger heads do not uniformly improve performance across paradigms. While high-capacity heads can
+help in tasks where discriminative evidence is sparse or distributed, they may also exacerbate overfitting when the backbone
+representation is misaligned with downstream supervision.
+18
+
+EEG-FM-Bench
+SEED-VII
+
+SEED
+
+77%
+Workload
+29%
+61%
+67%
+26%
+53%
+46%
+79%
+57% 45%
+22%
+41%
+69%
+37% 19%47%36% 59%
+TUEV
+32%
+49%
+61%55%
+64%79%
+48%42%
+36%50%
+
+BCIC-2A
+ADFTD
+
+77%
+Workload
+29%
+61%
+67%
+26%
+53%
+46%
+79%
+57% 45%
+22%
+41%
+69%
+37% 19%47%36% 59%
+TUEV
+32%
+49%
+61%55%
+64%79%
+48%42%
+36%50%
+
+ADFTD
+
+59%67%
+33%28%
+76%84%
+45%39%
+55%
+37%
+TUAB
+59% 40%49%61% 50%
+62% 45%
+63%
+70%
+61%
+66%
+76%
+50%
+78%
+74%
+THINGS
+55%
+87%
+HMC
+86%
+EEG 2
+
+59%67%
+33%28%
+76%84%
+45%39%
+55%
+37%
+TUAB
+59% 40%49%61% 50%
+62% 45%
+63%
+70%
+61%
+66%
+76%
+50%
+78%
+74%
+THINGS
+55%
+87%
+HMC
+86%
+EEG 2
+
+Mimul-11
+
+77%
+Workload
+29%
+61%
+67%
+26%
+53%
+46%
+79%
+57% 45%
+22%
+41%
+69%
+37% 19%47%36% 59%
+TUEV
+32%
+49%
+61%55%
+64%79%
+48%42%
+36%50%
+
+ADFTD
+
+BIOT
+
+LABRAM
+
+SEED
+
+SEED
+
+SEED
+
+SEED-VII
+
+SEED-VII
+
+PhysioMI
+
+77%
+Workload
+29%
+61%
+67%
+26%
+53%
+46%
+79%
+57% 45%
+41% 22%
+69%
+ADFTD 61% 37%32%19%47%36%49%59% 79% TUEV
+55%48%
+64%
+42%
+36%50%
+59%67%
+33%28%
+76%84%
+45%39%
+55%
+37%
+SEED-V
+TUAB
+59% 40%49%61% 50%
+62% 45%
+70% 63%
+61%
+66%
+76%
+50%
+78%
+74%
+THINGS
+55%
+87%
+HMC
+86%
+EEG 2
+
+Mimul-11
+
+Mimul-11
+
+CBRAMOD
+
+SEED-VII
+
+PhysioMI
+
+77%
+Workload
+29%
+61%
+67%
+26%
+53%
+46%
+79%
+57% 45%
+41% 22%
+69%
+ADFTD 61% 37%32%19%47%36%49%59% 79% TUEV
+55%48%
+64%
+42%
+36%50%
+59%67%
+33%28%
+76%84%
+45%39%
+55%
+37%
+SEED-V
+TUAB
+59% 40%49%61% 50%
+62% 45%
+70% 63%
+61%
+66%
+76%
+50%
+78%
+74%
+THINGS
+55%
+87%
+HMC
+86%
+EEG 2
+
+Mimul-11
+
+CSBRAIN
+
+Finetune from Scratch
+
+Siena
+
+TUSL
+
+EEGPT
+
+PhysioMI
+
+BCIC-2A
+
+Siena
+
+TUSL
+
+Mimul-11
+
+77%
+Workload
+29%
+61%
+67%
+26%
+53%
+46%
+79%
+57% 45%
+41% 22%
+69%
+ADFTD 61% 37%32%19%47%36%49%59% 79% TUEV
+55%48%
+64%
+42%
+36%50%
+59%67%
+33%28%
+76%84%
+45%39%
+55%
+37%
+SEED-V
+TUAB
+59% 40%49%61% 50%
+62% 45%
+70% 63%
+61%
+66%
+76%
+50%
+78%
+74%
+THINGS
+55%
+87%
+HMC
+86%
+EEG 2
+
+BCIC-2A
+
+Siena
+
+TUSL
+
+59%67%
+33%28%
+76%84%
+45%39%
+55%
+37%
+TUAB
+59% 40%49%61% 50%
+62% 45%
+63%
+70%
+61%
+66%
+76%
+50%
+78%
+74%
+THINGS
+55%
+87%
+HMC
+86%
+EEG 2
+
+SEED-V
+
+Siena
+
+TUSL
+
+BENDR
+BCIC-2A
+
+ADFTD
+
+59%67%
+33%28%
+76%84%
+45%39%
+55%
+37%
+TUAB
+59% 40%49%61% 50%
+62% 45%
+63%
+70%
+61%
+66%
+76%
+50%
+78%
+74%
+THINGS
+55%
+87%
+HMC
+86%
+EEG 2
+
+Mimul-11
+
+PhysioMI
+
+77%
+Workload
+29%
+61%
+67%
+26%
+53%
+46%
+79%
+57% 45%
+22%
+41%
+69%
+37% 19%47%36% 59%
+TUEV
+32%
+49%
+61%55%
+64%79%
+48%42%
+36%50%
+
+BCIC-2A
+
+SEED-V
+
+Siena
+
+TUSL
+
+SEED
+
+SEED-VII
+
+PhysioMI
+
+BCIC-2A
+
+SEED-V
+
+Siena
+
+TUSL
+
+SEED
+
+SEED-VII
+
+PhysioMI
+
+BCIC-2A
+
+SEED-V
+
+Mimul-11
+
+SEED
+
+SEED-VII
+
+PhysioMI
+
+Siena
+
+TUSL
+
+REVE
+
+Finetune from Pretrained
+
+Mantis
+
+Moment
+
+Figure 14. Performance comparison between fine-tuning from scratch and from pre-trained model for all 7 EEG-FMs.
+
+C.4. General time-series foundation models
+Tab. 9 compares EEG-FMs against general time-series foundation models. The performance gap in most EEG paradigms
+suggests that EEG-specific design choices (e.g., channel handling, spatial–temporal tokenization, and objective alignment)
+remain important for reliable transfer.
+
+D. Extended Training Dynamics Analysis
+D.1. CBraMod
+The results in Fig. 15 and 16 suggest that multi-task training leads to measurable improvements in CBraMod’s representation
+quality, reflected in higher cosine similarity and subspace affinity. Fig. 18 illustrates that CbraMod’s pre-training objective
+and fine-tuning objective exhibit a significant conflict in their gradient dynamics, and they primarily affect different model
+layers. Fig. 19 reveals an interesting divergence: while the intermediate representations from scratch training can rapidly
+align with the fine-tuned pre-trained model, the underlying gradient energy flow follows a fundamentally different trajectory.
+TUAB
+
+0.05
+±0.08
+
+0.00
+±0.06
+
+-0.03
+±0.04
+
+-0.02
+±0.09
+
+ADFTD
+
+-0.02
+±0.03
+
+0.12
+±0.14
+
+0.23
+±0.14
+
+0.03
+±0.09
+
+TUEV
+
+0.01
+±0.02
+
+-0.02
+±0.04
+
+0.50
+±0.15
+
+0.01
+±0.06
+
+SEED
+
+-0.01
+±0.02
+
+0.01
+±0.02
+
+0.00
+±0.02
+
+HMC
+
+0.00
+±0.03
+
+0.02
+±0.03
+
+-0.01
+±0.03
+
+0.01
+±0.02
+
+PhysioMI
+
+0.01
+±0.02
+
+-0.02
+±0.03
+
+0.01
+±0.04
+
+0.00
+±0.04
+
+0.05
+±0.10
+
+TUEV
+
+0.17
+±0.09
+
+0.05
+±0.08
+
+SEED
+
+0.30
+±0.10
+
+0.00
+±0.06
+
+0.12
+±0.14
+
+HMC
+
+0.41
+±0.10
+
+-0.03
+±0.04
+
+0.23
+±0.14
+
+0.50
+±0.15
+
+PhysioMI
+
+0.02
+±0.07
+
+-0.02
+±0.09
+
+0.03
+±0.09
+
+0.01
+±0.06
+
+FFN
+
+ADFTD
+
+0.05
+±0.06
+
+-0.02
+±0.03
+
+0.01
+±0.02
+
+-0.01
+±0.02
+
+0.00
+±0.03
+
+0.01
+±0.02
+
+TUAB
+
+-0.02
+±0.04
+
+0.01
+±0.02
+
+0.02
+±0.03
+
+-0.02
+±0.03
+
+ADFTD
+
+0.30
+±0.29
+
+0.00
+±0.02
+
+-0.01
+±0.03
+
+0.01
+±0.04
+
+TUEV
+
+0.34
+±0.20
+
+0.14
+±0.19
+
+0.01
+±0.02
+
+0.00
+±0.04
+
+SEED
+
+0.75
+±0.11
+
+0.34
+±0.25
+
+0.36
+±0.22
+
+HMC
+
+0.69
+±0.15
+
+0.26
+±0.18
+
+0.47
+±0.22
+
+0.78
+±0.15
+
+PhysioMI
+
+0.17
+±0.26
+
+0.22
+±0.19
+
+0.12
+±0.27
+
+0.20
+±0.24
+
+-0.01
+±0.02
+
+0.30
+±0.29
+
+0.34
+±0.20
+
+0.75
+±0.11
+
+0.69
+±0.15
+
+0.17
+±0.26
+
+TUAB
+
+0.14
+±0.19
+
+0.34
+±0.25
+
+0.26
+±0.18
+
+0.22
+±0.19
+
+ADFTD
+
+0.35
+±0.31
+
+0.36
+±0.22
+
+0.47
+±0.22
+
+0.12
+±0.27
+
+TUEV
+
+0.41
+±0.34
+
+0.36
+±0.29
+
+0.78
+±0.15
+
+0.20
+±0.24
+
+SEED
+
+0.83
+±0.16
+
+0.21
+±0.30
+
+0.38
+±0.30
+
+HMC
+
+0.82
+±0.21
+
+0.36
+±0.28
+
+0.43
+±0.31
+
+0.85
+±0.16
+
+PhysioMI
+
+0.12
+±0.38
+
+0.15
+±0.33
+
+0.08
+±0.36
+
+0.18
+±0.32
+
+0.19
+±0.28
+
+0.35
+±0.31
+
+0.41
+±0.34
+
+0.83
+±0.16
+
+0.82
+±0.21
+
+0.12
+±0.38
+
+TUAB
+
+0.36
+±0.29
+
+0.21
+±0.30
+
+0.36
+±0.28
+
+0.15
+±0.33
+
+ADFTD
+
+0.19
+±0.23
+
+0.38
+±0.30
+
+0.43
+±0.31
+
+0.08
+±0.36
+
+TUEV
+
+0.29
+±0.27
+
+0.18
+±0.20
+
+0.85
+±0.16
+
+0.18
+±0.32
+
+SEED
+
+0.79
+±0.16
+
+0.21
+±0.17
+
+0.25
+±0.23
+
+HMC
+
+0.08
+±0.09
+
+0.08
+±0.13
+
+0.08
+±0.10
+
+-0.05
+±0.04
+
+PhysioMI
+
+0.10
+±0.25
+
+0.11
+±0.21
+
+0.09
+±0.25
+
+0.16
+±0.21
+
+0.23
+±0.34
+
+0.19
+±0.23
+
+0.29
+±0.27
+
+0.79
+±0.16
+
+0.08
+±0.09
+
+0.10
+±0.25
+
+TUAB
+
+0.18
+±0.20
+
+0.21
+±0.17
+
+0.08
+±0.13
+
+0.11
+±0.21
+
+ADFTD
+
+0.37
+±0.26
+
+0.25
+±0.23
+
+0.08
+±0.10
+
+0.09
+±0.25
+
+TUEV
+
+0.44
+±0.24
+
+0.44
+±0.24
+
+-0.05
+±0.04
+
+0.16
+±0.21
+
+SEED
+
+0.74
+±0.10
+
+0.13
+±0.26
+
+0.30
+±0.23
+
+HMC
+
+0.79
+±0.18
+
+0.32
+±0.27
+
+0.47
+±0.24
+
+0.81
+±0.15
+
+PhysioMI
+
+0.13
+±0.30
+
+0.17
+±0.28
+
+0.11
+±0.31
+
+0.14
+±0.22
+
+TEMPORAL ATTN
+
+0.02
+±0.07
+
+SPATIAL ATTN
+
+0.41
+±0.10
+
+PATCH EMBED
+
+0.30
+±0.10
+
+NORM
+
+0.17
+±0.09
+
+HEAD
+
+0.05
+±0.10
+
+TUAB
+
+0.37
+±0.26
+
+0.44
+±0.24
+
+0.74
+±0.10
+
+0.79
+±0.18
+
+0.13
+±0.30
+
+0.44
+±0.24
+
+0.13
+±0.26
+
+0.32
+±0.27
+
+0.17
+±0.28
+
+0.30
+±0.23
+
+0.47
+±0.24
+
+0.11
+±0.31
+
+0.81
+±0.15
+
+0.14
+±0.22
+
+1.00
+0.75
+0.50
+
+0.00
+±0.09
+
+0.18
+±0.29
+
+0.25
+0.00
+−0.25
+
+M
+
+I
+io
+M
+
+H
+
+−0.75
+
+ys
+
+C
+
+0.18
+±0.29
+
+Ph
+
+EV
+
+ED
+SE
+
+TU
+
+B
+
+I
+
+D
+
+A
+
+FT
+D
+
+TU
+
+A
+
+M
+
+io
+M
+
+H
+
+ys
+
+C
+
+0.00
+±0.09
+
+Ph
+
+EV
+
+ED
+SE
+
+TU
+
+B
+
+I
+
+D
+
+A
+
+FT
+D
+
+TU
+
+A
+
+M
+
+io
+M
+
+H
+
+ys
+
+C
+
+0.23
+±0.34
+
+Ph
+
+EV
+
+ED
+SE
+
+TU
+
+B
+
+I
+
+D
+
+A
+
+FT
+D
+
+TU
+
+A
+
+M
+
+io
+M
+
+H
+
+ys
+
+C
+
+0.19
+±0.28
+
+Ph
+
+EV
+
+ED
+SE
+
+TU
+
+B
+
+I
+
+D
+
+A
+
+FT
+D
+
+TU
+
+A
+
+M
+
+io
+M
+
+H
+
+ys
+
+C
+
+-0.01
+±0.02
+
+Ph
+
+EV
+
+B
+
+D
+
+ED
+SE
+
+TU
+
+A
+
+FT
+D
+
+TU
+
+A
+
+I
+
+C
+M
+
+io
+M
+
+H
+
+ys
+Ph
+
+EV
+
+ED
+SE
+
+A
+
+TU
+
+D
+A
+
+TU
+
+FT
+
+B
+
+D
+
+−0.50
+
+0.05
+±0.06
+
+Figure 15. Cross-task gradient cosine similarity correlation analysis for CBraMod.
+
+D.2. CSBrain
+For CSBrain, Fig. 20, 21 provide the cross-task gradient correlation and subspace affinity analyses, respectively. The
+results in these two figures indicate that the core architecture of CSBrain struggles to achieve performance gains through
+19
+
+EEG-FM-Bench
+
+0.35
+±0.07
+
+0.50
+±0.07
+
+0.44
+±0.07
+
+PhysioMI
+
+0.40
+±0.08
+
+0.33
+±0.07
+
+0.44
+±0.07
+
+0.40
+±0.06
+
+0.4
+
+0.40
+±0.07
+
+I
+
+C
+
+M
+io
+
+M
+
+0.1
+
+0.0
+
+0.40
+±0.07
+
+H
+
+0.2
+
+ys
+
+I
+M
+
+M
+
+io
+
+H
+
+ys
+
+0.49
+±0.08
+
+0.5
+
+0.3
+
+Ph
+
+SE
+
+TU
+
+B
+
+0.19
+±0.05
+
+HMC
+
+0.6
+
+Ph
+
+0.34
+±0.06
+
+0.40
+±0.06
+
+0.44
+±0.06
+
+EV
+
+0.38
+±0.07
+
+0.44
+±0.07
+
+0.35
+±0.06
+
+ED
+
+0.31
+±0.07
+
+0.44
+±0.07
+
+SE
+
+0.37
+±0.07
+
+0.50
+±0.07
+
+0.45
+±0.08
+
+TU
+
+PhysioMI
+
+0.19
+±0.05
+
+0.44
+±0.06
+
+SEED
+
+B
+
+0.23
+±0.05
+
+0.33
+±0.07
+
+0.38
+±0.06
+
+D
+
+0.31
+±0.05
+
+0.40
+±0.08
+
+0.35
+±0.07
+
+0.52
+±0.09
+
+A
+
+0.25
+±0.05
+
+C
+
+0.27
+±0.04
+
+EV
+
+HMC
+
+ED
+
+0.45
+±0.08
+
+0.49
+±0.08
+
+0.35
+±0.06
+
+TUEV
+
+FT
+
+0.34
+±0.06
+
+0.31
+±0.06
+
+0.45
+±0.08
+
+0.38
+±0.06
+
+ADFTD
+
+D
+
+0.23
+±0.05
+
+0.46
+±0.08
+
+0.52
+±0.09
+
+0.39
+±0.08
+
+A
+
+0.38
+±0.07
+
+TEMPORAL ATTN
+
+0.31
+±0.05
+
+0.39
+±0.08
+
+TUAB
+
+TU
+
+0.45
+±0.08
+
+SEED
+
+D
+
+0.47
+±0.05
+
+0.31
+±0.07
+
+0.41
+±0.08
+
+A
+
+0.49
+±0.05
+
+0.37
+±0.07
+
+0.25
+±0.05
+
+0.51
+±0.10
+
+FT
+
+0.56
+±0.07
+
+0.27
+±0.04
+
+0.31
+±0.06
+
+TUEV
+
+D
+
+0.48
+±0.06
+
+0.46
+±0.08
+
+0.41
+±0.08
+
+ADFTD
+
+A
+
+0.54
+±0.07
+
+SPATIAL ATTN
+
+PhysioMI
+
+0.47
+±0.05
+
+0.51
+±0.10
+
+0.39
+±0.08
+
+TU
+
+I
+
+C
+
+M
+
+M
+
+io
+
+H
+
+ys
+
+0.43
+±0.08
+
+0.41
+±0.04
+
+I
+
+0.44
+±0.07
+
+0.52
+±0.05
+
+C
+
+0.51
+±0.09
+
+0.42
+±0.05
+
+M
+
+0.41
+±0.07
+
+0.49
+±0.05
+
+M
+
+0.48
+±0.09
+
+HMC
+
+io
+
+PhysioMI
+
+0.43
+±0.08
+
+0.49
+±0.05
+
+H
+
+0.45
+±0.07
+
+0.46
+±0.06
+
+ys
+
+0.56
+±0.08
+
+0.49
+±0.05
+
+0.50
+±0.06
+
+0.39
+±0.08
+
+TUAB
+
+Ph
+
+0.38
+±0.07
+
+0.41
+±0.04
+
+SEED
+
+EV
+
+0.51
+±0.09
+
+Ph
+
+0.44
+±0.07
+
+0.56
+±0.07
+
+ED
+
+HMC
+
+0.01
+±0.00
+
+0.45
+±0.07
+
+0.52
+±0.05
+
+SE
+
+0.50
+±0.07
+
+0.49
+±0.05
+
+TU
+
+0.39
+±0.06
+
+0.48
+±0.06
+
+0.48
+±0.06
+
+B
+
+0.49
+±0.06
+
+0.54
+±0.07
+
+0.42
+±0.05
+
+0.58
+±0.06
+
+D
+
+SEED
+
+SE
+
+TU
+
+B
+
+D
+
+A
+
+FT
+D
+
+TU
+
+A
+
+I
+
+C
+
+M
+
+M
+
+io
+
+H
+
+Ph
+
+ys
+
+EV
+
+ED
+SE
+
+A
+
+TU
+
+D
+A
+
+TU
+
+FT
+
+B
+
+D
+
+FFN
+
+0.06
+±0.04
+
+0.01
+±0.00
+
+0.49
+±0.05
+
+0.46
+±0.06
+
+TUEV
+
+A
+
+0.01
+±0.00
+
+0.05
+±0.01
+
+0.51
+±0.09
+
+FT
+
+0.01
+±0.00
+
+0.07
+±0.03
+
+0.56
+±0.08
+
+D
+
+0.01
+±0.00
+
+0.05
+±0.02
+
+0.00
+±0.00
+
+0.01
+±0.00
+
+0.50
+±0.07
+
+A
+
+0.01
+±0.00
+
+0.06
+±0.04
+
+0.46
+±0.07
+
+PATCH EMBED
+
+PhysioMI
+
+PhysioMI
+
+0.06
+±0.04
+
+0.58
+±0.10
+
+0.50
+±0.06
+
+0.48
+±0.06
+
+ADFTD
+
+TU
+
+0.00
+±0.00
+
+0.19
+±0.04
+
+TUEV
+
+0.58
+±0.06
+
+0.48
+±0.07
+
+I
+
+0.01
+±0.00
+
+0.29
+±0.04
+
+0.01
+±0.00
+
+C
+
+0.01
+±0.00
+
+0.11
+±0.03
+
+0.01
+±0.00
+
+0.48
+±0.07
+
+TUAB
+
+M
+
+0.01
+±0.00
+
+0.20
+±0.04
+
+0.01
+±0.00
+
+M
+
+HMC
+
+HMC
+
+0.41
+±0.07
+
+io
+
+0.01
+±0.00
+
+0.48
+±0.09
+
+0.38
+±0.07
+
+H
+
+0.01
+±0.00
+
+0.51
+±0.09
+
+0.39
+±0.06
+
+ys
+
+0.01
+±0.00
+
+0.49
+±0.06
+
+0.46
+±0.07
+
+Ph
+
+SEED
+
+0.58
+±0.10
+
+EV
+
+0.05
+±0.01
+
+0.18
+±0.05
+
+0.47
+±0.08
+
+ED
+
+0.19
+±0.04
+
+0.09
+±0.03
+
+ADFTD
+
+0.47
+±0.08
+
+TUAB
+
+SE
+
+0.01
+±0.00
+
+0.16
+±0.05
+
+0.01
+±0.00
+
+TU
+
+0.01
+±0.00
+
+SEED
+
+0.01
+±0.00
+
+0.01
+±0.00
+
+B
+
+TUEV
+
+0.12
+±0.03
+
+0.01
+±0.00
+
+0.01
+±0.00
+
+D
+
+0.07
+±0.03
+
+0.22
+±0.05
+
+0.01
+±0.00
+
+0.01
+±0.00
+
+A
+
+0.29
+±0.04
+
+TUEV
+
+0.01
+±0.00
+
+FT
+
+0.18
+±0.05
+
+ADFTD
+
+0.01
+±0.00
+
+D
+
+ADFTD
+
+0.01
+±0.00
+
+TUAB
+
+TU
+
+0.05
+±0.02
+
+A
+
+0.06
+±0.04
+
+0.11
+±0.03
+
+NORM
+
+0.20
+±0.04
+
+0.09
+±0.03
+
+EV
+
+0.16
+±0.05
+
+0.12
+±0.03
+
+ED
+
+0.22
+±0.05
+
+0.18
+±0.04
+
+HEAD
+
+0.18
+±0.04
+
+TUAB
+
+1.0
+
+0.8
+
+0.8
+
+ADFTD
+
+1.0
+
+0.6
+0.4
+
+0.6
+0.4
+0.2
+
+0.0
+
+0.0
+
+1.0
+
+1.0
+
+0.8
+
+0.8
+
+0.6
+
+0.6
+
+SEED
+
+0.2
+
+0.4
+
+0.4
+
+0.2
+
+0.2
+
+0.0
+
+0.0
+
+1.0
+
+1.0
+
+0.8
+
+0.8
+
+PhysioMI
+
+HMC
+
+TUEV
+
+TUAB
+
+Figure 16. Cross-task subspace affinity analysis for CBraMod.
+
+0.6
+0.4
+0.2
+0.0
+
+0.6
+0.4
+0.2
+
+0
+
+100
+
+200
+
+300
+
+400
+
+0.0
+
+500
+
+0
+
+100
+
+200
+
+Step
+PATCH EMBED
+
+300
+
+400
+
+500
+
+Step
+SPATIAL ATTN
+
+TEMPORAL ATTN
+
+FFN
+
+NORM
+
+HEAD
+
+Figure 17. Cross-task evolution dynamics analysis for CBraMod.
+
+multi-task training. We hypothesize that the multi-scale modules and brain region attention in CSBrain’s backbone design
+have difficulty adapting to the rapidly shifting data characteristics during fine-tuning.
+Fig. 23 analyzes the gradient alignment between pre-training and downstream tasks. It reveals that CSBrain struggles to
+effectively optimize its embedding module parameters in both scenarios, and does so in divergent directions, as evidenced
+by low cosine similarity and high conflict frequency. Fig. 24 indicates that the shallow layers in the CSBrain backbone
+exhibit markedly different behaviors between the randomly initialized and pre-trained models. Furthermore, modules such
+as the region attention and feed-forward networks appear particularly resistant to effective optimization if training starts
+from scratch. Fig. 25 shows that the randomly initialized CSBrain model exhibits abnormally large gradient norms and loss
+values. Although both metrics drop rapidly during training, we observed in subsequent phases that the model remains prone
+to collapse when fine-tuned from scratch.
+
+E. Visualization
+To complement the quantitative results, this section provides a qualitative analysis of the feature representations learned
+by each foundation model. We use t-SNE (Maaten & Hinton, 2008) to visualize the feature embeddings and Integrated
+Gradients (Sundararajan et al., 2017) to infer the neurophysiological basis for model decisions, focusing on the results from
+the full-parameter multi-task fine-tuning strategy. Additional visualizations are presented for TUEV, SEED-VII, Mimul-11,
+ADFTD, and HMC datasets.
+20
+
+EEG-FM-Bench
+
+• TUEV: This 6-class classification task involves identifying various epileptiform discharges and artifacts. The t-SNE
+plots (Fig. 26) show that CBraMod, EEGPT and CSBrain produce more coherent clusters, aligning with their superior
+B-Acc scores in the main text. In contrast, the embeddings from BENDR and BIOT are heavily overlapped or same
+category fail to cluster together, reflecting their lower quantitative performance. The Integrated Gradients maps for the
+top models indicate a focus on temporal and central channels, which is consistent with the typical scalp distribution of
+spike-wave discharges.
+• SEED-V: This 5-class emotion task is notoriously difficult. The visualizations reveal that all models struggle to form
+well-separated clusters, which corresponds to the low B-Acc scores across the board (Fig. 27). Nonetheless, EEGPT
+and LaBraM show emergent structures in their embeddings that are absent in other models. The saliency maps suggest
+that these models attend to channels over the prefrontal and temporal cortices, regions known to be involved in emotion
+processing, reaffirming the findings from the main text.
+• Mimul-11: For this 3-class motor imagery task, the t-SNE (Fig. 28) plots for EEGPT and BENDR show the clearest
+class separation, which is reflected in their higher B-Acc scores relative to other models in the multi-task setting. The
+Integrated Gradients visualizations highlight activity in the central and parietal areas of the scalp, corresponding to the
+location of the motor and somatosensory cortices that govern upper limb movements.
+• ADFTD: This task requires discriminating between Alzheimer’s Disease (AD), Frontotemporal Dementia (FTD), and
+healthy controls (CN). The t-SNE (Fig. 29) plots show that BENDR and EEGPT, which performed surprisingly well on
+this task in the multi-task setting, produces reasonably distinct clusters for the AD and CN classes, though the FTD
+class remains mixed for BENDR. The saliency maps for the better-performing models indicate a focus on frontal,
+temporal and parietal channels, which aligns with the known progression of cortical atrophy in Alzheimer’s Disease.
+• HMC: For this 5-class sleep staging task, the t-SNE visualizations (Fig. 30) show that the clusters of EEGPT appear
+highly fragmented, while CBraMod’s visualization exhibits a radial pattern where the central N2 category overlaps
+excessively with other categories, which indicates the suboptimal metrics in the table of main text.
+
+F. Limitations and Summary
+F.1. Limitations
+Scope of Benchmark While EEG-FM-Bench covers a diverse set of datasets and paradigms, it cannot represent the
+full spectrum of EEG applications (e.g., multi-modal EEG settings, closed-source proprietary models, and certain clinical
+workflows). Future iterations can expand the suite of tasks and continuously integrate new state-of-the-art models to ensure
+the benchmark remains relevant.
+Negative transfer in multi-task learning. Multi-task fine-tuning can improve generalization but also risks negative
+transfer when datasets have conflicting objectives or incompatible inductive biases. Our current implementation uses a unified
+optimizer and learning strategy for all tasks, which may be suboptimal for managing gradient conflicts. Conflict-aware
+updates, adaptive task weighting, or modular/shared-private designs are promising directions.
+Rapid evolution of EEG foundation models. EEG-FMs are evolving quickly in architecture, pre-training objectives,
+and data scale. This creates a moving target for fair comparison and emphasizes the need for open, reproducible, and
+continuously maintainable benchmarking infrastructure.
+F.2. Summary
+This appendix provides supplementary details that support the main paper, including:
+• Dataset-level descriptions and experimental specifics;
+• Detailed training settings;
+• Complete quantitative performance tables under multiple fine-tuning strategies and classifier heads;
+• Qualitative visualizations and diagnostic analyses that help interpret generalization and optimization behavior
+Together with the main paper, these results provide standardized baselines and mechanistic insights to guide future EEG-FM
+development, with an emphasis on benchmarking unity, pre-training efficiency, and robust multi-task transfer.
+21
+
+EEG-FM-Bench
+
+Table 2. Performance comparison of 7 EEG-FMs on 14 BCI tasks under full-parameter single-task fine-tuning with average pooling
+classification head. † indicates overlap between the model’s pre-training datasets and our benchmark datasets.
+Dataset
+
+Metrics
+
+BENDR
+
+BIOT
+
+LaBraM
+
+CBraMod
+
+CsBrain
+
+REVE
+
+†
+
+EEGPT
+†
+
+SEED
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+59.50±00.42
+58.88±00.98
+39.42±00.64
+
+63.87±01.77
+63.12±01.94
+45.99±02.67
+
+61.59±01.71
+60.30±01.60†
+43.28±02.48†
+
+70.83±00.28
+70.48±00.16†
+56.41±00.42†
+
+62.59±02.40
+61.67±02.66
+44.36±03.58
+
+70.23±00.25
+70.70±00.22
+55.70±00.28
+
+73.37±00.30
+73.32±00.41
+62.77±00.44
+
+PhysioMI
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+47.78±00.28
+42.72±08.93
+36.48±08.47
+
+36.22±00.10
+35.65±00.18
+14.95±00.15
+
+57.27±00.26
+57.29±00.25
+43.00±00.35
+
+54.16±00.18†
+53.27±00.92†
+38.04±01.08†
+
+56.74±00.36
+56.74±00.39
+42.31±00.48
+
+56.57±00.45
+56.57±00.53
+42.07±00.59
+
+60.03±00.58
+60.08±00.62
+46.65±00.80
+
+Workload
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+50.00±00.00
+52.36±01.25
+30.70±00.55
+
+63.98±00.66
+77.68±01.62
+69.30±02.27
+
+61.17±01.01
+67.78±01.48
+45.83±02.21
+
+62.31±03.98
+70.46±04.00
+48.13±06.90
+
+71.94±00.60
+81.63±01.63
+59.73±01.79
+
+69.53±02.65
+77.07±04.26
+64.67±03.20
+
+74.12±01.01
+83.47±01.74
+64.43±03.71
+
+TUEV
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+65.53±02.40
+80.95±02.18
+66.62±04.07
+
+57.07±04.29
+74.34±04.00
+39.55±04.15
+
+59.58±04.31
+77.72±03.25
+64.06±05.03
+
+66.86±02.54
+83.95±00.14
+74.45±00.09
+
+65.42±00.90
+79.03±01.36
+64.13±02.48
+
+71.20±01.34
+85.07±00.85
+74.67±01.44
+
+73.98±01.21
+90.25±01.42
+85.07±01.80
+
+TUAB
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+82.72±00.12
+89.52±00.14
+90.68±00.13
+
+79.52±00.59
+88.27±00.16
+88.45±00.07
+
+79.50±00.81
+86.91±00.51
+83.86±01.96
+
+78.66±00.24
+87.52±01.01
+86.94±02.15
+
+81.40±00.33
+89.02±00.16
+89.93±00.31
+
+78.97±00.17
+85.33±01.51
+82.73±04.69
+
+81.32±00.35
+87.93±01.76
+87.38±01.56
+
+HMC
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+72.63±00.13
+73.67±00.53
+65.86±00.70
+
+71.01±00.07
+72.27±00.11
+64.40±00.35
+
+70.85±00.44
+71.52±00.55
+64.47±00.70
+
+69.67±01.24
+73.03±00.32
+64.64±00.92
+
+71.14±00.14
+72.76±00.55
+64.86±00.41
+
+71.13±00.26
+73.10±00.22
+65.20±00.29
+
+71.82±00.82
+75.08±00.74
+66.49±00.83
+
+Siena
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+74.93±01.76
+90.90±03.60
+99.81±00.08
+
+72.05±01.15
+84.23±03.42
+99.72±00.09
+
+70.97±02.68
+91.33±02.00
+99.87±00.05
+
+76.25±01.02
+92.08±01.15
+99.81±00.02
+
+80.64±01.40
+93.86±00.25
+99.87±00.01
+
+79.25±01.68
+91.52±02.96
+99.83±00.13
+
+80.95±00.32
+91.77±03.26
+99.85±00.07
+
+TUSL
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+47.22±01.48
+34.17±02.80
+17.88±01.95
+
+60.05±04.47
+56.83±04.49
+37.52±06.77
+
+66.98±00.44
+62.43±01.73
+45.08±01.57
+
+62.41±03.10
+70.63±02.34
+58.92±02.63
+
+74.18±02.69
+73.15±02.74
+63.67±03.23
+
+71.60±02.63
+72.60±02.69
+61.91±03.85
+
+79.58±01.32
+74.58±01.25
+65.07±01.86
+
+Mimul-11
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+50.44±02.30
+59.09±01.23
+36.10±03.49
+
+40.55±01.14
+49.68±01.29
+14.45±02.10
+
+47.80±01.68
+57.43±01.27
+30.71±03.14
+
+45.19±01.69
+54.66±01.38
+23.68±02.30
+
+47.07±00.09
+55.10±00.36
+25.13±00.69
+
+42.67±00.77
+51.93±00.87
+18.13±02.05
+
+45.41±01.15
+50.63±00.71
+18.93±01.86
+
+Things
+EEG 2
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+71.09±02.02
+83.09±00.69
+52.68±00.45
+
+51.10±00.30
+62.05±01.53
+18.05±01.06
+
+53.38±00.39
+56.38±01.08
+13.65±00.45
+
+62.08±00.58
+75.69±01.02
+33.32±01.46
+
+62.40±01.56
+77.61±00.32
+37.48±00.78
+
+57.20±00.29
+62.67±00.53
+21.53±00.42
+
+61.03±00.90
+66.77±00.52
+22.87±01.72
+
+SEED-V
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+20.20±00.13
+10.72±01.57
+00.21±00.13
+
+26.66±00.13
+25.85±00.13
+09.53±00.08
+
+24.35±00.55
+23.64±01.21
+05.61±01.13
+
+36.43±01.33
+33.00±01.94
+18.52±00.67
+
+28.34±00.17
+27.48±00.89
+10.55±00.20
+
+38.23±00.24
+39.07±00.34
+22.70±00.29
+
+40.65±00.51
+40.35±01.63
+25.82±00.72
+
+ADFTD
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+37.16±02.62
+40.38±01.69
+07.27±04.67
+
+47.43±01.03
+48.17±01.38
+23.77±01.52
+
+35.75±02.76
+34.47±03.44
+11.40±03.67
+
+46.50±02.28
+48.77±02.56
+21.81±03.72
+
+48.47±01.12
+51.68±01.11
+31.17±01.74
+
+46.08±02.61
+46.63±03.41
+24.27±03.85
+
+50.22±00.41
+50.72±01.85
+29.21±02.08
+
+BCIC-2a
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+35.21±00.54
+33.25±00.57
+13.62±00.72
+
+33.33±00.79
+29.85±00.27
+11.10±01.04
+
+32.37±00.21
+30.73±00.39
+09.83±00.30
+
+44.07±03.27
+38.61±04.23
+25.42±04.36
+
+33.71±00.86
+28.99±01.35
+11.61±01.14
+
+42.10±00.87
+40.64±00.62
+22.83±01.13
+
+42.73±01.10
+42.60±01.77
+27.08±01.46
+
+SEED-VII
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+17.43±00.60
+14.20±00.79
+03.98±00.69
+
+18.89±00.43
+16.84±01.12
+05.80±00.48
+
+20.39±00.41
+19.55±03.82
+09.42±02.64
+
+26.42±00.55
+23.89±01.29
+14.05±00.99
+
+23.10±00.93
+21.82±02.00
+09.70±02.62
+
+24.73±00.79
+22.82±01.51
+12.20±01.14
+
+24.73±00.79
+22.82±01.51
+12.20±01.14
+
+22
+
+EEG-FM-Bench
+
+Table 3. Performance comparison of 7 EEG-FMs on 14 BCI tasks under full-parameter multi-task fine-tuning with average pooling
+classification head. † indicates overlap between the model’s pre-training datasets and our benchmark datasets.
+Dataset
+
+Metrics
+
+BENDR
+
+BIOT
+
+LaBraM
+
+CBraMod
+
+CSBrain
+
+REVE
+
+†
+
+EEGPT
+†
+
+SEED
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+60.82±00.19
+60.84±00.20
+41.59±00.16
+
+65.62±00.92
+65.57±00.81
+50.11±00.99
+
+67.71±00.55
+68.11±00.66†
+52.22±00.83†
+
+68.75±00.40
+67.42±00.78†
+52.37±00.28†
+
+72.25±01.90
+72.90±01.63
+58.68±02.91
+
+71.92±00.39
+71.84±00.20
+58.02±00.59
+
+72.62±00.92
+72.75±00.76
+62.57±00.94
+
+PhysioMI
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+44.77±00.31
+44.63±00.03
+26.33±00.40
+
+33.02±00.29
+32.75±00.36
+10.67±00.40
+
+43.19±01.03
+42.38±01.15
+24.25±01.37
+
+50.52±00.80†
+50.26±00.76†
+34.00±01.06†
+
+41.80±00.69
+40.35±00.87
+22.42±00.92
+
+55.43±00.37
+55.10±00.63
+40.48±00.48
+
+58.82±00.45
+58.77±00.56
+45.10±00.60
+
+Workload
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+63.32±02.29
+74.09±01.04
+54.78±01.84
+
+71.37±02.19
+72.43±01.94
+69.52±00.23
+
+67.77±00.95
+77.32±02.88
+61.13±03.03
+
+72.66±00.90
+81.16±03.42
+64.30±06.48
+
+74.12±00.79
+83.89±00.93
+72.58±01.55
+
+71.27±00.75
+79.63±01.20
+55.10±02.21
+
+74.67±01.46
+82.32±01.47
+68.22±03.92
+
+TUEV
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+67.46±02.59
+84.56±01.82
+72.85±02.87
+
+61.35±01.35
+80.55±00.46
+68.37±00.61
+
+71.53±00.19
+86.22±00.73
+77.42±01.20
+
+70.85±01.16
+86.35±00.47
+77.69±01.06
+
+69.41±01.86
+83.44±00.31
+72.02±00.65
+
+71.82±00.69
+87.00±00.64
+77.84±01.55
+
+74.27±00.87
+89.37±00.33
+82.12±00.76
+
+TUAB
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+81.72±00.26
+90.38±00.27
+90.22±00.15
+
+80.85±00.36
+88.67±00.62
+89.01±00.47
+
+80.47±00.12
+88.33±00.59
+88.65±00.28
+
+80.68±00.37
+90.10±00.52
+90.35±00.54
+
+81.55±00.14
+89.57±00.26
+89.67±00.02
+
+79.18±00.48
+86.32±00.28
+85.78±00.25
+
+81.18±00.46
+88.32±00.37
+89.33±00.61
+
+HMC
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+70.21±00.72
+72.44±00.65
+64.57±00.90
+
+71.45±01.05
+72.89±00.34
+64.89±00.71
+
+71.63±01.04
+72.28±01.08
+65.22±01.23
+
+71.30±00.91
+72.46±00.96
+64.86±00.77
+
+72.03±00.14
+75.20±00.29
+67.43±00.12
+
+72.18±00.24
+74.16±00.27
+66.43±00.16
+
+71.93±00.45
+72.07±00.73
+64.40±00.54
+
+Siena
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+78.96±03.08
+91.31±04.74
+99.81±00.11
+
+74.35±00.71
+81.20±00.92
+99.26±00.05
+
+73.62±00.62
+89.43±03.59
+99.82±00.07
+
+83.28±01.56
+93.44±00.12
+99.86±00.00
+
+82.75±02.10
+92.03±01.90
+99.83±00.04
+
+76.42±01.43
+92.70±00.67
+99.87±00.05
+
+81.87±02.03
+90.70±01.25
+99.88±00.03
+
+TUSL
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+73.35±00.98
+70.90±01.73
+56.65±02.55
+
+69.90±04.10
+71.03±05.19
+56.00±07.50
+
+75.86±01.15
+72.74±01.33
+59.60±01.81
+
+76.12±02.05
+84.19±01.04
+84.30±01.27
+
+79.56±03.24
+76.24±04.45
+64.72±05.96
+
+80.56±00.91
+76.72±00.38
+65.57±00.41
+
+79.85±01.27
+77.81±01.89
+66.62±02.35
+
+Mimul-11
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+52.55±01.52
+59.61±02.80
+38.35±04.93
+
+40.43±00.63
+49.02±00.73
+14.63±01.88
+
+45.05±00.66
+53.42±01.98
+22.60±02.20
+
+50.77±00.61
+57.44±01.11
+31.16±02.43
+
+44.53±00.19
+52.80±00.57
+19.23±00.77
+
+41.64±00.54
+50.70±00.61
+15.94±01.33
+
+45.22±00.13
+53.73±00.65
+21.53±01.16
+
+Things
+EEG 2
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+63.62±01.38
+77.23±00.88
+42.29±01.75
+
+54.15±00.25
+63.01±00.52
+20.12±00.33
+
+56.47±00.32
+62.82±00.84
+22.23±00.64
+
+51.54±00.76
+66.64±00.04
+20.30±00.65
+
+59.13±00.72
+69.58±01.41
+31.85±01.21
+
+57.49±00.27
+62.47±01.27
+24.66±01.93
+
+59.43±01.20
+69.00±00.53
+32.07±01.85
+
+SEED-V
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+21.75±00.66
+19.94±02.58
+02.90±00.68
+
+30.54±00.18
+30.97±00.26
+14.14±00.21
+
+43.26±00.29
+43.20±00.81
+28.93±00.50
+
+43.07±00.60
+42.99±00.54
+28.62±00.86
+
+40.56±00.77
+41.72±00.72
+26.22±00.97
+
+38.02±00.23
+38.07±01.03
+22.48±00.42
+
+40.84±00.98
+40.58±02.00
+25.59±01.48
+
+ADFTD
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+55.71±03.76
+56.97±02.75
+33.98±04.63
+
+52.40±01.98
+53.48±02.71
+36.27±03.65
+
+50.27±01.74
+52.36±02.23
+26.17±03.15
+
+52.91±01.57
+54.82±01.30
+31.14±01.85
+
+51.95±02.84
+54.41±03.13
+30.06±04.35
+
+48.96±02.65
+50.17±03.76
+24.96±04.13
+
+52.12±03.78
+51.10±03.90
+30.70±06.41
+
+BCIC-2a
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+34.98±00.25
+30.01±02.27
+13.31±00.33
+
+29.66±00.39
+23.61±04.64
+05.99±00.45
+
+34.58±01.64
+31.24±02.71
+12.60±02.00
+
+39.23±01.48
+33.08±01.86
+16.95±01.97
+
+35.50±00.58
+23.97±00.25
+14.00±00.77
+
+42.50±01.08
+39.97±02.34
+23.32±01.48
+
+41.87±03.34
+38.68±02.25
+22.48±03.47
+
+SEED-VII
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+21.98±00.66
+19.31±00.87
+09.49±01.03
+
+23.93±00.39
+22.13±00.52
+11.38±00.38
+
+26.13±00.92
+24.74±00.57
+13.07±00.93
+
+27.78±00.47
+25.40±00.12
+15.80±01.12
+
+26.05±00.72
+25.74±01.22
+13.09±00.86
+
+26.67±01.37
+22.68±02.69
+11.40±02.04
+
+27.62±00.61
+23.93±01.08
+14.78±00.44
+
+23
+
+EEG-FM-Bench
+
+Table 4. Performance comparison of 7 EEG-FMs on 14 BCI tasks under freezing-parameter multi-task fine-tuning with average
+pooling classification head. † indicates overlap between the model’s pre-training datasets and our benchmark datasets.
+Dataset
+
+Metrics
+
+BENDR
+
+BIOT
+
+LaBraM
+
+CBraMod
+
+CSBrain
+
+REVE
+
+†
+
+EEGPT
+†
+
+SEED
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+34.12±00.24
+24.48±02.82
+01.10±00.32
+
+57.85±00.19
+58.17±00.21
+37.17±00.29
+
+52.13±00.05
+51.23±00.34†
+28.33±00.12†
+
+61.80±00.65
+60.41±01.07†
+42.89±00.97†
+
+44.32±00.28
+44.50±00.30
+16.76±00.45
+
+58.57±00.05
+58.53±00.05
+38.00±00.14
+
+63.22±00.13
+63.35±00.08
+45.20±00.32
+
+PhysioMI
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+25.22±00.24
+12.55±02.53
+00.27±00.31
+
+29.80±00.33
+29.90±00.43
+06.40±00.41
+
+29.63±00.34
+28.97±00.77
+06.23±00.42
+
+39.90±01.39†
+39.51±01.92†
+19.87±01.84†
+
+26.90±00.24
+22.76±00.17
+02.54±00.32
+
+26.80±00.29
+24.77±01.25
+02.40±00.37
+
+32.55±00.18
+32.12±00.40
+10.08±00.23
+
+Workload
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+50.00±00.00
+48.83±01.68
+24.83±00.87
+
+58.25±00.50
+76.48±00.48
+54.17±00.30
+
+57.45±02.83
+73.43±00.56
+46.72±00.74
+
+61.05±03.33
+75.68±00.59
+58.23±01.57
+
+50.00±00.00
+66.87±00.17
+42.70±00.07
+
+55.07±00.94
+76.83±00.12
+54.73±00.12
+
+67.10±00.00
+79.83±00.17
+61.20±00.85
+
+TUEV
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+16.70±00.00
+44.10±00.00
+00.00±00.00
+
+52.12±00.55
+80.93±00.20
+68.85±00.28
+
+41.27±00.12
+73.37±00.39
+54.97±00.53
+
+63.08±00.66
+86.22±00.31
+76.83±00.71
+
+32.50±00.04
+65.97±00.20
+41.58±00.49
+
+38.63±00.17
+72.87±00.19
+53.40±00.28
+
+69.03±00.17
+89.53±00.30
+83.22±00.52
+
+TUAB
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+68.30±05.85
+73.17±00.82
+65.93±00.45
+
+80.30±00.22
+87.50±00.14
+87.27±00.57
+
+75.87±00.05
+84.07±00.05
+85.11±00.08
+
+79.53±00.05
+88.63±00.12
+88.47±00.05
+
+73.15±00.19
+80.41±00.02
+79.79±00.15
+
+78.20±00.00
+87.00±00.08
+87.23±00.12
+
+80.80±00.32
+88.77±00.41
+88.33±00.55
+
+HMC
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+24.18±00.02
+27.02±00.02
+07.50±00.05
+
+66.13±00.21
+70.27±00.29
+61.03±00.17
+
+59.80±00.00
+64.10±00.37
+53.40±00.16
+
+67.83±00.12
+71.63±00.05
+62.90±00.08
+
+51.81±00.55
+58.11±00.82
+44.95±00.68
+
+65.60±00.00
+69.73±00.21
+62.00±00.28
+
+63.80±00.08
+65.33±00.09
+56.27±00.05
+
+Siena
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+50.00±00.00
+61.20±04.16
+99.27±00.12
+
+56.42±00.02
+81.20±00.13
+99.70±00.00
+
+50.17±00.24
+84.48±01.45
+99.70±00.05
+
+73.90±01.28
+97.28±00.43
+99.93±00.02
+
+64.17±01.18
+90.16±00.41
+99.68±00.02
+
+50.00±00.00
+56.53±12.17
+98.10±00.62
+
+68.60±00.08
+77.87±00.37
+99.27±00.05
+
+TUSL
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+33.30±00.00
+17.50±00.00
+00.00±00.00
+
+47.62±00.05
+44.17±00.56
+18.75±00.19
+
+63.90±02.52
+54.57±02.18
+37.63±04.29
+
+69.13±01.65
+69.27±02.15
+59.70±03.25
+
+33.00±00.00
+09.35±01.20
+00.00±00.00
+
+68.17±01.04
+62.93±01.79
+47.63±01.93
+
+63.88±00.54
+55.37±00.87
+38.93±00.97
+
+Mimul-11
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+33.30±00.00
+37.90±00.00
+00.00±00.00
+
+36.65±00.13
+43.92±00.38
+06.90±00.27
+
+35.50±00.43
+42.97±00.88
+04.60±00.93
+
+37.11±01.97
+44.95±03.07
+10.06±03.66
+
+33.95±00.11
+40.09±00.18
+01.51±00.25
+
+34.80±00.59
+42.73±01.05
+03.10±01.39
+
+40.20±00.32
+48.02±00.50
+12.38±00.64
+
+Things
+EEG 2
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+50.00±00.00
+51.17±01.46
+11.23±00.39
+
+50.05±00.00
+53.85±00.56
+12.43±00.33
+
+50.00±00.00
+53.77±00.45
+12.57±00.17
+
+50.00±00.00
+59.57±00.42
+14.18±00.15
+
+50.00±00.00
+53.85±00.07
+12.29±00.13
+
+50.00±00.00
+51.63±02.31
+12.10±00.94
+
+50.47±00.13
+58.18±00.06
+14.92±00.06
+
+SEED-V
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+20.00±00.00
+06.00±01.98
+00.00±00.00
+
+26.27±00.47
+24.77±00.90
+09.17±00.54
+
+23.23±00.48
+19.63±00.91
+04.43±00.68
+
+30.48±00.73
+28.71±01.45
+12.90±00.57
+
+20.28±00.02
+10.93±00.03
+00.45±00.03
+
+21.97±00.12
+14.43±00.62
+02.50±00.16
+
+25.43±00.33
+24.07±00.41
+07.07±00.37
+
+ADFTD
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+33.30±00.00
+22.17±00.75
+00.00±00.00
+
+51.37±00.09
+50.47±00.05
+29.47±00.21
+
+38.20±00.77
+38.40±01.05
+09.70±01.27
+
+39.03±02.48
+32.02±00.53
+07.72±03.37
+
+38.17±00.13
+36.17±00.35
+09.12±00.26
+
+41.30±00.28
+42.23±00.25
+12.40±00.45
+
+46.10±00.24
+49.70±00.14
+23.20±00.29
+
+BCIC-2a
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+25.17±00.24
+10.65±00.92
+00.22±00.31
+
+29.73±00.54
+25.10±00.43
+06.97±00.79
+
+28.40±00.24
+22.83±00.45
+04.57±00.33
+
+32.02±00.06
+25.95±01.13
+09.40±00.08
+
+29.17±01.03
+24.94±01.72
+05.56±01.37
+
+28.13±00.17
+18.57±00.12
+04.17±00.26
+
+29.18±00.83
+23.37±01.36
+05.57±01.12
+
+SEED-VII
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+14.30±00.00
+03.63±00.61
+00.00±00.00
+
+20.60±00.45
+16.60±00.43
+07.50±00.42
+
+23.23±00.48
+19.63±00.91
+04.43±00.68
+
+25.20±00.08
+24.17±00.12
+12.70±00.08
+
+19.43±00.72
+16.76±00.29
+06.97±00.95
+
+18.90±00.29
+16.60±00.50
+06.27±00.41
+
+20.57±00.17
+20.50±00.33
+08.50±00.29
+
+24
+
+EEG-FM-Bench
+
+Table 5. Performance comparison of 7 EEG-FMs on 14 BCI tasks under LoRA multi-task fine-tuning with average pooling classification
+head. † indicates overlap between the model’s pre-training datasets and our benchmark datasets.
+Dataset
+
+Metrics
+
+BENDR
+
+BIOT
+
+LaBraM
+
+CBraMod
+
+CSBrain
+
+REVE
+
+†
+
+EEGPT
+†
+
+SEED
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+33.30±00.00
+17.00±00.00
+00.00±00.00
+
+62.70±00.14
+62.60±00.08
+44.20±00.22
+
+45.90±00.22
+43.07±02.04†
+18.90±00.29†
+
+69.97±00.05
+69.27±00.61†
+55.10±00.08†
+
+66.07±00.21
+65.57±00.38
+49.27±00.29
+
+64.67±00.05
+64.07±00.17
+47.20±00.08
+
+69.23±00.21
+68.97±00.46
+54.03±00.34
+
+PhysioMI
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+25.10±00.08
+11.90±02.55
+00.13±00.12
+
+26.93±00.05
+26.17±00.48
+02.57±00.09
+
+27.40±00.16
+20.47±01.13
+03.20±00.24
+
+45.83±00.85†
+45.33±00.74†
+27.80±01.10†
+
+27.60±00.22
+24.50±02.03
+03.50±00.29
+
+30.68±00.28
+29.92±00.61
+07.57±00.38
+
+53.95±00.33
+54.18±00.31
+38.62±00.46
+
+Workload
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+50.00±00.00
+49.20±00.64
+25.47±01.06
+
+58.30±00.71
+78.83±00.58
+58.60±00.57
+
+55.10±07.21
+72.07±02.26
+43.80±03.72
+
+76.87±00.37
+87.63±01.09
+76.43±01.52
+
+62.80±00.57
+81.63±00.90
+62.80±01.93
+
+67.33±01.42
+74.53±00.31
+45.48±01.25
+
+71.55±02.13
+81.03±01.48
+61.33±03.53
+
+TUEV
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+16.70±00.00
+44.10±00.00
+00.00±00.00
+
+59.68±00.17
+81.28±00.31
+68.33±00.59
+
+47.13±00.59
+72.33±01.32
+54.33±02.28
+
+61.07±00.98
+86.83±00.24
+79.60±01.07
+
+57.80±02.06
+77.60±03.19
+63.07±04.76
+
+64.02±00.61
+79.05±01.32
+65.80±02.08
+
+68.53±01.18
+77.83±00.86
+58.30±00.99
+
+TUAB
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+68.37±00.12
+76.77±00.21
+71.93±00.41
+
+80.67±00.28
+88.10±00.29
+88.78±00.32
+
+73.93±00.65
+82.57±00.48
+81.67±00.74
+
+83.93±00.50
+91.93±00.39
+91.93±00.21
+
+78.40±00.93
+86.07±00.97
+87.07±00.95
+
+78.97±00.71
+87.07±01.01
+87.23±01.09
+
+80.43±01.04
+88.03±00.54
+88.07±01.16
+
+HMC
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+20.00±00.00
+20.30±00.00
+00.00±00.00
+
+70.43±00.19
+74.03±00.19
+65.90±00.24
+
+44.10±01.31
+47.10±01.56
+32.67±01.39
+
+71.97±00.12
+72.27±00.39
+64.63±00.21
+
+69.13±00.17
+71.60±00.73
+63.00±00.28
+
+69.93±00.09
+73.13±00.17
+64.70±00.14
+
+71.03±00.25
+71.77±00.25
+63.83±00.26
+
+Siena
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+50.00±00.00
+80.70±05.21
+99.67±00.19
+
+68.83±00.47
+88.20±01.00
+99.80±00.00
+
+50.80±00.57
+68.57±17.66
+99.20±00.65
+
+84.57±00.61
+94.50±00.45
+99.90±00.00
+
+82.13±00.78
+93.20±01.35
+99.83±00.05
+
+72.87±01.11
+87.80±03.18
+99.77±00.11
+
+75.33±01.23
+88.73±01.05
+99.83±00.05
+
+TUSL
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+33.30±00.00
+25.70±00.00
+00.00±00.00
+
+62.90±00.28
+54.53±00.47
+36.93±00.33
+
+54.68±00.47
+37.08±01.33
+25.47±00.82
+
+72.59±00.81
+71.10±00.03
+56.74±00.23
+
+73.90±00.74
+67.57±01.41
+53.93±01.47
+
+75.03±02.53
+71.53±03.20
+58.12±04.65
+
+80.68±02.81
+80.78±02.41
+71.43±03.54
+
+Mimul-11
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+33.30±00.00
+37.90±00.00
+00.00±00.00
+
+40.57±00.37
+49.53±00.31
+12.40±00.57
+
+34.87±00.24
+41.67±00.45
+03.63±00.40
+
+43.00±00.36
+52.00±00.50
+18.90±00.29
+
+42.90±00.92
+50.00±01.22
+15.07±01.62
+
+39.10±00.24
+48.23±00.26
+12.13±00.37
+
+43.77±00.82
+50.33±01.98
+17.90±02.01
+
+Things
+EEG 2
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+50.00±00.00
+50.27±00.12
+11.03±00.05
+
+50.67±00.05
+64.13±00.17
+19.47±00.05
+
+50.00±00.00
+55.27±02.33
+13.13±01.13
+
+51.70±00.37
+61.83±00.21
+14.97±00.31
+
+50.23±00.05
+57.60±00.79
+14.17±00.31
+
+50.00±00.00
+54.43±00.62
+13.03±00.21
+
+53.77±00.12
+60.70±00.24
+15.70±00.22
+
+SEED-V
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+20.00±00.00
+08.80±00.00
+00.00±00.00
+
+28.37±00.12
+27.87±00.33
+11.33±00.19
+
+23.93±00.53
+22.10±00.80
+05.17±00.69
+
+36.07±00.85
+35.77±01.77
+20.10±00.75
+
+35.03±00.27
+33.22±00.54
+18.88±00.33
+
+30.43±00.17
+28.20±00.65
+13.17±00.29
+
+38.37±00.21
+38.87±00.42
+22.70±00.49
+
+ADFTD
+
+B-Acc
+F1/AUROC
+Kappa/AUCPR
+
+33.87±00.80
+18.77±07.78
+00.83±01.18
+
+48.77±01.40
+51.33±01.88
+25.27±01.93
+
+43.07±00.66
+45.77±00.76
+18.40±01.28
+
+44.93±01.18
+45.80±01.31
+17.73±01.70
+
+48.83±00.50
+51.57±00.25
+26.27±01.86
+
+48.60±00.45
+47.20±00.57
+27.33±00.74
+
+50.73±01.28
+24.73±02.80
+56.03±00.40
+
+BCIC-2a
+
+B-Acc
+F1/AU

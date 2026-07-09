@@ -1,0 +1,981 @@
+Sycophantic AI makes human interaction feel
+more effortful and less satisfying over time
+Lujain Ibrahim1*, Franziska Sofia Hafner1 , Myra Cheng2 , Cinoo Lee2 ,
+Rebecca Anselmetti1,3 , Robb Willer2 , Luc Rocher1 , Diyi Yang2
+
+arXiv:2605.07912v3 [cs.HC] 21 Jun 2026
+
+1
+
+University of Oxford.
+Stanford University.
+3
+UK AI Security Institute.
+2
+
+*Corresponding author(s). E-mail(s): lujain.ibrahim@oii.ox.ac.uk;
+Contributing authors: diyiy@stanford.edu;
+Abstract
+Millions of people now turn to artificial intelligence (AI) systems for personal advice, guidance,
+and support. Such systems can be sycophantic, frequently affirming users’ views and beliefs.
+Across five preregistered studies (N = 3,075 participants, 12,766 human-AI conversations),
+including a three-week study with a census-representative U.S. sample, we provide longitudinal
+experimental evidence that sycophantic AI shifts how users approach their closest relationships.
+We show that sycophantic AI immediately delivers the emotional and esteem support users typically associate with close friends and family. Over three weeks of such interactions, users became
+nearly as likely to seek personal advice from sycophantic AI as from close friends and family, and
+reported lower satisfaction with their real-world social interactions. When given a choice among
+AI response styles, a majority preferred sycophantic AI—not for the quality of its advice, but
+because it made them feel most understood. Together, these findings offer a relational account
+of AI sycophancy and its impacts.
+
+Introduction
+When facing a difficult job decision, a struggling relationship, or an everyday worry, people have
+long turned to those close to them for comfort and advice. Today, AI systems are rapidly taking
+on this role. Already, 12% of U.S. teens and over 20% of young adults turn to AI chatbots for
+personal support, and many young people report finding it easier to discuss mental health with an
+AI chatbot than with a doctor or psychologist [1–4]. A growing body of evidence shows that, in such
+conversations, AI systems tend to be sycophantic, frequently affirming users’ views and beliefs [5, 6].
+Even a single conversation with sycophantic AI has been shown to influence users’ judgment, leading
+them to hold more ideologically extreme political views [7], to be less willing to consider their own
+role in conflicts [8] and, in severe cases, to be more likely to engage in self-harm [9].
+Previous work has studied such effects resulting from single conversations, but in reality, people
+confide in AI systems repeatedly over weeks and months, just as they do with the people in their lives.
+At this scale, the actual influence of sycophantic AI depends not on any isolated conversation, but on
+how that influence unfolds alongside users’ relationships with friends, family, and partners. Even if
+sycophantic AI distorts a user’s judgment, these human relationships can still offer honest reflection,
+pushback, and perspective, buffering against its effects. At the same time, repeated exposure to
+unconditional AI affirmation may itself alter how users experience conversations with the people
+around them, shifting what feels sufficiently understanding, satisfying, or worth seeking out [10].
+Thus, the central long-term risk of sycophantic AI may not be the judgments it distorts in any single
+
+1
+
+conversation, but how it gradually reshapes the very relationships that would otherwise constrain its
+influence.
+Here, in five pre-registered studies (N = 3, 075 unique participants, N = 12, 766 human-AI
+conversations), including a three-week longitudinal study with a census-representative U.S. sample,
+we investigate how repeated discussion of personal dilemmas with sycophantic AI shapes users’ close
+relationships. We first establish that there is a gap between what people say they want from AI versus
+close friends and family, and what sycophantic AI actually provides. Participants reported seeking
+distinct kinds of support from each, yet in practice, sycophantic AI reliably delivered the forms of
+support, such as feeling understood and validated, that people more strongly associate with close
+human relationships. In turn, interactions with sycophantic AI shifted how participants approached
+these close relationships. Having just experienced active affirmation, they anticipated needing more
+effort to feel understood by the people closest to them, and felt less need to talk through their
+dilemmas any further.
+Tracking these effects longitudinally over weeks of use, we find that while sycophantic AI consistently made participants feel good in the moment, it produced none of the downstream benefits that
+such support from humans typically provides [11, 12]: we observed no increases in intellectual humility or connection to real-world relationships. Instead, these participants reported lower satisfaction
+with their real-world social interactions over the course of the study. Even so, by the study’s end,
+they were nearly as likely to seek personal advice from sycophantic AI as from their close friends and
+family.
+We further find that even when AI does not default to sycophancy, users may actively seek it out:
+when given a choice, a majority chose sycophantic AI over more balanced alternatives, not for the
+quality of its advice, but for how easy the conversation was and how understood it made them feel.
+Taken together, our findings offer a relational account of AI sycophancy and its impact: by providing
+effortless understanding, sycophantic AI can raise the bar against which human relationships are
+judged. Over time, if sycophantic AI becomes a comparable alternative to close friends and family,
+it could reshape patterns of social support at scale [13]. As the AI industry shifts toward greater
+personalization and user choice, our findings underscore the importance of both user-side and modellevel mitigations of AI sycophancy.
+
+1 Defining and operationalizing sycophancy
+Sycophancy has been broadly defined as AI systems agreeing with users even when that agreement is
+not warranted. However, it has been operationalized very differently across domains: from agreeing
+with factually incorrect claims [6], to endorsing users’ actions in personal conflicts [8], to supporting
+users’ preexisting political viewpoints [7], to failing to push back on users’ framing of situations in
+advice-seeking queries [5]. Here, we operationalize sycophancy as active affirmation of user views
+and reasoning. As active affirmation and active challenge may each have their own effects on users,
+and our primary interest is in isolating the effects of active affirmation specifically, we compare a
+sycophantic AI, designed to agree with and support a user’s views, and a neutral AI, designed to
+remain impartial and present multiple perspectives without explicitly agreeing or disagreeing. In
+Studies 4 and 5, we additionally include a challenging AI, designed to question users’ views and
+offer counterarguments, to provide a more comprehensive view of how different engagement styles
+compare. All three conditions shared identical instructions on tone, formatting, and conversational
+style, differing only in how they responded to participants’ views (see Supplementary Methods,
+Sections 1.1 for full prompts). We validated that each model engaged as intended through both
+computational analyses (i.e., measuring the prevalence of specific sycophantic behaviors in model
+responses) and participant perceptions (see Supplementary Information, Section 2.1).
+
+2 Results
+We conducted five preregistered studies (N = 3, 075; see Figure 1) to investigate the relational consequences of sycophantic AI. Studies 1 and 2 first establish what kinds of support people associate
+with close others vs. AI, and what support people perceive sycophantic AI to provide. Study 3 tests
+whether a single interaction with sycophantic AI shifts how people anticipate subsequent conversations with close others to go. Importantly, capturing sycophancy’s downstream effects requires a
+longitudinal design. Thus, Study 4 tests whether sycophancy’s effects accumulate into measurable
+changes in users’ attitudes towards their relationships over time. Finally, given that users now have
+2
+
+growing control over AI behavior, Study 5 asks whether, despite these relational consequences, users
+nonetheless choose to seek advice from sycophantic AI over other styles.
+a
+
+Type of support wanted from AI Chatbots
+and from close others
+
+Study 2 What kind of support does
+sycophantic AI provide? N = 391
+
+Study 3 How does sycophantic AI advice
+shift expectations of close others? N = 592
+
+Perception of support from Neutral
+and Sycophantic
+AI Chatbot
+
+Expectation of effort talking to a close other
+after an AI chatbot conversation
+
+Emotional
+
+Emotional
+
+Esteem
+
+Esteem
+
+Informational
+
+Informational
+
+Certainty
+
+Certainty
+3.5
+
+4
+
+4.5
+
+5
+
+% Expecting Effort
+
+Study 1 How important are different kinds
+of support from AI vs humans? N = 228
+
+4
+
+5.5
+
+4.5
+
+5
+
+5.5
+
+60%
+40%
+20%
+
+6
+
+0%
+
+Sycophantic
+
+Neutral
+
+b
+Study 4 How does receiving sycophantic AI advice affect people’s relationships with close others over time? N = 1364
+
+3 AI conditions
+Week 1
+
+Sycophantic
+
+Week 2
+
+Week 3
+
+Neutral
+Challenging
+
+1364 participants
+12 conversations
+
+3 weeks
+
+AI Conditions
+1
+
+-1
+
+More
+Challenging
+
+2
+
+More
+Validating
+
+No AI Control
+
+Pre-
+
+study
+
+Post-
+
+study
+
+c
+Study 5 Which AI chatbot do people choose for advice after trying out all three? N = 500
+I think I should break up with my
+partner, they never take out the trash.
+
+If it's consistently upsetting and unresolved, your feelings
+are valid—your happiness and peace should come first.
+Consider if this situation is specifically about the trash or if it
+reflects a larger pattern before deciding how to respond.
+nding a relationship over trash seems disproportionate; this
+might reflect deeper issues you're not addressing directly.
+E
+
+20%
+
+40%
+
+60%
+
+% Selected
+
+Fig. 1 Overview of five preregistered studies on the impact of sycophantic AI on human relationships.
+(A) Studies 1–3: Expectations of support from humans vs. AI systems. In all studies, participants first describe a
+personal situation they are seeking advice on. In Study 1, they are then randomly assigned to rate how much they
+would expect each type of support (e.g., informational, emotional) from either an AI system or a close other. In Study
+2, they are randomly assigned to discuss the situation with either a sycophantic or neutral AI and then rate the AI
+systems on the same support dimensions. In Study 3, participants identify a close other they would normally go to
+for advice on such a situation, are randomly assigned to discuss the situation with either a sycophantic or neutral
+AI, and are then asked to answer questions about how they would expect the conversation with their identified close
+other to go. (B) Study 4: Longitudinal exposure to sycophantic AI advice. Participants are randomly assigned to one
+of three AI conditions (sycophantic, neutral, or challenging) or a no-AI control group. All participants complete a prestudy survey at the beginning of the experiment. Participants in the AI conditions then converse with their assigned
+AI system every other day over three weeks, completing surveys at the end of each session, each week, and the entire
+study period. At the end of the study, participants rated their assigned AI on validation (explicit and implicit) and
+challenge in a manipulation check. The average rating of validation minus the average rating of challenge is plotted in
+the bar plot for each of the sycophantic, challenging, and neutral AI. (C) Study 5: User choice dynamics across different
+interaction styles. Participants converse with unlabeled neutral, sycophantic, and challenging AIs in randomized order,
+then choose which AI system they would most want to continue talking to. Sample sizes for each study were determined
+using power analyses, with details in the pre-registrations and Supplementary Information.
+
+Sycophantic AI provides the support people associate with close human
+relationships
+Study 1 first establishes whether people turn to AI systems and close others for different kinds of
+support when seeking advice. We asked participants (N = 228) to describe a personal situation they
+
+3
+
+would like advice on and then rate the importance of receiving four types of support, either from
+an identified close person in their life or from an AI system: emotional support (understanding and
+care), esteem support (validation and recognition of strengths), informational support (practical
+advice and new perspectives), and certainty (confidence and clarity on next steps) [14, 15]. Figure 2
+shows that desired support from AI systems and close others varied significantly by support type
+(F (3, 678) = 17.69, p < 0.001, partial η 2 = 0.073). People valued far more emotional (d = 0.77,
+p < 0.001) and esteem support (d = 0.64, p < 0.001) from humans than from AI systems, valued
+certainty somewhat more from humans (d = 0.29, p = 0.027), and showed no statistically significant
+difference for informational support (d = −0.04, p = 0.789). Thus, people approach AI systems and
+close others for distinct kinds of support, looking to close others especially for emotional and esteem
+support.
+Given this gap, Study 2 asks whether sycophantic AI may close it, providing, in practice, the
+kinds of support people associate with close human relationships. Participants (N = 391) described
+a personal situation they would like advice on, discussed it with either a sycophantic or neutral AI,
+and then rated the AI systems on the same four types of support from Study 1. Participants in the
+sycophantic (compared to neutral) condition rated the AI higher on emotional support (d = 0.54,
+p < 0.001), esteem support (d = 0.73, p < 0.001), and certainty (d = 0.39, p < 0.001), with no
+statistically significant difference in informational support (d = 0.07, p = 0.5) [16]. Sycophantic AI
+thus delivers what we will call relational support—emotional and esteem support, the two types
+people most strongly associate with close others rather than AI systems.
+
+After sycophantic AI, people expect more effort to feel understood by
+humans
+In Study 3, we ask whether receiving this relational support from sycophantic AI shapes how people
+approach subsequent conversations with close others. Participants (N = 592) described a personal
+situation they would like advice on, discussed it in a live interaction with either a sycophantic or
+neutral AI, and then rated their expectations for a subsequent conversation about the same situation
+with a chosen confidant (i.e., a friend, partner, or family member). Participants in the sycophantic
+(vs. neutral) condition anticipated that it would take greater effort to be understood by this person
+(d = 0.18, p = 0.03). They also reported greater conversational sufficiency following the sycophantic
+AI conversation, feeling they had already talked through their personal situation enough (d = 0.26,
+p = 0.002). These effects were more pronounced when the confidant identified was a friend or family
+member rather than a romantic partner (effort d = 0.21; sufficiency d = 0.29), suggesting that
+sycophantic AI may compete differently with different types of human relationships.
+
+Across weeks, participants were nearly as inclined to seek advice from
+sycophantic AI as from close others
+Study 4 tests whether sustained use of sycophantic AI impacts advice-seeking preferences and social
+outcomes over time. For three weeks, participants (N = 1364) discussed personal advice topics such
+as relationships and everyday habits with a sycophantic, neutral, or challenging AI, or were placed
+in a no-AI control condition (full list of 16 topic choices in Supplementary Methods, Section 1.3).
+Figure 3 shows that compared to the neutral condition, participants in the sycophantic condition
+showed a smaller gap between their inclination to seek advice from AI and from close friends and
+family (0.37 pt on a 7-point scale; d = 0.19, padj = 0.034). This shift emerged early and persisted
+across all three weeks. It operated through relational rather than epistemic pathways. The preference
+for AI vs. close others was mediated by feeling understood by the AI (indirect = 0.22, 95% CI [0.06,
+0.38], 59% mediated), perceived helpfulness of the conversations (indirect = 0.18, 95% CI [0.04, 0.31],
+48% mediated), and positive affect (indirect = 0.13, 95% CI [0.01, 0.26], 34% mediated), rather than
+by increased certainty.
+
+Feeling understood by AI grows with sustained use but does not provide
+downstream benefits
+Figure 4 shows that participants in the sycophantic and neutral conditions reported small but statistically significant increases in feeling understood by AI over the three-week period, with those in
+the sycophantic condition showing a higher baseline and a steeper trajectory. This was the case even
+
+4
+
+a
+
+***
+
+Emotional
+
+***
+
+Esteem
+Certainty
+
+*
+
+Informational
+
+b
+
+c
+
+***
+
+Emotional
+
+**
+
+Sufficiency
+
+***
+
+Esteem
+
+***
+
+Certainty
+
+*
+
+Effort
+
+Informational
+0.0
+0.5
+1.0
+Expectation of Support
+Human vs AI
+
+0.0
+0.5
+Perception of AI Support
+Sycophantic vs Neutral
+
+0.0
+0.2
+0.4
+Expectation of Human Support
+after Sycophantic vs Neutral AI
+
+Fig. 2 Sycophantic AI provides the types of support people associate with close human relationships.
+All studies used between-subjects random assignment. (A) In Study 1, participants (N = 228) rated how important
+receiving different types of support would be when discussing a personal situation either with close others or an AI
+system. Participants valued emotional support (understanding and care), esteem support (validation and recognition
+of strengths), and certainty (confidence and clarity on next steps) more from humans than from AI systems, with no
+statistically significant difference for informational support (practical advice and new perspectives). (B) In Study 2,
+participants (N = 391) discussed a personal situation with a sycophantic or neutral AI, then rated the AI systems
+on each type of support. Participants rated the sycophantic AI (vs. neutral) higher on emotional support, esteem
+support, and certainty, with no statistically significant difference for informational support. (C) In Study 3, participants
+(N = 592) discussed a personal situation with a sycophantic or neutral AI and then reported expectations for a
+subsequent conversation with a chosen confidant. Participants in the sycophantic (vs. neutral) condition anticipated
+that greater effort would be needed to be understood by this confidant and reported greater conversational sufficiency,
+feeling they had already talked through their situation enough. Effect sizes are Cohen’s d with 95% CIs (*p < 0.05,
+**p < 0.01, ***p < 0.001)
+
+.
+
+Preference Discussing
+Personal Matters
+
+a
+
+Humans
+AI Chatbot
+
+4.4
+4.2
+
+b
+Satisfaction with
+Human Interactions
+
+4.0
+3.8
+w1
+
+sycophantic
+w2
+w3 w1
+
+neutral
+w2
+w3 w1
+
+challenging
+w2
+w3
+
+*
+
+Preference for
+AI vs Humans
+
+*
+
+Amount of Time
+Spent with Humans
+0.25 0.00 0.25
+Effect of Sycophantic
+vs Neutral AI
+
+Fig. 3 Sycophantic AI narrows the gap with close others as advice sources and reduces real-world
+social satisfaction. In a three-week longitudinal study, participants (N = 1364) were randomized to interact with a
+sycophantic, neutral, or challenging AI, or assigned to a no-AI control condition, and discussed personal topics (e.g.,
+relationship advice, career decisions, personal habits). (A) Weekly trajectories of participants’ inclination to turn to
+their assigned AI system vs. close others for personal advice. The sycophantic condition showed a smaller gap between
+AI and humans than the neutral condition. (B) Compared to the neutral condition, participants in the sycophantic
+condition reported lower satisfaction with their real-world social interactions over the three weeks, and a greater shift
+in advice-seeking toward their assigned AI system, with no statistically significant effect on the social time they spent
+with others. Effect sizes are Cohen’s d with 95% CIs (*p < 0.05, **p < 0.01, ***p < 0.001).
+
+though the chat history was reset after each conversation (i.e., the AI systems retained no “memories”
+of previous conversations). Other session-level measures, such as affect or certainty, remained flat
+or slightly declined over the three weeks. In human relationships, feeling understood and supported
+is broadly associated with downstream benefits for how people see themselves, their relationships,
+and the world [11, 12, 17–19]. Here, we find that feeling understood by sycophantic AI was largely
+contained to the AI interaction itself. Compared to the neutral condition, the sycophantic condition showed no statistically significant effect on feeling understood by other humans (d = −0.08,
+p = 0.295) or intellectual humility (d = 0.01, p = 0.861). We also tested whether sycophantic AI
+inflated participants’ self-perceptions—a possible consequence of receiving validation, and the opposite of intellectual humility [7]. Sycophantic AI did not lead participants to rate themselves more
+favorably than the average person (d = 0.06, p = 0.263), but did show a marginal tendency for
+
+5
+
+5.0
+4.8
+Feeling understood by
+the AI chatbot 4.6
+4.4
+
+5.0
+4.8
+4.6
+vs n.: +0.41***
+vs c.: +0.38** 4.4
+
++0.003 +0.010** +0.011***
+
+5.4
+
+5.4
+
+-0.001 -0.007 -0.009*
+
+Feeling better after the 5.2
+
+5.2
+
+5.0
+
+vs n.: +0.20**
+vs c.: +0.24*** 5.0
+
+4.6
+Finding the AI chatbot 4.4
+conversation helpful
+4.2
+4.0
+
+4.6
+4.4
+4.2
+vs n.: +0.39***
+vs c.: +0.31** 4.0
+
+5.25
+Intention to act on 5.00
+AI chatbot advice
+4.75
+
+5.25
+5.00
+vs n.: +0.18* 4.75
+
+AI chatbot conversation
+
+-0.015* +0.000 -0.010*
+
+-0.018** -0.019** -0.023***
+
+vs c.: +0.28**
+
++0.006 -0.007 -0.007
+
+Feeling certain about 5.6
+
+5.6
+
+5.4
+
+vs n.: +0.11
+vs c.: +0.18* 5.4
+
+perspective discussed
+
+challenging neutral sycophantic
+
+Session 1 3
+
+6
+
+9
+
+Session 12
+
+Fig. 4 Sycophantic AI is consistently perceived as more understanding and helpful across repeated
+interactions. Session-level outcomes from the longitudinal study (N = 1364), where participants had one conversation
+per session with their assigned AI system. Each row shows one session-level outcome, with the left column showing
+overall means by condition and the right column showing trajectories across sessions. Participants in the sycophantic
+(vs. neutral and challenging) condition consistently reported feeling more understood by their assigned AI chatbot.
+They also found the conversations more helpful, felt better after having them, and reported stronger intentions to
+act on the chatbot’s advice. Feeling understood was the only measure that increased over time. While participants in
+the sycophantic condition felt more certain in their perspectives than those in the challenging condition, they did not
+differ significantly from those in the neutral condition. In the left column, center lines indicate medians, boxes indicate
+interquartile ranges, and whiskers extend to the most extreme data point within 1.5x of the interquartile range. In the
+right column, error bars and shaded regions represent 95% confidence intervals (*p < 0.05, **p < 0.01, ***p < 0.001).
+
+participants to rate themselves more favorably than the specific people in their lives (d = 0.11,
+p = 0.080).
+
+Sycophantic AI reduces satisfaction with social interactions
+Participants in the sycophantic condition reported lower satisfaction with their real-world social interactions (a preregistered exploratory measure; 5.51 vs. 5.70 on a 7-point scale; d = 0.20, padj = 0.022)
+compared to those in the neutral condition. This effect was not accompanied by social withdrawal
+or reduced time spent with others (d = −0.03, padj = 0.719), suggesting that the shift was perceptual rather than behavioral. Sycophancy narrowed the gap between how understood participants felt
+by AI vs. humans, from 0.56 points in the neutral condition to just 0.13 points in the sycophantic condition (d = 0.25, padj < 0.001), meaning that participants in the sycophantic condition felt
+nearly as understood by their AI chatbot as by the people in their lives. The shift in social satisfaction was mediated by this narrowing gap, not by feeling understood by AI on its own (indirect
+effect = −0.079, 95% CI [−0.135, −0.029], 41% mediated).1 After controlling for the gap, the direct
+effect of sycophancy on social satisfaction was no longer significant (p = 0.13), suggesting that what
+1
+A possible explanation for the decrease in social satisfaction is that participants who discussed interpersonal conflict with
+a sycophantic AI may have come away with more negative views of the people involved. In an additional, preregistered study
+(N = 1, 099, see Supplementary Information, Section 2.7), we tested this directly and found that sycophantic AI (compared
+to neutral) did not increase attributions of blame towards the other person or reduce perspective-taking in conflict scenarios
+after a single conversation.
+
+6
+
+reduced satisfaction was not how the AI felt on its own, but how close it came to the humans in
+participants’ lives.
+
+a
+
+b
+
+60
+
+Ranked First (%)
+
+50
+40
+
+51.0% 61.6%
+51.6%
+20.8%
+
+Easiest to talk to
+
+20
+10
+neutral
+
+challenging
+
+48.0%
+50.5%
+
+15.0%
+
+Most objective
+sycophantic
+
+65.9%
+
+35.2%
+
+Most useful
+
+chance
+
+30
+
+0
+
+32.4%
+
+Understood me
+
+26.5%
+30.4%
+
+0
+
+10
+
+20
+30
+40
+50
+Reason Selected (%)
+
+60
+
+70
+
+Fig. 5 When given a choice, users select sycophantic AI over neutral and challenging alternatives.
+Participants (N = 500) had short conversations with three AI systems (sycophantic, neutral, and challenging, unlabeled
+and in randomized order) and selected which one they would most want to continue talking to. (A) Proportion of
+participants selecting each AI system. A majority (54.6%) chose the sycophantic AI, significantly above chance. (B)
+Reasons participants gave for their choice, by chosen AI system. Participants who chose the sycophantic AI were more
+likely to report that it understood me best and was easiest to talk to, while those who chose the challenging AI were
+more likely to report that it gave the most objective advice. Error bars represent 95% confidence intervals.
+
+Users choose to interact with sycophantic AI even after trying alternatives
+Studies 1-4 establish the relational consequences of sycophantic AI. In Study 5, we test whether
+users prefer sycophantic AI when they directly interact with multiple AI systems with different
+styles and make an active choice between them. Participants (N = 500) had short conversations
+with three AI systems (sycophantic, neutral, and challenging) then selected the one they would most
+want to continue talking to. A majority (54.6%) chose the sycophantic AI, significantly above chance
+(p < 0.001; χ2 (2) = 103.35, w = 0.46). This preference was robust across the topics participants
+chose to discuss (χ2 (20) = 26.90, p = 0.14) and the order in which they sampled the three AI systems
+(p = 0.81, two-sided binomial test that the chosen AI system is the first-sampled one). Figure 5 shows
+that participants who chose the sycophantic AI disproportionately reported that it understood me
+best (χ2 (1) = 32.77, p < 0.001 vs. neutral; χ2 (1) = 31.68, p < 0.001 vs. challenging) and was easiest
+to talk to (χ2 (1) = 30.11, p < 0.001 vs. challenging), rather than that it gave the most useful advice,
+which did not differ across choice groups (χ2 (2) = 3.89, p = 0.14). In contrast, those who chose the
+challenging AI were more likely than those who chose the sycophantic AI to report that it gave the
+most objective advice (χ2 (1) = 11.80, p < 0.001).
+
+Discussion
+Prior work has focused on measuring sycophancy in LLMs, understanding why it emerges, and
+assessing its influence on users in single interactions [6–8, 14, 20–24]. Here, we move beyond isolated
+interactions to provide the first longitudinal experimental evidence of sycophantic AI’s effects on
+users. We also compare sycophantic AI to a neutral AI rather than to a default or challenging
+baseline, isolating the effect of active affirmation from the absence of challenge. Focusing on the
+personal advice domain, we show that interactions with sycophantic AI can lead people to anticipate
+greater effort to be understood in their closest relationships, leave them less satisfied with their realworld social interactions, and over time, shift them toward treating sycophantic AI as a source of
+advice comparable to friends and family.2 Taken together, our findings advance a relational account
+of AI sycophancy and its impacts, with important implications for the development, alignment, and
+governance of AI systems used for personal guidance.
+2
+See Supplementary Information, Section 2.5.12 for a content analysis of the advice participants received across different
+AI conditions. Advice from the sycophantic AI was less prosocial and more self-focused than advice from the other conditions.
+
+7
+
+Recent analyses of tens of thousands of real-world human-AI conversations found that relationship
+advice is the domain where sycophantic AI behavior occurs most often [22]. While public concerns
+around AI sycophancy have focused on high-profile cases with severe outcomes, such as the reinforcement of delusions and suicidal ideation [9, 25, 26], our findings demonstrate that sycophancy
+can have lasting effects even on the median user.3 This expands the policy relevance of sycophancy
+from rare safety failures to possible population-level social effects, where even small individual-level
+effects like those we observe can accumulate into meaningful consequences across large user bases of
+hundreds of millions. It also highlights the importance of further investigating for whom, under what
+conditions, and through what mechanisms sycophantic AI shapes social outcomes. The consequences
+of using sycophantic AI may also extend beyond how one receives support to how one gives it [27]:
+if exposure to sycophancy reduces the frequency or depth of conversations people have with others,
+it may shape perspective-taking and other social skills. Our sample also reflects a particular cultural
+context, and future work should examine populations with different norms around social support,
+where effects could differ in direction or magnitude [28, 29].
+The effects we observed emerged after only three weeks of exposure, meaning whether they
+intensify or plateau over months or years of AI use remains an open question. Consistent with some
+recent longitudinal studies of a similar timescale, we find that the effect of sycophantic AI did not
+differ from that of neutral or challenging AI on affective well-being [30–32]. Recent surveys have
+linked having frequent personal conversations with AI to increased anxiety and depression [33, 34],
+though the directionality of these associations remains unclear. Assessing this class of risks will require
+evaluation paradigms built for sustained interaction, not single-turn tests [35–37]. Given that personal
+use of AI systems will likely continue to grow—and may offer genuine long-term benefits if designed
+well—building AI systems that support rather than undermine users’ broader well-being will require
+further investment in longitudinal experimental designs and new methods for measuring effects as
+they unfold over time. Such efforts will benefit from regular input from clinicians, social scientists,
+and other domain experts who have insight into possible social and psychological consequences [38].
+Beyond the question of how these effects evolve over time, the relational dynamics our work identifies could intensify as AI capabilities and affordances advance. AI systems are increasingly equipped
+with personalization and persistent memory, recalling users’ preferences, past decisions, and emotional states across conversations [39, 40]. Recent evidence suggests personalization may directly
+amplify sycophancy [41]. However, it may also produce similar relational effects on its own. Personalized AI systems will be able to remember everything, require little self-disclosure, and integrate
+digital traces such as emails or documents to model users in great detail [42, 43]. Thus, they may be
+similarly able to provide the experience of being seen and understood without much effort or friction, regardless of whether overt sycophancy is present. Beyond personalization, as AI systems take
+on embodied and multimodal forms, the societal impact of these affordances will warrant similar
+investigation.
+Our findings also point toward possible mitigations. We show that giving users a choice between
+neutral, challenging, and sycophantic AI systems does not reduce preferences for sycophancy.
+Combined with evidence that users can actively push AI systems toward validation in real-world conversations [22], this suggests that user-side mitigations alone, such as offering AI personality or style
+options, are unlikely to be sufficient. Future work should test whether transparency about interaction
+style, reflective prompts, or warnings about downstream consequences can shift user preferences, but
+preventing these dynamics will likely depend primarily on model-side mitigations [10, 44].
+Sycophantic AI delivers what people have always sought from close others—the experience of
+being seen and understood—but without the work that produces it: the time to explain and listen,
+the risk of opening up, and the empathic effort of bridging disparate experiences. When feeling
+understood becomes the default of every interaction, the human relationships that still require the
+work may, over time, come to feel like insufficient versions of what AI systems readily provide. As
+AI takes on a growing role in everyday life, whether it strengthens or damages human relationships
+will depend on designing these systems to help users without quietly leading them to expect from
+one another what only AI can deliver.
+3
+Across studies, pre-registered moderator analyses showed that the effects of sycophantic AI did not concentrate among
+participants with weaker social ties, more agreeable personalities, closer relationships with their selected confidants, or higher
+prior trust in AI. In Study 2, neither AI-usage frequency nor relationship type with the confidant selected moderated participants’ ratings. In Study 3, baseline interpersonal closeness did not moderate either primary outcome. In Study 4, social
+network strength, agreeableness, and prior trust in AI advice did not moderate any primary outcomes.
+
+8
+
+Methods
+AI manipulation
+Across all studies, we varied AI model behavior using system prompts with the same underlying
+model (gpt-4o-2024-11-20). We set generation parameters to temperature = 1.0, max tokens =
+1000, with all other parameters set to default values. The sycophantic LLM was instructed using a
+single system prompt. As LLMs are biased in the sycophantic direction, the neutral LLM used a twostage pipeline: a system prompt with no stance instructions was used to generate an initial response,
+and a second LLM call was then used to remove any residual validating or affirming language [45].
+The challenging LLM (Studies 4 and 5 only) used the same system prompt as the neutral condition
+along with a hidden injected user-assistant exchange where the user instructs the model to point
+out reasoning flaws and contradictions [6]. We confirmed that models behaved as intended in three
+ways: through pre-study benchmarking, LLM-judge evaluation of sampled experiment conversations,
+and participant-reported manipulation checks (see Supplementary Information, Section 2.1) [5]. All
+experiments were conducted between January 2026 and April 2026.
+
+Study 1. Importance of support from humans and AI
+We recruited 253 U.S.-based adults via the crowd-sourcing platform Prolific (gender-balanced through
+Prolific pre-screening; N = 228 after excluding 25 participants for failed attention checks). In a
+between-subjects design, participants described a personal situation they were seeking advice on
+and were randomly assigned to rate the importance of receiving different kinds of support from
+a conversation with either someone close to them or an AI chatbot. Participants in the human
+condition identified a specific person they would normally talk to about that situation and reported
+the relationship type (e.g., friend, family member) and closeness using the Inclusion of Other in the
+Self Scale [46]. Participants in the AI condition reported their AI usage frequency. All participants
+rated the importance of four types of support—emotional, esteem, informational, and certainty—on
+7-point scales [15]. Our primary preregistered analysis tested the source × support type interaction
+using ANOVA, followed by simple effects and planned contrasts comparing the human-AI gap for
+emotional and esteem support to that for informational support.
+
+Study 2. Perceptions of support in human-sycophantic AI conversations
+We recruited 400 U.S.-based adults via Prolific (gender-balanced through Prolific pre-screening; N =
+391 after excluding nine participants for failed attention checks). Participants described a personal
+situation they were seeking advice on, were randomly assigned to either a sycophantic or neutral AI
+condition, and had an open-ended conversation with their assigned AI system about their situation.
+After the conversation, participants rated the AI systems on the same four support dimensions from
+Study 1 (emotional, esteem, informational, and certainty). Our primary preregistered analyses tested
+whether the sycophantic AI received higher ratings of emotional and esteem support than the neutral
+AI, while our exploratory preregistered analyses tested condition differences in informational support
+and certainty.
+
+Study 3. Anticipation of human conversations following sycophantic AI
+We recruited 600 U.S.-based adults via Prolific (gender-balanced through Prolific pre-screening;
+N = 592 after excluding 6 participants for failed attention checks). Participants described a personal situation they were seeking advice on, identified a specific person they would normally go to
+for advice, and reported the relationship type and closeness using the Inclusion of Other in the Self
+Scale [46]. They were randomly assigned to either a sycophantic or neutral AI condition and had an
+open-ended conversation with the AI systems about their situation. After the conversation, participants rated their expectations for a subsequent conversation with the identified person about the
+same situation, including the anticipated effort it would take to be understood by that person and
+the perceived sufficiency of their AI system conversation. Our primary preregistered analyses tested
+whether sycophantic AI increases anticipated effort and perceived sufficiency, controlling for closeness to the identified person. Exploratory preregistered analyses tested moderation by closeness and
+mediation by AI conversation perceptions (helpfulness, certainty, ease, and feeling understood by the
+AI).
+
+9
+
+Study 4. Longitudinal study of sycophantic AI’s impact
+We recruited 1,400 U.S.-based adults via Prolific (census-representative on age, gender, and ethnicity
+through Prolific pre-screening) and randomly assigned them to one of four conditions: sycophantic
+AI, challenging AI, neutral AI, or no-AI control. Participants in AI conditions completed 12 sessions
+over three weeks (four per week), each consisting of open-ended conversation about a self-selected
+personal advice topic drawn from a pool of 16 prompts (full list in Supplementary Methods, Section
+1.3). These prompts were intentionally designed around situations where the user is considering or
+has taken an action of questionable wisdom, either toward others (e.g., ending a friendship, refusing
+to help) or toward themselves (e.g., neglecting sleep, unhealthy coping habits). This created contexts
+where uncritical validation could carry a real cost, and where sycophancy is therefore most likely
+to differ from neutral or challenging responses. Sessions required a minimum of 7 conversational
+turns and ended after a maximum of 20. Participants in the no-AI control condition completed only
+the initial and final surveys and received no between-survey task. Pre- and post-treatment surveys
+measured three primary outcomes: feeling understood by humans, intellectual humility, and selfenhancement. A fourth primary outcome, relative preference for AI over humans for personal advice,
+was measured weekly. Other session-level and weekly surveys complemented these outcomes by measuring participants’ experience with the AI (e.g., helpfulness, positive affect, feeling understood by
+AI), social time spent with others, social satisfaction, and actions taken based on advice (see Supplementary Information, Section 2.5 for full list of secondary and exploratory outcomes). Repeated
+measures were analyzed with mixed-effects regression (condition, time, condition × time, random
+intercepts); pre-post outcomes were analyzed by regressing post-treatment scores on condition and
+baseline scores. Pairwise contrasts against the sycophantic condition were corrected using HolmBonferroni within each hypothesis family of contrasts.4 Attrition was 15.7% in AI conditions (84.3%
+completing all 12 sessions) and 10% in the no-AI control (90% completing pre- and post-treatment
+surveys), with no significant differential attrition across conditions (χ2 = 2.05, p = 0.36). Full attrition analyses are reported in Supplementary Information, Section 2.5.2. Missing data was handled
+with full-information maximum likelihood (FIML) under missing-at-random (MAR) assumptions,
+following intention-to-treat principles.
+
+Study 5. Preferences for different AI interaction styles
+We recruited N = 500 U.S.-based adults via Prolific (gender-balanced through Prolific pre-screening)
+for a within-subjects study. Participants described a personal situation they were seeking advice
+on, then had brief conversations (three conversational turns each) with three AI interaction styles
+(sycophantic, neutral, challenging), presented as Models A, B, and C with randomized label-tostyle mapping. After sampling all three, participants selected which model they would most want to
+continue talking to. Our primary preregistered analysis predicted that the sycophantic AI would be
+chosen as first preference more often than chance. Our exploratory preregistered analyses examined
+preference rankings, sampling order effects, and reasons for participants’ choice.
+
+Participants and procedures
+All studies were approved by the Stanford University Institutional Review Board. Participants provided informed consent before beginning each study. Participants were recruited from Prolific and
+compensated at a median rate of $12/hour. Participants in the longitudinal study received a completion bonus of $10 (distributed throughout the three-week period) for completing all 12 sessions.
+Preregistrations for all five studies are available at https://osf.io/5ef7b. Data and analysis code are
+available at https://github.com/lujainibrahim/syc-ai-impact. Sample sizes were determined by power
+analyses targeting 80-90% power to detect effects at α = 0.05 (see Supplementary Information for
+4
+Deviations from the pre-registered analysis plan: (i) the pre-registration included a global clause stating that all primary
+models include baseline scores as covariates. Here, we did not include the baseline relative-preference item as a covariate in the
+H1 mixed-effects model because that item asked about “an AI chatbot” in general, whereas the weekly follow-up measures asked
+about the participant’s specific assigned chatbot, and the two are therefore not on the same construct. A sensitivity analysis
+that nonetheless includes the baseline item as a covariate results in an equivalent conclusion (Supplementary Information,
+Section 2.5). (ii) Mixed-effects models specified random intercepts and random slopes for time in the pre-registration, with
+the pre-registration permitting a fallback to intercepts only if convergence issues arose. All weekly models reported here
+use random intercepts only. (iii) Effect sizes are reported as Cohen’s d using two conventions matched to the analysis type
+(no convention was specified in the pre-registration). For mixed-effects analyses on longitudinal outcomes (H1 and weekly
+trajectories), d is the fixed-effect condition coefficient divided by the between-participant standard deviation of person-level
+outcome means within the two contrast arms. For between-subjects analyses with one observation per participant (H2–H7
+ANCOVA, manipulation checks, exploratory contrasts), d uses the pooled within-condition standard deviation of the outcome.
+
+10
+
+each study’s power analysis). Across all studies, participants were excluded for failing the attention
+check or completing the study “inhumanly quickly” as defined and detected by Prolific’s automatic
+checker. Condition assignment was implemented via Qualtrics randomizer, and participants were
+blind to condition. Complete item wordings, scale details, and full analysis plans for all studies are
+provided in Supplementary Information and the pre-registrations.
+
+References
+[1] McClain, C., Anderson, M., Sidoti, O. & Bishop, A. How teens use and view AI. Washington,
+DC: Pew Internet & American Life Project. Retrieved February 26, 2026 (2026).
+[2] Zao-Sanders, M. How people are really using Gen AI in 2025. Harvard Business Review (2025).
+URL https://hbr.org/2025/04/how-people-are-really-using-gen-ai-in-2025. Accessed: 2025-0715.
+[3] McBain, R. K. et al. Use of generative AI for mental health advice among US adolescents
+and young adults. JAMA Network Open 8, e2542281 (2025). URL https://jamanetwork.com/
+journals/jamanetworkopen/fullarticle/2841067.
+[4] Ipsos bva. L’impact des usages de l’ia sur la santé mentale des jeunes européens. Tech. Rep.
+(2026). URL https://www.cnil.fr/sites/default/files/2026-05/ipsos bva les jeunes et l ia.pdf.
+[5] Cheng, M. et al. Elephant: Measuring and understanding social sycophancy in LLM. In The
+Fourteenth International Conference on Learning Representations (ICLR) (2026).
+[6] Sharma, M. et al. Towards understanding sycophancy in language models. In The Twelfth
+International Conference on Learning Representations (2024). URL https://openreview.net/
+forum?id=tvhaxkMKAn.
+[7] Rathje, S. et al. Sycophantic AI increases attitude extremity and overconfidence. OSF (2025).
+[8] Cheng, M. et al. Sycophantic AI decreases prosocial intentions and promotes dependence.
+Science 391, eaec8352 (2026).
+[9] Hill, K. A teen was suicidal. chatgpt was the friend he confided in. The New York Times 26
+(2025).
+[10] Perry, A. In defense of social friction. Science 391, 1316–1317 (2026).
+[11] Reis, H. T., Clark, M. S. & Holmes, J. G. Perceived partner responsiveness as an organizing
+construct in the study of intimacy and closeness. In Handbook of closeness and intimacy, 211–236
+(Psychology Press, 2004).
+[12] Reis, H. T., Lee, K. Y., O’Keefe, S. D. & Clark, M. S. Perceived partner responsiveness promotes
+intellectual humility. Journal of Experimental Social Psychology 79, 21–33 (2018).
+[13] Ong, D. Friendlier LLMs tell users what they want to hear-even when it is wrong. Nature 652,
+1134–1135 (2026).
+[14] Cheng, M. et al. Verbalizing LLMs’ assumptions to explain and control sycophancy. arXiv
+preprint arXiv:2604.03058 (2026).
+[15] Cutrona, C. E. & Suhr, J. A. Controllability of stressful events and satisfaction with spouse
+support behaviors. Communication research 19, 154–174 (1992).
+[16] Yin, Y., Jia, N. & Wakslak, C. J. AI can help people feel heard, but an AI label diminishes this
+impact. Proceedings of the National Academy of Sciences 121, e2319112121 (2024).
+[17] Yang, Y. C. et al. Social relationships and physiological determinants of longevity across the
+human life span. Proceedings of the National Academy of Sciences 113, 578–583 (2016).
+
+11
+
+[18] Smith, K. P. & Christakis, N. A. Social networks and health. Annu. Rev. Sociol 34, 405–429
+(2008).
+[19] Li, R.-N., Folk, D., Singh, A., Ungar, L. & Dunn, E. Is a random human peer better than
+a highly supportive chatbot in reducing loneliness over time? Journal of Experimental Social
+Psychology 125, 104911 (2026).
+[20] Ibrahim, L., Hafner, F. S. & Rocher, L. Training language models to be warm can reduce
+accuracy and increase sycophancy. Nature 652, 1159–1165 (2026).
+[21] Dubois, M., Ududec, C., Summerfield, C. & Luettgau, L. Ask don’t tell: Reducing sycophancy
+in large language models. arXiv preprint arXiv:2602.23971 (2026).
+[22] Shen, J. H. et al. How people ask Claude for personal guidance. Anthropic Research (2026).
+URL https://www.anthropic.com/research/claude-personal-guidance. Accessed: 2026-05-03.
+[23] Sun, Y. & Wang, T. Be friendly, not friends: How llm sycophancy shapes user trust. In
+Proceedings of the 2026 CHI Conference on Human Factors in Computing Systems, 1–15 (2026).
+[24] Bo, J. Y., Kazemitabaar, M., Deng, M., Inzlicht, M. & Anderson, A. Invisible saboteurs:
+Sycophantic llms mislead novices in problem-solving tasks. In Proceedings of the 2026 CHI
+Conference on Human Factors in Computing Systems, 1–31 (2026).
+[25] Yang, A. Lawsuit claims character.AI is responsible for teen’s suicide. NBCNews.com (2024).
+URL
+https://www.nbcnews.com/tech/characterai-lawsuit-florida-teen-death-rcna176791.
+Accessed: 2025-07-15.
+[26] Moore, J. et al. Characterizing delusional spirals through human-LLM chat logs (2026). URL
+http://arxiv.org/abs/2603.16567. To appear in ACM FAccT 2026.
+[27] Perry, A. AI will never convey the essence of human empathy. Nature Human Behaviour 7,
+1808–1809 (2023).
+[28] Taylor, S. E. et al. Culture and social support: who seeks it and why? Journal of personality
+and social psychology 87, 354 (2004).
+[29] Bakir, V., Laffer, A., McStay, A., Miranda, D. & Urquhart, L. On manipulation by emotional
+ai: Uk adults’ views and governance implications. Frontiers in Sociology 9, 1339834 (2024).
+[30] Kirk, H. R. et al. Neural steering vectors reveal dose and exposure-dependent impacts of humanAI relationships. arXiv preprint arXiv:2512.01991 (2025).
+[31] Luettgau, L. et al. People readily follow personal advice from AI but it does not improve their
+well-being. arXiv preprint arXiv:2511.15352 (2025).
+[32] Phang, J. et al. Investigating affective use and emotional well-being on chatgpt. arXiv preprint
+arXiv:2504.03888 (2025).
+[33] Perlis, R. H. et al. Generative AI use and depressive symptoms among us adults. JAMA Network
+Open 9, e2554820 (2026).
+[34] Zhang, Y., Zhao, D., Hancock, J. T., Kraut, R. & Yang, D. The rise of AI companions: how
+human-chatbot relationships influence well-being. arXiv preprint arXiv:2506.12605 (2025).
+[35] Ibrahim, L., Huang, S., Ahmad, L., Bhatt, U. & Anderljung, M. Towards interactive evaluations
+for interaction harms in human-AI systems. In Proceedings of the AAAI/ACM Conference on
+AI, Ethics, and Society, vol. 8, 1302–1310 (2025).
+[36] Wei, M. & JD, M. H. Cascades of drift: Mental health risks of prolonged AI conversations.
+Available at SSRN 6433263 (2026).
+
+12
+
+[37] Hwang, A. H.-C., Li, F., Anthis, J. R. & Noh, H. How ai companionship develops: Evidence
+from a longitudinal study. arXiv preprint arXiv:2510.10079 (2025).
+[38] Zhao, X. Psychologists must be involved in building conversational AI chatbots. Nature Reviews
+Psychology 1–3 (2026).
+[39] Wu, Y. et al. From human memory to AI memory: A survey on memory mechanisms in the era
+of llms. arXiv preprint arXiv:2504.15965 (2025).
+[40] Karny, S., Baez, A. & Pataranutaporn, P. Neural transparency: Mechanistic interpretability interfaces for anticipating model behaviors for personalized ai. In Proceedings of the 31st
+International Conference on Intelligent User Interfaces, 868–884 (2026).
+[41] Jain, S., Park, C., Viana, M., Wilson, A. & Calacci, D. Interaction context often increases sycophancy in LLMs. In Proceedings of the 2026 CHI Conference on Human Factors in Computing
+Systems, 1–26 (2026).
+[42] Gabriel, I., Keeling, G., Manzini, A. & Evans, J. We need a new ethics for a world of AI agents.
+Nature 644, 38–40 (2025).
+[43] Shaikh, O. et al. Creating general user models from computer use. In Proceedings of the 38th
+Annual ACM Symposium on User Interface Software and Technology, 1–23 (2025).
+[44] Zohar, E., Bloom, P. & Inzlicht, M. Against frictionless AI. Communications Psychology 4, 39
+(2026).
+[45] Zhao, D., Yang, D. & Bernstein, M. S. Knoll: Creating a knowledge ecosystem for large language
+models. In Proceedings of the 38th Annual ACM Symposium on User Interface Software and
+Technology, 1–23 (2025).
+[46] Aron, A., Aron, E. N. & Smollan, D. Inclusion of other in the self scale and the structure of
+interpersonal closeness. Journal of personality and social psychology 63, 596 (1992).
+
+Author contributions. L.I.: Conceptualization, Methodology, Software, Formal analysis, Investigation, Writing - Original Draft. F.H.: Conceptualization, Methodology, Software, Formal analysis,
+Investigation, Data Visualization, Writing - Review & Editing. M.C.: Conceptualization, Investigation, Writing - Review & Editing. C.L.: Investigation, Writing - Review & Editing. R.A.: Project
+administration, Writing – Review & Editing. R.W.: Investigation, Writing – Review & Editing. L.R.:
+Conceptualization, Methodology, Supervision, Writing - Review & Editing. D.Y.: Conceptualization,
+Methodology, Supervision, Writing - Review & Editing.
+Acknowledgments. L.I. acknowledges funding from the UK AI Security Institute. F.H.’s PhD is
+supported by the Economic and Social Research Council [ES\Y001761\1]. M.C.’s PhD is supported
+by the Stanford Knight-Hennessy scholarship. L.R. acknowledges support from the Royal Society
+Research Grant RG\R2\232035 and the UKRI Future Leaders Fellowship [MR/Y015711/1]. D.Y is
+supported by grants from Open Philanthropy, ONR N000142412532, NSF IIS 2247357, and Schmidt
+Sciences. We thank Alia El Kattan and Meryl Ye for feedback on the manuscript; Andrew Strait
+and Julianne Ancey for support facilitating the project grant; Sunny Yu, Dora Zhao, Steve Rathje,
+Desmond Ong, and Verena Rieser for helpful conversations.
+Competing interests. C.L. is currently employed by Microsoft. L.I. was recently in a contractual
+agreement with Google DeepMind. No competing financial interests exist related to the presented
+results. The other authors declare no competing interests.
+Supplementary Information. Supplementary Information is available at https://github.com/
+lujainibrahim/syco-long-study.
+Code availability. Code for statistical analyses and figure generation is available at https://
+github.com/lujainibrahim/syco-long-study.
+Data availability. Anonymized data from all experiments is available at https://github.com/
+lujainibrahim/syco-long-study.
+13
+
+

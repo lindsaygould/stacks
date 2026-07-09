@@ -1,0 +1,927 @@
+Cognitive Dark Matter: Measuring What AI Misses
+Patrick J. Mineault∗
+
+Thomas L. Griffiths†
+
+Sean Escola‡
+
+arXiv:2603.03414v1 [q-bio.NC] 3 Mar 2026
+
+March 5, 2026
+We propose that the jagged intelligence landscape of modern AI systems arises from a missing training signal that
+we call “cognitive dark matter” (CDM): brain functions that meaningfully shape behavior yet are hard to infer
+from behavior alone. We identify key CDM domains—metacognition, cognitive flexibility, episodic memory, lifelong
+learning, abductive reasoning, social and common-sense reasoning, and emotional intelligence—and present evidence
+that current AI benchmarks and large-scale neuroscience datasets are both heavily skewed toward already-mastered
+capabilities, with CDM-loaded functions largely unmeasured. We then outline a research program centered on three
+complementary data types designed to surface CDM for model training: (i) latent variables from large-scale cognitive
+models, (ii) process-tracing data such as eye-tracking and think-aloud protocols, and (iii) paired neural–behavioral
+data. These data will enable AI training on cognitive process rather than behavioral outcome alone, producing
+models with more general, less jagged intelligence. As a dual benefit, the same data will advance our understanding
+of human intelligence itself.
+
+Over the past several years, AI has made remarkable
+strides [1–4]. Benchmarks, where they exist, have increasingly become saturated: while it took close to 20 years
+to go from defining handwriting and speech recognition
+benchmarks to solving them at a human level, more recent
+benchmarks focusing on natural language processing and
+advanced reasoning have reached saturation within a period of around 2 years [5]. The potent combination of clear
+definitions of success, as captured by benchmarks, and
+unleashing impressive amounts of compute on large-scale
+datasets has led to rapid advances, first in vision and language, and now in other domains, including, in particular,
+software programming, mathematics, and biology.
+
+The data used to train current AI models largely amounts
+to human behavior: the text, images, and other digital
+traces that we generate. Underlying these data is a set of
+complex causal processes: human cognition. The thoughts
+and feelings that result in our behavior are latent variables that AI models rarely have access to. What we are
+calling cognitive dark matter is largely made up of these
+latent variables. By giving AI models better access to
+the underlying causal processes, we can potentially train
+those models to perform in ways that are more similar to
+humans, more interpretable, and more generalizable.
+
+Here, we sketch a working definition of CDM, argue that
+its under-measurement explains jagged intelligence, and
+Nevertheless, there remain clear gaps in cognitive capabil- propose a concrete path forward: using rich data derived
+ities. Artificial intelligence is jagged [6]: while AI systems from human minds and brains to supervise models on
+are remarkably adept at some tasks that are very difficult process, not just outcomes.
+for individual humans, they often stumble on seemingly innocuous tasks. It can be difficult to predict the boundary
+between what is feasible and infeasible for an AI model. An Example of Jagged Intelligence
+Why is performance jagged? Our thesis is that progress
+and Missing CDM in AI
+concentrates in capabilities where data and metrics are
+rich, and stalls where they are thin. We call the latter Consider a well-defined software engineering task: asking
+cognitive dark matter (CDM): capabilities that materi- an LLM to create a web application that allows one to
+ally shape intelligent behavior yet are under-measured and practice 3 chess endgames (mate-in-one) of its choice.
+under-represented in the data and benchmarks that drive In our tests with state-of-the-art models at the time of
+modern AI, and thus are poorly instilled in models during writing1 (GPT-5.1-Thinking, Claude Opus 4.5, Gemini
+training. Much as the existence of cosmological dark mat- 3.0 Pro), we have not been able to reliably complete this
+ter is inferred from its macro-effects—heavy dark matter task in a single prompt (Figure 1). The reason is rather
+must exist for galaxies to hold together under gravity—the unintuitive: most frequently, models generated invalid
+existence of CDM is inferred from the fact that humans endgames.
+must have certain competencies in order to survive and
+thrive, but these have proved difficult to elicit from and On the one hand, it is remarkable that these models have
+encyclopedic knowledge of software packages and can write
+evaluate in behavior.
+∗ Amaranth Foundation
+
+1 This particular issue might be fixed by the time you read these
+lines, but the general point stands: it’s hard to predict what models
+fail at and why.
+
+† Princeton University
+‡ Protocol Labs
+
+1
+
+competent code to display a chess board with draggable
+pieces, involving hundreds of valid lines of HTML, CSS,
+and JavaScript. A novice programmer might struggle with
+a drag-and-drop implementation, but would at least verify
+that the app they’ve created actually accomplishes the
+overall goal: practicing endgames.
+
+More broadly, metacognition [17]—the self-reflective
+monitoring of ongoing performance and, when needed,
+triggering of corrective control—endows humans with the
+ability to recover from compounding errors, even if human
+competence at individual subtasks is weaker than that
+of an equivalent machine. Competent adults with strong
+capabilities in some domains and weaknesses in others
+can compensate for them: a procrastinating student redoubles their effort upon receiving a D on a midterm. In
+our chess endgame example, metacognition appears to be
+missing. Claude Code has access to feedback and tools
+in a loop. Thus, after multiple failures, the model could
+choose a different tack, leveraging its superhuman coding
+abilities and using already imported chess libraries to check
+that the proposed positions are valid. Instead, Claude
+Code perseveres with a bad strategy, and so displays low
+cognitive flexibility.
+
+CDM, Jagged Intelligence,
+human–AI interactions
+
+and
+
+In addition to metacognition and cognitive flexibility, current AI models display difficulty in retrieving relevant facts,
+updating their knowledge, generating genuinely novel explanations, and reasoning about the minds and feelings of
+humans. We presume that these missing capabilities, as
+well as others, underlie jagged intelligence and impede the
+transition from chatbots to full agents. More significantly,
+the lack of these abilities—the causal processes that underlie human performance—means that our intuitions about
+how the behavior of AI systems will generalize from task
+to task are dramatically off the mark.
+
+Figure 1: White to play. Notice that the position is
+invalid; black is already in check. This could be avoided
+by checking the validity of the proposed positions via
+the already imported libraries; failing to identify one’s
+cognitive weaknesses is a failure of metacognition.
+
+Put another way, the problem of jagged intelligence is not
+just one of task failure, but of failure type. Hardcoding
+invalid endgames in an otherwise sophisticated web app
+for chess is not merely wrong; it’s alien. When humans
+fail, they tend to fail in predictable ways: overlooking edge
+cases, making arithmetic errors, or losing focus. These
+failure modes are legible to people, which makes collaboration possible. AI systems that fail in unpredictable ways
+resist integration into human social networks. The goal is
+not merely to reduce failures, but to ensure that failures
+are detectable and interpretable. One path to achieve this
+is recapitulating the cognitive processes that generated
+human outputs. Systems built on these foundations won’t
+just generalize better, they will also fail better, in ways
+we can understand, anticipate, and correct.
+
+The CDM of Multistep Tasks
+We’ve seen remarkable improvements in the ability of
+coding agents to complete long tasks, with a doubling of
+task length every 7 months [7]. State-of-the-art models
+now complete, with 50% probability, tasks that would
+take a human several hours [8]. However, the mechanism
+by which they’ve reached this capability appears quite
+different from humans. Ord [9] noted that LLMs’ success
+or failure on these coding tasks are compatible with a
+constant hazard rate over time. That is, if a task contains
+n subtasks and the probability of success for each subtask
+is p, the probability of success for the overall task is pn .
+The recent increase in task length by frontier models has
+resulted from increasing p, or by decreasing the effective
+number of error-prone steps n by the use of verified tools
+(cf. [10]), instead of changing the fundamental dynamics
+of multistep task completion. This is problematic: unless
+p = 1, an exponential falloff will doom long tasks [11, 12].
+
+Jagged intelligence stems from a
+lack of measurement
+
+There are multiple well-documented mechanisms by which
+humans can display better-than-constant hazard rates, at Some capabilities are inherently hard to measure: they are
+least until boredom or fatigue kick in [13]. These include seldom expressed, and in idiosyncratic ways, which prelearning within a task [14], insight [15], or incubation [16]. clude large-scale, repeatable data collection. For example,
+2
+
+some are expressed only privately, as in metacognition; are
+expressed only once, like insight—a Eureka moment—and
+don’t leave many behavioral traces online; or are expressed
+when people interact together in private social settings,
+which again are only partially reflected in internet data.
+Behavior, expressed in text and other measurable outputs,
+is easy to measure. The cognitive processes that produce
+that behavior are not.
+
+that has already been shown to provide an advantage for
+fine-tuning AI systems [18]. By collecting large amounts
+of process-tracing data, we obtain constraints and datasets
+that can focus AI systems on more human-like perceptual
+experiences and thought processes.
+Finally, paired neural and behavioral data offer a
+unique opportunity for training AI systems. Indeed, multiple studies have shown glimpses that generic models
+can be fine-tuned with brain data, leading to improved
+performance advantages. Recent work has demonstrated
+that fine-tuning audio and video models on neural activity
+improved performance on downstream semantic and social
+tasks [28–30]. Furthermore, training on neural data can
+increase robustness to adversarial stimuli [31–34]. We are
+not the first to suggest [35] that neural data could be used
+to directly train artificial intelligence. Our point is more
+subtle, which is that neural data could be most profitably
+used to train artificial intelligence systems in domains
+which are heavily loaded on cognitive dark matter, which
+is otherwise difficult to measure in standard paradigms.
+
+Our thesis is that we need more data in which these
+hard-to-measure elements are made visible. A direct approach would be to measure and replicate, in humans, the
+process by which a complex task is completed. Process
+supervision [18]—rewarding a model for producing not
+just the desired outcome, but the intermediates leading
+to the correct outcome—can improve the performance of
+models on mathematical reasoning. However, for most
+tasks, this direct approach is not possible because the
+“correct” intermediate steps are unknown. An alternative
+is to surface the latent variables that reflect cognitive
+dark matter and that underlie the generation of behavior,
+and then use these latents as supervision signals to train
+general-purpose models.
+
+Charting the Data Gap
+
+We see three kinds of data that can surface the content
+of cognitive dark matter. The first is data sampled
+from cognitive models constructed from large-scale rich
+behavioral data. This is illustrated by problem-solving:
+classic work by Newell and Simon [19] suggested that
+we can think about human problem solving in terms of
+searching a tree of possibilities, and identified heuristic
+strategies people use to make that search efficient. Modern
+AI systems are trained on data that are generated by
+such processes, in the form of reasoning traces that are
+used to fine-tune models. However, search is just one
+kind of cognitive process; the pipeline from behavior to
+cognitive model to synthetic data could be applied to
+other cognitive domains. By measuring behavior when
+people make complex decisions, engage in planning, and
+reason about the minds of others, we can develop accurate
+cognitive models of those behavioral paradigms [20], which
+can then be used to develop synthetic CDM-enriched data
+in these domains. This requires collecting large-scale
+behavioral studies of human cognition [21, 22] in specific
+domains.
+
+Bringing this vision to life will require scaling (i) behavioral
+data for robust cognitive models, (ii) process-tracing data,
+and (iii) paired neural-behavioral data, all in the context
+of tasks that load heavily on CDM. For neural-behavioral
+data in particular, however, the issue isn’t just scale—it is
+subject matter. A useful taxonomy of cognitive functions
+indexed to AI capabilities is the one introduced by Liu
+et al. [23]: they define capabilities supported by human
+cognition and their mastery in current AI in a three-tier
+classification, ranging from L1 (high capability) to L2
+(partial progress) to L3 (rarely explored) (see Table 1). L1
+covers cognitive functions like language comprehension and
+visual perception, which have been mastered by current AI
+systems, while L3 covers functions aligned with cognitive
+dark matter (with L2 comprising intermediate functions).
+A survey of large-scale human neural datasets reveals
+that intensive neuroimaging datasets are heavily skewed
+towards two domains, vision and language, which are
+by-and-large mastered by AI models: they are classified
+as L1. This is in contrast with the broader field of neuroimaging and neuroscience. Analyzing the topics of neuroimaging studies [36] and 2025 biorxiv and PsyArXiv
+neuroscience preprints reveals that many studies focus on
+CDM-loaded L2 and L3 domains, but these are typically
+small-scale, single-focus, hypothesis-driven, short-duration
+experiments. In short, we have simply not built the kind
+of intensive, foundational neural-behavioral dataset that
+would allow translation to AI.
+
+A second kind of behavioral data that can be used to train
+AI systems is process-tracing data. Methods such as
+eye-tracking or mouse-tracking [24, 25] can reveal what
+people are attending to and what options they are considering, elucidating their cognitive processes. Triplet odd-one
+out tasks reveal the implicit geometry of the manifold of
+images, and can help improve performance and robustness
+[26]. Process tracing techniques also include “think aloud”
+paradigms, where people are encouraged to describe the To summarize, with few exceptions, those aspects of cogsteps they are executing when working on a problem [27]. nition that are well-mastered by AI are those that are
+This results in rich text descriptions of mental processes, well-measured by large-scale neuroscience datasets. Conmaking ineffable cognitive processes visible — something versely, those aspects of AI that are not yet mastered are
+3
+
+AI Tier
+
+Capability Level
+
+Examples
+
+L1
+
+Visual Perception, Language Comprehension, Language Production, Face
+Recognition, Auditory Processing, Reflexive Responses
+
+L2
+
+High
+(superhuman in
+some cases)
+Partial progress
+
+L3
+
+Rarely explored
+
+Planning, Logical Reasoning, Decision-making, Working Memory, Reward
+Mechanisms, Multisensory Integration, Spatial Representation & Mapping, Attention,
+Episodic Memory, Sensorimotor Coordination, Scene Understanding & Visual
+Reasoning, Visual Attention & Eye Movements, Semantic Understanding & Context
+Recognition, Adaptive Error Correction, Motor Skill Learning, Motor Coordination
+Cognitive Flexibility, Inhibitory Control, Social Reasoning & Theory of Mind,
+Empathy, Emotional Intelligence, Self-reflection, Tactile Perception, Lifelong
+Learning, Cognitive Timing & Predictive Modeling, Autonomic Regulation, Arousal
+& Attention States, Motivational Drives
+
+Table 1: Tiers of cognitive capabilities in AI systems, adapted from Liu et al. [23]. Their categorization stratifies
+different cognitive capabilities in terms of how well they are explored in AI systems.
+
+Papers by Cognitive Level Across Data Sources
+Intensive Neuroimaging
+
+Number of Papers
+
+15
+
+Neuroquery
+
+bioRxiv/PsyArXiv 2025
+
+4000
+2000
+3000
+
+10
+2000
+1000
+5
+1000
+
+0
+
+0
+
+L1
+
+L2
+
+L3
+
+0
+
+L1
+
+L2
+
+L3
+
+L1
+
+L2
+
+L3
+
+Level
+
+Figure 2: Distribution across AI tiers of the cognitive capabilities focused on in intensive neuroimaging datasets, and
+in the neuroscience literature at large. While the field of neuroscience as a whole is interested in L2 and, to a smaller
+extent, L3 capabilities, foundational large-scale datasets do not yet exist for these capabilities.
+
+4
+
+also poorly measured in large-scale neuroscience experiments. This gap suggests a clear opportunity with dual
+benefits: obtain large-scale neuroscience datasets during
+complex cognition, with a high loading on CDM; and then
+use these datasets to both better understand ineffable
+aspects of human cognition and fill the gaps in the jagged
+intelligence landscape of AI systems.
+
+We propose that longitudinal, large-scale, high-entropy
+datasets should be collected in humans with a high loading
+on CDM capabilities that we suspect could help solve
+jagged intelligence:
+• Metacognition: Humans have limited cognitive resources and must decide how to deploy those resources
+effectively [47]. This requires an interconnected set
+of metacognitive abilities: self-assessment, to know
+what we can and can’t do [48]; task monitoring, to
+track progress against our expectations [49]; and metareasoning, deciding which strategies to pursue in new
+tasks [50]. These abilities must be calibrated: if we
+are systematically over-confident, we take on tasks
+where we lack good prospects for success, or pursue
+overly simplistic strategies for complex tasks. While
+humans consistently make calibration errors, those
+errors are often explicable as rational inferences from
+limited data [51]. By contrast, current AI models
+consistently overestimate their abilities [40, 52, 53].
+
+Charting the Measurement Gap
+As with the availability of neural data, when we survey the
+current benchmarks that the AI research community uses
+to measure model performance, we find a substantial underrepresentation of CDM. Categorizing each benchmark
+in the evaluation suites published as part of the releases
+of Claude Opus 4.5 [38], Gemini 3 Pro [37], and GPT 5.2
+[39] by the highest tier of AI function (according to the
+Liu et al. schema) that the benchmark probes, we find
+that the evaluation suites largely focus on L2 cognitive
+functions with little L3 function characterization (Figure
+3; see Methods). Two clear exceptions are ARC-AGI-2
+[41] and τ 2 -bench [42]. The former challenges models to
+discover and operate under the constraints of never-beforeseen rules and thus requires cognitive flexibility, an L3
+function. The latter assesses how well models cooperate
+with users in customer support environments and requires
+the L3 function of social reasoning and theory of mind.
+
+• Cognitive flexibility: A hallmark of biological intelligence is the ability to quickly develop adaptive
+strategies in novel environments or in response to
+feedback. This capability is demonstrated most classically in the Stroop task, where a switch in rules
+requires a new behavioral strategy and the suppression of a prior one [54]. This is not a strictly human
+capability with rodent and monkey versions of the
+Stroop task demonstrating that other mammals can
+infer context switches and apply context-dependent
+strategies [55, 56]. Models, on the other hand, show
+inappropriate perseverative behavior, as in our chess
+example, where failing strategies were repeatedly applied despite clear feedback. The ARC-AGI series
+of benchmarks also demonstrates this biological versus artificial intelligence disparity. When faced with
+novel situations with unknown rules, humans quickly
+figure out what to do while models struggle even with
+considerable computational resources [41].
+
+As Figure 3 shows, 2025-era evaluation suites don’t test L1
+functions in isolation, focusing almost exclusively on L2,
+suggesting that the field assumes human or super-human
+performance for L1 functions by all modern models. In
+contrast, evaluation suites for GPT-4 included multiple
+benchmarks with L1 functions as the highest AI tier [40].
+So while the evaluation field has evolved to match the
+cognitive frontier of current models, assessment of CDMloaded L3 functions is still lacking. This results in a
+skewed view of performance with the jagged edges of
+modern models largely hidden.
+
+• Episodic memory: Humans can remember salient
+events and use these content-addressable memories to
+shape future behavior, abilities that currently evade
+deployed language models. Workarounds like external
+memory stores and retrieval-augmented generation
+are employed to reinject relevant context into the context windows of large-language models. Hendrycks et
+al. [57] frame this as a type of capabilities distortion,
+a path for models’ separation between training and
+evaluation. Ideally, models would have an in-built
+ability to tag, index, and flexibly retrieve episodic
+memories, enabling learning from experience.
+
+What to collect next: a CDM wish
+list
+We believe that the time is ripe to collect datasets that
+capture CDM and to design benchmarks to properly measure it in AI. It has never been easier to collect internetscale behavioral data across a wide range of complex
+cognitive tasks [43]. Intensive neuroimaging datasets [44]
+have provided a blueprint for collecting these datasets in
+the context of neuroimaging; in addition to fMRI, OPMMEG and functional ultrasound imaging can help us peer
+into the brain non-invasively; and invasive recording technologies including human Neuropixels [45] and recordings
+during epilepsy monitoring [46] give increasing access to
+fine-grained neural activity that has otherwise eluded us.
+
+• Lifelong learning: Humans learn to see, hear, and
+control their bodies during development despite limited experience [58]; teenagers learn to drive in a
+dozen hours; and we continue to adapt our behavior
+over a lifetime, despite changes in our environment,
+5
+
+Benchmarks by Cognitive Level Across AI Models
+Claude 4.5
+
+Gemini 3 Pro
+
+GPT 5.2
+
+# benchmarks
+
+15
+
+10
+
+5
+
+0
+
+L1
+
+L2
+
+L3
+
+L1
+
+L2
+
+L3
+
+L1
+
+L2
+
+L3
+
+Level
+
+Figure 3: Distribution across AI tiers of the benchmarks used by leading AI labs. We assigned AI tier labels to each
+benchmark reported in the three models’ launch documents [37–39] according to the highest AI tier of the cognitive
+functions the benchmark is designed to probe. Frontier models are almost exclusively benchmarked against tests
+that target L2 capabilities. This is an interesting development from 2023-era models, which were evaluated on L1
+capabilities [40]. What used to be the frontier has faded into the background.
+our bodies, and our senses. Current models require
+retraining on massive datasets to incorporate new information. Continual and data-efficient learning could
+unlock AI that acquires and integrates knowledge and
+skills rapidly, overcomes catastrophic forgetting, and
+avoids pitfalls like the reversal curse [59].
+
+happens when the cup is pushed off the table [64]?—
+to complex multidegree social interactions—what will
+she think that he thinks that she thought when he
+said, etc. [65]? Accurate (enough) mental models
+permit reasoning and planning in novel scenarios: the
+essence of generalization. Current AI develops world
+models that are at best incomplete and at worst
+wrong [66], with demonstrated resultant cognitive
+impairment.
+
+• Abductive reasoning: AI research has focused heavily on improving deductive reasoning, using reinforcement learning to support the generation of chains
+• Emotional intelligence: Emotional intelligence inof thought that result in verifiable outcomes in settings like mathematics and logic [60]. Large language
+volves the recognition of affective states in oneself
+models also show some success in inductive reasoning:
+and others, the influence of those states over behavtraining for next-token prediction implicitly trains
+ior, and their modulation for contextually adaptive
+these systems to perform Bayesian inference with apbehavior [67]. Examples of emotionally-guided bepropriate priors, and their behavior can be analyzed
+havior include risk perception shifts in the presence
+as such [61, 62]. However, there is a third kind of
+of fear or anger [68, 69]. We can sidestep the anthroreasoning that is much harder to capture in datasets
+pomorphic framing of whether or not machines can
+because of its intrinsic rarity: abductive reasoning,
+“feel” and still assess affective cue perception, emoin which we leap from observations to a potentially
+tional appraisals, and the prosociality of responses
+novel explanation [63]. Abduction is the kind of inin emotionally-laden contexts [70–72]. Recent examsight that leads a scientist to a new discovery, or an
+ples of tone-deaf and manipulative behavior [73, 74]—
+engineer to a new design—recognizing a kind of strucand, worse, encouragements of self-harm or violence
+ture in the data that hadn’t previously been posited.
+[75, 76]—demonstrate significant gaps in AI relative
+Capturing this human capacity is a key challenge for
+to human emotional intelligence.
+creating AI systems that can act as effective scientists
+capable of making novel discoveries or transcending An ideal dataset should contain data at each of our three
+levels: massively scaled behavioral data that is used to
+the information in their training data.
+train cognitive models from which the latent variables un• Social and common-sense reasoning: Human derlying behavior can be observed; process-tracing data;
+behavior relies on mental models of the world: causal and paired neural-behavioral data in the intensive neurelationships, governing rules, dynamical evolution roimaging style. Process supervision and neural data
+over time. These range from intuitive physics—what capture intermediate computations that are invisible in
+6
+
+outcome data alone, but increase the difficulty and cost with default temperature (1.0) and top-p (1.0) settings.
+of data acquisition.
+Applications were manually scored for UI functionality
+(board rendering, drag-and-drop) and chess validity (legal
+We currently do not have scaling laws needed to predict
+positions, valid mate-in-one solutions). Position validthe scale of neural data needed for directly training and
+ity was verified using the Python chess library. We also
+fine-tuning on neural data. However, prior experience on
+ran interactive sessions with Claude Code where we gave
+large-scale neuroscience datasets, for example, the Natural
+the system iterative feedback in an attempt to trigger an
+Scenes Dataset [77], the Allen Brain Observatory Visual
+alternative strategy, but failed to elicit it.
+Coding dataset [78], or the International Brain Lab (IBL)
+dataset [79], indicate that ˜500 hours of well-labeled, and Survey of neuroimaging datasets. We aggregated
+accessible data enable widespread re-use in neuroscience; tasks from 19 intensive neuroimaging datasets identified
+this is a useful intermediate milestone before deciding in Kupers et al. [44] and two additional datasets [84, 85].
+whether to scale up exponentially, as required by scaling Tasks were categorized according to the three-tier AI calaws.
+pability taxonomy of Liu et al. (2025), cross-referenced
+against the Cognitive Atlas. Categorization was performed
+A potentially useful shortcut could be to leverage games
+manually for most datasets; for Individual Brain Chartwith high loading on CDM capabilities [43] that have been
+ing and Many-Tasks datasets (>50 tasks each), we used
+validated by cognitive scientists in massively-scaled rich
+Claude Opus 4.5 for tagging.
+behavioral data; for example, chess [80], Sea Hero Quest
+[81], or Diplomacy [82]. Using these same environments Literature analysis. We analyzed two corpora: the
+in process elicitation scenarios and during neural record- NeuroQuery dataset [36] and all neuroscience preprints
+ings would allow us to obtain process supervision data from biorxiv and psyarxiv (Jan 1-Dec 10, 2025; ˜12,000
+and immediately evaluate the relative value of behavioral studies). Papers were categorized against the Liu et al.
+versus process data in training better AI. Indeed, scalably taxonomy using Claude Sonnet 4.5, extracting at most two
+collecting CDM means creating tasks that a broad range primary cognitive domains per paper; only the top cogniof people can perform over an extended period of time; tive domain was analyzed. Papers outside the taxonomy
+games can be designed to heavily load on CDM, while scope (structural/connectomic studies, reviews, methods
+also being sufficiently intrinsically interesting for people papers) were excluded from categorization.
+to perform the task.
+AI benchmark analysis. We referenced the technical
+reports of the releases of GPT-5.2, Claude Opus 4.5, and
+Gemini 3.0 Pro [37–39] to extract the union of benchmarks
+Conclusion
+used to assess these models’ performance. This resulted
+Measurement has been a crucial ingredient in AI [83]. Mea- in 37 benchmarks in all. We then used GPT-5.2 with high
+surement is limited in cognitive dark matter domains, fo- reasoning effort to assign cognitive functions from Table
+cusing on observable behavior rather than latent cognitive 1 to each benchmark, determining the maximum AI tier
+processes, which has made systematic progress difficult. (L1/L2/L3) probed. We re-ran the analysis 50 times to
+We propose a research program that leverages large-scale assess classification stability.
+neural and behavioral data to (i) fine-tune AI models to
+obtain more general, less-jagged intelligence and (ii) help
+us better understand human cognition. We emphasize the References
+dual value of this research: even if we miss the mark on
+[1] A. Krizhevsky, I. Sutskever, and G. E. Hinton, “Imbuilding less jagged AI—or if conventional AI research
+ageNet classification with deep convolutional neural
+proceeds sufficiently fast that jaggedness is resolved benetworks,” in Advances in Neural Information Profore neuroscience can have a major impact—foundational
+cessing Systems, F. Pereira, C. J. Burges, L. Bottou,
+datasets to study cognitive processes will prove invaluable
+and K. Q. Weinberger, Eds., vol. 25. Curran Assoin better understanding how human cognition works and
+ciates, Inc., 2012.
+building a science of intelligence. The stakes are high: better agency, calibration, and learning-to-learn are critical
+[2] D. Silver, T. Hubert, J. Schrittwieser, I. Antonoglou,
+for safer and more reliable AI.
+M. Lai, A. Guez, M. Lanctot, L. Sifre, D. Kumaran,
+T. Graepel, T. Lillicrap, K. Simonyan, and D. Hassabis, “A general reinforcement learning algorithm
+Methods
+that masters chess, shogi, and go through self-play,”
+Chess endgame evaluation. We prompted frontier
+Science, vol. 362, no. 6419, pp. 1140–1144, Dec. 2018.
+models (GPT-5.1-Thinking, Claude Opus 4.5, Gemini
+3.0 Pro) via OpenRouter to create a JavaScript web ap- [3] J. Abramson, J. Adler, J. Dunger, R. Evans, T. Green,
+plication with three mate-in-one chess scenarios, with
+A. Pritzel, O. Ronneberger, L. Willmore, A. J. Baldrag-and-drop functionality. We ran each query 10 times
+lard, J. Bambrick, S. W. Bodenstein, D. A. Evans,
+7
+
+C.-C. Hung, M. O’Neill, D. Reiman, K. Tunyasuvu- [11] N. Dziri, X. Lu, M. Sclar, X. L. Li, L. Jiang, B. Y. Lin,
+nakool, Z. Wu, A. Žemgulytė, E. Arvaniti, C. Beattie,
+P. West, C. Bhagavatula, R. L. Bras, J. D. Hwang,
+O. Bertolli, A. Bridgland, A. Cherepanov, M. ConS. Sanyal, S. Welleck, X. Ren, A. Ettinger, Z. Hargreve, A. I. Cowen-Rivers, A. Cowie, M. Figurnov,
+chaoui, and Y. Choi, “Faith and fate: Limits of transF. B. Fuchs, H. Gladman, R. Jain, Y. A. Khan,
+formers on compositionality,” May 2023.
+C. M. R. Low, K. Perlin, A. Potapenko, P. Savy,
+S. Singh, A. Stecula, A. Thillaisundaram, C. Tong, [12] Y. LeCun, “SSL, JEPA, world models and the future
+of AI,” Seminar, Sep. 2025.
+S. Yakneen, E. D. Zhong, M. Zielinski, A. Žı́dek,
+V. Bapst, P. Kohli, M. Jaderberg, D. Hassabis, and [13] N. H. Mackworth, “The breakdown of vigilance during
+J. M. Jumper, “Accurate structure prediction of
+prolonged visual search,” Q. J. Exp. Psychol., vol. 1,
+biomolecular interactions with AlphaFold 3,” Nature,
+no. 1, pp. 6–21, Apr. 1948.
+vol. 630, no. 8016, pp. 493–500, Jun. 2024.
+[14] K. Kotovsky, J. R. Hayes, and H. A. Simon, “Why
+[4] T. B. Brown, B. Mann, N. Ryder, M. Subbiah,
+are some problems hard? evidence from tower of
+J. Kaplan, P. Dhariwal, A. Neelakantan, P. Shyam,
+hanoi,” Cogn. Psychol., vol. 17, no. 2, pp. 248–294,
+G. Sastry, A. Askell, S. Agarwal, A. Herbert-Voss,
+Apr. 1985.
+G. Krueger, T. Henighan, R. Child, A. Ramesh,
+D. M. Ziegler, J. Wu, C. Winter, C. Hesse, M. Chen, [15] J. Metcalfe and D. Wiebe, “Intuition in insight and
+E. Sigler, M. Litwin, S. Gray, B. Chess, J. Clark,
+noninsight problem solving,” Mem. Cognit., vol. 15,
+C. Berner, S. McCandlish, A. Radford, I. Sutskever,
+no. 3, pp. 238–246, May 1987.
+and D. Amodei, “Language models are Few-Shot
+[16] U. N. Sio and T. C. Ormerod, “Does incubation
+learners,” May 2020.
+enhance problem solving? a meta-analytic review,”
+Psychol. Bull., vol. 135, no. 1, pp. 94–120, Jan. 2009.
+[5] D. Kiela, M. Bartolo, Y. Nie, D. Kaushik, A. Geiger,
+Z. Wu, B. Vidgen, G. Prasad, A. Singh, P. Ringshia,
+Z. Ma, T. Thrush, S. Riedel, Z. Waseem, P. Stene- [17] S. M. Fleming, “Metacognition and confidence: A
+review and synthesis,” Annu. Rev. Psychol., vol. 75,
+torp, R. Jia, M. Bansal, C. Potts, and A. Williams,
+no. 1, pp. 241–268, Jan. 2024.
+“Dynabench: Rethinking benchmarking in NLP,” Apr.
+2021.
+[18] L. Luo, Y. Liu, R. Liu, S. Phatale, H. Lara, Y. Li,
+L. Shu, Y. Zhu, L. Meng, J. Sun, and A. Rastogi,
+[6] F. Dell’Acqua, E. McFowland, E. R. Mollick,
+“Improve mathematical reasoning in language models
+H. Lifshitz-Assaf, K. Kellogg, S. Rajendran,
+by automated process supervision,” Jun. 2024.
+L. Krayer, F. Candelon, and K. R. Lakhani, “Navigating the jagged technological frontier: Field exper- [19] A. Newell and H. A. Simon, Human Problem Solving.
+imental evidence of the effects of AI on knowledge
+Englewood Cliffs, N.J.: Prentice-Hall, 1972.
+worker productivity and quality,” SSRN Electron. J.,
+[20] T. L. Griffiths, N. Chater, and J. B. Tenenbaum,
+Sep. 2023.
+Bayesian Models of Cognition. Cambridge, MA:
+[7] T. Kwa, B. West, J. Becker, A. Deng, K. GarThe MIT Press, Dec. 2024.
+cia, M. Hasin, S. Jawhar, M. Kinniment, N. Rush,
+S. Von Arx, R. Bloom, T. Broadley, H. Du, [21] J. C. Peterson, D. D. Bourgin, M. Agrawal, D. Reichman, and T. L. Griffiths, “Using large-scale experB. Goodrich, N. Jurkovic, L. H. Miles, S. Nix, T. Lin,
+iments and machine learning to discover theories of
+N. Parikh, D. Rein, L. J. K. Sato, H. Wijk, D. M.
+human decision-making,” Science, vol. 372, no. 6547,
+Ziegler, E. Barnes, and L. Chan, “Measuring AI abilpp. 1209–1214, Jun. 2021.
+ity to complete long tasks,” Mar. 2025.
+
+[8] METR, “Measuring AI ability to complete long tasks,” [22] A. Almaatouq, T. L. Griffiths, J. W. Suchow, M. E.
+Whiting, J. Evans, and D. J. Watts, “Beyond playing
+https://metr.org/blog/2025-03-19-measuring-ai20 questions with nature: Integrative experiment
+ability-to-complete-long-tasks/, Mar. 2025, accessed:
+design in the social and behavioral sciences,” Behav.
+2026-1-12.
+Brain Sci., vol. 47, p. e33, Dec. 2022.
+[9] T. Ord, “Is there a half-life for the success rates of
+[23] B. Liu, X. Li, J. Zhang, J. Wang, T. He, S. Hong,
+AI agents?” May 2025.
+H. Liu, S. Zhang, K. Song, K. Zhu, Y. Cheng,
+[10] T. Schick, J. Dwivedi-Yu, R. Dessi, R. Raileanu,
+S. Wang, X. Wang, Y. Luo, H. Jin, P. Zhang, O. Liu,
+M. Lomeli, L. Zettlemoyer, N. Cancedda, and
+J. Chen, H. Zhang, Z. Yu, H. Shi, B. Li, D. Wu,
+T. Scialom, “Toolformer: Language models can teach
+F. Teng, X. Jia, J. Xu, J. Xiang, Y. Lin, T. Liu,
+themselves to use tools,” 2023. [Online]. Available:
+T. Liu, Y. Su, H. Sun, G. Berseth, J. Nie, I. Foshttps://arxiv.org/abs/2302.04761
+ter, L. Ward, Q. Wu, Y. Gu, M. Zhuge, X. Liang,
+8
+
+X. Tang, H. Wang, J. You, C. Wang, J. Pei, Q. Yang, [34] J. Dapello, K. Kar, M. Schrimpf, R. B. Geary,
+X. Qi, and C. Wu, “Advances and challenges in founM. Ferguson, D. D. Cox, and J. J. DiCarlo,
+dation agents: From brain-inspired intelligence to
+“Aligning model and macaque inferior temporal
+evolutionary, collaborative, and safe systems,” Aug.
+cortex representations improves model-to-human
+2025.
+behavioral alignment and adversarial robustness,”
+in The Eleventh International Conference on
+[24] M. G. Glaholt and E. M. Reingold, “Eye movement
+Learning Representations, 2023. [Online]. Available:
+monitoring as a process tracing methodology in decihttps://openreview.net/forum?id=SMYdcXjJh1q
+sion making research,” J. Neurosci. Psychol. Econ.,
+[35] R. C. Fong, W. J. Scheirer, and D. D. Cox, “Using
+vol. 4, no. 2, pp. 125–146, May 2011.
+human brain activity to guide machine learning,” Sci.
+[25] M. Maldonado, E. Dunbar, and E. Chemla, “Mouse
+Rep., vol. 8, no. 1, p. 5397, Mar. 2018.
+tracking as a window into decision making,” Behav.
+Res. Methods, vol. 51, no. 3, pp. 1085–1101, Jun. [36] J. Dockès, R. A. Poldrack, R. Primet, H. Gözükan,
+T. Yarkoni, F. Suchanek, B. Thirion, and G. Varo2019.
+quaux, “NeuroQuery, comprehensive meta-analysis
+[26] L. Muttenthaler, K. Greff, F. Born, B. Spitzer, S. Koof human brain mapping,” Elife, vol. 9, Mar. 2020.
+rnblith, M. C. Mozer, K.-R. Müller, T. Unterthiner,
+and A. K. Lampinen, “Aligning machine and human [37] Google DeepMind, “Gemini 3 pro: Model evaluation – approach, methodology and results,” Google
+visual representations across abstraction levels,” NaDeepMind, Tech. Rep., 2025.
+ture, vol. 647, no. 8089, pp. 349–355, Nov. 2025.
+[27] M. Schulte-Mecklenbeck, A. Kuehberger, and J. G. [38] Anthropic, “System card: Claude opus 4.5,” Tech.
+Rep., 2025.
+Johnson, A handbook of process tracing methods:
+2nd edition, 2nd ed., ser. The Society for Judgment [39] OpenAI, “Introducing GPT-5.2,” https://openai.c
+and Decision Making Series, M. Schulte-Mecklenbeck,
+om/index/introducing-gpt-5-2/, 2025, accessed:
+A. Kuehberger, and J. G. Johnson, Eds. London,
+2026-2-2.
+England: Routledge, Jun. 2019.
+[40] OpenAI, J. Achiam, S. Adler, S. Agarwal, L. Ah[28] O. Moussa, D. Klakow, and M. Toneva, “Improving
+mad, I. Akkaya, F. L. Aleman, D. Almeida, J. Alsemantic understanding in speech language models
+tenschmidt, S. Altman, S. Anadkat, R. Avila,
+via brain-tuning,” Oct. 2024.
+I. Babuschkin, S. Balaji, V. Balcom, P. Baltescu,
+H. Bao, M. Bavarian, J. Belgum, I. Bello, J. Berdine,
+[29] N. Vattikonda, A. R. Vaidya, R. J. Antonello, and
+G. Bernadett-Shapiro, C. Berner, L. Bogdonoff,
+A. G. Huth, “BrainWavLM: Fine-tuning speech repO. Boiko, M. Boyd, A.-L. Brakman, G. Brockman,
+resentations with brain responses to language,” Feb.
+T.
+Brooks, M. Brundage, K. Button et al., “GPT-4
+2025.
+technical report,” Mar. 2023.
+[30] N. Policzer, C. Braunstein, and M. Toneva, “The one
+[41] F. Chollet, M. Knoop, G. Kamradt, B. Landers, and
+where they brain-tune for social cognition: MultiH. Pinkard, “ARC-AGI-2: A new challenge for fronmodal brain-tuning on friends,” Nov. 2025.
+tier AI reasoning systems,” May 2025.
+[31] Z. Li, W. Brendel, E. Walker, E. Cobos, T. Muham[42] V. Barres, H. Dong, S. Ray, X. Si, and K. Narasimhan,
+mad, J. Reimer, M. Bethge, F. Sinz, Z. Pitkow, and
+“τ 2 -bench: Evaluating conversational agents in a dualA. Tolias, “Learning from brains how to regularize
+control environment,” Jun. 2025.
+machines,” in Advances in Neural Information Processing Systems, vol. 32. Curran Associates, Inc., [43] K. Allen, F. Brändle, M. Botvinick, J. E. Fan,
+2019.
+S. J. Gershman, A. Gopnik, T. L. Griffiths, J. K.
+Hartshorne, T. U. Hauser, M. K. Ho et al., “Using
+[32] J. Dapello, T. Marques, M. Schrimpf, F. Geiger,
+games to understand the mind,” Nature Human BeD. Cox, and J. J. DiCarlo, “Simulating a primary vihaviour, vol. 8, no. 6, pp. 1035–1043, 2024.
+sual cortex at the front of CNNs improves robustness
+to image perturbations,” Advances in Neural Infor- [44] E. R. Kupers, T. Knapen, E. P. Merriam, and K. N.
+mation Processing Systems, vol. 33, pp. 13 073–13 087,
+Kay, “Principles of intensive human neuroimaging,”
+2020.
+Trends Neurosci., Oct. 2024.
+[33] S. Safarani, A. Nix, K. Willeke, S. A. Cadena, [45] A. C. Paulk, Y. Kfir, A. R. Khanna, M. L. MusK. Restivo, G. Denfield, A. S. Tolias, and F. H. Sinz,
+troph, E. M. Trautmann, D. J. Soper, S. D. Stavisky,
+“Towards robust vision by multi-task learning on monM. Welkenhuysen, B. Dutta, K. V. Shenoy, L. R.
+key visual cortex,” Jul. 2021.
+Hochberg, R. M. Richardson, Z. M. Williams, and
+9
+
+S. S. Cash, “Large-scale neural recordings with single
+G. Marcus, J. Tallinn, E. Schmidt, and Y. Bengio,
+neuron resolution using neuropixels probes in human
+“A definition of AGI,” Dec. 2025.
+cortex,” Nat. Neurosci., vol. 25, no. 2, pp. 252–263,
+[58] B. M. Lake, R. Salakhutdinov, and J. B. Tenenbaum,
+Feb. 2022.
+“Human-level concept learning through probabilistic
+[46] S. M. Peterson, S. H. Singh, B. Dichter, M. Scheid,
+program induction,” Science, vol. 350, no. 6266, pp.
+R. P. N. Rao, and B. W. Brunton, “AJILE12: Long1332–1338, Dec. 2015.
+term naturalistic human intracranial neural recordings and pose,” Sci Data, vol. 9, no. 1, p. 184, Apr. [59] L. Berglund, M. Tong, M. Kaufmann, M. Balesni,
+A. C. Stickland, T. Korbak, and O. Evans, “The
+2022.
+reversal curse: LLMs trained on “a is b” fail to learn
+[47] F. Lieder and T. L. Griffiths, “Resource-rational anal“b is a”,” Sep. 2023.
+ysis: Understanding human cognition as the optimal
+use of limited computational resources,” Behav. Brain [60] J. Wei, X. Wang, D. Schuurmans, M. Bosma,
+B. Ichter, F. Xia, E. Chi, Q. Le, and D. Zhou, “ChainSci., vol. 43, no. e1, p. e1, Feb. 2019.
+of-thought prompting elicits reasoning in large lan[48] S. M. Fleming and N. D. Daw, “Self-evaluation of
+guage models,” Jan. 2022.
+decision-making: A general bayesian framework for
+metacognitive computation,” Psychol. Rev., vol. 124, [61] T. L. Griffiths, J.-Q. Zhu, E. Grant, and
+no. 1, pp. 91–114, Jan. 2017.
+R. Thomas McCoy, “Bayes in the age of intelligent
+machines,” Current Directions in Psychological Sci[49] R. Ackerman and V. A. Thompson, “Meta-reasoning:
+ence, vol. 33, no. 5, pp. 283–291, 2024.
+Monitoring and control of thinking and reasoning,”
+Trends Cogn. Sci., vol. 21, no. 8, pp. 607–617, Aug. [62] S. M. Xie, A. Raghunathan, P. Liang, and T. Ma, “An
+2017.
+explanation of in-context learning as implicit bayesian
+inference,” Nov. 2021.
+[50] F. Lieder and T. L. Griffiths, “Strategy selection
+as rational metareasoning,” Psychol. Rev., vol. 124, [63] D. Walton, Abductive Reasoning. Tuscaloosa, AL:
+no. 6, pp. 762–794, Nov. 2017.
+University of Alabama Press, May 2014.
+[51] D. A. Moore and P. J. Healy, “The trouble with [64] M. McCloskey, “Intuitive physics,” Sci. Am., vol. 248,
+overconfidence,” Psychol. Rev., vol. 115, no. 2, pp.
+no. 4, pp. 122–131, 1983.
+502–517, Apr. 2008.
+[65] P. Kinderman, R. Dunbar, and R. P. Bentall, “Theory[52] M. Xiong, Z. Hu, X. Lu, Y. Li, J. Fu, J. He,
+of-mind deficits and causal attributions,” Br. J. Psyand B. Hooi, “Can LLMs express their uncertainty?
+chol., vol. 89, no. 2, pp. 191–204, May 1998.
+an empirical evaluation of confidence elicitation in
+LLMs,” Jun. 2023.
+[66] K. Vafa, J. Y. Chen, A. Rambachan, J. Kleinberg,
+[53] A. T. Kalai, O. Nachum, S. S. Vempala, and E. Zhang,
+“Why language models hallucinate,” Sep. 2025.
+
+and S. Mullainathan, “Evaluating the world model
+implicit in a generative model,” Jun. 2024.
+
+[54] C. Golden, S. M. Freshwater, and Z. Golden, “Stroop
+color and word test,” Jul. 2012, title of the publication
+associated with this dataset: PsycTESTS Dataset.
+
+[67] M. A. Brackett and P. Salovey, “Measuring emotional intelligence with the Mayer-Salovery-Caruso
+emotional intelligence test (MSCEIT),” Psicothema,
+vol. 18 Suppl, pp. 34–41, 2006.
+
+[55] J. E. Haddon and S. Killcross, “Prefrontal cortex
+lesions disrupt the contextual control of response [68] J. S. Lerner, Y. Li, P. Valdesolo, and K. S. Kassam,
+“Emotion and decision making,” Annu. Rev. Psychol.,
+conflict,” J. Neurosci., vol. 26, no. 11, pp. 2933–2940,
+vol. 66, no. 1, pp. 799–823, Jan. 2015.
+Mar. 2006.
+
+[56] D. A. Washburn, “Stroop-like effects for monkeys and [69] G. Loewenstein and J. S. Lerner, “The role of affect in
+decision making,” in Handbook of Affective Sciences,
+humans: processing speed or strength of association?”
+R. J. Davidson, K. R. Scherer, and H. H. Goldsmith,
+Psychol. Sci., vol. 5, no. 6, pp. 375–379, Nov. 1994.
+Eds. Oxford, England: Oxford University Press,
+[57] D. Hendrycks, D. Song, C. Szegedy, H. Lee, Y. Gal,
+2003.
+E. Brynjolfsson, S. Li, A. Zou, L. Levine, B. Han,
+J. Fu, Z. Liu, J. Shin, K. Lee, M. Mazeika, L. Phan, [70] L. F. Barrett, “The theory of constructed emotion:
+G. Ingebretsen, A. Khoja, C. Xie, O. Salaudeen,
+an active inference account of interoception and cateM. Hein, K. Zhao, A. Pan, D. Duvenaud, B. Li,
+gorization,” Soc. Cogn. Affect. Neurosci., p. nsw154,
+S. Omohundro, G. Alfour, M. Tegmark, K. McGrew,
+Oct. 2016.
+10
+
+[71] R. W. Picard, Affective Computing, ser. The MIT [81] H. J. Spiers, A. Coutrot, and M. Hornberger, “ExPress. London, England: MIT Press, Jul. 2000.
+plaining world-wide variation in navigation ability
+from millions of people: Citizen science project sea
+[72] T. Singer and C. Lamm, “The social neuroscience of
+hero quest,” Top. Cogn. Sci., vol. 15, no. 1, pp. 120–
+empathy,” Ann. N. Y. Acad. Sci., vol. 1156, no. 1,
+138, Jan. 2023.
+pp. 81–96, Mar. 2009.
+[82] P. Paquette, Y. Lu, S. Bocco, M. O. Smith,
+[73] K. Crawford, Atlas of AI: Power, politics, and the
+S. Ortiz-Gagne, J. K. Kummerfeld, S. Singh,
+planetary costs of artificial intelligence. Yale UniJ. Pineau, and A. Courville, “No press diplomacy:
+versity Press, Apr. 2021.
+Modeling multi-agent gameplay,” 2019. [Online].
+Available: https://arxiv.org/abs/1909.02128
+[74] L. Floridi and J. W. Sanders, “On the morality of
+[83] O. Russakovsky, J. Deng, H. Su, J. Krause,
+artificial agents,” Minds and Machines, 2004.
+S. Satheesh, S. Ma, Z. Huang, A. Karpathy, A. Khosla,
+[75] K. Hill, “A teen was suicidal. ChatGPT was the friend
+M. Bernstein, A. C. Berg, and L. Fei-Fei, “ImageNet
+he confided in,” The New York Times, Aug. 2025.
+large scale visual recognition challenge,” Sep. 2014.
+[84] T. Nakai and S. Nishimoto, “Quantitative models
+reveal the organization of diverse cognitive functions
+in the brain,” Nat. Commun., vol. 11, no. 1, p. 1142,
+Mar. 2020.
+
+[76] T. Singleton, T. Gerken, and L. McMahon, “How a
+chatbot encouraged a man who wanted to kill the
+queen,” BBC News, Oct. 2023.
+
+[77] E. J. Allen, G. St-Yves, Y. Wu, J. L. Breedlove, J. S.
+Prince, L. T. Dowdle, M. Nau, B. Caron, F. Pestilli, [85] H. Jung, M. Amini, B. J. Hunt, E. I. Murphy, P. Sadil,
+Y. O. Halchenko, B. Petre, Z. Miao, P. A. Kragel,
+I. Charest, J. B. Hutchinson, T. Naselaris, and K. Kay,
+X. Han, M. O. Heilicher, M. Sun, O. G. Collins, M. A.
+“A massive 7T fMRI dataset to bridge cognitive neuLindquist, and T. D. Wager, “Spacetop: A multiroscience and artificial intelligence,” Nat. Neurosci.,
+modal fMRI dataset unifying naturalistic processes
+vol. 25, no. 1, pp. 116–126, Jan. 2022.
+with a rich array of experimental tasks,” Sci. Data,
+vol. 12, no. 1, p. 1465, Aug. 2025.
+[78] S. E. J. de Vries, J. A. Lecoq, M. A. Buice, P. A.
+Groblewski, G. K. Ocker, M. Oliver, D. Feng, N. Cain,
+P. Ledochowitsch, and D. Millman, “A large-scale
+standardized physiological survey reveals functional
+organization of the mouse visual cortex,” Nat. Neurosci., vol. 23, no. 1, pp. 138–151, 2020.
+[79] C. Findling, F. Hubert, International Brain Laboratory, L. Acerbi, B. Benson, J. Benson, D. Birman,
+N. Bonacchi, E. K. Buchanan, S. Bruijns, M. Carandini, J. A. Catarino, G. A. Chapuis, A. K. Churchland,
+Y. Dan, F. Davatolhagh, E. E. J. DeWitt, T. A. Engel,
+M. Fabbri, M. A. Faulkner, I. R. Fiete, L. FreitasSilva, B. Gercek, K. D. Harris, M. Häusser, S. B.
+Hofer, F. Hu, J. M. Huntenburg, A. Khanal, C. Krasniak, C. Langdon, C. A. Langfield, P. E. Latham,
+P. Y. P. Lau, Z. Mainen, G. T. Meijer, N. J. Miska,
+T. D. Mrsic-Flogel, J.-P. Noel, K. Nylund, A. PanVazquez, L. Paninski, J. Pillow, C. Rossant, N. Roth,
+R. Schaeffer, M. Schartner, Y. Shi, K. Z. Socha, N. A.
+Steinmetz, K. Svoboda, C. Tessereau, A. E. Urai,
+M. J. Wells, S. J. West, M. R. Whiteway, O. Winter,
+I. B. Witten, A. Zador, Y. Zhang, P. Dayan, and
+A. Pouget, “Brain-wide representations of prior information in mouse decision-making,” Nature, vol. 645,
+no. 8079, pp. 192–200, Sep. 2025.
+[80] E. M. Russek, D. Acosta-Kane, B. van Opheusden,
+M. G. Mattar, and T. L. Griffiths, “Time spent thinking in online chess reflects the value of computation,”
+Cogn. Sci., vol. 49, no. 10, p. e70119, Oct. 2025.
+11
+
+

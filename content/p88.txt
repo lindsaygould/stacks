@@ -1,0 +1,1730 @@
+www.nature.com/scientificdata
+
+An EEG dataset with carbon wire
+Data Descriptor loops in cognitive tasks and
+resting state inside and outside
+MR scanners
+OPEN
+
+Mizuki Tsutsumi1,2, Tomohiko Kishi1,2, Takeshi Ogawa
+Reinmer J. Kobler1 & Motoaki Kawanabe1
+
+1✉
+
+, Toshikazu Kuroda
+
+1✉
+
+,
+
+We present a new dataset consisting of functional magnetic resonance imaging (fMRI) and
+electroencephalography (EEG) collected from 39 healthy adults in their twenties to forties while
+performing cognitive tasks (visual oddball and N-back tasks) in addition to resting state. These
+tasks took place both inside and outside an MR scanner (i.e., simultaneous EEG-fMRI and EEG-only,
+respectively), enabling direct comparisons across the different recording environments. Moreover, a
+subset of the participants was in two different MRI scanners, allowing for traveling-subject analyses.
+In both scanners, we used EEG caps equipped with carbon wire loops to measure motion and
+ballistocardiogram artifacts for their subsequent removal from raw EEG signals, resulting in a dataset
+of superior quality compared to previous studies. All the raw data are publicly available for facilitating
+multimodal neuroimaging research.
+
+Background & Summary
+
+Electroencephalography (EEG) and functional magnetic resonance imaging (fMRI) are two widely-used noninvasive methods for measuring brain activities. EEG measures electrophysiological signals on the scalp, which
+reflect neural activities. fMRI measures signals related to blood flow, blood volume, and oxygen metabolism
+(blood-oxygenation-level-dependent, or BOLD signals) as an indirect measure of the neural activity1 and there
+typically are hemodynamic delays of 3–6 s. Their simultaneous recording allows for the integration of high temporal resolutions of EEG and high spatial resolutions of fMRI in the analysis of brain activity. Consequently,
+simultaneous EEG-fMRI has been extensively studied in the last two decades2–4.
+Simultaneous EEG-fMRI often is associated with problems despite its potentials. First, EEG data suffer from
+serious contamination with noise. Not only that shield rooms are absent but also MR scanners themselves offer
+a noisy environment for EEG recording: i) gradient artifact (GA), which occur due to switching in the gradient
+system as it adjusts the magnetic field for phase/frequency encoding5; ii) the helium pump6 and motion artifacts
+from head/body movements7; and iii) ballistocardiogram (BCG) artifact8. Among those, BCG likely is the most
+challenging noise for its similarity in amplitude to EEG and also for its spectral profile (approximately 1 Hz
+and its harmonics) overlapping with the delta, theta, and artifacts9. For example, average artifact subtraction
+(AAS) is widely used to reduce GA5 and BCG10. This method takes advantage of the repetitive nature of GA and
+BCG artifacts by creating an average noise template that can be effectively subtracted. Another approach is the
+carbon-wire loop (CWL)11, which helps removing motion and BCG artifacts by independently measuring these
+artifacts based on Faraday’s law of induction12.
+Several simultaneous EEG-fMRI datasets have already been published (Table 1). Most of these datasets
+include experimental tasks using visual stimuli13,14, possibly because vision is little affected by loud sound in MR
+scanners. Some datasets also include tasks using auditory stimuli15,16. However, there are few datasets that allow
+for a direct comparison of EEG recorded inside and outside the MR scanner14,17. Moreover, CWL has been used
+for denoising only in a few datasets11,18.
+1
+
+Cognitive Mechanisms Laboratories, Advanced Telecommunications Research Institute International, 2-2-2,
+Hikaridai, Seika-cho, Soraku-gun, Kyoto, 619-0288, Japan. 2These authors contributed equally: Mizuki Tsutsumi,
+Tomohiko Kishi. ✉e-mail: t.ogawa@atr.jp; t.kuroda@atr.jp
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+1
+
+www.nature.com/scientificdata
+
+www.nature.com/scientificdata/
+Authors
+
+N
+
+Telesford et al.13
+
+22
+
+Recording time (h)
+47.0
+
+CWL
+—
+
+Task
+
+Data acquisition
+
+naturalistic movie, flickering checkerboard,
+resting, 3D-shape movie
+
+MRI: Siemens Trio (3 T, 12-ch head coil, TR = 2.1 s)
+
+Schrooten et al.14
+
+5
+
+2.7
+
+—
+
+attention task
+
+Kraljič et al.18
+
+16
+
+12.6
+
+✓
+
+resting (EO/EC), finger tapping, checkerboard
+
+He et al.15
+
+19
+
+7.8
+
+—
+
+auditory oddball
+
+Walz et al.16
+
+27
+
+Georgie et al.17
+van der Meer et al.
+
+17
+
+7.6
+4.0
+
+—
+—
+
+auditory oddball
+perceptual decision making task
+
+8
+
+0.6
+
+✓
+
+resting (EO/EC)
+
+Lioi et al.36
+
+10
+
+5.3
+
+—
+
+fMRI NF, eegfMRI-NF, eeg-NF, motor imagery
+
+Gu et al.37
+
+33
+
+58.3
+
+—
+
+resting, 15-minute sleeping
+
+11
+
+Daly et al.38
+Cha et al.39
+
+21
+28
+
+21.0
+28.0
+
+—
+
+30-minute music listening × 2
+
+—
+
+resting (EO/EC), gradGPT, motor imagey,
+checkerboard
+
+EEG: Brain Amp MR 64ch
+MRI: Philips Achieva (3 T, 32-ch head coil, TR = 2.0 s)
+EEG: Brain Amp MR 64ch
+MRI: Philips TX (3 T, TR = 1.1 s, multi-band)
+EEG: Brain Amp MR 128ch
+MRI: Siemens Prisma (3 T, 64-ch head coil, TR = 2.1 s)
+EEG: Brain Amp MR 64ch; pupillometry
+MRI: Phillips Achieva (3 T, TR = 2.0 s, single-ch coil)
+EEG: custorm-built MR compartible system 49ch
+MRI: Phillips Achieva (3 T, TR = 2.0 s)
+EEG: Brain Amp MR 64ch
+MRI: Siemens Trio(TR = 1.95 s), Verio (TR = 2.0 s, 12-ch head coil)
+EEG: Brain Amp MR plus 32ch
+MRI: Siemens Verio (3 T, 12ch head coil, TR = 2.0 s, 12ch head coil)
+EEG: Brain Amp MR 64ch
+MRI: Siemens Prisma (3 T, TR = 2.1 s, 20ch head coil)
+EEG: Brain Amp MR 32ch
+MRI: Siemens Trio (3 T, TR = 2.0 s, 37-ch head coil)
+EEG: Brain Amp MR 32ch
+MRI: Siemens Prisma (3 T)
+EEG: Brain Amp MR 32ch
+MRI: Siemens Prisma (3 T, TR = 0.8 s, 64ch head coil, multi-band)
+
+This study
+
+39
+
+43.6
+
+✓
+
+resting (EO), visual oddball, n-back
+
+MRI: Siemens Verio (3 T, TR = 2.5 s, 12ch headcoil, single-band)
+EEG: Brain Amp MR 64ch
+
+Table 1. A summary of EEG-fMRI dataset in previous research.
+
+In the present work, we provide a new dataset consisting of EEG and fMRI collected from 39 healthy adults in
+their twenties to forties while performing cognitive tasks (N-back and visual oddball tasks) in addition to resting
+state. This dataset has three advantages compared to extant datasets. First, these tasks took place both inside and
+outside an MR scanner, enabling direct comparisons across the different recording environments. Second, we
+used EEG caps equipped with CWLs to reduce artifacts arising from MR scanners. Third, a subset of the participants was in two different scanners, allowing for a traveling-subject analysis19. A portion of the data presented
+in this study was used in Kuroda et al.20 to evaluate a novel noise-reduction method. The dataset is prepared in
+machine-readable BIDS (Brain Imaging Data Structure)21,22 format, ensuring the ease of analysis.
+
+Methods
+
+Participants. The protocol of this study was approved by the ATR Review Board Ethics Committee (IRB
+committee number: 18000062; application number: 167) and followed the Declaration of Helsinki. Participants
+were recruited through public advertisements in the local community with two recruitment criteria: (1) ages
+ranging from 20 to 49; and (2) no self-reported health issues. Initially, 41 participants were recruited but two of
+them were excluded: one due to illness and one due to a device failure. Consequently, the present dataset consisted
+of a total of 39 participants (19 men, 20 women; mean age: 29.0; SD: 9.35). Among them, 33 participants (16 men,
+17 women; ages: 20–48 with a mean of 29.6; SD: 9.67) were assigned to a Prisma fit scanner (Prisma; Siemens,
+Erlangen, Germany) whereas 16 (8 men, 8 women, ages: 20–48 with a mean of 29.0; SD: 9.45) assigned to a Verio
+scanner(Siemens, Erlangen, Germany), resulting in 10 participants (5 men, 5 women, age: 20–48 with a mean of
+32.8; SD: 11.31) assigned to both scanners.
+All instructions were in Japanese and the participants provided written informed consent prior to participation. In the informed consent, they explicitly agreed to provide information on their age and gender, structural
+MRI data, functional MRI data, EEG data, and behavioral data from the experimental tasks. They also agreed
+for data sharing with other research institutions and for public release. All data were anonymized for protecting
+participant privacy, including removal of the facial part of structural MRI data.
+Participants had two laboratory visits for each scanner with each visit starting with EEG recording in a shield
+room (i.e., outside an MR scanner: EEG-only). Then simultaneous EEG-fMRI began shortly after that. Table 2
+shows a summary of experimental schedules. It should be noted that, due to time constraints, some recordings
+planned for Day 1 had to be postponed to Day 2, resulting in some missing data. Moreover, some participants
+assigned to Verio had a few additional laboratory visits (see Supplemental Material for more details).
+Data acquisitions of EEG and fMRI. Experimental settings. EEG recordings outside MR scanners took
+place in a shield room. The walls of the shield room were made of copper mesh to block electromagnetic noise
+from the outside, with the interior dimensions of 145 cm wide, 185 cm long, and 210 cm high. The shield room
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+2
+
+www.nature.com/scientificdata
+
+www.nature.com/scientificdata/
+
+Prisma
+
+Verio
+
+Day 1
+
+Day 2
+
+Day 1
+
+Shield room (EEG recording only)
+
+Day 2
+
+Shield room (EEG recording only)
+
+Resting state with eyes open (8 min)
+
+Resting state with eyes open (8 min)
+
+Visual oddball task (6 min)
+
+Visual oddball task (6 min)
+
+Visual oddball task (6 min)
+
+N-back task (7 min)
+
+N-back task (7 min)
+
+N-back task (7 min)
+
+Visual oddball task (6 min)
+
+Resting state with eyes open (8 min)
+
+Resting state with eyes open (8 min)
+
+N-back task (7 min)
+
+Resting state with eyes open (8 min)
+
+Resting state with eyes open (8 min)
+In Prisma (simultaneous EEG-fMRI)
+
+In Verio (simultaneous EEG-fMRI)
+
+T1-weighted structural images
+
+Fieldmap
+
+T2-weighted structural images
+
+EEG recording without scanning (1 min) EEG recording without scanning (1 min) Resting state with eyes open (8 min)
+
+T1-weighted structural images
+
+Fieldmap
+
+Resting state with eyes open (8 min)
+
+Visual oddball task (6 min)
+
+EEG recording without scanning (1 min) Visual oddball task (6 min)
+
+N-back task (7 min)
+Visual oddball task (6 min)
+
+Resting state with eyes open (8 min)
+
+N-back task (7 min)
+
+Visual oddball task (6 min)
+
+Fieldmap
+
+N-back task (7 min)
+
+N-back task (7 min)
+
+Resting state with eyes open (8 min)
+
+Resting state with eyes open (8 min)
+
+Resting state with eyes open (8 min)
+
+T1-weighted structural images
+
+EEG recording without scanning (1 min)
+Resting state with eyes open (8 min)
+
+Table 2. A summary of simultaneous EEG-fMRI experimental schedules. Notes: We did not conduct visual
+oddball and N-back tasks in Verio on Day 2 for conducting a different experimental task as part of collaborative
+research with a different laboratory, which was outside the scope of the present study.
+
+MRI scanner
+
+Prisma
+
+Verio
+
+Magnetic field strength
+
+3.0 T
+
+3.0 T
+
+Number of channels per coil
+
+64
+
+12
+
+Field of view(mm)
+
+205.9
+
+192
+
+Matrix
+
+86 × 86
+
+64 × 64
+
+Number of slices
+
+60
+
+38
+
+Number of volumes
+
+resting: 694
+oddball: 498
+N-back: 600
+
+resting: 222
+oddball: 166
+N-back: 192
+
+Slice thickness(mm)
+
+2.4
+
+4.0
+
+slice gap(mm)
+
+0.6
+
+0.8
+
+TR(ms)
+
+800
+
+2500
+
+TE(ms)
+
+34.4
+
+30
+
+Flip angle(deg)
+
+52
+
+80
+
+Phase encoding
+
+PA/AP†
+
+PA
+
+Table 3. The parameters for each EPI. †PA and AP sequences for fieldmaps. PA sequence for all EPIs except for
+the first recording in resting state on Day 2.
+
+was equipped with a table, comfortable chairs, two ceiling lights, and an air conditioner. On the table were a
+conventional keyboard and a Dell computer monitor (34 cm × 60 cm). The center of the monitor was approximately at eye level when the participant was seated. A photosensor was mounted at the bottom-right corner of
+the monitor, being connected to a Stim Tracker (Cedrus model ST-100) to record the actual time at which the
+stimuli were presented. The ceiling lights and the air conditioner were each covered with wire mesh boxes to
+minimize noise.
+Simultaneous EEG-fMRI recordings were conducted in Prisma and Verio. In Prisma, visual stimuli were
+displayed on an opaque screen via a projector (Cannon Power Projector, WUX6000 at 60 Hz frame rate), being
+visible to participants through a small mirror attached to the head coil. A photosensor was mounted at the
+bottom-right corner of the screen. In Verio, visual stimuli were presented to participants as in Prisma, using
+a projector (JVC, DLA-X7) with 60 Hz frame rate. A photosensor was mounted likewise. In both scanners, an
+MR-compatible response device (HHSC-1 × 4-D, Current Designs, Inc., Pennsylvania, USA) was used to record
+button presses.
+
+®
+
+®
+
+EEG acquisition. EEG signals were recorded using MR-compatible EEG caps and amplifiers (BrainAmp MR
+plus, BrainAmp ExG MR, and BrainCap MR; Brain productsGmbH, Germany), with each cap having 63 EEG
+channels, one electrocardiogram (ECG) channel, and four CWL channels. An appropriate size of the cap (54, 56,
+and 58 cm) was selected for each participant.
+The electrodes of EEG caps were placed on the scalp according to a modified International 10–20 system. The
+ground and reference electrodes were placed at AFz and FCz, respectively. The ECG electrode was positioned
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+3
+
+www.nature.com/scientificdata
+
+www.nature.com/scientificdata/
+EEG-only
+
+EEG-fMRI
+
+BIDS format
+
+BIDS format
+
+1. High-pass filter (0.5 Hz)
+
+1. High-pass filter (0.5 Hz)
+
+3. Low-pass filter (125 Hz)
+
+3. Low-pass filter (125 Hz)
+
+2. GA correction with AAS
+4. Resampling (500 Hz)
+5. CWL regression for reducing motion-related artifacts
+6. Resampling (250 Hz)
+
+6. Resampling (250 Hz)
+
+EEGLAB format
+
+EEGLAB format
+
+7.Band-pass filter (1–70 Hz)
+
+7.Band-pass filter (1–70 Hz)
+
+8. Apply autoreject.Ransac to detect and interpolate
+abnormal EEG channels
+
+8. Apply autoreject.Ransac to detect and interpolate abnormal EEG channels
+
+9. Remove power line noise using Zapline
+
+9. Remove power line noise using Zapline
+
+10. Re-reference to CAR
+
+10. Re-reference to CAR
+
+11. Remove EOG-related artifacts
+
+11. Remove EOG-related artifacts
+
+12. Apply autoreject.Autoreject for artifact
+correction
+
+12. Apply autoreject.Autoreject for artifact correction
+13. Apply Generalized OBS to reduce residual BCG artifacts
+
+Table 4. A summary of EEG preprocessing steps. Notes: Brain Imaging Data Structure (BIDS), average artifact
+subtraction (AAS), gradient artifact (GA), carbon-wire loop (CWL), common average reference (CAR),
+electrooculogram (EOG), ballistocardiogram (BCG), independent component analysis (ICA). Texts in italics
+are Python function names.
+
+Fig. 1 PSD in each step of preprocessing. The solid line represents the mean, while the light-colored bands
+indicate ± 1 standard deviation. GA refers to gradient artifact correction (steps 1–4, 6, and 7 in Table 3).
+EEG-fMRI (preprocessed) represents the combination of gradient artifact (GA) correction (steps 1–4, 6, and
+7 in Table 3) and CWL regression (steps 1–7 in Table 3). EEG-fMRI with autoreject includes gradient artifact
+correction, CWL regression, artifact removal using autoreject, and other noise reduction methods (all steps).
+EEG-only (preprocessed) refers to the application of steps 1, 3, and 6 in Table 3, while EEG-only with autoreject
+represents the application of steps 1, 3, 6, and 8–13 in Table 3. The slight increase in PSD at 60 Hz for EEG-only
+reflects the alternating current (AC) power supply in Western Japan, where the experiment was conducted.
+CWL: Carbon wire loop, EEG: Electroencephalogram, GA: Gradient artifact, PSD: Power spectral density.
+
+on the participant’s back. Conductive gel (Abralyt HiCl, EASYCAP, Brain Products GmbH, Germany) was used
+to maintain the impedance of all electrodes below 10 kΩ throughout the experiment. Raw EEG signals were
+sampled at 5 kHz. EEG and fMRI data were recorded simultaneously using hardware clock synchronization
+(SyncBox, BrainProducts, Germany). The MR scanner also sent trigger signals to mark the start time of each
+fMRI volume acquisition in the EEG data.
+MRI data acquisition. MRI data were acquired with a multi-band sequence in 3 T MAGNETOM Prisma
+fit, running the syngo MR VE11C/E software, with 64-channel head coils (Siemens, Erlangen, Germany).
+The scan protocol followed the Multimodel Harmonized MRI Imaging Protocol (HARP; see https://hbm.
+brainminds-beyond.jp/documents/protocol.html). For each participant, we obtained T1-weighted structural
+images (repetition time [TR] = 2500 ms, echo time [TE] = 2.18 ms, flip angle = 8 deg, inversion time = 1000 ms,
+
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+4
+
+www.nature.com/scientificdata/
+
+www.nature.com/scientificdata
+
+Fig. 2 Traces of all EEG channels for a representative participant during the 5 seconds from 60 seconds after
+resting state task measurement in Prisma on Day 1 begins. GA refers to gradient artifact correction (steps 1–4,
+6, and 7 in Table 3). EEG-fMRI (preprocessed) represents the combination of gradient artifact (GA) correction
+(steps 1–4, 6, and 7 in Table 3) and CWL regression (steps 1–7 in Table 3). EEG-only (preprocessed) refers to the
+application of steps 1, 3, and 6 in Table 3. GA: Gradient artifact, CWL: Carbon wire loop.
+
+matrix = 300 × 320, 224 sagittal slices, 0.8 mm isotropic) and T2-weighted structural images (TR = 3200 ms,
+TE = 564 ms, flip angle = 120 deg, matrix = 300 × 320, 224 sagittal slices, 0.8 mm isotropic) as well as fieldmaps
+(both posterior-to-anterior [PA] and anterior-to-posterior [AP] sequences; TR = 6100 ms, TE = 60 ms, flip
+angle = 90 deg, matrix = 86 × 86, 60 sagittal slices, 2.4 mm isotropic).
+
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+5
+
+www.nature.com/scientificdata
+
+www.nature.com/scientificdata/
+
+Fig. 3 ERPs in the oddball task for Prisma, averaged across subjects. Thick vertical lines represent the onset of
+normal or target stimuli, detected by photo sensors. Dashed vertical lines indicate 200–400 ms in steps of 50 ms
+after the stimulus onset, corresponding to topography maps above each ERP graph. Each line corresponds
+to an electrode (Fz: cyan, Cz: orange, Pz: green, Oz: magenda, and others: gray), each referenced to the mean
+microvolt between −100 and 0 ms relative to the stimulus onset. The colored electrodes on the topography
+correspond to the electrodes showing ERP waveforms of the same color. (A)Trials with target stimuli for
+simultaneous EEG-fMRI; (B)Trials with normal stimuli for simultaneous EEG-fMRI; (C) Trials with target
+stimuli for EEG-only; (D)Trials with normal stimuli for EEG-only. EEG-fMRI with autoreject includes GA
+correction, CWL regression, artifact removal using autoreject, and other noise reduction methods (all steps in
+Table 3). EEG-only with autoreject represents the application of steps 1, 3, 6, and 8–13 in Table 3. CWL: carbon
+wire loop; ERP: event-related potential; GA: gradient artifact.
+
+MRI data also were acquired with a single-band sequence in 3 T MAGNETOM Verio, running the syngo MR
+VB19A software, with 12-channel head coils (Siemens, Erlangen, Germany). We obtained T1 -weighted structural images (TR = 2250 ms, TE = 3.06 ms, flip angle = 9 deg, inversion time = 900 ms, matrix = 256 × 256, 208
+sagittal slices, 1.0 mm isotropic) for each participant. T2-weighted images and fieldmaps were not acquired in
+Verio for safety reasons. Table 3 summarizes the parameters for each echo-planar imaging (EPI).
+
+Task data/stimuli description. Recording took place during resting state with eyes open, a visual oddball
+task, and an N-back task. In the shield room, there was an approximately 2-min break between recordings, during
+which instructions for the next task were given. Inside the MR scanner, there was a 40-s pre-task period and a 30-s
+post-task period for each recording, during which a fixation cross was displayed. These additional periods were
+to stabilize the magnetic field in the MR scanner and also to create a template for removing GA in a subsequent
+process. A Panasonic laptop computer with Python 3.9 controlled all experimental tasks. All visual stimuli were
+displayed in dark bluish/greenish colors (RGB: 47, 79, 79) on a black background.
+
+®
+
+Resting state. Participants were instructed to stare blankly at a fixation cross (“+”) in the center of the screen
+without thinking anything and sleeping. The task lasted for eight minutes.
+
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+6
+
+www.nature.com/scientificdata/
+
+www.nature.com/scientificdata
+
+Fig. 4 ERPs in the oddball task for Verio, averaged across subjects. See Fig. 3 for details.
+
+Visual oddball task. This task consisted of 250 trials, with each trial lasting for 1300 ms. Each trial had 650-ms
+pre-stimulus period (plus a jitter randomly selected from from −100 ms to 100 ms in steps of 2 ms), a stimulus
+presentation for 250 ms, and 450-ms post-stimulus period (minus the pre-stimulus jitter to keep trial duration
+constant) in this order. Two types of stimuli were presented: target and normal. A circle image was presented
+as a normal stimulus at p = 0.8 on average across participants, and a star image as a target stimulus at p = 0.2
+on average. Each shape image was 125 px by 125 px in size. The actual number of trials with the target stimulus
+varied randomly between 47 and 53 in steps of 1. After the task, participants were asked to verbally report how
+many times the target stimulus was presented to ensure that they were attending to the task (but without penalty
+for incorrect answers). A fixation cross was displayed in the center of the screen during the pre-stimulus and
+post-stimulus periods.
+N-back task. An N-back task consisted of two conditions: 0- and 2-back conditions. The stimulus was a single
+number (0-back: ranging from 0 to 9; ranging from 2-back: 1 to 9). Each condition was in effect twice, constituting one EEG recording. The order of the conditions was randomized for each recording. Each condition
+consisted of 60 trials, each lasting for 1500 ms. Each trial had a 10-ms pre-stimulus period, a stimulus presentation for 500 ms, and a 990-ms post-stimulus period in this order. In the 0-back condition, participants were
+instructed to press a button when the number “0” appeared on the screen. In the 2-back condition, participants
+were instructed to press a button when the number on the screen matched the number displayed two trials ago.
+In both conditions, a button press was considered valid and thus registered if it occurred sometime between
+150 and 1400 ms after the stimulus onset. A fixation cross was displayed in the center of the screen during the
+pre-stimulus and post-stimulus periods.
+
+EEG preprocessing. We used a pipeline that automatically preprocessed EEG data collected both inside and
+
+outside the MR scanner, taking steps described in Table 4. Some of the steps differed depending on whether EEG
+was acquired inside or outside the scanner as described below. All EEG files were converted to EEGLAB format23
+from step 7 onward.
+
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+7
+
+www.nature.com/scientificdata/
+
+www.nature.com/scientificdata
+
+Fig. 5 ERPs in the N-back task for Prisma, averaged across subjects. Thick vertical lines represent the onset of match
+or non-match stimuli, detected by photo sensors. Dashed vertical lines indicate 200–400 ms in steps of 50 ms after
+the stimulus onset, corresponding to topography maps above each ERP graph. Each line corresponds to an electrode
+(Fz: cyan, Cz: orange, Pz: green, Oz: magenda, and others: gray), each referenced to the mean microvolt between
+−100 and 0 ms relative to the stimulus onset. The colored electrodes on the topography correspond to the electrodes
+showing ERP waveforms of the same color. (A)Trials with match stimuli (0-back) for simultaneous EEG-fMRI;
+(B) Trials with non-match stimuli (0-back) for simultaneous EEG-fMRI; (C) Trials with match stimuli (0-back)
+for EEG-only. (D) Trials with non-match stimuli (0-back) for EEG-only; (E) Trials with match stimuli (2-back) for
+simultaneous EEG-fMRI; (F) Trials with non-match stimuli (2-back) for simultaneous EEG-fMRI; (G) Trials with
+match stimuli (2-back) for EEG-only; (H) Trials with non-match stimuli (2-back) for EEG-only. EEG-fMRI with
+autoreject includes GA correction, CWL regression, artifact removal using autoreject, and other noise reduction
+methods (all steps in Table 3). EEG-only with autoreject represents the application of steps 1, 3, 6, and 8–13 in Table 3.
+CWL: carbon wire loop; ERP: event-related potential; GA: gradient artifact.
+
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+8
+
+www.nature.com/scientificdata/
+
+www.nature.com/scientificdata
+
+Fig. 6 ERPs in the N-back task for Verio, averaged across subjects. See Fig. 5 for details.
+
+Outside the MR scanner. For EEG recorded outside the MR scanner, we first applied a band-pass filter (0.5–
+125 Hz; Butterworth filter, second order, applied bidirectionally) and resampled the data to 250 Hz. We then
+used autoreject ver.0.4.0 (https://autoreject.github.io/stable/index.html)24 to detect and interpolate noisy channels. Autoreject is an automatic data-driven algorithm that estimates optimal peak-to-peak thresholds for each
+datum, followed by detection and interpolation of abnormal segments. We also applied the RANSAC algorithm25 to identify channels containing data that significantly deviated from those of other channels. Next, we
+removed power line noise (60 Hz) and re-referenced the data to a common average reference. After removing
+artifacts related to electrooculogram (EOG), we segmented the data into 10-s windows and performed artifact
+correction with autoreject using a sliding window method.
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+9
+
+www.nature.com/scientificdata
+
+www.nature.com/scientificdata/
+
+Brain regions
+
+Peak coordinate(MNI)
+
+Cluster size
+
+x
+
+y
+
+z
+
+Voxels
+
+Peak of T score Details
+
+32
+
+−90
+
+−4
+
+3563
+
+9.87
+
+Visual oddball task
+target > normal
+R IOG
+
+R IOG
+R CER6
+R MTG
+
+L SMA
+
+−8
+
+4
+
+64
+
+19573
+
+9.09
+
+L SMA
+L IPG
+L PoCG
+
+R SMG
+
+42
+
+−38
+
+40
+
+3286
+
+8.68
+
+R SMG
+R IPG
+R MOG
+
+L CER7b
+
+−24
+
+−74
+
+−50
+
+463
+
+6.45
+
+L CER7b
+
+R CER8
+
+20
+
+−72
+
+−52
+
+395
+
+5.82
+
+R CER8
+
+R CAU
+
+10
+
+12
+
+−2
+
+1108
+
+5.24
+
+R CAU
+
+L CER8
+
+R REC
+R INS
+R MFG
+
+44
+
+38
+
+18
+
+336
+
+4.92
+
+R MFG
+
+Table 5. Results of the contrast between target and normal stimuli in the visual oddball task in Prisma. Notes:
+The MNI coordinate corresponds to the peak voxels within each cluster. Clusters were set at a threshold of
+p < 0.001 and the cluster level family-wise-error was set at p < 0.05. Notes: Brain regions were labelled by the
+AAL toolbox in the SPM extension. IOG: Inferior occipital gyrus, CER6: Lobule VI of cerebellar hemisphere,
+MTG: Middle temporal gyrus, SMA: Supplementary motor area, IPG: Inferior parietal gyrus, excluding
+supramarginal and angular gyri, PoCG: Postcentral gyrus, SMG: SupraMarginal gyrus, MOG: Middle occipital
+gyrus, CER7b: Lobule VIIB of cerebellar hemisphere, CER8: Lobule VIII of cerebellar hemisphere, CAU:
+Caudate nucleus, REC: Gyrus rectus, INS: Insula, MFG: Middle frontal gyrus.
+
+Inside the MR scanner. For EEG recorded simultaneously with fMRI, we first applied a high-pass filter (0.5 Hz,
+Butterworth filter, second order, applied bidirectionally). Next, we removed GA and BCG artifacts using AAS5.
+During this step, we used the FMRIB plug-in for EEGLAB, provided by the University of Oxford Centre for
+Functional MRI of the Brain (FMRIB)26,27. We then applied a low-pass filter (0.5 Hz, Butterworth filter, second
+order, applied bidirectionally), resampled the data to 500 Hz, and applied CWL regression (https://github.com/
+jnvandermeer/CWRegrTool)11 to reduce motion artifacts. The data were then resampled again to 250 Hz. As
+with EEG recorded outside the scanner, we detected and interpolated noisy channels, removed power line noise,
+re-referenced the data to a common average reference, removed EOG-related artifacts, segmented the data into
+10-s windows, and performed artifact correction with autoreject using a sliding window method. Finally, we further attenuated residual BCG artifacts using generalized optimal basis set (OBS) – a custom method described
+by Kuroda et al.20.
+
+MRI preprocessing. We used BIDS_spm_preprocessing script (https://github.com/kfinc/bids-spm-preprocessing)
+
+to process fMRI data. This script was designed for group-level SPM preprocessing of BIDS longitudinal data. We processed the data using SPM12 software as follows: (i) A first few volumes were discarded (12 and 4 volumes for Prisma
+and Verio, respectively) to allow for T1 equilibration; (ii) the remaining data were corrected for slice timing; (iii) the
+mean image of the sequence was realigned to compensate for head motion; (iv) the structural image was co-registered
+to the mean of the functional images and segmented into three tissue classes in Montreal Neurological Institute (MNI)
+space; (v) the functional images were normalized using the associated parameters and resampled onto a 2 × 2 × 2 mm
+grid; and (vi) the data were spatially smoothed using an isotropic Gaussian kernel with an 8 mm full width at half
+maximum.
+
+Data quality control. Participants had to complete two laboratory visits to be included in the present dataset. Two participants were unable to complete due to either sickness or device failure. Body movement was not
+considered as an exclusion criterion. These criteria resulted in a total of 39 participants in the final set of data. It
+should be noted that we attempted to preprocess this dataset using fMRIPrep28, but it did not work properly for
+the defaced sub-38 data. However, we confirmed successful preprocessing of this data with SPM12; thus, being
+included in this dataset.
+Data privacy. All imaging data in this study have been anonymized by deleting personal information, except
+for sex and age. The T1-weighted structural image was defaced using the method proposed by Tanaka et al.29.
+However, as this method was insufficient for two participants assigned to Verio, we applied fsl_deface30 to their
+T-1 structural images. For T2-weighted structural images in Prisma, deface_T1231 was used. We carefully confirmed that the defaced T1 and T2 images showed no removal of gray matter through visual inspection.
+
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+10
+
+www.nature.com/scientificdata
+
+www.nature.com/scientificdata/
+
+Brain regions
+
+Peak coordinate(MNI)
+
+Cluster size
+
+x
+
+y
+
+z
+
+Voxels
+
+Peak of T score Details
+
+−34
+
+−22
+
+52
+
+80691
+
+21.24
+
+N-back task
+match_zero > non-match_zero
+L PoCG
+
+L PoCG
+L PreCG
+R CER6
+
+L MFG
+
+−34
+
+46
+
+22
+
+900
+
+8.39
+
+L MFG
+
+−38
+
+−18
+
+60
+
+15413
+
+12.7
+
+L PreCG
+
+match_two > non-match_two
+L PreCG
+
+L ROL
+L PoCG
+CER6_R
+
+22
+
+−52
+
+−24
+
+4124
+
+11.51
+
+R CER6
+R CER4_5
+R CER8
+
+R IFGorb
+
+32
+
+24
+
+−12
+
+2993
+
+7.23
+
+R STG
+
+64
+
+−48
+
+22
+
+1075
+
+6.49
+
+R IFGorb
+R INS
+R STG
+R ITG
+R MTG
+
+R IPG
+
+54
+
+−32
+
+50
+
+1163
+
+5.83
+
+R IPG
+R PoCG
+R ROL
+
+L IFGtriang
+
+−40
+
+44
+
+2
+
+261
+
+4.57
+
+L IFGtriang
+L MFG
+
+Table 6. Results of contrasts for different combinations of match and non-match stimuli in 0- and 2-back
+conditions in the N-back task in Prisma. Notes: The MNI coordinate corresponds to the peak voxels within each
+cluster. Clusters were set at a threshold of p < 0.001 and the cluster level family-wise-error was set at p < 0.05.
+Notes: Brain regions were labelled by the AAL toolbox in the SPM extension. PoCG: Postcentral gyrus, PreCG:
+Precentral gyrus, CER6: Lobule VI of cerebellar hemisphere, MFG: Middle frontal gyrus, ROL: Rolandic
+operculum, CER4_5: Lobule IV, V of cerebellar hemisphere, CER8: Lobule VIII of cerebellar hemisphere,
+IFGorb: IFG pars orbitalis, INS: Insula, STG: Superior temporal gyrus, ITG: Inferior temporal gyrus, MTG:
+Middle temporal gyrus, IPG: Inferior parietal gyrus, IFGtriang: Inferior frontal gyrus, triangular part.
+
+Data Records
+
+Data organization. All data in this study have been organized following the BIDS format32. The dataset
+consists of raw data for EEG data, EPI, and fieldmaps, and defaced data for T1-weighted image and T2-weighted
+image.
+The provided link for the present dataset contains two main data folders, ‘41_prisma_deface’ and ‘41_verio_
+deface’, each following the BIDS standard. In each subject’s folder, two session folders are included (Day 1: ses-1
+and Day 2: ses-2), with a consistent structure across sessions. Specifically, each session folder contains (i) an
+‘anat’ folder for structural MRI images, (ii) an ‘eeg’ folder for EEG data, (iii) a ‘func’ folder for fMRI data, and
+(iv) an ‘fmap’ folder for fieldmaps. MRI data are provided in the NIfTI format (.nii.gz), and EEG data are in the
+EEGLAB (.set) format. All datasets are raw but de-identified, and structural and functional MRI scans have been
+defaced (i.e., facial parts removed) to protect participant privacy. JSON files are included to provide acquisition
+parameters as metadata. All experimental events were recorded in the EEG file with their markers and descriptions described in the accompanying documentation file (event_marker_info.txt).
+
+Technical Validation
+
+EEG data validation and quality. To assess the quality of resting EEG data, we compared the power
+spectral density (PSD) of EEG signals after GA correction (GA), CWL regression (EEG-fMRI (preprocessed)),
+and autoreject (EEG-fMRI with autoreject) (Fig. 1). Just for the data presentation here, the frequency band was
+adjusted to 1–120 Hz at step 7 in Table 3. The frequency band of notable noise differed across MR scanners.
+When comparing results of GA to EEG-fMRI(preprocessed), with the main difference being the presence of CWL
+regression in the latter (see Table 4), noise in the 20–60 Hz range was considerably reduced in Prisma whereas
+noise in the 80–100 Hz range was reduced in Verio. These frequency ranges likely correspond to vibrations from
+the helium pump operation6,8,20 in respective scanners. Thus, CWLs were effective in reducing motion-related
+artifacts. Additionally, CWL regression also reduced power at low frequencies. In both Prisma and Verio, artifact
+removal using autoreject led to an overall reduction in power for both simultaneous EEG-fMRI and EEG-only
+recordings. For EEG-only, the alternating current power at 60 Hz was effectively removed. As a result of these
+noise reductions, the final PSDs were similar to each other between simultaneous EEG-fMRI and EEG-only.
+Figure 2 shows representative traces of all EEG channels for a single participant across different
+noise-reduction methods. The top two panels show EEG acquired inside the MRI scanner with noise removed
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+11
+
+www.nature.com/scientificdata
+
+www.nature.com/scientificdata/
+
+Brain regions
+
+Peak coordinate(MNI)
+
+Cluster size
+
+x
+
+y
+
+z
+
+Voxels
+
+Peak of T score Details
+
+Visual oddball task
+target > normal
+L SMA
+
+−6
+
+2
+
+64
+
+784
+
+8.91
+
+L PAL
+
+−20
+
+−4
+
+−2
+
+974
+
+7.27
+
+L SMA
+L SFG
+L PAL
+L IFGorb
+L IFGtriang
+
+L PoCG
+
+−54
+
+−8
+
+18
+
+142
+
+7.13
+
+L MOG
+
+−24
+
+−90
+
+2
+
+566
+
+6.76
+
+L PoCG
+L PreCG
+L MOG
+L FFG
+L IOG
+
+R FFG
+
+26
+
+−82
+
+0
+
+565
+
+6.75
+
+R FFG
+R SOG
+R CAL
+
+L IPG
+
+−28
+
+−46
+
+38
+
+349
+
+6.2
+
+L IPG
+
+L SOG
+
+−26
+
+−70
+
+34
+
+338
+
+6.15
+
+L SOG
+
+R SFG
+
+28
+
+12
+
+62
+
+247
+
+5.84
+
+R CER6
+
+28
+
+−64
+
+−30
+
+134
+
+5.27
+
+L SPG
+R SFG
+R MFG
+R CER6
+R CERCRU1
+
+Table 7. Results of the contrast between target and normal stimuli in the visual oddball task in Verio. Notes:
+The MNI coordinate corresponds to the peak voxels within each cluster. Clusters were set at a threshold of
+p < 0.001 and the cluster level family-wise-error was set at p < 0.05. Notes: Brain regions were labelled by the
+AAL toolbox in the SPM extension. SMA: Supplementary motor area, SFG: Superior frontal gyrus, dorsolateral,
+PAL: Lenticular nucleus, Pallidum, IFGorb: IFG pars orbitalis, IFGtriang: Inferior frontal gyrus, triangular part,
+PoCG: Postcentral gyrus, PreCG: Precentral gyrus, MOG: Middle occipital gyrus, FFG: Fusiform gyrus, IOG:
+Inferior occipital gyrus, SOG: Superior occipital gyrus, CAL: Calcarine fissure and surrounding cortex, IPG:
+Inferior parietal gyrus, excluding supramarginal and angular gyri, SPG: Superior parietal gyrus, MFG: Middle
+frontal gyrus, CER6: Lobule VI of cerebellar hemisphere, CERCRU1: Crus I of cerebellar hemisphere.
+
+(EEG-fMRI [GA] and EEG-fMRI[preprocessed]), whereas the bottom panel shows EEG outside the MRI scanner that has undergone preprocessing (EEG-only [preprocessed]). Compared to EEG-fMRI [GA], its combination with CWL regression considerably reduced noise.
+Next, we examined event-related potentials (ERPs) in oddball and N-back tasks. Figures 3–6 show the ERPs
+averaged across subjects in each task separately for Prisma and Verio for EEG-only with autoreject and simultaneous EEG-fMRI with autoreject. In the oddball task (Figs. 3, 4), EEG signals from simultaneous EEG-fMRI
+showed physiologically meaningful signals such as P300 when comparing trials with target and normal stimuli
+although their overall amplitudes were smaller relative to EEG-only. Likewise, in the N-back task, physiologically meaningful signals such as P300 were observed for both simultaneous EEG-fMRI and EEG-only when
+comparing trials with match and normal stimuli, particularly in the 0-back condition (Figs. 5, 6). Results were
+similar in 2-back conditions but their amplitudes were much smaller than 0-back conditions possibly due to the
+increase in task difficulty33.
+
+fMRI data validation and quality. To assess the quality of fMRI data, we examined statistical differences in
+brain activity during experimental tasks. A general linear model (GLM) was applied using an event-related design
+(Tables 5–8). For oddball, fMRI data were modeled with two regressors of interest (i.e., target and normal trials).
+For N-back, the data were modeled with four regressors of interest corresponding to the trial/condition types
+(match_zero and non-match_zero respectively represent trials with match and non-match stimuli in the 0-back
+condition; match_two and non-match_two represent the respective stimuli in the 2-back condition). To localize
+the activated brain regions, we calculated contrast images for the following comparisons: (i) target > normal; (ii)
+match_zero > non-match_zero; (iii) match_two > non-match_two. We applied the contrast images as the input
+to group-level random-effect analysis with one-sample t-tests. The threshold for statistical significance was set
+at < 0.001 (uncorrected p-value) and a cluster-based family-wise-error correction of p-value < 0.05.
+Although activation levels and spatial extent differed between the two scanners, the location of activation generally were consistent and related to common areas in previous research (e.g., visual oddball task:
+supplementary motor area34; N-back task: Lobule VI of cerebellar hemisphere35). Additionally, fMRI images
+(Supplementary Fig. S5, S6) show similar results to previous research34,35. The coordinates of the peak voxels of
+the clusters were similar between the two scanners but with larger t-values and cluster sizes in Prisma compared
+to Verio.
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+12
+
+www.nature.com/scientificdata
+
+www.nature.com/scientificdata/
+
+Brain regions
+
+Peak coordinate(MNI)
+
+Cluster size
+
+x
+
+y
+
+z
+
+Voxels
+
+Peak of T score Details
+
+−34
+
+0
+
+4
+
+19349
+
+12.6
+
+N-back task
+match_zero > non-match_zero
+L PUT
+
+L PUT
+R CER6
+R MCC
+
+R PoCG
+
+54
+
+−16
+
+30
+
+1710
+
+7.22
+
+L LING
+
+−24
+
+−66
+
+−2
+
+409
+
+6.71
+
+R SOG
+
+22
+
+−60
+
+38
+
+351
+
+6.67
+
+L SFG
+
+−28
+
+46
+
+20
+
+410
+
+6.53
+
+R PreCG
+
+52
+
+12
+
+36
+
+322
+
+6.52
+
+L PUT
+
+−22
+
+14
+
+−2
+
+369
+
+4.23
+
+R PoCG
+R SMG
+L LING
+L CAL
+R SOG
+R ANG
+L SFG
+L MFG
+R PreCG
+R MFG
+L PUT
+L CAU
+L PAL
+
+R SFG
+
+34
+
+54
+
+24
+
+295
+
+5.83
+
+R SFG
+R MFG
+
+match_two > non-match_two
+L MCC
+
+0
+
+10
+
+42
+
+2264
+
+8.96
+
+L MCC
+L ACC
+L SFGmedial
+
+R CER4_5
+
+16
+
+−52
+
+−20
+
+545
+
+8.36
+
+R CER4_5
+
+L ROL
+
+−40
+
+−28
+
+14
+
+2545
+
+7.68
+
+L CER4_5
+
+−8
+
+−30
+
+−10
+
+350
+
+7.29
+
+R THA
+
+8
+
+−16
+
+4
+
+342
+
+7.28
+
+R THA
+
+R INS
+
+44
+
+16
+
+−4
+
+206
+
+6.64
+
+R INS
+
+R STG
+
+64
+
+−44
+
+20
+
+453
+
+6.3
+
+R STG
+
+R INS
+
+38
+
+−18
+
+−4
+
+147
+
+6.2
+
+R CER6
+L ROL
+L SMG
+L CER4_5
+L THA
+
+R SMG
+R INS
+R PUT
+R MTG
+L INS
+
+−34
+
+18
+
+−4
+
+264
+
+6.16
+
+L INS
+
+−38
+
+−8
+
+−2
+
+172
+
+5.54
+
+L INS
+L STG
+L INS
+L ROL
+
+Table 8. Results of the contrast between match and non-match stimuli in 0- and 2-back conditions each in the
+N-back task in Verio. The MNI coordinate corresponds to the peak voxels within each cluster. Clusters were set at a
+threshold of p < 0.001 and the cluster level family-wise-error was set at p < 0.05. Notes: Brain regions were labelled
+by the AAL toolbox in the SPM extension. PUT: Lenticular nucleus, Putamen, CER6: Lobule VI of cerebellar
+hemisphere, MCC: Middle cingulate & paracingulate gyri, PoCG: Postcentral gyrus, SMG: SupraMarginal
+gyrus, LING: Lingual gyrus, CAL: Calcarine fissure and surrounding cortex, SOG: Superior occipital gyrus,
+ANG: Angular gyrus, SFG: Superior frontal gyrus, dorsolateral, MFG: Middle frontal gyrus, PreCG: Precentral
+gyrus, CAU: Caudate nucleus, PAL: Lenticular nucleus, Pallidum, ACC: Anterior cingulate & paracingulate
+gyri, SFGmedial: Superior frontal gyrus, medial, CER4_5: Lobule IV, V of cerebellar hemisphere, ROL: Rolandic
+operculum, THA: Thalamus, INS: Insula, STG: Superior temporal gyrus, MTG: Middle temporal gyrus
+
+Data availability
+
+The datasets in this study are available through our website(https://doi.org/10.34860/atr-EfP-2025). Access to the
+data is provided to researchers upon registration, after which a link to the data repository will be supplied.
+
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+13
+
+www.nature.com/scientificdata/
+
+www.nature.com/scientificdata
+
+Code availability
+
+MATLAB and Python codes for EEG preprocessing described in Table 4 are available from a link to our data
+repository after registering on our website, https://doi.org/10.34860/atr-EfP-2025.
+Received: 18 August 2025; Accepted: 27 January 2026;
+Published: xx xx xxxx
+
+References
+
+1. Buxton, R. B. Introduction to functional magnetic resonance imaging. https://doi.org/10.1017/CBO9780511549854 (Cambridge Univ.
+Press, 2002).
+2. Britz, J., Van De Ville, D. & Michel, C. M. BOLD correlates of EEG topography reveal rapid resting-state network dynamics.
+NeuroImage 52, 1162–1170, https://doi.org/10.1016/j.neuroimage.2010.02.052 (2010).
+3. Mantini, D., Perrucci, M. G., Del Gratta, C., Romani, G. L. & Corbetta, M. Electrophysiological signatures of resting state networks
+in the human brain. PNAS 104, 13170–13175, https://doi.org/10.1073/pnas.0700668104 (2007).
+4. Jorge, J., van der Zwaag, W. & Figueiredo, P. EEG–fMRI integration for the study of human brain function. NeuroImage 102, 24–34,
+https://doi.org/10.1016/j.neuroimage.2013.05.114 (2014).
+5. Allen, P. J., Josephs, O. & Turner, R. A Method for Removing Imaging Artifact from Continuous EEG Recorded during Functional
+MRI. NeuroImage 12, 230–239, https://doi.org/10.1006/nimg.2000.0599 (2000).
+6. Rothlübbers, S. et al. Characterisation and Reduction of the EEG Artefact Caused by the Helium Cooling Pump in the MR
+Environment: Validation in Epilepsy Patient Data. Brain Topogr 28, 208–220, https://doi.org/10.1007/s10548-014-0408-0 (2015).
+7. Hoffmann, S. & Falkenstein, M. The Correction of Eye Blink Artefacts in the EEG: A Comparison of Two Prominent Methods. PLOS
+ONE 3, e3004, https://doi.org/10.1371/journal.pone.0003004 (2008).
+8. Debener, S., Mullinger, J. K., Niazy, R. K. & Bowtel, R. W. Properties of the ballistocardiogram artefact as revealed by EEG recordings
+at 1.5, 3 and 7 T static magnetic field strength. Int J Psychophysiol 67, 189–199, https://doi.org/10.1016/j.ijpsycho.2007.05.015 (2008).
+9. Abreu, R., Jorge, J. & Figueiredo, P. EEG quality: The pulse artifact. In C. Muler & L. Lemieux (Eds.), EEG-fMRI: Physiological basis,
+technique, and applications (pp. 167–188). (Springer, 2022).
+10. Allen, P. J., Polizzi, G., Krakow, K., Fish, D. R. & Lemieux, L. Identification of EEG Events in the MR Scanner: The Problem of Pulse
+Artifact and a Method for Its Subtraction. NeuroImage 8, 229–239, https://doi.org/10.1006/nimg.1998.0361 (1998).
+11. van der Meer, J. N. et al. Carbon-wire loop based artifact correction outperforms post-processing EEG/fMRI corrections—A
+validation of a real-time simultaneous EEG/fMRI correction method. NeuroImage 125, 880–894, https://doi.org/10.1016/j.
+neuroimage.2015.10.064 (2016).
+12. Jorge, J., Grouiller, F., Gruetter, R., van der Zwaag, W. & Figueiredo, P. Towards high-quality simultaneous EEG-fMRI at 7 T: Detection
+and reduction of EEG artifacts due to head motion. NeuroImage 120, 143–153, https://doi.org/10.1016/j.neuroimage.2015.07.020
+(2015).
+13. Telesford, Q. K. et al. An open-access dataset of naturalistic viewing using simultaneous EEG-fMRI. Sci. Data 10, 554, https://doi.
+org/10.1038/s41597-023-02458-8 (2023).
+14. Schrooten, M., Vandenberghe, R., Peeters, R. & Dupont, P. Quantitative Analyses Help in Choosing Between Simultaneous vs.
+Separate EEG and fMRI. Front. Neurosci. 12, https://doi.org/10.3389/fnins.2018.01009 (2019).
+15. He, H., Hong, L. & Sajda, P. Pupillary response is associated with the reset and switching of functional brain networks during
+salience processing. PLoS Comput. Biol 19, e1011081, https://doi.org/10.1371/journal.pcbi.1011081 (2023).
+16. Walz, J. M. et al. Prestimulus EEG alpha oscillations modulate task-related fMRI BOLD responses to auditory stimuli. NeuroImage
+113, 153–163, https://doi.org/10.1016/j.neuroimage.2015.03.028 (2015).
+17. Georgie, Y. K., Porcaro, C., Mayhew, S. D., Bagshaw, A. P. & Ostwald, D. A perceptual decision making EEG/fMRI data set. 253047
+Preprint at https://doi.org/10.1101/253047 (2018).
+18. Kraljič, A., Matkovič, A., Purg, N., Demšar, J. & Repovš, G. Evaluation and comparison of most prevalent artifact reduction methods
+for EEG acquired simultaneously with fMRI. Front. Neuroimaging 1, https://doi.org/10.3389/fnimg.2022.968363 (2022).
+19. Noble, S. et al. Multisite reliability of MR-based functional connectivity. NeuroImage 146, 959–970, https://doi.org/10.1016/j.
+neuroimage.2016.10.020 (2017).
+20. Kuroda, T. et al. Test-retest reliability of EEG microstate metrics for evaluating noise reductions in simultaneous EEG-fMRI. Imaging
+Neuroscience 2, 1–20, https://doi.org/10.1162/imag_a_00272 (2024).
+21. Gorgolewski, K. J. et al. The brain imaging data structure, a format for organizing and describing outputs of neuroimaging
+experiments. Sci. Data 3, 1–9, https://doi.org/10.1038/sdata.2016.44 (2016).
+22. Pernet, C. R. et al. EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Sci. Data 6, 103, https://
+doi.org/10.1038/s41597-019-0104-8 (2019).
+23. Delorme, A. & Makeig, S. EEGLAB: an open source toolbox for analysis of single-trial EEG dynamics including independent
+component analysis. J. Neurosci. Methods 134, 9–21, https://doi.org/10.1016/j.jneumeth.2003.10.009 (2004).
+24. Jas, M., Engemann, D. A., Bekhti, Y., Raimondo, F. & Gramfort, A. Autoreject: Automated artifact rejection for MEG and EEG data.
+NeuroImage 159, 417–429, https://doi.org/10.1016/j.neuroimage.2017.06.030 (2017).
+25. Bigdely-Shamlo, N., Mullen, T., Kothe, C., Su, K.-M. & Robbins, K. A. The PREP pipeline: standardized preprocessing for large-scale
+EEG analysis. Front. Neuroinform. 9, https://doi.org/10.3389/fninf.2015.00016 (2015).
+26. Niazy, R. K., Beckmann, C. F., Iannetti, G. D., Brady, J. M. & Smith, S. M. Removal of FMRI environment artifacts from EEG data
+using optimal basis sets. Neuroimage 28, 720–737, https://doi.org/10.1016/j.neuroimage.2005.06.067 (2005).
+27. Iannetti, G. D. et al. Simultaneous recording of laser-evoked brain potentials and continuous, high-field functional magnetic
+resonance imaging in humans. Neuroimage 28, 708–719, https://doi.org/10.1016/j.neuroimage.2005.06.060 (2005).
+28. Esteban, O. et al. fMRIPrep: a robust preprocessing pipeline for functional MRI. Nat Methods 16, 111–116, https://doi.org/10.1038/
+s41592-018-0235-4 (2019).
+29. Tanaka, C. S. et al. A multi-site, multi-disorder resting-state magnetic resonance image database. Sci. data 8, 227, https://doi.
+org/10.1038/s41597-021-01004-8 (2021).
+30. Alfaro-Almagro, F. et al. Image processing and Quality Control for the first 10,000 brain imaging datasets from UK Biobank.
+NeuroImage 166, 400–424, https://doi.org/10.1016/j.neuroimage.2017.10.034 (2018).
+31. Pernet C. Archiving and Sharing Functional MRI data. fMRI data sharing verision 2. Edinburgh Imaging, University of Edinburgh,
+https://doi.org/10.7488/ds/1347 (2016).
+32. Tsutsumi, M., Kishi, T., Ogawa, T., Kuroda, T., Kobler, J. R. Kawanabe, An EEG-fMRI dataset with carbon wire loops in cognitive
+tasks and resting state (atr-EfP-2025), https://doi.org/10.34860/atr-EfP-2025 (2025).
+33. Scharinger, C., Soutschek, A., Schubert, T. & Gerjets, P. Comparison of the Working Memory Load in N-Back and Working Memory
+Span Tasks by Means of EEG Frequency Band Power and P300 Amplitude. Front. Hum. Neurosci. 11, 6, https://doi.org/10.3389/
+fnhum.2017.00006 (2017).
+34. Harsay, H. A., Spaan, M., Wijnen, J. G. & Ridderinkhof, K. R. Error awareness and salience processing in the oddball task: Shared
+neural mechanisms. Front. Hum. Neurosci 6, 246, https://doi.org/10.3389/fnhum.2012.00246 (2012).
+
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+14
+
+www.nature.com/scientificdata/
+
+www.nature.com/scientificdata
+
+35. Yaple, A. Z., Stevens, D. W. & Arsalidou, M. Meta-analyses of the n-back working memory task: fMRI evidence of age-related changes
+in prefrontal cortex involvement across the adult lifespan. Neuroimage 196, 16–31, https://doi.org/10.1016/j.neuroimage.2019.03.074
+(2019).
+36. Lioi, G. et al. Simultaneous EEG-fMRI during a neurofeedback task, a brain imaging dataset for multimodal data integration. Sci.
+Data 7, 173, https://doi.org/10.1038/s41597-020-0498-3 (2020).
+37. Gu, Y., Sainburg, L. E., Han, F. & Liu, X. Simultaneous EEG and functional MRI data during rest and sleep from humans. Data in
+Brief 48, 1–5, https://doi.org/10.1016/j.dib.2023.109059 (2023).
+38. Daly, I. et al. Electroencephalography reflects the activity of sub-cortical brain regions during approach-withdrawal behaviour while
+listening to music. Sci. Rep 9, 9415, https://doi.org/10.1038/s41598-019-45105-2 (2019).
+39. Cha, Y. et al Sustained Attention Task (gradCPT) Dataset using simultaneous EEG-fMRI and DTI. OpenNeuro [Dataset], https://doi.
+org/10.18112/openneuro.ds006040.v1.0.0.
+
+Acknowledgements
+
+We thank Tomosumi Haitani, Issaku Kawashima, Tomoko Kawashima and Kana Inoue for help of data collection;
+Miki Kitagawa preparing for the experiment; Yoko Matsumoto for recruiting participants and scheduling the
+experiment. Furthermore, we would like to thank the team from the ATR Brain Activity Imaging Center (BAIC),
+in particular, Akikazu Nishikido, Nobuyoshi Tanki, and Akihide Yamamoto for their technical support. This work
+was supported by Innovative Science and Technology Initiative for Security Grant Number JPJ004596, ATLA,
+Japan.
+
+Author contributions
+
+Mizuki Tsutsumi and Tomohiko Kishi collected, analyzed, and interpreted the data and drafted the manuscript.
+They are equal contributors to this work and are designated as co-first authors. Takeshi Ogawa and Toshikazu
+Kuroda collected data and advised on data analysis and interpretation. Reinmar J. Kobler developed the EEG
+preprocessing pipeline. Takeshi Ogawa, Toshikazu Kuroda, and Reinmar J. Kobler contributed to the study
+conception and design under the supervision of Motoaki Kawanabe. All authors read and approved the final
+manuscript.
+
+Competing interests
+
+The authors declare no competing interests.
+
+Additional information
+
+Supplementary information The online version contains supplementary material available at https://doi.org/
+10.1038/s41597-026-06734-1.
+Correspondence and requests for materials should be addressed to T.O. or T.K.
+Reprints and permissions information is available at www.nature.com/reprints.
+Publisher’s note Springer Nature remains neutral with regard to jurisdictional claims in published maps and
+institutional affiliations.
+Open Access This article is licensed under a Creative Commons Attribution-NonCommercialNoDerivatives 4.0 International License, which permits any non-commercial use, sharing, distribution and reproduction in any medium or format, as long as you give appropriate credit to the original author(s)
+and the source, provide a link to the Creative Commons licence, and indicate if you modified the licensed material. You do not have permission under this licence to share adapted material derived from this article or parts of
+it. The images or other third party material in this article are included in the article’s Creative Commons licence,
+unless indicated otherwise in a credit line to the material. If material is not included in the article’s Creative
+Commons licence and your intended use is not permitted by statutory regulation or exceeds the permitted
+use, you will need to obtain permission directly from the copyright holder. To view a copy of this licence, visit
+http://creativecommons.org/licenses/by-nc-nd/4.0/.
+© The Author(s) 2026
+
+Scientific Data |
+
+(2026) 13:351 | https://doi.org/10.1038/s41597-026-06734-1
+
+15
+
+

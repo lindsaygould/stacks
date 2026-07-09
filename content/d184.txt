@@ -1,0 +1,2442 @@
+SleepLM: Natural-Language Intelligence for Human Sleep 
+
+|  |
+| :-: |
+| [**Page 1**]() |
+
+*2026-7-2*
+
+**SleepLM: Natural-Language Intelligence for**
+
+**Human Sleep**
+
+**Zongzhe Xu**1**, Zitao Shuai**1**, Eideen Mozaffari**1**, Ravi S. Aysola**1**, Rajesh Kumar**1**, Yuzhe Yang**1†
+
+1University of California, Los Angeles
+
+We present SleepLM, a family of sleep-language foundation models that enable human sleep alignment,
+
+interpretation, and interaction with natural language. Despite the critical role of sleep, learning-based
+
+sleep analysis systems operate in closed label spaces (e.g., predefined stages or events) and fail to
+
+describe, query, or generalize to novel sleep phenomena. SleepLM bridges natural language and
+
+multimodal polysomnography, enabling language-grounded representations of sleep physiology. To
+
+support this alignment, we introduce a multilevel sleep caption generation pipeline that enables the
+
+curation of the *first* large-scale sleep-text dataset, comprising over 100K hours of data from more
+
+than 10,000 individuals. Furthermore, we present a unified pretraining objective that combines
+
+contrastive alignment, caption generation, and signal reconstruction to better capture physiological
+
+fidelity and cross-modal interactions. Extensive experiments on real-world sleep understanding tasks
+
+verify that SleepLM outperforms state-of-the-art in zero-shot and few-shot learning, cross-modal
+
+retrieval, and sleep captioning. Importantly, SleepLM also exhibits intriguing capabilities including
+
+language-guided event localization, targeted insight generation, and zero-shot generalization to
+
+unseen tasks.
+
+**Code:** <https://github.com/yang-ai-lab/SleepLM>
+
+**Website:** <https://yang-ai-lab.github.io/SleepLM>
+
+**1. Introduction**
+
+Humans move between two distinct states: the *waking* life, structured by perception and language;
+
+and *sleep*, expressed through dense and continuous physiology. Sleep is not simply rest; it is a dynamic
+
+orchestration shaped by interactions among brain oscillations, cardiac regulation, and respiratory
+
+rhythms \[[7](#12)[,](#12) [10](#12), [18](#13)\]. Polysomnography (PSG) captures this narrative through synchronized channels
+
+(e.g., EEG, ECG, EMG, EOG, respiration), offering a high-resolution view into human health and
+
+encoding rich biomarkers for cardiovascular, neurological, and metabolic function \[[1](#11)[,](#11) [39](#14)[,](#14) [41](#15)\].
+
+As with waking experience, making sense of sleep requires a mapping from ***physiology*** to ***language***.
+
+The same PSG pattern can be described from low-level signal shifts (e.g., *“EEG delta power increases and*
+
+*heart rate slows”*) to high-level sleep states (e.g., *“transition into deep sleep”*). Learning this translation
+
+and alignment is the key to interpreting and interacting with high-frequency sleep physiology through
+
+actionable language descriptions, which is essential for democratizing sleep health \[[15](#13)\], enabling
+
+personalized monitoring \[[26](#13)\] and advancing clinical analysis beyond fixed categorization.
+
+Yet, current computational methods do not meet this need. On one hand, existing machine learning
+
+models for sleep are predominantly *discriminative* and confined to *closed* label spaces (e.g., sleep
+
+stages or events) without the capacity for open-ended description or reasoning \[[5](#12)[,](#12) [27](#14)[,](#14) [30](#14)\]. On the
+
+other hand, while Large Language Models (LLMs) excel at generative tasks, they are inherently
+
+ill-equipped to handle the high-dimensional, continuous nature of physiological data \[[25](#13)\]: Fig. [1](#2)
+
+†*Correspondence to: yuzhey@ucla.edu.*
+
+arXiv:2602.23605v2 \[cs.AI\] 1 Jul 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 2**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+Brain Activity
+
+Heart Activity
+
+Muscle Movements
+
+Respirations
+
+**Human Sleep Physiology Signals**
+
+**Central EEG Activity:** delta relative power
+
+equal to 68.21%, along with …
+
+**Electrocardiogram:** an estimated beat rate
+
+measuring 80.1 bpm, and …
+
+**Abdominal Respiration:** respiratory rate of
+
+16.34 bpm, along with …
+
+**Chin EMG Activity:** median frequency
+
+measuring 18.70 Hz, accompanied by …
+
+**Channel captions**
+
+A distinct **Stable Light Sleep (N2)** pattern
+
+emerges in this epoch.
+
+**Global captions**
+
+**Local captions**
+
+The **Oxygen Desaturation** event is detected
+
+from 27.0 s to 30.0 s.
+
+Heart Rate: **an increasing tendency** from 4.7
+
+to 7.5 seconds, plus …
+
+**Multilevel Captions**
+
+**SleepLM**
+
+**A \<event\> is**
+
+**detected …**
+
+▪
+
+arousal
+
+▪
+
+hypopnea
+
+▪
+
+……
+
+Text
+
+**A**
+
+**B**
+
+**C**
+
+Text
+
+**Blood Oxygen Saturation:** minimum value
+
+measuring 96.09, as well as a mean …
+
+sleep stage
+
+event class.
+
+BERT
+
+score
+
+METEOR
+
+score
+
+sleep stage
+
+event
+
+seg.
+
+regression
+
+unseen
+
+concept
+
+sleep
+
+→ text
+
+text → sleep
+
+SleepLM
+
+DeepSeek-R1
+
+Gemini 2.5 Pro
+
+LLaVA-Next
+
+MAE
+
+SimCLR
+
+**Central EEG:**
+
+**Zero-Shot**
+
+**targeted insights**
+
+**localize**
+
+**within- & cross-modal**
+
+**retrieval**
+
+**Generation**
+
+**Few-Shot**
+
+**Retrieval**
+
+Figure 1 | **Sleep-language foundation models (SleepLM).** We present a comprehensive study using over
+
+100K hours of multimodal sleep PSG data from over 10,000 individuals. We design a multi-level captioning
+
+pipeline that captures PSG information at different temporal and semantic granularities. Across a wide range of
+
+downstream tasks and evaluation settings, SleepLM consistently outperforms state-of-the-art LLMs and VLMs.
+
+In addition to its predictive capabilities, SleepLM also enables: **(A)** targeted and controlled insights generation,
+
+**(B)** language-guided event localization, and **(C)** within- and cross-modal zero-shot retrieval (details in Sec. [5](#6)).
+
+shows the poor zero-shot performance of Gemini 2.5 Pro \[[14](#13)\] and DeepSeek-R1 \[[21](#13)\] (details in Sec.
+
+[5](#6)), leaving the rich narrative of sleep largely inaccessible to modern generative AI.
+
+To fill the gap, we present SleepLM, to our knowledge, the first family of sleep-language foundation
+
+models that unlocks meaningful interpretation of raw sleep signals and enable novel sleep applications
+
+through natural language. The efficacy of SleepLM represents a paradigm shift from *categorizing* sleep
+
+to *describing* and *interacting* with it, enabled by three key innovations: ❶ A hierarchical, automated
+
+captioning pipeline that generates structural descriptions for each sleep epoch, spanning global
+
+semantic summaries, local fine-grained details, and channel-specific characteristics; ❷ The curation
+
+of the *largest* paired sleep-text dataset to date, comprising over 100,000 hours of data from more
+
+than 10,000 individuals, enabling the learning of robust, generalized representations of human sleep;
+
+and ❸ ReCoCa, a novel and generic multimodal pretraining architecture that utilizes a compound
+
+objective (contrastive alignment, caption generation, and signal reconstruction) to support scalable
+
+learning of joint language and physiological time-series data.
+
+To rigorously evaluate SleepLM, we benchmark it against state-of-the-art (SOTA) methods across
+
+diverse, real-world sleep understanding tasks. Extensive experiments verify that SleepLM not only
+
+achieves superior performance on established tasks, but also enables new capabilities such as control-
+
+lable insight generation and zero-shot generalization to novel clinical concepts. Our contributions are
+
+as follows:
+
+4 We introduce a multilevel captioning pipeline for sleep data, yielding the largest sleep-text dataset
+
+to date with over 100,000 hours of data from over 10,000 people.
+
+4 We design SleepLM, the first family of sleep-language foundation models that enables diverse
+
+sleep capabilities and interaction through natural language.
+
+4 We present ReCoCa, a unified and generic multimodal pretraining architecture for joint learning
+
+2
+
+-----
+
+|  |
+| :-: |
+| [**Page 3**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+**Central EEG Activity (C3-A2):** a delta relative power measuring 68.70%, a
+
+theta relative power measuring 19.98%, an alpha relative power measuring
+
+5.81%, as well as a beta relative power measuring approximately 2%.
+
+**Electrocardiogram:** an estimated beat rate at 55.6 bpm, also an ultra-short
+
+HRV (RMSSD) of 26.45 ms.
+
+•
+
+A **Deep Sleep (N3)** pattern is observed in this epoch.
+
+•
+
+**Heart Rate:** a minimum value equal to 46.10 …
+
+•
+
+**Blood Oxygen Saturation:** minimum value at approximately 95.68 …
+
+❖ **Global Captions**
+
+We identify an **Oxygen Desaturation** event from 0.0 to 6.6 seconds. The
+
+**Hypopnea** event is identified from 7.8 to 20.2 seconds. The **Oxygen**
+
+**Desaturation** event spans 17.6 to 29.6 seconds. A **Hypopnea** event is
+
+identified between 27.0 and 30.0 seconds.
+
+❖ **Local Captions**
+
+❖ **Channel Captions**
+
+**. . . . . .**
+
+Figure 2 | **Multilevel sleep captioning pipeline.** We generate three complementary levels of captions from each
+
+PSG window: (1) Channel captions summarize modality-specific clinically relevant statistical features commonly
+
+used in manual scoring; (2) Local captions capture temporal semantics such as transient morphological changes
+
+and sleep event onsets and durations; (3) Global captions describe high-level physiological states such as sleep
+
+stage and overall cardiac and respiratory conditions. Example captions are privided in Appendix [E.1](#29).
+
+over language and physiological time-series data.
+
+4 Extensive experiments across real-world sleep tasks verify the superiority of SleepLM against
+
+SOTA methods, and reveal emergent capabilities including controllable insight generation and
+
+generalization to unseen concepts.
+
+**2. Related Work**
+
+**Sleep Foundation Models.** Sleep research has begun adopting large-scale pretraining for physiological
+
+signals, producing strong representations for discriminative tasks such as sleep staging and event
+
+detection \[[11](#12)[,](#12) [35](#14)[,](#14) [47](#15)\]. Current methods focus on self-supervised learning for biological signals,
+
+including inter-channel contrastive learning \[[37](#14)\], masked reconstruction \[[29](#14)\], and predictive coding
+
+for long-range sleep structure \[[19](#13)\]. However, existing sleep foundation models remain unimodal and
+
+optimized for classification, limiting their ability to generate descriptions or handle new concepts.
+
+In contrast, our work aligns raw PSG with *natural language* to support open-ended description,
+
+controllable reporting, and zero-shot generalization beyond fixed label sets.
+
+**Time Series Foundation Models.** Time series modeling has advanced with foundation models
+
+that generalize across many downstream settings, including weather forecasting and financial data
+
+\[[3](#12), [13](#12)[,](#12) [40](#14)\]. Recent work also studies how to represent temporal structure effectively, including
+
+tokenization and parameterization \[[28](#14)\], pretraining objectives \[[45](#15)\], architectural choices \[[16](#13)\], and
+
+embedding strategies \[[4](#12)\]. Although physiological signals share the same temporal form, they differ
+
+in sampling rate, recording length, and fixed channel structure. In contrast, we adapt these time-
+
+series design principles to PSG by explicitly accounting for multi-channel physiology and long, dense
+
+recordings, and by pairing signals with language for interpretability and interaction.
+
+**Multimodal Language Models.** Connecting non-text modalities with language models is now central
+
+in multimodal learning. In vision, CLIP \[[32](#14)\] showed that contrastive alignment between images and
+
+text enables strong zero-shot transfer, and CoCa \[[43](#15)\] combined contrastive learning with captioning
+
+to support both retrieval and generation. These alignment ideas have since been extended to temporal
+
+data: OpenTSLM \[[23](#13)\] adapts language-modality alignment to general time series, while SensorLM
+
+\[[48](#15)\] pairs wearable signals with automatically generated text to enable natural language interaction
+
+with sensor data. We extend this language-signal alignment framework to multi-channel PSG by
+
+3
+
+-----
+
+|  |
+| :-: |
+| [**Page 4**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+**Sleep**
+
+**Encoder**
+
+**Text**
+
+**Encoder**
+
+**Sleep**
+
+**Decoder**
+
+**Text**
+
+**Decoder**
+
+reconstruction loss
+
+channel-independent
+
+patch embedding
+
+channel attention
+
+learnable RoPE
+
+MLP
+
+temporal attention
+
+fixed sinusoidal RoPE
+
+MLP
+
+⨉ **N**
+
+S
+
+h
+
+a
+
+re
+
+d
+
+a
+
+cro
+
+ss
+
+a
+
+ll la
+
+ye
+
+rs
+
+contrastive loss
+
+cross attention
+
+**Text**
+
+**Encoder**
+
+**Sleep**
+
+**Encoder**
+
+contrastive loss
+
+**Text**
+
+**Decoder**
+
+captioning loss
+
+cross attention
+
+re
+
+co
+
+nstru
+
+ctio
+
+n
+
+**Text**
+
+**Encoder**
+
+**Sleep**
+
+**Encoder**
+
+**Text**
+
+**Decoder**
+
+cross attention
+
+**Text**
+
+**Encoder**
+
+**Sleep**
+
+**Encoder**
+
+contrastive loss
+
+captioning loss
+
+captioning loss
+
+Recon. + Con. + Cap.
+
+Con.
+
+Cap.
+
+Con. + Cap.
+
+**ReCoCa**
+
+**CLIP**
+
+**Cap**
+
+**CoCa**
+
+Figure 3 | **The SleepLM architecture, pretraining objectives, and variants.** We introduce ReCoCa, a generic
+
+sleep-language pretraining framework that jointly optimizes signal reconstruction, contrastive alignment,
+
+and caption generation for multi-channel PSG. By enabling or disabling components, ReCoCa yields common
+
+formulations (e.g., CLIP, Cap, CoCa) as special cases.
+
+introducing a sleep-specific captioning pipeline, a large paired sleep-text dataset, and a multimodal
+
+pretraining architecture designed for dense physiological time series.
+
+**3. Human Sleep Captioning at Scale**
+
+**PSG Data and Processing.** We source our primary pretraining corpus from the National Sleep
+
+Research Resource \[[46](#15)\]. Specifically, we aggregate five large-scale datasets: SHHS \[[31](#14)\], MrOS \[[9](#12)\],
+
+CFS \[[33](#14)\], \[[34](#14)\], and WSC \[[42](#15)\].
+
+For preprocessing, continuous recordings are segmented into non-overlapping 30-second epochs,
+
+following standard clinical sleep scoring conventions \[[2](#12)\]. We use a standardized 12-channel montage
+
+grouped by physiological modality: ❶ *Brain (EEG/EOG):* C3-A2, C4-A1, E1-A2, E2-A1. ❷ *Respiration:*
+
+Thorax, Abdominal effort, Airflow. ❸ *Cardiac:* ECG, Heart Rate, SpO2. ❹ *Somatic:* Chin
+
+EMG, Body Position. Detailed preprocessing steps are provided in Appendix [B](#16).
+
+**Multilevel Sleep Caption Generation.** Foundation models benefit from dense, structured supervision,
+
+yet most sleep datasets provide only a single coarse label per 30-second epoch (e.g., stage label such
+
+as “N2”), creating a strong information bottleneck \[[8](#12)\]. To address this, we introduce a ***multilevel***
+
+captioning pipeline that produces hierarchical, text supervision for each PSG epoch. The captions are
+
+organized at three complementary granularities:
+
+***Channel Captions:*** These captions describe signal morphology that is directly observable in the input
+
+channels. For each modality (e.g., EEG), we extract clinically used features from standard scoring
+
+practice, such as EEG band power and respiratory periodicity and variability. We then render these
+
+features into diverse linguistic templates, promoting robustness to language variation while keeping
+
+the supervision tightly grounded to the measured signals.
+
+***Local Captions:*** This level captures within-epoch temporal structure and event localization. We apply
+
+trend and peak detection to identify transient changes such as heart-rate accelerations and oxygen
+
+denaturation. Beyond event presence, we also indicate onset and offset timestamps within each
+
+epoch (Fig. [2](#3)), providing fine-grained temporal supervision to enable both event *identification* and
+
+*localization*.
+
+***Global Captions:*** At the highest level, we integrate semantic summaries of the epoch’s holistic state,
+
+including sleep stage (e.g., “N2”, “REM”) and global autonomic descriptors. Notably, we derive some of
+
+4
+
+-----
+
+|  |
+| :-: |
+| [**Page 5**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+Table 1 | **Zero-shot classification and regression.** We compare SleepLM with fine-tuned VLMs and state-
+
+of-the-art LLMs across a broad set of tasks. Results are averaged over the SHHS (internal), MrOS (internal),
+
+and CFS (external) evaluation sets. Sleep-event IoU and balanced accuracy are averaged over {Central Apnea,
+
+Hypopnea, Oxygen Desaturation, Arousal}. Heart rate MAE is averaged over {Mean, Min, Max}, and SpO2 MAE
+
+over {Min, Mean}. Channel statistics MAE is averaged over a diverse set of per-channel statistics (Appendix
+
+[B.2](#17)). Detailed task setups and additional results are provided in Appendix [C ](#17)and [D.5](#23).
+
+**Model**
+
+**Sleep Stage**
+
+**Sleep Event**
+
+**Heart Rate**
+
+**SpO**2
+
+**Channel Stats**
+
+AUC↑
+
+BAcc↑
+
+IoU↑
+
+BAcc↑
+
+MAE↓
+
+Recall↑
+
+MAE↓
+
+Recall↑
+
+SMAPE↓
+
+***Fine-tuned VLMs:***
+
+Qwen3-VL-8B-Instruct \[[6](#12)[\]](#12)
+
+70.2
+
+51.3
+
+13.5
+
+59.8
+
+14.25
+
+22.2
+
+2.73
+
+18.4
+
+34.62
+
+LLaVA-Next \[[24](#13)[\]](#13)
+
+58.9
+
+33.7
+
+7.4
+
+54.0
+
+14.67
+
+22.2
+
+2.58
+
+18.8
+
+36.34
+
+***State-of-the-art LLMs:***
+
+DeepSeek-R1 \[[21](#13)[\]](#13)
+
+50.9
+
+20.8
+
+1.6
+
+50.8
+
+9.42
+
+27.3
+
+**1.88**
+
+9.4
+
+\-
+
+Gemini 2.5 Pro \[[14](#13)\]
+
+52.2
+
+24.5
+
+2.8
+
+51.7
+
+2.01
+
+10.7
+
+2.20
+
+12.1
+
+\-
+
+SleepLM
+
+**85.4**
+
+**76.9**
+
+**30.4**
+
+**74.3**
+
+**1.97**
+
+**35.8**
+
+2.24
+
+**39.1**
+
+**3.15**
+
+Gains
+
+**+15.2**
+
+**+25.6**
+
+**+15.9**
+
+**+14.5**
+
+**+0.04**
+
+**+8.5**
+
+**-0.36**
+
+**+20.3**
+
+**+21.47**
+
+these descriptors from withheld signals (e.g., average heart rate and baseline SpO2) that are excluded
+
+from the model input, encouraging inference of these consequences from the remaining biosignals
+
+and acting as a masked-prediction proxy task during pretraining.
+
+**Large-Scale Pretraining Sleep-Text Dataset.** Building on the aggregated PSG corpus and the
+
+multilevel captioning pipeline, we construct the *first* large-scale paired sleep-text dataset. In total, the
+
+dataset comprises over 100,000 hours of PSG data spanning over 12,000 recording nights from more
+
+than 10,000 individuals. Detailed cohort statistics and dataset splits are provided in Appendix [B](#16).
+
+**4. SleepLM**
+
+SleepLM introduces a generic sleep-language pretraining framework for learning joint representations
+
+of sleep PSG and text. SleepLM is trained with a compound objective that combines contrastive
+
+alignment, caption generation, and signal reconstruction. By enabling or disabling components, this
+
+framework instantiates common formulations (e.g., CLIP, Cap, CoCa) as special cases.
+
+**Reconstructive Contrastive Captioner (ReCoCa).** We present ReCoCa, a unified multimodal pre-
+
+training architecture designed for dense physiological time series and forms the default instantiation
+
+of the SleepLM family (Fig. [3](#4)):
+
+*Channel-Specific Sleep Encoder.* PSG channels are not interchangeable: they follow a fixed montage
+
+with modality-specific meaning (e.g., EEG vs. EOG vs. respiratory effort). To capture this structure,
+
+ReCoCa first applies a channel-independent patch embedding so that each sensor’s local morphology
+
+is encoded before cross-channel mixing. The resulting tokens are processed by interleaved temporal-
+
+attention and channel-attention blocks. Temporal attention uses sinusoidal RoPE \[[36](#14)\] along time,
+
+while channel attention uses a shared learnable RoPE along the sensor dimension, allowing the model
+
+to represent montage topology and stable inter-channel relationships.
+
+*Signal Reconstruction Decoder.* Text supervision is sparse relative to the information presented in PSG.
+
+If trained only to align with captions, the encoder may discard waveform details that are not explicitly
+
+described. ReCoCa therefore includes a lightweight reconstruction decoder that predicts the original
+
+signal patches from the encoder latents, encouraging physiologically grounded representations and
+
+acting as a regularizer during multimodal pretraining.
+
+5
+
+-----
+
+|  |
+| :-: |
+| [**Page 6**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+*Modality-Conditioned Text Decoder.* PSG descriptions can target different physiological systems, and
+
+generating a single caption that covers all channels can be inefficient. We therefore group captions into
+
+four systems, M = {Brain, Respiratory, Cardiac, Somatic}. During training and inference,
+
+we sample a target system ð ∈ M and prepend a learnable token \[ð\] to the decoder input. This
+
+conditioning guides the decoder to focus on one system at a time, enabling *controllable* and *targeted*
+
+caption generation.
+
+**Pretraining Objectives.** ReCoCa uses a composite loss function that combines *contrastive*, *reconstruc-*
+
+*tion*, and *generative* objectives. Given a batch of ð paired examples {(ðð, ðð)}ð∈\[ð \], where ð denotes
+
+a PSG epoch and ð denotes its caption, let the sleep encoder produce a pooled embedding ðð (e.g.,
+
+a CLS token) and the text encoder produce a pooled embedding ðð. We first employ a symmetric
+
+InfoNCE contrastive objective \[[12](#12)\]:
+
+Lcon = −
+
+1
+
+ð
+
+ ð
+
+∑︁
+
+ð=1
+
+log
+
+exp(sim(ðð, ðð)/ð)
+
+Íð
+
+ð=1, ð≠ð exp(sim(ðð, ðð)/ð)
+
+| {z }
+
+sleep-to-text
+
+\+
+
+ð
+
+∑︁
+
+ð=1
+
+log
+
+exp(sim(ðð, ðð)/ð)
+
+Íð
+
+ð=1, ð≠ð exp(sim(ðð, ðð)/ð)
+
+| {z }
+
+text-to-sleep
+
+.
+
+where sim(·, ·) is a similarity function between embeddings, and ð denotes the temperature parameter.
+
+To further preserve signal fidelity, we reconstruct the input from the sleep encoder representations.
+
+Let ˆð denote the reconstructed sleep epoch, we minimize a mean-squared error:
+
+Lrec =
+
+1
+
+ð
+
+ð
+
+∑︁
+
+ð=1
+
+∥ðð − ˆðð ∥
+
+2
+
+2 .
+
+For caption generation, the multimodal text decoder conditions on the sleep embeddings and a
+
+modality token \[ð\]. Using an autoregressive factorization, the captioning loss is:
+
+Lcap = −
+
+∑︁ð
+
+ð¡=1
+
+logℙð(ðð¡ | ð\<ð¡, ð, \[ð\]).
+
+**The SleepLM Family.** The final objective is a weighted combination LReCoCa = ðcon · Lcon + ðrec ·
+
+Lrec + ðcap · Lcap, which yields a family of sleep-language models by varying (ðcon, ðrec, ðcap). For
+
+instance, setting ðrec = 0 and ðcap = 0 yields a CLIP-style dual encoder (Fig. [3](#4)). The full ReCoCa
+
+configuration uses all three losses and is our default model; we ablate these variants in Sec. [5.3](#10).
+
+**5. Experiments and Results**
+
+**Datasets.** We use the pretraining splits of SHHS, MrOS, and CCSHS as the primary training corpora,
+
+and keep CFS and WSC fully held out. For zero-shot evaluation, we use the validation splits of
+
+SHHS and MrOS together with CFS to assess both internal and external generalization. Due to its
+
+higher prevalence of rare apnea subtypes, WSC is reserved for few-shot learning and unseen-concept
+
+generalization experiments. Further details are provided in Appendix [B](#16).
+
+**Baselines.** For zero-shot and generative tasks, we compare against two classes of models. ❶ *Fine-tuned*
+
+*multimodal LLMs:* we adapt leading open-source vision-language models by replacing the vision
+
+encoder with our pretrained sleep encoder, then fine-tune the full system on our sleep-text corpus.
+
+We evaluate Qwen3-VL-8B-Instruct \[[6](#12)\] and LLaVA-Next \[[24](#13)\] as representative strong open-source
+
+backbones. ❷ *Proprietary LLMs:* we evaluate strong commercial models, including Gemini 2.5 Pro \[[14](#13)\]
+
+and DeepSeek-R1 \[[21](#13)\], by providing PSG as tabular time-series input with task-specific prompts. For
+
+few-shot tasks, we compare against SOTA self-supervised learning methods, MAE \[[22](#13)\] and SimCLR
+
+6
+
+-----
+
+|  |
+| :-: |
+| [**Page 7**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+\[[12](#12)\]. These models are pretrained on the same PSG corpus as all other methods for a controlled
+
+comparison. Training details and prompts for zero-shot tasks are provided in Appendix [A ](#16)and [E.2](#31).
+
+**Metrics.** For zero-shot classification, we report area under the ROC curve (AUROC), and balanced
+
+accuracy (BAcc). For zero-shot event localization, we report intersection-over-union (IoU). We
+
+report both symmetric mean absolute percentage error (sMAPE) and mean absolute error (MAE)
+
+for regression. For few-shot learning, we report AUROC across {5, 10, 20, 50} samples per class.
+
+Cross-modal retrieval is evaluated using Recall@1 and Recall@5 (R@K). A detailed settings by task is
+
+provided in Appendix [C](#17).
+
+Unless otherwise stated, we report the main results using the base ReCoCa configuration, denoted as
+
+SleepLM-B. We study the effects of scaling model components in Sec. [5.2](#8).
+
+**5.1. Main Results**
+
+**Zero-Shot Recognition.** We evaluate SleepLM in a zero-shot setting across four task categories: ❶
+
+five-class sleep staging, ❷ sleep event localization, ❸ implicit physiological inference (HR/SpO2),
+
+and ❹ explicit signal grounding (channel statistics). As shown in Table [1](#5)[,](#5) SleepLM consistently
+
+outperforms both proprietary LLMs and fine-tuned VLMs across all zero-shot tasks. The baselines
+
+exhibit distinct failure modes. Proprietary LLMs, even when given tabular PSG descriptors, produce
+
+near-random predictions for sleep stages and event identification, yet perform relatively well on HR
+
+and SpO2 regression. This suggests that strong LLMs can extract and manipulate explicit numeric
+
+summaries, but struggle to map low-level signal descriptors into higher-level sleep and event states.
+
+In contrast, fine-tuned VLMs are consistently suboptimal, suggesting that simply swapping in a sleep
+
+encoder does not yield effective multimodal fusion for dense physiological time series.
+
+**Zero-Shot Cross Modal Retrieval.** We evaluate cross-modal alignment via retrieval in both directions
+
+(signal-to-text and text-to-signal), reporting R@1 and R@5. As shown in Table [2](#7)[,](#7) SleepLM substan-
+
+tially outperforms LLM baselines, which are only slightly above random in this dense retrieval setting.
+
+Table 2 | **Zero-shot cross-modal retrieval.** We
+
+evaluate text-to-signal (**top**) and signal-to-text
+
+(**bottom**) retrieval for SleepLM and LLM base-
+
+lines. “–” indicates that the task is infeasible for
+
+an LLM baseline due to context limits. Full results
+
+are in Appendix [D.6](#24).
+
+**Model**
+
+n=100
+
+n=2000
+
+R@1↑ R@5↑ R@1↑ R@5↑
+
+*Text* ⇀ *Signal Retrieval*
+
+DeepSeek-R1 \[[21](#13)\]
+
+\-
+
+\-
+
+\-
+
+\-
+
+Gemini 2.5 Pro \[[14](#13)\]
+
+\-
+
+\-
+
+\-
+
+\-
+
+SleepLM
+
+**94.3 99.0 82.5 91.9**
+
+*Signal* ⇀ *Text Retrieval*
+
+DeepSeek-R1 \[[21](#13)\]
+
+1.7
+
+5.7
+
+\-
+
+\-
+
+Gemini 2.5 Pro \[[14](#13)\] 4.0 10.7
+
+\-
+
+\-
+
+SleepLM
+
+**94.3 99.7 80.9 91.5**
+
+On a 100-sample validation subset, SleepLM
+
+achieves near-perfect accuracy. On the full 2,000-
+
+sample validation set, where LLM baselines are not
+
+feasible due to context-length constraints, SleepLM
+
+still maintains strong retrieval performance. These
+
+results confirm that our pretraining objective learns
+
+a precise mapping between physiological states and
+
+their language descriptions. Later in Sec. [5.2](#8), we
+
+further demonstrate that SleepLM learns a continu-
+
+ous embedding space that supports practical retrieval
+
+beyond exact matches, enabling the search of seman-
+
+tically related data clusters.
+
+**Generalization to Unseen Concepts.** A key prop-
+
+erty of foundation models is the ability to generalize
+
+to concepts that are not explicitly observed during
+
+training. We evaluate SleepLM on two held-out clin-
+
+ical events: “Mixed Apnea” and “Obstructive Apnea”.
+
+These labels are absent from the training vocabulary,
+
+requiring the model to extrapolate from related phys-
+
+iological patterns (e.g., “Central Apnea”). As Table
+
+[3 ](#8)confirms,
+
+7
+
+-----
+
+|  |
+| :-: |
+| [**Page 8**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+Table 3 | **Zero-shot generalization to unseen concepts.** We
+
+report performance on two held-out respiratory event clas-
+
+sification tasks, where SleepLM remains robust across both
+
+settings.
+
+**Model**
+
+**Mixed Apnea**
+
+**Obstructive Apnea**
+
+F1↑
+
+BAcc↑
+
+F1↑
+
+BAcc↑
+
+Gemini 2.5 Pro
+
+33.4
+
+48.3
+
+15.6
+
+51.4
+
+SleepLM
+
+**78.2**
+
+**81.8**
+
+**79.7**
+
+**77.1**
+
+Obstructive Apnea (**unseen**)
+
+Mixed Apnea (**unseen**)
+
+Unrelated Concept
+
+Unseen
+
+Concepts
+
+Similar
+
+Concept
+
+Text Embedding
+
+Signal Embedding
+
+Similar
+
+Concept
+
+Unseen
+
+Concepts
+
+Central Apnea
+
+Oxy Desat.
+
+Figure 4 | **Zero-shot generalization analysis of SleepLM.**
+
+We visualize text and signal embeddings with UMAP as a case
+
+study of zero-shot concept transfer. SleepLM is capable of
+
+clustering previously unseen concepts to semantically related
+
+seen concepts.
+
+while LLM baselines perform at chance,
+
+SleepLM achieves approximately 80% F1
+
+and accuracy on these unseen events. To
+
+probe the source of this behavior, we visual-
+
+ize the embedding space with UMAP (Fig.
+
+[4](#8)). We observe that SleepLM places mixed
+
+and “Obstructive Apnea” near “Central Ap-
+
+nea” (a seen concept), while separating
+
+them from physiologically distinct events
+
+such as “Oxygen Desaturation”. This struc-
+
+ture suggests that SleepLM learns a latent
+
+concept that spans both seen and unseen
+
+variants in the aligned text and physiology
+
+spaces.
+
+**Few-Shot Learning.** We evaluate the
+
+transferability of SleepLM by isolating the
+
+sleep encoder and comparing it with SOTA
+
+SSL baselines and a supervised ViT model
+
+\[[17](#13)\]. We freeze encoder backbones and
+
+train a linear probe using a small labeled
+
+samples per class (i.e., {1, 5, 10, 20, 50})
+
+on the held-out WSC cohort. As shown
+
+in Fig. [6](#9), SleepLM consistently outper-
+
+forms both SSL and supervised baselines
+
+on sleep staging. With only 50 samples
+
+per class, SleepLM reaches approximately
+
+0.90 AUC, indicating strong data efficiency.
+
+Beyond general pretraining recipes, we fur-
+
+ther validate our approach by comparing
+
+SleepLM against specialized domain archi-
+
+tectures. We conduct few-shot linear prob-
+
+ing runs and full finetuning runs against
+
+diverse types of domain specific models:
+
+(1) *Supervised sleep stage models* \[[20](#13)[,](#13) [30](#14)\],
+
+(2) *Sleep FMs* \[[37](#14)\], and (3) *General time series FMs* \[[4](#12)\]. Specifically, to ensure a fair comparison, the
+
+domain-specific models are trained on the same data splits as SleepLM. We then isolated SleepLM
+
+’s sleep encoder and evaluate all models via linear probing and full fine-tuning on the completely
+
+unseen CFS dataset. Notably, for Chronos-2, we fine-tune its public checkpoint to properly assess
+
+its capacity as a general time-series foundation model. Ultimately, SleepLM demonstrates highly
+
+competitive performance across all tasks and settings. Together, these findings indicate that the
+
+semantic structure learned through caption-based supervision produces more discriminative and
+
+transferable features than standard reconstruction or invariance objectives, consistently matching or
+
+exceeding prior domain-specific state-of-the-art methods. Detailed results are provided in Appendix
+
+[D.4](#21).
+
+**5.2. Analyses**
+
+**Sleep Caption Generation.** We assess the generation quality of SleepLM by comparing its captions
+
+with ground-truth text and with captions from Gemini 2.5 Pro. As confirmed in Fig. [5](#9)[,](#9) SleepLM
+
+8
+
+-----
+
+|  |
+| :-: |
+| [**Page 9**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+A distinct Wake pattern emerges in this epoch.
+
+The Oxygen Desaturation event is noted from 0.0 to 29.0 seconds.
+
+The Arousal event is identified from 12.3 to 29.6 seconds.
+
+The patient presents Wake characteristics in this segment.
+
+The Oxygen Desaturation event is observed between 0.0 and 30.0 seconds.
+
+The Arousal event is observed between 10.3 and 29.9 seconds.
+
+**Ground truth**
+
+**SleepLM**
+
+This epoch corresponds to Deep Sleep (N3).
+
+A Central Apnea is identified from 15.2 to 28.0 seconds,
+
+accompanied by an Oxygen Desaturation spanning 16.0 to 30.0 seconds.
+
+An Arousal event is noted at the epoch's conclusion, from 28.0 to 30.0 seconds.
+
+**Gemini 2.5 Pro**
+
+Figure 5 | **Sleep caption generation.** SleepLM captures both high-level sleep stages and fine-grained localized
+
+events, while LLM baselines often fail to recognize or localize. Additional examples, including fine-tuned VLM
+
+outputs, are provided in Appendix [D.9](#26). The generation scores are provided in Table [20](#28).
+
+produces concise, clinically accurate descriptions that capture both sleep stage and the timing of
+
+localized events. In contrast, Gemini 2.5 Pro frequently introduces incorrect associations and fails to
+
+reflect the underlying signal morphology.
+
+**Localization Sensitivity.** One key capability is whether the model captures *when* an event occurs,
+
+rather than only its presence. To test this, we run a controlled perturbation study (Fig. [8](#11)). We select an
+
+epoch containing a ground-truth event (e.g., hypopnea) and construct synthetic captions that are identi-
+
+cal except for their timestamp intervals. We then compute the cosine similarity between the fixed signal
+
+embedding and the text embeddings of these temporally shifted captions. The similarity shows a strong
+
+linear relationship with timestamp IoU: it peaks near the correct alignment and decreases as overlap
+
+diminishes. This indicates that SleepLM learns temporally grounded representations that are sensitive
+
+to fine-grained localization in a zero-shot setting. Additional examples are provided in Appendix [E.5 ](#39).
+
+**Embedding Space Continuity.** To further visualize the structure of the learned latent space, we
+
+analyze retrieval results for a single PSG epoch. Fig. [7 ](#10)shows the top three retrieved captions from
+
+the pool, ranked by decreasing similarity. For clarity, we display only the global sleep stage and event
+
+descriptions. We observe a smooth semantic gradient: higher similarity scores consistently return cap-
+
+tions that match the query physiology, while lower scores correspond to physiologically distinct states.
+
+This indicates that SleepLM learns a continuous and semantically meaningful manifold in which
+
+embedding distance reflects physiological similarity, enabling data exploration based on semantic
+
+proximity rather than exact concept matches. Additional examples are provided in Appendix [E.4](#36).
+
+1
+
+5
+
+10
+
+20
+
+50
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+AUROC
+
+SleepLM
+
+MAE
+
+SimCLR
+
+ViT-Base (Supervised)
+
+Figure 6 | **Few-shot to downstream tasks.** We
+
+compare SleepLM with SSL and supervised base-
+
+lines under varying numbers of labeled samples
+
+per class. SleepLM shows higher data efficiency
+
+and stronger performance across all shot regimes.
+
+**Scaling Behavior (Appendix [D.1 ](#20)& [D.2](#20)):** We study
+
+how SleepLM scales with both model size and data
+
+diversity. For model scaling, we train three vari-
+
+ants, SleepLM-T (38M), SleepLM-S (180M), and
+
+SleepLM-B (410M). As shown in Table [9](#20), perfor-
+
+mance improves consistently as parameter count
+
+increases, with particularly clear gains in channel-
+
+statistics regression and cross-modal retrieval, and
+
+no evidence of saturation at the base scale. Model
+
+specifications are summarized in Table [10](#20). For data
+
+scaling, we compare single-source pretraining (SHHS
+
+only) with multi-source pretraining (SHHS + MrOS
+
+\+ CCSHS). Multi-source training improves all metrics
+
+and even outperforms the single-source baseline on
+
+9
+
+-----
+
+|  |
+| :-: |
+| [**Page 10**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+During this epoch, the patient exhibits REM Sleep. We observe a
+
+Hypopnea event between 0.0 and 3.9 seconds. The Hypopnea event
+
+spans 16.1 to 28.3 seconds. The Oxygen Desaturation event is
+
+observed from 17.3 to 30.0 seconds.
+
+Sleep stage analysis shows Deep Sleep (N3) for this epoch. The Arousal
+
+event spans 18.1 to 30.0 seconds.
+
+A REM Sleep pattern is observed in this epoch. The Oxygen
+
+Desaturation event is documented from 13.0 to 28.0 seconds. The
+
+Hypopnea event is observed from 20.0 to 30.0 seconds.
+
+**0**
+
+**30**
+
+The patient presents REM Sleep characteristics in this segment. Sleep
+
+continuity was maintained without events.
+
+**Rank 2**
+
+**Sim. = 0.36**
+
+**Rank 99**
+
+**Sim. = 0.18**
+
+**Rank 199**
+
+**Sim. = -0.45**
+
+Figure 7 | **Semantic retrieval continuity of SleepLM.** Retrieval results show a smooth semantic gradient: high-
+
+similarity captions (green) match the query’s physiological state, while lower-scoring results (red) correspond
+
+to distinct conditions. This indicates that embedding distance of SleepLM reflects physiological similarity.
+
+the internal SHHS evaluation set, indicating that our captioning pipeline provides stable supervision
+
+across cohorts and that added source diversity strengthens, rather than harms, generalization.
+
+**Full-Night Reporting (Appendix [D.8](#25)).** To connect with clinical practice, we aggregate epoch-level
+
+predictions across full-night recordings to derive standard diagnostic metrics, including the apnea–
+
+hypopnea index (AHI) and wake after sleep onset (WASO). We randomly select five SHHS subjects and
+
+run SleepLM in a sliding-window manner over each night, then summarize the fine-grained outputs
+
+into full-night statistics (details in Appendix [D.8](#25)[)](#25). SleepLM shows strong concordance with manual
+
+scoring and remains stable across thousands of epochs, whereas fine-tuned VLM baselines exhibit drift
+
+over long sequences. Fig. [19 ](#27)shows an example report constructed from these derived statistics, illus-
+
+trating that SleepLM can translate longitudinal PSG into actionable, physician-oriented summaries.
+
+**5.3. Ablation Studies**
+
+Table 4 | **SleepLM variant ablations on representa-**
+
+**tive tasks.** The full ReCoCa configuration consistently
+
+performs best, highlighting the benefit of our sleep-
+
+specific design choices. Complete results are provided
+
+in Appendix [D](#20).
+
+Arch
+
+Stage Acc↑ Event IoU↑ T2S R@1↑ sMAPE↓
+
+Cap \[[38](#14)[\]](#14)
+
+72.0
+
+29.2
+
+\-
+
+7.20
+
+CLIP \[[32](#14)\]
+
+74.6
+
+\-
+
+74.3
+
+\-
+
+CoCa \[[43](#15)[\]](#15)
+
+76.0
+
+27.4
+
+77.5
+
+7.34
+
+ReCoCa
+
+**76.9**
+
+**30.4**
+
+**82.5**
+
+**3.15**
+
+**ReCoCa vs. other SleepLM variants.** We
+
+compare ReCoCa with other pretraining for-
+
+mulations that can be instantiated within the
+
+SleepLMframework. As described in Sec. [4](#5), we
+
+obtain CLIP-, Cap-, and CoCa-style variants by
+
+toggling the contrastive (Lcon) and captioning
+
+and captioning (Lcap) objectives. To ablate our
+
+channel-specific sleep encoder, we also replace
+
+it with a standard encoder backbone consisting
+
+of convolutional feature extraction followed by
+
+a temporal transformer \[[11](#12)\]. All models are
+
+matched to roughly the same parameter size.
+
+Comparing these variants in Table [4 ](#10)reports representative metrics across tasks and shows that ReCoCa
+
+consistently performs best across most classification, regression, and event-localization evaluations,
+
+highlighting the benefit of our sleep-specific architectural choices.
+
+**Sleep reconstruction as regularization (Appendix [D.3](#21)).** We hypothesize that the mismatch between
+
+dense PSG and sparse text can cause the encoder to discard fine-grained morphology under text-only
+
+supervision. To test this, we ablate the reconstruction objective by setting Lrec = 0. As shown in
+
+Appendix [D.3](#21), removing reconstruction consistently degrades performance on discriminative tasks,
+
+supporting the role of reconstruction as a regularizer that preserves physiologically meaningful details.
+
+10
+
+-----
+
+|  |
+| :-: |
+| [**Page 11**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+…… Hypopnea event is documented from 0.0 to 5.6 seconds,
+
+… present from 15.4 to 30.0 seconds …
+
+**30**
+
+**0**
+
+**5.6**
+
+**15.4**
+
+**GT**
+
+**S**
+
+**ig**
+
+**n**
+
+**a**
+
+**l**
+
+**0**
+
+**30**
+
+**Sim**
+
+**ila**
+
+**rity**
+
+… from 0.0 to 4.0 seconds,
+
+… from 22.0 to 30.0 seconds …
+
+… from 0.0 to 6.0 seconds,
+
+… from 16.0 to 30.0 seconds …
+
+… from 0.0 to 8.0 seconds,
+
+… from 12.0 to 30.0 seconds …
+
+… from 0.0 to 30.0 seconds …
+
+… from 0.0 to 2.0 seconds,
+
+… from 28.0 to 30.0 seconds …
+
+**Pe**
+
+**rtu**
+
+**rb**
+
+**e**
+
+**d**
+
+**C**
+
+**a**
+
+**p**
+
+**tio**
+
+**n**
+
+Figure 8 | **Localization sensitivity of SleepLM.** Given
+
+a fixed signal embedding and its caption, we progres-
+
+sively shift the event timestamp in the caption and com-
+
+pare the resulting text embeddings to the signal em-
+
+bedding. Embedding similarity increases with the IoU
+
+between the ground-truth and perturbed timestamps,
+
+peaking near the correct alignment.
+
+**Multilevel caption supervision (Appendix**
+
+**[D.3](#21)).** An important design of our captioning
+
+pipeline is the integration of both low-level
+
+grounding (channel/local) and high-level sum-
+
+maries (global). To assess the value of low-level
+
+supervision, we compare the full-caption model
+
+(channel + local + global) with an ablation
+
+trained only on global captions. Results in Ap-
+
+pendix [D.3 ](#21)demonstrate that the model trained
+
+with multilevel supervision consistently outper-
+
+forms other baselines, including on high-level
+
+tasks such as sleep staging and event classifica-
+
+tion. This suggests that learning grounded wave-
+
+form descriptors strengthens the representa-
+
+tions used to infer broader physiological states.
+
+**6. Discussion**
+
+**Limitations.** While promising, SleepLM is a re-
+
+search prototype and is not clinically validated
+
+for diagnosis, treatment, or medical decision-
+
+making. In addition, our study focuses on five
+
+PSG cohorts curated from NSRR; further work
+
+may extend the data coverage to assess robustness to broader clinical variability, devices, and patient
+
+populations.
+
+**Conclusion.** We present SleepLM, the first family of sleep-language foundation models that unlock
+
+human sleep understanding through natural language. By curating the first large-scale sleep-text
+
+dataset and designing a unified pretraining objective ReCoCa, we support joint learning of language
+
+and physiological time-series at scale. We verify that SleepLM achieves strong performance across
+
+diverse tasks while enabling new capabilities such as language-guided localization and generalization
+
+to unseen concepts.
+
+**Acknowledgments**
+
+We gratefully acknowledge the support by Amazon Science Hub and UCLA DataX. Any opinions,
+
+findings, conclusions, or recommendations expressed in this material are those of the author(s) and
+
+do not necessarily reflect the views of the funders.
+
+**References**
+
+\[1\] Prince Nii Ossah Addo, Paddington T Mundagowa, Longgang Zhao, Mufaro Kanyangarara,
+
+Monique J Brown, and Jihong Liu. Associations between sleep duration, sleep disturbance
+
+and cardiovascular disease biomarkers among adults in the united states. *BMC Public Health*,
+
+24(1):947, 2024.
+
+11
+
+-----
+
+|  |
+| :-: |
+| [**Page 12**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+\[2\] American Academy of Sleep Medicine. The AASM manual for the scoring of sleep and associated
+
+events. <https://aasm.org/clinical-resources/scoring-manual/>, 2025. Accessed:
+
+2026-01-25.
+
+\[3\] Abdul Fatir Ansari, Oleksandr Shchur, Jaris Küken, Andreas Auer, Boran Han, Pedro Mercado,
+
+Syama Sundar Rangapuram, Huibin Shen, Lorenzo Stella, Xiyuan Zhang, et al. Chronos-2:
+
+From univariate to universal forecasting. *arXiv preprint arXiv:2510.15821*, 2025.
+
+\[4\] Abdul Fatir Ansari, Lorenzo Stella, Ali Caner Turkmen, Xiyuan Zhang, Pedro Mercado, Huibin
+
+Shen, Oleksandr Shchur, Syama Sundar Rangapuram, Sebastian Pineda Arango, Shubham
+
+Kapoor, Jasper Zschiegner, Danielle C. Maddix, Hao Wang, Michael W. Mahoney, Kari Torkkola,
+
+Andrew Gordon Wilson, Michael Bohlke-Schneider, and Bernie Wang. Chronos: Learning the
+
+language of time series. *Transactions on Machine Learning Research*, 2024. Expert Certification.
+
+\[5\] Mahsa Bahrami and Mohamad Forouzanfar. Sleep apnea detection from single-lead ecg: A
+
+comprehensive analysis of machine learning and deep learning algorithms. *IEEE Transactions*
+
+*on Instrumentation and Measurement*, 71:1–11, 2022.
+
+\[6\] Shuai Bai, Keqin Chen, Xuejing Liu, Jialin Wang, Wenbin Ge, Sibo Song, Kai Dang, Peng Wang,
+
+Shijie Wang, Jun Tang, et al. Qwen2. 5-vl technical report. *arXiv preprint arXiv:2502.13923*,
+
+2025\.
+
+\[7\] Richard B Berry, Rita Brooks, Charlene E Gamaldo, Susan M Harding, Carole Marcus, Bradley V
+
+Vaughn, et al. The aasm manual for the scoring of sleep and associated events. *Rules, Terminology*
+
+*and Technical Specifications, Darien, Illinois, American Academy of Sleep Medicine*, 176(2012):7,
+
+2012\.
+
+\[8\] Erhan Bilal, Matheus Lima Diniz Araujo, Kristen L Beck, Catherine M Heinzinger, Samer Ghosn,
+
+Carl Y Saab, Nancy Foldvary Schaefer, Jeffrey L Rogers, and Reena Mehra. A foundation model
+
+for sleep-based risk stratification and clinical outcomes. *Research Square*, pages rs–3, 2025.
+
+\[9\] Terri Blackwell, Kristine Yaffe, Sonia Ancoli-Israel, Susan Redline, Kristine E Ensrud, Marcia L
+
+Stefanick, Alison Laffan, Katie L Stone, and Osteoporotic Fractures in Men Study Group.
+
+Associations between sleep architecture and sleep-disordered breathing and cognition in older
+
+community-dwelling men: the osteoporotic fractures in men sleep study. *Journal of the American*
+
+*Geriatrics Society*, 59(12):2217–2225, 2011.
+
+\[10\] Andreas Brink-Kjaer, Eileen B Leary, Haoqi Sun, M Brandon Westover, Katie L Stone, Paul E
+
+Peppard, Nancy E Lane, Peggy M Cawthon, Susan Redline, Poul Jennum, et al. Age estimation
+
+from sleep studies using deep learning predicts life expectancy. *NPJ digital medicine*, 5(1):103,
+
+2022\.
+
+\[11\] Jonathan F Carter and Lionel Tarassenko. wav2sleep: A unified multi-modal approach to sleep
+
+stage classification from physiological signals. *arXiv preprint arXiv:2411.04644*, 2024.
+
+\[12\] Ting Chen, Simon Kornblith, Mohammad Norouzi, and Geoffrey Hinton. A simple framework
+
+for contrastive learning of visual representations. In *International conference on machine learning*,
+
+pages 1597–1607. PMLR, 2020.
+
+\[13\] Ben Cohen, Emaad Khwaja, Youssef Doubli, Salahidine Lemaachi, Chris Lettieri, Charles Masson,
+
+Hugo Miccinilli, Elise Ramé, Qiqi Ren, Afshin Rostamizadeh, et al. This time is different: An
+
+observability perspective on time series foundation models. *arXiv preprint arXiv:2505.14766*,
+
+2025\.
+
+12
+
+-----
+
+|  |
+| :-: |
+| [**Page 13**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+\[14\] Gheorghe Comanici, Eric Bieber, Mike Schaekermann, Ice Pasupat, Noveen Sachdeva, Inderjit
+
+Dhillon, Marcel Blistein, Ori Ram, Dan Zhang, Evan Rosen, et al. Gemini 2.5: Pushing the
+
+frontier with advanced reasoning, multimodality, long context, and next generation agentic
+
+capabilities. *arXiv preprint arXiv:2507.06261*, 2025.
+
+\[15\] Justin Cosentino, Anastasiya Belyaeva, Xin Liu, Nicholas A Furlotte, Zhun Yang, Chace Lee, Erik
+
+Schenck, Yojan Patel, Jian Cui, Logan Douglas Schneider, et al. Towards a personal health large
+
+language model. *arXiv preprint arXiv:2406.06474*, 2024.
+
+\[16\] Abhimanyu Das, Weihao Kong, Rajat Sen, and Yichen Zhou. A decoder-only foundation model
+
+for time-series forecasting. In *Forty-first International Conference on Machine Learning*, 2024.
+
+\[17\] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas
+
+Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, Jakob Uszkor-
+
+eit, and Neil Houlsby. An image is worth 16x16 words: Transformers for image recognition at
+
+scale. In *International Conference on Learning Representations*, 2021.
+
+\[18\] Ada Eban-Rothschild, Lior Appelbaum, and Luis de Lecea. Neuronal mechanisms for sleep/wake
+
+regulation and modulatory drive. *Neuropsychopharmacology*, 43(5):937–952, 2018.
+
+\[19\] Emadeldeen Eldele, Mohamed Ragab, Zhenghua Chen, Min Wu, Chee-Keong Kwoh, and Xiaoli Li.
+
+Self-supervised learning for label-efficient sleep stage classification: A comprehensive evaluation.
+
+*IEEE Transactions on Neural Systems and Rehabilitation Engineering*, 31:1333–1342, 2023.
+
+\[20\] Antoine Guillot and Valentin Thorey. Robustsleepnet: Transfer learning for automated sleep
+
+staging at scale. *IEEE Transactions on Neural Systems and Rehabilitation Engineering*, 29:1441–
+
+1451, 2021.
+
+\[21\] Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Ruoyu Zhang, Runxin Xu, Qihao Zhu,
+
+Shirong Ma, Peiyi Wang, Xiao Bi, et al. Deepseek-r1: Incentivizing reasoning capability in llms
+
+via reinforcement learning. *arXiv preprint arXiv:2501.12948*, 2025.
+
+\[22\] Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollár, and Ross Girshick. Masked
+
+autoencoders are scalable vision learners. In *Proceedings of the IEEE/CVF conference on computer*
+
+*vision and pattern recognition*, pages 16000–16009, 2022.
+
+\[23\] Patrick Langer, Thomas Kaar, Max Rosenblattl, Maxwell A Xu, Winnie Chow, Martin Maritsch,
+
+Aradhana Verma, Brian Han, Daniel Seung Kim, Henry Chubb, et al. Opentslm: Time-series
+
+language models for reasoning over multivariate medical text-and time-series data. *arXiv*
+
+*preprint arXiv:2510.02410*, 2025.
+
+\[24\] Feng Li, Renrui Zhang, Hao Zhang, Yuanhan Zhang, Bo Li, Wei Li, Zejun Ma, and Chunyuan Li.
+
+Llava-next-interleave: Tackling multi-image, video, and 3d in large multimodal models. *arXiv*
+
+*preprint arXiv:2407.07895*, 2024.
+
+\[25\] Sirui Li, Shuhan Xiao, Mihir Joshi, Ahmed Metwally, Daniel McDuff, Wei Wang, and Yuzhe Yang.
+
+Hearts: Benchmarking llm reasoning on health time series. *arXiv preprint arXiv:2603.06638*,
+
+2026\.
+
+\[26\] Maria P Mogavero, Giuseppe Lanza, Oliviero Bruni, Luigi Ferini-Strambi, Alessandro Silvani,
+
+Ugo Faraguna, and Raffaele Ferri. Beyond the sleep lab: A narrative review of wearable sleep
+
+monitoring. *Bioengineering*, 12(11):1191, 2025.
+
+13
+
+-----
+
+|  |
+| :-: |
+| [**Page 14**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+\[27\] Guangkun Nie, Xuesong Chen, Yichen Wang, Jingxu Chen, Yunhan Shi, Jianwen Zhong, Jie
+
+Shi, Chun-feng Liu, Bei Huang, Yaping Liu, et al. A zero-burden sleep foundation model built
+
+on cardiorespiratory signals from 800,000+ hours of multi-ethnic sleep recordings. *medRxiv*,
+
+pages 2025–09, 2025.
+
+\[28\] Yuqi Nie, Nam H Nguyen, Phanwadee Sinthong, and Jayant Kalagnanam. A time series is worth
+
+64 words: Long-term forecasting with transformers. In *The Eleventh International Conference on*
+
+*Learning Representations*, 2023.
+
+\[29\] Saurav Raj Pandey, Aaqib Saeed, and Harlin Lee. Pedsleepmae: Generative model for multimodal
+
+pediatric sleep signals. In *2024 IEEE EMBS International Conference on Biomedical and Health*
+
+*Informatics (BHI)*, pages 1–8. IEEE, 2024.
+
+\[30\] Mathias Perslev, Sune Darkner, Lykke Kempfner, Miki Nikolic, Poul Jørgen Jennum, and Christian
+
+Igel. U-sleep: resilient high-frequency sleep staging. *NPJ digital medicine*, 4(1):72, 2021.
+
+\[31\] Stuart F Quan, Barbara V Howard, Conrad Iber, James P Kiley, F Javier Nieto, George T O’Connor,
+
+David M Rapoport, Susan Redline, John Robbins, Jonathan M Samet, et al. The sleep heart
+
+health study: design, rationale, and methods. *Sleep*, 20(12):1077–1085, 1997.
+
+\[32\] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal,
+
+Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al. Learning transferable visual
+
+models from natural language supervision. In *International conference on machine learning*,
+
+pages 8748–8763. PmLR, 2021.
+
+\[33\] Susan Redline, Peter V Tishler, Tor D Tosteson, John Williamson, Kenneth Kump, Ilene Browner,
+
+Veronica Ferrette, and Patrick Krejci. The familial aggregation of obstructive sleep apnea.
+
+*American journal of respiratory and critical care medicine*, 151(3):682–687, 1995.
+
+\[34\] Carol L Rosen, Emma K Larkin, H Lester Kirchner, Judith L Emancipator, Sarah F Bivins, Susan A
+
+Surovec, Richard J Martin, and Susan Redline. Prevalence and risk factors for sleep-disordered
+
+breathing in 8-to 11-year-old children: association with race and prematurity. *The Journal of*
+
+*pediatrics*, 142(4):383–389, 2003.
+
+\[35\] Zitao Shuai, Zongzhe Xu, David Yang, Wei Wang, and Yuzhe Yang. Osf: On pre-training and
+
+scaling of sleep foundation models. *arXiv preprint arXiv:2603.00190*, 2026.
+
+\[36\] Jianlin Su, Murtadha Ahmed, Yu Lu, Shengfeng Pan, Wen Bo, and Yunfeng Liu. Roformer:
+
+Enhanced transformer with rotary position embedding. *Neurocomputing*, 568:127063, 2024.
+
+\[37\] Rahul Thapa, Bryan He, Magnus Ruud Kjaer, Hyatt Moore IV, Gauri Ganjoo, Emmanuel Mignot,
+
+and James Zou. SleepFM: Multi-modal representation learning for sleep across brain activity,
+
+ECG and respiratory signals. In *Forty-first International Conference on Machine Learning*, 2024.
+
+\[38\] Michael Tschannen, Manoj Kumar, Andreas Steiner, Xiaohua Zhai, Neil Houlsby, and Lucas Beyer.
+
+Image captioners are scalable vision learners too. *Advances in Neural Information Processing*
+
+*Systems*, 36:46830–46855, 2023.
+
+\[39\] Raphael Vallat, Vyoma D Shah, and Matthew P Walker. Coordinated human sleeping brainwaves
+
+map peripheral body glucose homeostasis. *Cell Reports Medicine*, 4(7), 2023.
+
+\[40\] Gerald Woo, Chenghao Liu, Akshat Kumar, Caiming Xiong, Silvio Savarese, and Doyen Sahoo.
+
+Unified training of universal time series forecasting transformers. *International Conference on*
+
+*Machine Learning*, 2024.
+
+14
+
+-----
+
+|  |
+| :-: |
+| [**Page 15**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+\[41\] Yuzhe Yang, Yuan Yuan, Guo Zhang, Hao Wang, Ying-Cong Chen, Yingcheng Liu, Christopher G
+
+Tarolli, Daniel Crepeau, Jan Bukartyk, Mithri R Junna, et al. Artificial intelligence-enabled
+
+detection and assessment of parkinson’s disease using nocturnal breathing signals. *Nature*
+
+*Medicine*, 28(10):2207–2215, 2022.
+
+\[42\] Terry Young, Mari Palta, Jerome Dempsey, Paul E Peppard, F Javier Nieto, and K Mae Hla.
+
+Burden of sleep apnea: rationale, design, and major findings of the wisconsin sleep cohort study.
+
+*WMJ: official publication of the State Medical Society of Wisconsin*, 108(5):246, 2009.
+
+\[43\] Jiahui Yu, Zirui Wang, Vijay Vasudevan, Legg Yeung, Mojtaba Seyedhosseini, and Yonghui Wu.
+
+Coca: Contrastive captioners are image-text foundation models. *arXiv preprint arXiv:2205.01917*,
+
+2022\.
+
+\[44\] Sergey Zagoruyko and Nikos Komodakis.
+
+Wide residual networks.
+
+*arXiv preprint*
+
+*arXiv:1605.07146*, 2016.
+
+\[45\] Ailing Zeng, Muxi Chen, Lei Zhang, and Qiang Xu. Are transformers effective for time series
+
+forecasting? In *Proceedings of the AAAI conference on artificial intelligence*, volume 37, pages
+
+11121–11128, 2023.
+
+\[46\] Guo-Qiang Zhang, Licong Cui, Remo Mueller, Shiqiang Tao, Matthew Kim, Michael Rueschman,
+
+Sara Mariani, Daniel Mobley, and Susan Redline. The national sleep research resource: towards a
+
+sleep data commons. *Journal of the American Medical Informatics Association*, 25(10):1351–1358,
+
+2018\.
+
+\[47\] Hongjun Zhang, Jing Wang, Jiahong Xiong, Yuxuan Ding, Zhenliang Gan, and Youfang Lin.
+
+Expert knowledge inspired contrastive learning for sleep staging. In *2022 International Joint*
+
+*Conference on Neural Networks (IJCNN)*, pages 1–6. IEEE, 2022.
+
+\[48\] Yuwei Zhang, Kumar Ayush, Siyuan Qiao, A Ali Heydari, Girish Narayanswamy, Maxwell A Xu,
+
+Ahmed A Metwally, Shawn Xu, Jake Garrison, Xuhai Xu, et al. Sensorlm: Learning the language
+
+of wearable sensors. *arXiv preprint arXiv:2506.09108*, 2025.
+
+15
+
+-----
+
+|  |
+| :-: |
+| [**Page 16**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+**A. Training Details**
+
+**Training ReCoCa:**We train ReCoCa using the AdamW optimizer with a learning rate of 1e-4 and a
+
+cosine annealing schedule. The training runs for 15 epochs with a 5,000-step linear warmup. We
+
+utilize a global batch size of 384 distributed across 4 NVIDIA H100 GPUs. The loss components are
+
+weighted as follows: ðððð = 1.0, ðððð = 2.0, and ðððð = 0.1. Gradients are clipped at a norm of 1.0.
+
+Training typically converges within approximately 48 hours.
+
+**Baseline Finetuning Strategy:** For the multimodal LLM baselines (Qwen3-VL-8B-Instruct \[[6](#12)\] and
+
+LLaVA-Next \[[24](#13)\]), we adopt the two-stage modality adaptation protocol proposed in LLaVA-Next.
+
+4 **Stage 1 (Alignment):** We freeze both the pretrained Sleep Encoder (initialized from ReCoCa) and
+
+the LLM backbone, training only the projector and token pooler layers. This stage aligns the sleep
+
+feature space with the LLM’s embedding space.
+
+4 **Stage 2 (Finetuning):** We unfreeze the projector, pooler, and Sleep Encoder, and apply Low-Rank
+
+Adaptation (LoRA) to the LLM backbone.
+
+Due to computational constraints, we use LoRA with rank ð = 16, ð¼ = 32, and dropout ð = 0.05.
+
+We use a batch size of 8 with gradient accumulation every 16 steps. The models are warmed up for
+
+500 steps followed by one full epoch of finetuning. These baseline experiments require significantly
+
+higher compute, taking 96–144 hours on the same 4×H100 hardware setup.
+
+**B. Dataset Details**
+
+**B.1. Data Split & Preprocessing**
+
+To evaluate generalization and zero-shot performance, we implement a strict splitting strategy. We
+
+partition SHHS and MrOS into pretraining and internal evaluation sets on a subject level. We utilize
+
+CCSHS exclusively for training. Crucially, we hold out CFS and WSC entirely to serve as external
+
+validation datasets. For evaluation, we sample a fixed subset of 2,000 epochs from the validation
+
+partition of each dataset. This sampling strategy is necessary to accommodate the prohibitive
+
+computational and financial costs associated with performing inference on the full validation set using
+
+proprietary LLMs. To preserve statistical validity, this subset is strictly stratified at the subject level,
+
+ensuring maximal biological variance despite the reduced sample size. Additionally, to ensure high
+
+representativeness, we strictly stratified these validation samples across 930 distinct patients (SHHS:
+
+409, MrOS: 193, CFS: 328), capturing a truly diverse population. The complete split information is
+
+available in Table [5](#16), and we provide the demographic distribution over different cohorts used in Table
+
+[6](#17).
+
+Table 5 | Distribution of number of epochs across different datasets and splits
+
+**Split**
+
+**Internal Datasets**
+
+**External Datasets**
+
+**Total**
+
+SHHS
+
+MROS
+
+CCSHS
+
+CFS
+
+WSC
+
+Train
+
+6,985,633
+
+3,569,317
+
+552,693
+
+0
+
+0
+
+11,107,643
+
+Valid
+
+2,000
+
+2,000
+
+0
+
+2,000
+
+2,000
+
+8,000
+
+Total
+
+6,987,633
+
+3,571,317
+
+552,693
+
+2,000
+
+2,000
+
+11,115,643
+
+Missing channels are zero-padded to maintain consistency. Given the heterogeneity of the source
+
+data (varying sampling rates, device ranges), we unify all signals to a fixed sampling rate of 64Hz.
+
+We apply manual quality control over all night’s data to trim excessive wakefulness or non-wear
+
+16
+
+-----
+
+|  |
+| :-: |
+| [**Page 17**]() |
+
+SleepLM : Natural-Language Intelligence for Human Sleep
+
+period at the start and end of recordings to reduce extreme sensor noise. Finally, we apply z-score
+
+normalization on a per-night basis. For respiratory channels specifically, we apply area-dependent
+
+z-score normalization to ensure consistent amplitude scaling over time.
+
+Table 6 | **Age distribution across cohorts in train and validation splits.** Values are percentages. This
+
+demographic skew is expected and aligns with real world clinical baselines, as the prevalence of sleep disorders
+
+dramatically increases with advanced age.
+
+**Train**
+
+**Age**
+
+**SHHS MROS CCSHS**
+
+**All**
+
+0–18
+
+0.0
+
+0.0
+
+78.1
+
+3.3
+
+18–35
+
+0.0
+
+0.0
+
+21.9
+
+0.9
+
+35–50
+
+12.9
+
+0.0
+
+0.0
+
+8.4
+
+50+
+
+87.1
+
+100.0
+
+0.0
+
+87.3
+
+**Validation**
+
+**Age**
+
+**SHHS MROS**
+
+**CFS**
+
+**All**
+
+0–18
+
+0.0
+
+0.0
+
+20.7
+
+7.3
+
+18–35
+
+0.0
+
+0.0
+
+21.0
+
+7.4
+
+35–50
+
+11.0
+
+0.0
+
+26.5 14.2
+
+50+
+
+89.0
+
+100.0
+
+31.7 71.1
+
+**B.2. Statistics Details**
+
+For our Channel Captions, we defined a variable set of statistics for each channel in order to provide
+
+diverse, fine-grained, clinically relevant information. The specific statistics and their relevant channels
+
+are provided in Table [5](#16).
+

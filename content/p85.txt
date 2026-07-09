@@ -1,0 +1,1430 @@
+nature medicine
+Brief Communication
+
+https://doi.org/10.1038/s41591-026-04431-5
+
+General-purpose large language models
+outperform specialized clinical AI tools on
+medical benchmarks
+Received: 1 December 2025
+Accepted: 29 April 2026
+Published online: xx xx xxxx
+Check for updates
+
+Krithik Vishwanath 1,2,3 , Anton Alyakin1,4,5, Mrigayu Ghosh 6,7, Ali Hage8,
+Sean N. Neifert1, Cordelia Orillac1, Nataniel J. Mandelberg1, Hammad A. Khan1,
+Jin Vivian Lee 1,4,5, Jie J. Yao9, William Robert Small 10,11,12, Aakaash Varma13,14,
+D. Brock Hewitt15, Yindalon Aphinyanaphongs 10,12,16, Daniel Alexander Alber 11 &
+Eric Karl Oermann 1,5,17,18,19
+
+Specialized clinical artificial intelligence (AI) tools are entering medical
+practice despite scarce independent evaluation. We quantitatively evaluate
+two clinical AI tools, OpenEvidence and UpToDate Expert AI, built on large
+language models (LLMs) against three frontier LLMs: GPT-5.2, Gemini 3.1
+Pro and Claude Opus 4.6. Our evaluation has three stages: (1) 500 MedQA
+questions testing medical knowledge, (2) 500 HealthBench items measuring
+alignment with clinicians and (3) the real clinical queries (RCQ) benchmark,
+built from 100 de-identified queries from physicians to a general-purpose
+language model in a live clinical environment. For the RCQ benchmark, 12
+US clinicians performed randomized, blinded review of model outputs,
+producing 1,800 model–question annotations. Frontier LLMs outperformed
+clinical AI tools in all three evaluations. Clinical AI tools performed
+comparably to auto-enabled Google Search AI Overview on the RCQ. These
+findings highlight the need for independent, real-world evaluation of AI tools
+before they enter clinical settings.
+Specialized clinical artificial intelligence (AI) tools are entering medical
+practice at scale1,2. These proprietary large language model (LLM)-based
+tools promise superior clinical performance to general-purpose frontier
+LLMs as a result of domain-specific training or retrieval-augmented
+generation (RAG)3. Yet, their architectures, base models and training pipelines are not public. Clinicians and health systems must therefore assess
+their value and safety without independent evidence. Conversely, large
+training corpora and extensive alignment of frontier LLMs may enable
+them to challenge clinical AI tools without domain-specific modification.
+We test this hypothesis by comparing clinical AI tools (OpenEvidence1 and
+UpToDate Expert AI2) to leading general-purpose LLMs (OpenAI GPT-5.2,
+Google Gemini 3.1 Pro Preview and Anthropic Claude Opus 4.6). Later, we
+include auto-enabled Google Search AI Overview as a real-world control
+frequently encountered by physicians.
+Our evaluation (Fig. 1) has three stages: (1) 500 US Medical Licensing Examination-style MedQA4 questions assessing medical knowledge,
+A full list of affiliations appears at the end of the paper.
+
+Nature Medicine
+
+(2) 500 HealthBench5 items evaluating agreement with expert clinicians
+and (3) 100 real clinical queries (RCQ) drawn from physician LLM queries
+during live clinical deployment. The RCQ stage underwent randomized,
+blinded review by 12 US clinicians, producing 1,800 model–question
+annotations. The combined analysis spans multiple-choice reasoning,
+expert clinical judgment and everyday clinician use.
+General-purpose LLMs outperformed clinical AI tools on the
+MedQA questions (Fig. 2a and Extended Data Fig. 1a,b). Among frontier
+LLMs, Gemini achieved the highest accuracy at 97.4% (95% confidence
+interval (CI) 95.6%–98.5%), followed by GPT at 94.2% (91.8%–95.9%)
+and Claude at 90.2% (87.3%–92.5%). Clinical tools scored lower, with
+OpenEvidence achieving an accuracy of 89.6% (86.6%–92.0%) and
+UpToDate achieving 88.4% (85.3%–90.9%). Gemini outperformed all
+other models (McNemar P < 1 × 10−4 versus OpenEvidence, UpToDate
+and Claude; P = 0.02 versus GPT). GPT outperformed OpenEvidence
+(P = 0.008), UpToDate (P = 0.0004) and Claude (P = 0.04).
+
+e-mail: krithik.vish@utexas.edu; eric.oermann@nyulangone.org
+
+Brief Communication
+
+https://doi.org/10.1038/s41591-026-04431-5
+
+Models evaluated
+Frontier LLMs
+
+Commercial clinical LLMs
+
+API
+
+UI
+
+Embedded AI system
+
+OpenAI
+
+Google DeepMind
+
+Anthropic
+
+OpenEvidence Inc.
+
+Wolters Kluwer
+
+Google Search
+
+GPT-5.2
+
+Gemini 3.1 Pro
+
+Opus 4.6
+
+OpenEvidence
+
+UpToDate AI
+
+Google AI Overview
+
+Three-stage evaluation
+MedQA
+
+HealthBench
+Medical knowledge
+
+500 items
+
+500 items
+
+RCQ
+Physician alignment
+
+100 items
+
+Real-world queries
+
+Physician queries during routine care
+
+Single-turn · Free response · OpenAI
+
+USMLE-style · Multiple-choice
+
+MedQA + HealthBench
+
+RCQ
+
+Scoring
+
+Combined 1,000-item public mini-benchmark + independent private gold-standard benchmark
+
+LLM-as-judge
+GPT-5.2
+OpenAI
+
+Blinded physician review
+
+Cross-model meta-evaluation
+
+×
+
+Gemini 3.1 Pro
+Google
+
+×
+
+Opus 4.6
+Anthropic
+
+3 independent blinded reviews per model response
+Total of 1,800 manual physician annotations
+
+Rounded mean consensus scoring
+
+Clinical rubric
+Accuracy
+
+Safety
+
+Completeness
+
+Clarity
+
+Harm (Y/N)
+
+Hallucination (Y/N)
+
+Fig. 1 | Clinical LLM evaluation pipeline. Schematic overview of the comparative
+analysis between frontier, clinical-specific and search-embedded AI models.
+The framework integrates automated scoring (MedQA and HealthBench) with
+high-fidelity blinded and randomized clinician reviews (RCQ) to assess model
+performance across accuracy, safety and reliability metrics. N, no; USMLE, US
+
+Medical Licensing Examination; Y, yes. Blindfold/blinded icon from Tailwind Labs
+under an MIT license (©Tailwind Labs); other icons from React Icons under a CC
+BY 4.0 (brain, stethoscope, book, bar chart, doctor, justice scale, chat, shield) or
+Apache 2.0 (browser, API badge).
+
+HealthBench (Fig. 2b) was graded by a panel of LLM judges to mitigate single-model bias. Scores reflect the proportion of rubric points
+achieved, scaled 0–100. GPT scored highest at 88.0 (95% CI 85.9–90.1),
+followed by Gemini at 79.3 (76.6–81.9) and Claude at 77.0 (74.2–79.9);
+both clinical tools scored lower (OpenEvidence scoring 62.6 (59.3–65.9)
+and UpToDate scoring 61.3 (58.0–64.6)). GPT outperformed all other
+models (Wilcoxon P < 10−9), and the two clinical tools did not differ
+(P = 0.6). In theme-level analysis (Extended Data Fig. 1c,d), GPT ranked
+first or tied for first in all seven categories, while OpenEvidence and
+UpToDate ranked lowest or tied for lowest in all seven categories, with
+differences from GPT significant in six of the categories (P ≤ 0.004;
+exception: responding under uncertainty, P = 1.00).
+To develop the RCQ benchmark, we sampled 100 anonymous
+clinician queries to the NYU Langone Health Insurance Portability and
+Accountability Act-compliant GPT instance. Twelve blinded clinicians
+scored six models’ responses across four dimensions (clinical correctness, completeness, safety/harm avoidance and clarity) on a 1–4-point
+scale (Extended Data Fig. 2). For each response, three raters were then
+randomly assigned to evaluate them. We included Google Search AI
+Overview in the RCQ evaluation because it is routinely encountered
+by clinicians. After excluding 32 refusals, 568 responses remained.
+The six models differed significantly (Friedman P < 10−9), with two
+performance tiers emerging (Fig. 2c). Frontier LLMs formed the first:
+Gemini (mean aggregate 3.62; 95% CI 3.56–3.68), GPT (3.54; 3.47–3.61)
+and Claude (3.52; 3.44–3.59), with no significant differences between
+them. Clinical tools and Google AI Overview followed: OpenEvidence
+(3.24; 3.17–3.32), UpToDate AI (3.17; 3.09–3.25) and Google AI Overview
+
+(3.27; 3.18–3.35), also without significant differences. All nine significant pairwise comparisons were between tiers (rank-biserial r = 0.5–
+0.9), meaning frontier models outperformed clinical tools on most
+individual questions, not just on average. After adjusting for rater
+leniency, clinical AI tools (including Google AI) had 49–87% lower
+odds of receiving a higher rating than Gemini (odds ratio 0.13–0.51; all
+P < 0.0001). In a sensitivity linear mixed model, this corresponded to
+0.36–0.44 points lower on the 1–4-point scale (all P < 0.0001). Google
+AI Overview scored as well or better than OpenEvidence and UpToDate
+AI across all dimensions (Extended Data Fig. 3).
+The tier structure held across all four dimensions (Fig. 2d). Models differed most on clarity (Kendall’s W = 0.292) and least on clinical
+correctness (W = 0.141). OpenEvidence scored lowest on clarity (mean
+2.84), suggesting its weakness was communication, not knowledge.
+Qualitatively, incomplete clinical content, safety-critical omissions
+and disorganized responses were common, particularly for OpenEvidence and Google AI Overview (Extended Data Table 1). UpToDate
+AI refused 19% of queries (Fig. 2e), more than all other models (1–3%;
+P < 0.01) except Google AI Overview (6%; P = 0.10). Safety outcomes
+(Fig. 2f,g) did not differ across models: none of the models produced
+more harmful content (Cochran’s Q = 4.00, P = 0.55) or hallucinations
+(Q = 5.00, P = 0.42) than any of the others. All 12 clinicians ranked the
+models similarly (Kendall’s W = 0.651, P = 2.3 × 10−7), placing frontier
+LLMs above clinical tools (Extended Data Fig. 4).
+This study is an independent, quantitative comparison of clinical
+AI tools against frontier LLMs using real-world physician queries from
+the course of care. Clinical AI tools lagged behind frontier models on
+
+Nature Medicine
+
+Brief Communication
+
+https://doi.org/10.1038/s41591-026-04431-5
+
+Gemini 3.1 Pro
+
+GPT-5.2
+
+a
+
+Claude Opus 4.6
+
+OpenEvidence
+
+UpToDate Expert AI
+
+b
+
+4.0
+
+97.4%
+
+a
+
+b
+
+c
+
+HealthBench score (%)
+
+c
+
+90.2%
+
+c
+
+89.6%
+
+88.4%
+90
+
+85
+
+a
+
+a
+
+3.54
+
+3.52
+
+3.62
+
+b
+
+b
+
+79.3%
+
+77.0%
+
+80
+
+70
+
+c
+
+c
+
+62.6
+
+61.3%
+
+3.5
+
+b
+
+b
+
+b
+
+3.24
+
+3.27
+
+3.17
+
+3.0
+
+60
+
+d
+
+e
+
+Gemini
+
+rv
+ve
+O
+
+AI
+e
+gl
+
+oo
+G
+
+3%
+
+Claude
+
+1%
+
+OpenEvidence
+
+1%
+
+UpToDate
+
+19%
+
+Google AI
+
+6%
+0
+
+f
+
+Completeness
+
+5
+
+10
+
+15
+
+20
+
+Refusal rate (%)
+Gemini
+
+0.0%
+
+GPT-5.2
+
+0.0%
+
+Claude
+
+3.0%
+
+OpenEvidence
+
+1.0%
+
+UpToDate
+Safety/harm
+avoidance
+
+ie
+w
+
+AI
+rt
+pe
+
+Ex
+te
+Da
+
+To
+Up
+
+2%
+
+GPT-5.2
+Clinical
+correctness
+
+nc
+e
+
+6
+
+vi
+nE
+
+pe
+O
+
+ud
+
+Up
+
+C
+
+la
+
+G
+
+de
+
+4.
+pu
+s
+
+O
+e
+
+em
+
+in
+
+G
+
+i3
+
+pe
+
+.1
+
+PT
+
+-5
+
+Pr
+
+.2
+
+o
+
+AI
+rt
+
+nc
+e
+te
+Da
+To
+
+pe
+O
+
+Ex
+
+vi
+nE
+
+O
+e
+ud
+
+la
+C
+
+Up
+
+de
+
+4.
+
+6
+
+.2
+
+pu
+s
+
+PT
+
+-5
+
+o
+G
+
+Da
+
+te
+
+em
+
+in
+
+Ex
+
+i3
+
+pe
+
+.1
+
+rt
+
+Pr
+
+AI
+
+nc
+e
+de
+To
+
+O
+
+pe
+
+nE
+
+O
+e
+ud
+
+C
+
+la
+
+vi
+
+pu
+
+s
+
+PT
+
+-5
+
+4.
+
+6
+
+.2
+
+o
+Pr
+
+G
+
+.1
+i3
+G
+
+em
+
+in
+
+2.5
+
+50
+
+80
+
+G
+
+MedQA accuracy (%)
+
+95
+
+a
+
+88.0%
+
+90
+
+94.2%
+
+RCQ mean aggregate (1–4)
+
+100
+
+c
+100
+
+a
+
+Google AI Overview
+
+2.5%
+
+Google AI
+
+0.0%
+0
+
+1
+
+2
+
+3
+
+4
+
+5
+
+2.0
+
+2.5
+
+Harmful responses (%)
+
+g
+Clarity for
+clinicians
+
+Gemini
+
+1.0%
+
+GPT-5.2
+
+0.0%
+
+Claude
+
+0.0%
+
+OpenEvidence
+
+1.0%
+
+UpToDate
+
+0.0%
+
+Google AI
+2.8
+
+3.0
+
+3.2
+
+3.4
+
+3.6
+
+Mean score (1–4)
+
+Fig. 2 | Comparative evaluation of AI systems across benchmark performance
+and real-world clinical use. a, MedQA accuracy (n = 500 questions per model).
+b, HealthBench score (n = 500 questions per model). c, RCQ mean aggregate
+clinician rating (1–4-point scale). Each of n = 100 clinical questions was answered
+by all 6 models and independently rated by 3 of 12 clinicians; 32 question–model
+pairs identified as refusals were excluded, yielding n = 98 (Gemini), 97 (GPT-5.2),
+99 (Claude), 99 (OpenEvidence), 81 (UpToDate) and 94 (Google AI) non-refusal
+items per model. d, RCQ scores disaggregated by evaluation dimension; sample
+sizes as in c. e, Refusal rate (n = 100 questions per model). f,g, Proportion flagged
+for harmful content (f) or hallucination by majority vote (≥2 of 3 raters) (g);
+sample sizes as in c. The unit of observation is the individual question (a,b,e)
+or the question–model–rater evaluation (c,d,f,g); each question represents an
+
+Nature Medicine
+
+3.8
+
+1.1%
+0
+
+0.5
+
+1.0
+
+1.5
+
+Hallucinated responses (%)
+
+independent observation and individual raters serve as independent evaluators
+(biological replicates). No technical replicates were used. No control group was
+designated, as the study compares all models against one another. In a–d, data
+are presented as mean ± 95% CI (Wilson score interval in a; mean ± 1.96 × s.e.m.
+in b–d). Italic letters denote compact letter display (CLD) significance groups.
+Models sharing a letter do not differ significantly (adjusted P > 0.05). CLD
+groups were derived from two-sided pairwise McNemar tests with Holm–
+Bonferroni correction in a, two-sided Wilcoxon signed-rank tests with
+Holm–Bonferroni correction in b and two-sided Nemenyi post hoc tests
+following Friedman test (χ2 = 93.65, d.f. = 5, P = 1.15 × 10−18) in c. Higher values
+indicate better performance in a–d; lower values indicate better performance
+in e–g.
+
+Brief Communication
+every evaluation: knowledge, expert alignment and real-world clinical
+use across multiple dimensions. Google AI Overview, an auto-enabled
+search feature, matched clinical AI tools in this benchmark.
+As the architecture of proprietary clinical AI tools is inaccessible,
+it is impossible to definitively assess a mechanistic understanding for
+their underperformance against general-purpose models. Evidence
+shows that RAG, which is likely employed by both OpenEvidence1 and
+UpToDate Expert AI2, may actually negatively affect model performance when irrelevant material is retrieved or poorly integrated by
+the base model6–8. Frontier LLMs may simply be better at the knowledge retrieval and reasoning that characterize most medical questions9. They also benefit from faster iteration cycles, larger training
+corpora and greater alignment than specialist systems. The observed
+advantages of frontier general-purpose models may reflect the accelerated development and investment in these systems. Should scaling returns diminish, the relative value of domain-specific tuning,
+curated retrieval and clinician-in-the-loop optimization may increase.
+Our results should therefore be interpreted as a snapshot of a rapidly
+evolving landscape rather than a permanent ordering of approaches.
+In particular, deeply subspecialized medical tasks may favor more
+sophisticated, domain-specific adaptation9–11.
+This study has several limitations. Clinical tools lack public application programming interfaces (APIs), so they were queried through
+browser interfaces, which limited sample size and may have introduced
+differences in hidden prompts, retrieval behavior and output formatting. Standardized benchmarks have known issues such as data leakage7; models may have been exposed to MedQA or HealthBench during
+training, though our RCQ benchmark is free from this contamination.
+HealthBench is an OpenAI-developed benchmark that relies on a small
+number of physicians for each rubric, and public documentation provides limited detail on its construction and evaluation5. Evaluation of
+OpenAI models, including the highest-scoring model on HealthBench,
+GPT-5.2, may be influenced by potential benchmark–developer overlap,
+including potential similarities in training data, optimization objectives
+or rubric design. Grading bias is also possible, as frontier models served
+as both evaluated systems and judges, although we used a multimodel
+panel to mitigate this effect. Accordingly, we view the blinded clinician
+evaluation on the RCQ benchmark as the primary evidence in this study,
+while HealthBench should be interpreted as supplementary.
+More broadly, industry-created benchmarks may systematically favor the systems developed by their creators, reinforcing
+the need for independently constructed evaluation instruments.
+The RCQ benchmark partially addresses this concern: it is derived
+from real clinical queries, evaluated by blinded clinicians and free
+from training-set contamination. Additionally, recently proposed
+safety-focused evaluations of LLM medical recommendations such as
+the NOHARM12 framework suggest that knowledge and communication benchmarks may not fully capture clinical risk. Related work also
+points to health-system-grounded evaluation frameworks, such as
+institution-specific operational tasks and prediction settings embedded in local clinical workflows, as an important complement to public,
+industry-authored benchmarks, because they may better capture
+whether a model is clinically useful in a given care environment13,14.
+Finally, our evaluation did not assess response latency or citation
+quality. These factors are important for real-world clinical deployment and workflow integration, and may differ substantially between
+API-accessed frontier models and subscription-based clinical tools
+(Extended Data Table 2). Future work should systematically compare
+these practical dimensions alongside accuracy and safety.
+Clinical AI tools may carry institutional legitimacy and are likely safe
+for routine use, but our results show that they are not superior to frontier
+models on knowledge, communication or clinical alignment. The superior performance of frontier models in our study suggests that scale,
+alignment and cross-domain reasoning may outweigh domain-specific
+tuning as determinants of medical competency for particular tasks, a
+Nature Medicine
+
+https://doi.org/10.1038/s41591-026-04431-5
+
+finding with implications for procurement, reimbursement and regulatory oversight. The path forward may ultimately lie with hospital-specific
+LLMs that leverage institutional data13,14 to mitigate external harm15,
+along with careful use of frontier models for less-sensitive tasks16. As
+generative LLMs become integrated into healthcare at the enterprise,
+individual clinician and consumer levels, there is an increasing need for
+rigorous, independent evaluation on real-world tasks.
+
+Online content
+Any methods, additional references, Nature Portfolio reporting summaries, source data, extended data, supplementary information,
+acknowledgements, peer review information; details of author contributions and competing interests; and statements of data and code
+availability are available at https://doi.org/10.1038/s41591-026-04431-5.
+
+References
+1.
+
+2.
+
+3.
+
+4.
+
+5.
+
+6.
+
+7.
+
+8.
+
+9.
+
+10.
+11.
+12.
+
+13.
+
+14.
+15.
+16.
+
+OpenEvidence, the fastest-growing application for physicians
+in history, announces 210 million round at 3.5 billion valuation.
+Cision PR Newswire https://www.prnewswire.com/news-releases/
+openevidence-the-fastest-growing-application-for-physiciansin-history-announces-210-million-round-at-3-5-billionvaluation-302505806.html (2025).
+HLTH 2025: Wolters Kluwer showcases UpToDate Expert AI and
+workflow innovations. Wolterskluwer https://www.wolterskluwer.
+com/en/news/uptodate-expert-ai-workflow-hlth-2025 (2025).
+Amugongo, L. M., Mascheroni, P., Brooks, S., Doering, S. & Seidel, J.
+Retrieval augmented generation for large language models in
+healthcare: a systematic review. PLOS Digit. Health 4, e0000877
+(2025).
+Jin, D. et al. What disease does this patient have? A large-scale
+open domain question answering dataset from medical exams.
+Appl. Sci. (Basel) 11, 6421 (2021).
+Arora, R. K. et al. HealthBench: evaluating large language
+models towards improved human health. Preprint at
+https://doi.org/10.48550/arXiv.2505.08775 (2025).
+Vishwanath, K. et al. Medical large language models are
+easily distracted. Preprint at https://doi.org/10.48550/
+arXiv.2504.01201 (2025).
+Vishwanath, K., Stryker, J., Alyakin, A., Alber, D. A. & Oermann, E. K.
+MedMobile: a mobile-sized language model with clinical
+capabilities. BMJ Digit. Health AI 1, e000068 (2025).
+Wu, E., Wu, K. & Zou, J. ClashEval: quantifying the tug-of-war
+between an LLM’s internal prior and external evidence. In
+Advances in Neural Information Processing Systems 37 33402–
+33422 (Neural Information Processing Systems Foundation, 2024).
+Alyakin, A. et al. CNS-Obsidian: a neurosurgical vision-language
+model built from scientific publications. Neurosurgery
+https://doi.org/10.1227/neu.0000000000004070 (2026).
+O’Sullivan, J. W. et al. A large language model for complex
+cardiology care. Nat. Med. 32, 616–623 (2026).
+Nori, H. et al. Sequential diagnosis with language models.
+Preprint at https://doi.org/10.48550/arXiv.2506.22405 (2025).
+Wu, D. et al. First, do NOHARM: towards clinically safe large
+language models. Preprint at https://doi.org/10.48550/
+arXiv.2512.01241 (2025).
+Jiang, L. Y. et al. Generalist foundation models are not clinical
+enough for hospital operations. Preprint at https://doi.org/
+10.48550/arXiv.2511.13703 (2025).
+Jiang, L. Y. et al. Health system-scale language models are
+all-purpose prediction engines. Nature 619, 357–362 (2023).
+Alber, D. A. et al. Medical large language models are vulnerable to
+data-poisoning attacks. Nat. Med. 31, 618–626 (2025).
+Malhotra, K. et al. Health system-wide access to generative
+artificial intelligence: the New York University Langone Health
+experience. J. Am. Med. Inform. Assoc. 32, 268–274 (2025).
+
+Brief Communication
+Publisher’s note Springer Nature remains neutral with regard to
+jurisdictional claims in published maps and institutional affiliations.
+Open Access This article is licensed under a Creative Commons
+Attribution-NonCommercial-NoDerivatives 4.0 International License,
+which permits any non-commercial use, sharing, distribution and
+reproduction in any medium or format, as long as you give appropriate
+credit to the original author(s) and the source, provide a link to the
+Creative Commons licence, and indicate if you modified the licensed
+material. You do not have permission under this licence to share
+
+https://doi.org/10.1038/s41591-026-04431-5
+adapted material derived from this article or parts of it. The images
+or other third party material in this article are included in the article’s
+Creative Commons licence, unless indicated otherwise in a credit
+line to the material. If material is not included in the article’s Creative
+Commons licence and your intended use is not permitted by statutory
+regulation or exceeds the permitted use, you will need to obtain
+permission directly from the copyright holder. To view a copy of this
+licence, visit http://creativecommons.org/licenses/by-nc-nd/4.0/.
+© The Author(s) 2026
+
+Department of Neurological Surgery, NYU Langone Health, New York, NY, USA. 2Department of Aerospace Engineering & Engineering Mechanics,
+The University of Texas at Austin, Austin, TX, USA. 3Department of Mathematics, The University of Texas at Austin, Austin, TX, USA. 4Department
+of Neurosurgery, Washington University School of Medicine, St. Louis, MO, USA. 5Global AI Frontier Lab, New York University, New York, NY, USA.
+6
+Department of Biomedical Engineering, The University of Texas at Austin, Austin, TX, USA. 7Department of Molecular Biosciences, The University of Texas
+at Austin, Austin, TX, USA. 8Department of Cardiothoracic Surgery, NYU Langone Health, New York, NY, USA. 9Department of Orthopedic Surgery, NYU
+Langone Health, New York, NY, USA. 10Department of Medicine, NYU Langone Health, New York, NY, USA. 11New York University (NYU) Grossman School of
+Medicine, New York, NY, USA. 12Department of MCIT Health Informatics, NYU Langone Health, New York, NY, USA. 13Division of Dermatology, NYU Langone
+Long Island, Mineola, NY, USA. 14Department of Medicine, NYU Langone Long Island, Mineola, NY, USA. 15Department of Surgery, NYU Langone Health,
+New York, NY, USA. 16Department of Population Health, NYU Langone Health, New York, NY, USA. 17Department of Radiology, NYU Langone Health, New
+York, NY, USA. 18Center for Data Science, New York University, New York, NY, USA. 19Neuroscience Institute, NYU Langone Health, New York, NY, USA.
+e-mail: krithik.vish@utexas.edu; eric.oermann@nyulangone.org
+1
+
+Nature Medicine
+
+Brief Communication
+
+Methods
+
+Study approval and benchmark construction
+This study was approved by the NYU Langone Institutional Review
+Board (i23-00510). We randomly sampled (seed = 62) 500 US Medical Licensing Examination-style questions from MedQA4 and 500
+single-turn prompts from HealthBench5. The 1,000 items were used to
+evaluate three frontier LLMs via API: GPT-5.2 (accessed February 2026,
+GPT-5.2-2025-12-11), Gemini 3.1 Pro Preview (accessed February 2026)
+and Claude Opus 4.6 (February 2026). Two clinical tools, OpenEvidence
+(accessed September 2025 and February 2026) and UpToDate Expert AI
+(accessed November 2025 and February 2026), were queried manually
+through browser interfaces.
+
+Generation parameters
+Frontier model generations were conducted using fixed, deterministic
+parameters. Search tools were enabled for all runs. The temperature
+was set to 0.0 to eliminate sampling variability, and a fixed generation
+seed of 62 was used. Although matching response length or format
+across systems would reduce one source of variability, we opted against
+this approach because output structure, verbosity and formatting
+are integral to each system’s clinical interface and directly influence
+dimensions such as clarity; normalizing these features would obscure
+real usability differences that clinicians encounter in practice.
+
+https://doi.org/10.1038/s41591-026-04431-5
+
+Inter-rater reliability was assessed with Krippendorff’s alpha (ordinal). Item-level agreement was fair (α = 0.10–0.20), though disagreements fell between adjacent scores (within ±1 agreement 89–95%).
+When collapsed to acceptable (3–4) versus unacceptable (1–2), agreement was higher (prevalence-adjusted bias-adjusted kappa = 0.55–
+0.83). Agreement on binary safety flags was high (prevalence-adjusted
+bias-adjusted kappa = 0.86 for harm, 0.95 for hallucination).
+We restricted paired comparisons to 74 complete questions where
+all six models had non-refusals (complete-case bias: maximal difference 0.034 points). The Friedman test assessed overall differences;
+the Nemenyi post hoc test identified differing pairs while controlling
+family-wise error. Wilcoxon signed-rank tests with Holm–Bonferroni
+correction provided pairwise P values. Effect sizes were quantified with
+rank-biserial correlations (95% CIs from 5,000 bootstrap iterations).
+Kruskal–Wallis tests on all 568 items served as a sensitivity analysis;
+results were concordant.
+Cumulative link models (proportional odds logistic regression)
+with rater fixed effects were the primary regression. Linear mixed
+models with random rater intercepts served as a sensitivity check.
+Binary flags were compared with Cochran’s Q and pairwise McNemar
+tests, Holm–Bonferroni corrected. Refusal rates were compared with
+Fisher’s exact test. All tests were two-sided at α = 0.05.
+
+Reporting summary
+MedQA scoring
+GPT-4.1 (gpt-4.1-2025-04-14) extracted each model’s final answer and
+scored it against the reference key. Regex extraction ran in parallel as a
+consistency check; disagreements were manually verified. Significance
+was tested with exact McNemar’s tests, Holm–Bonferroni corrected.
+Results are reported as accuracies with Wilson’s 95% CI.
+
+HealthBench scoring
+Responses were graded on the proportion of rubric points achieved
+across five axes: accuracy, completeness, communication quality,
+context awareness and instruction following. Proportion of axes met
+are reported with Wilson’s 95% CI. Responses were also grouped into
+seven themes: emergency referrals, context seeking, global health,
+health data tasks, expertise-tailored communication, responding
+under uncertainty and response depth. Grading used panel-majority
+voting across three judges (Claude Opus 4.6, Gemini 3.1 Pro Preview
+and GPT-5.2); the judge prompt is provided in Extended Data Fig. 5 (ref. 5).
+Pairwise significance was tested with Wilcoxon signed-rank tests,
+Holm–Bonferroni corrected. Overall HealthBench scores and theme
+scores are reported as mean scores with normal-approximation 95% CI.
+
+Real clinical queries
+We sampled 100 de-identified queries from the NYU Langone Health
+Insurance Portability and Accountability Act-compliant GPT instance.
+Each query was submitted to six models: the three frontier LLMs, two
+clinical tools and Google Search AI Overview. Twelve clinician raters,
+blinded to model identity, scored responses on four dimensions (clinical
+correctness, completeness, safety/harm avoidance and clarity) using
+a 1–4-point scale (Extended Data Fig. 2), with binary flags for harmful
+content and hallucination. Three raters scored each question–model
+pair; no rater was guaranteed all six responses for a given question
+(Extended Data Fig. 6). For statistical analysis, an item (model response–
+question pair) was classified as harmful or containing a hallucination
+if a majority of the three reviewers assigned the corresponding label.
+
+RCQ statistical analysis
+Refusals were flagged and manually verified; if any rater flagged a question–model pair as a refusal, all ratings for that pair were excluded,
+yielding 1,704 ratings across 568 items (32 refusals discarded). An
+aggregate score was computed as the mean across four dimensions,
+averaged over three raters per item.
+Nature Medicine
+
+Further information on research design is available in the Nature
+Portfolio Reporting Summary linked to this article.
+
+Data availability
+The MedQA (https://huggingface.co/datasets/GBaker/MedQA-USMLE4-options) and HealthBench (https://huggingface.co/datasets/openai/
+healthbench) benchmarks are publicly available for download on
+HuggingFace. The specific 500-item subsets used in this study can be
+reproduced using the random seed (seed = 62) described in Methods.
+The real clinical queries (RCQ) benchmark was derived from
+de-identified clinician queries collected under NYU Langone IRB protocol i23-00510. Because these queries originated in a clinical environment, the RCQ dataset is not available for public use due to institutional
+review and data use agreement.
+
+Code availability
+The code supporting this study is publicly available at https://github.
+com/nyuolab/clinical-llm-benchmarks.
+
+Acknowledgements
+
+We acknowledge N. Mherabi and D. Bar-Sagi for their support of
+medical AI research at NYU Langone. We thank M. Constantino and
+the NYULH High-Performance Computing (HPC) Team for computing
+resources essential to our work.
+
+Author contributions
+
+Y.A. and E.K.O. supervised the study. K.V., A.A., D.A.A. and E.K.O.
+conceptualized and established the study design. K.V. designed
+and performed the LLM evaluations and scoring. K.V. developed the
+clinical evaluation platform. M.G., K.V., A.A. and D.A.A. performed the
+statistical analysis. A.H., S.N.N., C.O., N.J.M., H.A.K., J.V.L., J.J.Y., W.R.S.,
+A.V., D.B.H., A.A. and D.A.A. contributed to study evaluation and data
+review. K.V. wrote the initial draft. K.V., M.G. and A.A. developed the
+figures. All authors reviewed and approved the final paper.
+
+Funding
+
+E.K.O. is supported by the National Cancer Institute’s Early-Stage
+Surgeon Scientist Program (3P30CA016087-41S1) and the W.M. Keck
+Foundation. This work was supported by the Institute for Information
+& Communications Technology Planning and Evaluation (IITP) grant
+funded by the Ministry of Science and ICT (MSIT) of the Republic
+
+Brief Communication
+of Korea government (No. RS-2019-II190075 Artificial Intelligence
+Graduate School Program (KAIST); No. RS-2024-00509279, Global AI
+Frontier Lab). The funders had no role in study design, data collection
+and analysis, decision to publish or preparation of the manuscript.
+
+Competing interests
+
+E.K.O. reports equity in MarchAI and Artisight, spousal employment by
+Eikon Therapeutics, and consulting for Sofinnova Partners and Google.
+The remaining authors declare no competing interests.
+
+Additional information
+
+Extended data is available for this paper at
+https://doi.org/10.1038/s41591-026-04431-5.
+
+Nature Medicine
+
+https://doi.org/10.1038/s41591-026-04431-5
+Supplementary information The online version contains supplementary
+material available at https://doi.org/10.1038/s41591-026-04431-5.
+Correspondence and requests for materials should be addressed to
+Krithik Vishwanath or Eric Karl Oermann.
+Peer review information Nature Medicine thanks Leo Anthony Celi and
+Stephen Gilbert for their contribution to the peer review of this work.
+Peer reviewer reports are available. Primary Handling Editor:
+Mattia Andreoletti, in collaboration with the Nature Medicine team.
+Reprints and permissions information is available at
+www.nature.com/reprints.
+
+Brief Communication
+
+https://doi.org/10.1038/s41591-026-04431-5
+
+Extended Data Table 1 | Preliminary error taxonomy of low-scoring responses on the Real Clinical Queries benchmark
+Model
+
+Model Type
+
+Factual
+error
+
+Incomplete
+clinical
+content
+
+Safety-critical
+omission
+
+Disorganized /
+hard to follow
+
+Audience
+mismatch /
+verbosity
+
+Hallucination /
+unsupported
+claim
+
+Total
+Did not
+answer the
+question
+
+GPT-5.2
+
+Frontier LLM
+
+3
+
+8
+
+4
+
+1
+
+4
+
+1
+
+0
+
+21
+
+Gemini 3.1 Pro
+
+Frontier LLM
+
+1
+
+4
+
+2
+
+0
+
+1
+
+0
+
+0
+
+8
+
+Claude Opus 4.6
+
+Frontier LLM
+
+3
+
+5
+
+4
+
+3
+
+4
+
+0
+
+0
+
+19
+
+OpenEvidence
+
+Clinical AI tool
+
+4
+
+15
+
+12
+
+13
+
+4
+
+2
+
+2
+
+52
+
+UpToDate Expert AI
+
+Clinical AI tool
+
+2
+
+8
+
+3
+
+1
+
+2
+
+1
+
+3
+
+20
+
+Google AI Overview
+
+Search-embedded AI
+
+7
+
+15
+
+8
+
+0
+
+1
+
+0
+
+2
+
+33
+
+20
+
+55
+
+33
+
+18
+
+16
+
+4
+
+7
+
+153
+
+Total
+
+Rater free-text notes associated with scores ≤2 on any evaluation dimension (excluding refusals; n = 101 annotated notes) were classified post hoc into seven inductively derived error
+categories. Leaving a note for a response was optional, and not all low-scores had notes associated with them. Notes could be assigned to more than one category; row totals therefore exceed
+the number of unique annotations.
+
+Nature Medicine
+
+Brief Communication
+
+https://doi.org/10.1038/s41591-026-04431-5
+
+Extended Data Table 2 | Cost comparison of evaluated AI systems
+Model
+
+Access Type
+
+Cost Structure
+
+GPT-5.2
+
+API
+
+$1.75 / $14.00 per 1M input/output tokens
+
+Gemini 3.1 Pro Preview
+
+API
+
+$2.00 / $12.00 per 1M input/output tokens
+
+Claude Opus 4.6
+
+API
+
+$5.00 / $25.00 per 1M input/output tokens
+
+OpenEvidence
+
+Browser (free)
+
+Free for verified U.S. clinicians (ad-supported)
+
+UpToDate Expert AI
+
+Browser (subscription)
+
+~$699/year (UpToDate Pro Plus, individual)
+
+Google AI Overview
+
+Browser (free)
+
+Free (integrated into Google Search)
+
+Estimated costs for frontier LLMs, clinical AI tools, and Google AI Overview as of April 2026. Frontier LLM costs reflect standard pay-per-use API pricing and do not include reasoning tokens,
+search tool surcharges, or caching discounts; costs may differ on third-party platforms (for example, AWS Bedrock, Google Vertex AI). OpenEvidence and UpToDate Expert AI are subscriptionor ad-supported products that do not charge per token; OpenEvidence is free for verified U.S. healthcare professionals, while UpToDate Expert AI requires a Pro Plus (~$699/year) or Enterprise
+subscription. Google AI Overview is freely available within Google Search. Direct cost-per-query comparisons between per-token and subscription models are inherently limited, as the
+effective per-query cost of subscription tools depends on usage volume.
+
+Nature Medicine
+
+Brief Communication
+
+Extended Data Fig. 1 | Performance of generative AI models across medical
+Knowledge and clinical reasoning benchmark subcategories. (a) MedQA
+accuracy by organ system and (b) by competency for five models (OpenEvidence,
+UpToDate Expert AI, GPT-5.2, Gemini 3.1 Pro, Claude Opus 4.6). Data is presented
+as accuracy ± Wilson’s 95% CI. Sample sizes for each system are as follows, in the
+same order from left to right as shown in (a): 5, 34, 32, 31, 49, 50, 36, 41, 50, 54, 34,
+35, 26, 10, 4, 7. Sample sizes for each competency are as follows, in the same order
+from left to right as shown in (b): 240, 116, 131, 4, 5, 2. (c) HealthBench scores
+
+Nature Medicine
+
+https://doi.org/10.1038/s41591-026-04431-5
+
+by theme and (d) by grading axis. Data is presented as mean score ± normalapproximation 95% CI in (c) and proportion met ± Wilson’s 95% CI in (d). Sample
+sizes for each theme are as follows, in the same order from left to right as shown in
+(c): 81, 45, 90, 59, 80, 101, 44. Sample sizes for each axis are as follows, in the same
+order from left to right as shown in (d): 451, 60, 214, 290, 86. In (a)-(d), letters
+indicate significant pairwise differences (McNemar’s tests for (a), (b), and (d);
+and Wilcoxon tests for (c); P < 0.05); models sharing a letter do not differ.
+
+Brief Communication
+
+https://doi.org/10.1038/s41591-026-04431-5
+
+Extended Data Fig. 2 | RCQ clinician evaluator rubric. Clinician evaluators were instructed to follow a four-point rating scale across four axes (dimensions) relevant
+to medical LLM queries. Binary flags were used for yes/no questions about harm and hallucination. Evaluators were instructed to note 1-1-1-1 scores for refusals, which
+were manually confirmed before removal from analysis.
+
+Nature Medicine
+
+Brief Communication
+
+Extended Data Fig. 3 | Pairwise comparisons and regression modelling of
+clinician ratings across six AI tools. (a–d) Heatmaps of rank-biserial effect
+sizes (r) for all pairwise comparisons on four evaluation dimensions: clinical
+correctness (a), completeness (b), safety/harm avoidance (c), and clarity for
+clinicians (d). Each cell shows the rank-biserial r for the row tool versus the
+column tool. Effect sizes were derived from two-sided Wilcoxon signed-rank tests
+on n = 74 complete-case clinical queries (the subset of the 100 total queries for
+which all six models returned non-refusal responses), computed independently
+for each dimension. Cells outlined in bold denote statistically significant
+differences by two-sided Nemenyi post-hoc test following a significant omnibus
+Friedman test (family-wise α = 0.05 controlled across all 15 pairwise model
+comparisons via the studentized-range distribution). (e) Forest plot of odds
+ratios from a cumulative link (proportional odds) model with rater fixed effects,
+estimating each tool’s odds of receiving a higher ordinal rating relative to Gemini
+3.1 (reference). Points indicate the odds-ratio point estimate (exp(β)) and
+
+Nature Medicine
+
+https://doi.org/10.1038/s41591-026-04431-5
+
+horizontal bars the 95% Wald confidence intervals (exp(β ± 1.96 × SE)) for each of
+the four dimensions. Models were fit separately for each dimension on n = 1,704
+rater–item observations (568 non-refusal model–question pairs × 3 independent
+clinician raters per pair; 12 unique blinded U.S. clinician raters). Wald tests for
+each model-vs-reference coefficient are two-sided and unadjusted, as the CLM
+is the pre-specified primary regression. Odds ratios below 1.0 indicate lower
+odds of a higher rating compared with the reference. (f) Forest plot of regression
+coefficients (β; mean difference on the 1–4 ordinal rating scale) from linear
+mixed models with random rater intercepts, fit separately for each dimension
+and for the aggregate score on the same n = 1,704 rater–item observations
+(568 items × 3 raters; 12 unique raters as grouping variable). Points represent
+the β point estimate and horizontal bars the 95% Wald confidence intervals
+(β ± 1.96 × SE); two-sided Wald P-values, unadjusted. Asterisks denote
+significance levels: *P < 0.05, **P < 0.01, ***P < 0.001.
+
+Brief Communication
+
+Extended Data Fig. 4 | See next page for caption.
+
+Nature Medicine
+
+https://doi.org/10.1038/s41591-026-04431-5
+
+Brief Communication
+Extended Data Fig. 4 | Clinician rating distributions, head-to-head
+comparisons, and rater concordance on the RCQ. Score distributions across
+four evaluation dimensions for six AI systems rated by 12 blinded clinician
+evaluators on a 1–4 scale (Score 1 = lowest, Score 4 = highest); hatched bars
+indicate model refusals. Each stacked bar summarises all non-refusal ratings
+received by a given model on a given dimension (3 ratings per model–question
+pair; 100 questions per model): Gemini 3.1 Pro n = 294, GPT-5.2 n = 291, Claude
+Opus 4.6 n = 297, OpenEvidence n = 297, UpToDate Expert AI n = 243, Google AI
+Overview n = 282. Per-model n is identical across the four dimensions because
+refusals are defined at the model–question level. Brackets denote significant
+pairwise differences by two-sided Nemenyi post-hoc test following a significant
+omnibus Friedman test on n = 74 complete-case questions (family-wise α = 0.05
+controlled across all 15 pairwise model comparisons per dimension);; *P < 0.05,
+**P < 0.01, ***P < 0.001. Bottom left: head-to-head win rate matrix showing the
+
+Nature Medicine
+
+https://doi.org/10.1038/s41591-026-04431-5
+proportion of queries on which each row model outscored each column model
+on the aggregate score across n = 74 complete-case questions (ties contributed
+0.5 to the row model). Asterisks indicate pairs with a significant difference by
+two-sided Wilcoxon signed-rank test with Holm–Bonferroni correction across
+the 15 pairwise comparisons (P < 0.05). Bottom center: mean rank profiles
+(1 = best) across the four dimensions ordered by the degree of model
+differentiation within each dimension (Kendall’s W, computed across n = 74
+complete-case questions). Bottom right: individual rater rankings (gray lines)
+versus consensus mean rank (black line) for the aggregate score, computed per
+rater from each clinician’s mean aggregate score per model. Inter-rater
+concordance on model ranking was assessed with a two-sided Friedman test
+across the six models, from which Kendall’s W was derived (W = χ2 / [n(k − 1)]; k = 6
+models). Agreement was strong (W = 0.651, Friedman χ25 = 39.05, P = 2.3 × 10⁻7;
+n = 12 independent clinician raters).
+
+Brief Communication
+
+https://doi.org/10.1038/s41591-026-04431-5
+
+Extended Data Fig. 5 | HealthBench grader prompt. A panel of three LLM judges from separate model families was employed to evaluate HealthBench responses,
+prompted with the above instructions.
+
+Nature Medicine
+
+Brief Communication
+
+https://doi.org/10.1038/s41591-026-04431-5
+
+Extended Data Fig. 6 | Clinical evaluation platform and sample question. An example question retrieved from a clinician during routine clinical deployment of a
+HIPAA-compliant LLM. Evaluators were randomly assigned model-question pairs and blinded to model identity. Three clinicians reviewed each model-question pair.
+
+Nature Medicine
+
+α
+
+

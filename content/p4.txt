@@ -1,0 +1,489 @@
+One Tokenizer To Rule Them All: Emergent Language Plasticity via Multilingual Tokenizers 
+
+One Tokenizer To Rule Them All: Emergent Language Plasticity via Multilingual Tokenizers
+
+Diana Abagyan⋆1, Alejandro R. Salamanca1, Andres Felipe Cruz-Salinas2, Kris Cao2, Hangyu Lin2, Acyr Locatelli2, Marzieh Fadaee1, Ahmet Üstün♦1, and Sara Hooker♦1
+
+1Cohere Labs, 2Cohere
+
+Corresponding authors: {dianaabagyan, ahmet, sarahooker}@cohere.com
+
+Abstract Pretraining massively multilingual Large Language Models (LLMs) for many languages at once is chal- lenging due to limited model capacity, scarce high-quality data, and compute constraints. Moreover, the lack of language coverage of the tokenizer makes it harder to address the gap for new languages purely at the post-training stage. In this work, we study what relatively cheap interventions early on in training improve “language plasticity”, or adaptation capabilities of the model post-training to new languages. We focus on tokenizer design and propose using a universal tokenizer that is trained for more languages than the primary pretraining languages to enable efficient adaptation in expanding language coverage after pretraining. Our systematic experiments across diverse groups of languages and different training strategies show that a universal tokenizer enables significantly higher language adaptation, with up to 20.2% increase in win rates compared to tokenizers specific to pretraining languages. Furthermore, a universal tokenizer also leads to better plasticity towards languages that are completely unseen in the tokenizer and pretraining, by up to 5% win rate gain. We achieve this adaptation to an expanded set of languages with minimal compromise in performance on the majority of languages included in pre- training.
+
+1 Introduction
+
+There are only a handful of research labs with enough compute resources and expertise to train large AI systems at scale \[Maslej et al., 2025; Hooker, 2024\]. Most researchers and practitioners are forced to choose among available pretrained models for downstream tasks, even if they are not tailored to their use cases. Nowhere is this tension more evident than in the multilingual setting \[Joshi et al., 2020; Singh et al., 2024; Üstün et al., 2024\], where limited investment in multilingual support in pretraining often results in significant gaps in language coverage in state-of-the-art LLMs \[Holtermann et al., 2024\].
+
+⋆First author. ♦Principal senior advisors.
+
+Released as a preprint on June 13, 2025 1
+
+04035\) %(e taRn iW30252015+8x Faster Adaptation y ticitsalPx 2+10Tokenizer 5cluster
+
+universal
+
+25 300 575 1125 2500
+
+Training Steps
+
+Figure 1: Universal tokenizer exhibits +2x higher plasticity with +8x faster adaptation compared to the cluster-specific baseline tokenizer. Average win rates on the expanded (new) language subset during continued pretraining that involves both primary and expanded language subsets (§ 2.1).
+
+This imbalance in language coverage has created a growing divide in the cost of use for particular language users as marginalized languages require more tokens and incur higher latency for gener- ations \[Ji et al., 2023; Cui et al., 2024; Ahia et al., 2023\], restricting speakers of low-performing languages to lower quality technology \[Held et al., 2023; Durmus et al., 2024; Nicholas & Bhatia, 2023; Ojo et al., 2025\]. Further compounding these issues, once a model is pretrained, it is hard to steer towards new behavior using post-training alone \[Wang et al., 2025\]. Unless the tokenizer has been calibrated to a new language during training, it often requires far more significant amount of data and intricate optimization steps \[Muller et al., 2021\].
+
+Multilingual plasticity represents the capability of the language model to quickly adapt to lin- gual distribution shifts to the downstream target, which in our case, involves a new set of focus languages \[Chen et al., 2023\]. Given that pretraining requires the bulk of compute and cost re- sources, any intervention made at this stage that improves the plasticity for downstream developers and researchers is beneficial.
+
+In this work, we investigate minimal and efficient pretraining interventions to reduce later adaptation costs. In particular, we identify tokenization as an area with relatively low cost of intervention, but potential for large downstream gains. We ask: Can we leverage tokenizers with broad language coverage to improve the plasticity of LLMs without hurting pretraining performance?
+
+We hypothesize that a universal tokenizer that is trained on more languages than the primary pretraining languages, introduced from the start of pretraining, enables quick and effective inter- ventions for adapting a model to new languages. This significantly diverges from the previous work that focuses on techniques such as vocabulary extension \[Wang et al., 2020\] or retraining the em- bedding layer \[Artetxe et al., 2020\] after pretraining. These techniques are more costly, needing more resources like training budget, with varying degrees of success across languages \[Limisiewicz et al., 2023; Sharthak et al., 2025; Nag et al., 2025\].
+
+We systematically investigate the impact of multilingual tokenizers through an exhaustive set of ab- lations at pretraining scale, which requires a significant investment of resources. We vary tokenizer, language subsets and adaptation strategy across 69 languages, and we find the following results:
+
+1\. The Universal tokenizer significantly improves adaptation to new (expanded) languages, achieving an average of 19% higher win rate in continued pretraining experiments, compared
+
+2
+
+Figure 2: Win rates for models trained with the Universal and Cluster tokenizers against Dolly generations \[Singh et al., 2024\]. The shaded blue portion represents a subset of primary languages, and the white represents expanded languages. On average, Universal tokenizer achieves an increase of 18.9% win rate on expanded subset languages, and +0.3% on primary languages compared to the Cluster tokenizers across clusters.
+
+to the baseline tokenizers specialized to pretraining languages. In addition to achieving higher adaptation, the Universal tokenizer exhibits almost the same performance on primary languages with no more than 2% difference in downstream evaluation against the baseline tokenizer.
+
+2\. For targeted adaptation where the new languages are the only focus, the Universal tok- enizer achieves an average of 14.6% improvement over the baseline tokenizer for the expanded languages subset. Furthermore, for adapting to fully unseen languages, not included both in the tokenizer and pretraining (the most extreme case of adaptation), Universal tokenizer outperforms the baseline by up to 5% gain in win rates across 7 heavily under-resourced languages.
+
+3\. We find that the Universal tokenizer enables more than 8x faster adaptation performance, requiring much less additional training, and therefore minimal costs. We believe that this dramatically benefits practitioners who want to extend the language coverage of a pretraining model with minimal intervention.
+
+2 Methodology and Experimental Setup
+
+2.1 Methodology and Core Ablations
+
+Language Coverage and Model Variants. Our experiments include 62 typologically and lexico- graphically diverse languages, broken up into three geographically motivated clusters: (1) European languages, (2) Asian languages, and (3) Middle-Eastern and Indic languages (referred to as ME- Indic throughout the paper). For each geo-cluster, we pretrain language models primarily on the languages within that cluster (referred to as primary subset) and we use the remaining languages (referred to as expanded subset) as reference points for plasticity adaptation experiments. For example, for the European cluster, the primary subset consists of languages such as Spanish, Rus- sian, and Portuguese, and the expanded subset includes the 10 languages outside of the dominant training data for that cluster. In addition, we also consider 7 fully unseen languages, such as Sinhala and Kazakh, which were not present in the tokenizer or base model training data. The full language list with clusters is provided in Appendix E.
+
+Adaptation Strategies. One of our goals is to introduce highly plastic and adaptable model properties. A practitioner may choose to conduct language adaptation using a variety of different training strategies, influenced by what data they may have available. Ideally, the choices we make
+
+3
+
+for the tokenizer allow for improved plasticity given any approach taken after pretraining. Hence, we evaluate our interventions under various different adaptation strategies, which include continued pretraining with data in both primary and expanded language subsets, targeted adaptation for expanded languages, and targeted adaptation for fully unseen languages. We briefly describe both these strategies and experimental details below:
+
+• Continued pretraining with data from primary and expanded languages: The ob- jective for this strategy is to increase language coverage of the model, so that it supports both primary and expanded languages. Half of the training mix consists of an even distribution of all languages in the instruction finetuning data, and the other half is a standard cooldown mix with high-quality datasets (See § 2.2). This imparts instruction-following abilities to our base models, and also allows for evaluation on both the primary and expanded languages.
+
+• Targeted adaptation (expanded languages): In these experiments, we explore a targeted language adaptation through supervised fine-tuning. The post-training data solely consists of instruction-style data in the expanded language subsets for each cluster model. This allows us to isolate the effect of introducing new languages that are not focused on during pretraining but represented in the tokenizer.
+
+• Targeted adaptation (fully unseen languages): In the final set of experiments, we explore the most extreme setting of targeted adaptation to fully unseen languages that are not seen in the tokenizer or pretraining. In this setting, we consider the availability of the data in one language only for each experiment, thus, we fine-tune the base model on one language at a time. This ablation enables evaluating our approach for adaptation under a heavily under-resourced scenario.
+
+Tokenizer Variants. We train a massively multilingual tokenizer using data from all 62 languages as well as cluster-specific tokenizers that represent only the primary language subsets. Throughout the paper, we refer to these tokenizers as Universal and Cluster tokenizers, respectively. We include more details about the tokenizer training in Section 2.3.
+
+2.2 Experimental Set-up
+
+Pretraining datasets. Models are pretrained with a mixture of English, code, and multilingual corpora, where data weights are distributed as 55%, 15%, and 30%, respectively. Upweighting English in multilingual training is a common practice, due to higher task coverage and quality, which is crucial for cross-lingual transfer \[Dash et al., 2025; Singh et al., 2024; Ravisankar et al., 2025\]. We also include code data as it has become a standard part of the training recipe even for natural language models, and has been found to boost performance on other tasks when included in pre-training \[MA et al.; Aryabumi et al., 2024\]. We use a large corpus of data from a variety of public and proprietary sources. For models we pretrain with the Universal tokenizer, we reallocate 5% of the training mixture from English data and uniformly distribute it among all the expanded languages, to avoid undertrained tokens in the vocabulary \[Land & Bartolo, 2024\]. However, in Section 5.4, we ablate this percentage and show that even when no expanded language subset data is included in pretraining, the Universal tokenizer significantly improves multilingual plasticity.
+
+Cooldown and instruct datasets. For continued pretraining, we use cooldown data that in- volves upweighting higher quality datasets, comprised of text, math, code, and instruct-style data \[Aryabumi et al., 2024\]. It has been found by recent work to improve performance on downstream
+
+4
+
+tasks, in particular by helping impart instruction-following capabilities \[Parmar et al., 2024; Team et al., 2025\]. We include a high-quality mix of proprietary and open data, much of which was cre- ated by following a multilingual data arbitrage strategy \[Odumakinde et al., 2024\], covering 100,000 prompt-completion pairs in 23 languages. Finally, for experiments on fully unseen languages, we emulate a realistic data-constrained regime, and use only 14,800 instructions per language from the translated Dolly training set from Aya Collection \[Singh et al., 2024\].
+
+Training details. For our experiments, as standard for most LLMs, we use the Transformer-based decoder-only architecture \[Vaswani et al., 2017; Radford & Narasimhan, 2018\]. Our architecture includes key optimizations such as Parallel Attention Blocks \[Chowdhery et al., 2023\], Grouped Query Attention \[Ainslie et al., 2023\], SwiGLU activation function \[Shazeer, 2020\], and Rotary Positional Embeddings \[Su et al., 2024\].
+
+Our ablations are extensive and require a large amount of pretraining runs. Given the huge amount of compute required for pretraining, where training a 3.3B parameter model on 128 Nvidia H100 GPUs takes 11 hours, we focus on only 3.3 billion parameter language models for ablations. We train each base variant for 100 billion tokens using a total of 25,000 steps. Given the number of experiments we run, and the variety of factors we evaluate, this model size and amount of training steps is at the edge of what is computationally feasible at pretraining scale. Overall, the goal is not to emulate the settings of a full pretraining run, but to get sufficient signal about the relative merits of different approaches. In the continued pretraining strategy, we train for an additional 10.5B tokens and the targeted adaptation are done for 4 epochs over the respective datasets for each experiment. Additional training and infrastructure details are provided in Appendix B.
+
+Infrastructure. We use Nvidia H100 GPUs for training and evaluation. We use FAX \[Yoo et al., 2022\], which is a high-performance training framework built on JAX \[Bradbury et al., 2018\], enabling efficient tensor and model parallelism.
+
+2.3 Tokenizer Training
+
+All tokenizers are trained using the Byte Pair Encoding algorithm \[Sennrich et al., 2016\]. Additional implementation details about the tokenizer training is given in Appendix A.
+
+Language weighting. In addition to varying the coverage of the tokenizer, with some being trained on Universal and Cluster language coverage, we also invest in a methodology that adjusts the weighting based upon availability of data. In contrast to traditional approaches which sample uniformly across all data and end up dominated by most frequent languages, we consider two factors: (1) natural distribution of the data available across languages, and (2) language buckets formed by languages that share the same family and script (which are more likely to share tokens). Within each language bucket, we use uniform weighting across languages. Concretely, for a language i, where wdi and wbi denote weights for data distribution and language bucket, respectively, we compute the language weights in the tokenizer data mixture as follows:
+
+wi = wdi .wbi Pn wdn.wbn (1)
+
+This way, we balance natural data distribution (skewed through the high-resource languages) with language bucketing in a principled manner, ensuring that there is equitable representation for di- verse scripts and lower-resourced languages. Our pretraining experiments (Section 3, Appendix D)
+
+5
+
+show that our specialized weighting combining language bucketing with size-proportional data dis- tribution enables better compression ratios than uniform weighting and achieves better downstream performance. For the remainder of this work, we use specialized weighting throughout experiments, unless specified otherwise.
+
+Vocabulary size. We use a vocabulary size of 250k tokens in our main experiments. However, in § 5.3, we explore how vocabulary size impacts performance for both Universal and Cluster tokenizers, and vary the vocabulary size between 100k, 175k, and 250k to understand the impact.
+
+2.4 Evaluation
+
+Open-ended evaluation. Goldman et al. \[2024\] find that generative tasks are more informative than classification in evaluating tokenizers, likely due to the number of generation steps. Following Üstün et al. \[2024\], the quality of generations is assessed using LLM-as-a-Judge win rates, where original generations are used as the reference answer. We use the dolly\_human\_edited and the dolly\_machine\_translated splits of the Aya Evaluation Dataset \[Singh et al., 2024\] as test data for this task, which are formed by translating 200 held-out examples from the Dolly-15k \[Conover et al., 2023\]. We use 15 adaptation languages for open-ended evaluation, listed in Appendix E.
+
+Prior work has shown that LLMs as evaluators are reasonable proxies and aligned with human preferences also in multilingual settings \[Üstün et al., 2024; Singh et al., 2025; Dang et al., 2024; Kreutzer et al., 2025\]. We use Command-A \[Cohere et al., 2025\] as the judge model, given its reported strength as the best open-weights judge on multilingual setting, scoring closely to GPT4o \[Gureja et al., 2024; Pombal et al., 2025\]. The full judge prompt is included in Appendix C.3.
+
+Task-specific performance. We use two task specific evaluations for multilingual evaluations. Belebele \[Bandarkar et al., 2024\] is a multiple-choice question machine-reading comprehension (MRC) dataset representing 122 language variants. Multilingual MMLU (M-MMLU) \[Dac Lai et al., 2023\] is a machine-translated version of the original MMLU dataset \[Hendrycks et al., 2021\] that contains questions ranging in topic from STEM to humanities.
+
+English-only evaluation. Additionally, we also evaluate models on 11 English-only natural language inference and commonsense reasoning benchmarks: ARC-C and ARC-E \[Chollet, 2019\], BoolQ \[Clark et al., 2019\], CommonsenseQA \[Talmor et al., 2019\], Hellaswag \[Zellers et al., 2019\], MMLU \[Hendrycks et al., 2021\], OpenBookQA \[Mihaylov et al., 2018\], PIQA \[Bisk et al., 2020\], SIQA \[Sap et al., 2019\], TruthfulQA \[Lin et al., 2022\], and WinoGrande \[Sakaguchi et al., 2019\].
+
+We include task-specific evaluations (both multilingual and English-only) to understand the relative merit of different design choices. Typically pretrained models do not perform well at downstream tasks at this point in training, as the models have not yet been optimized for instruction following \[Wang et al., 2022; Üstün et al., 2024; Aakanksha et al., 2024\], or aligned using reinforcement learning \[Ahmadian et al., 2024; Dang et al., 2024\]. Hence, we do not expect state-of-the-art performance, but rather evaluate the relative signal of different variants.
+
+6
+
+Cluster Tokenizer Belebele M-MMLU EN Tasks
+
+Primary Languages
+
+European Cluster 41.4 31.1 48.5 Universal 41.9 30.9 48.4
+
+Asian Cluster 38.2 29.6 48.2 Universal 38.1 28.9 48.1
+
+Middle East Cluster 38.1 29.2 49.1 & Indic Universal 36.5 28.6 48.2
+
+Table 1: Comparison of Cluster vs. Universal tokenizers during the pretraining on the primary languages across three regional clusters. Performance with Universal tokenizer is comparable to Cluster tokenizers across all the geo-cluster models.
+
+bul cat ces dan deu ell est eus fin fra hrv hun ita lit
+
+Uniform 41.0 43.7 42.7 41.5 43.6 41.2 35.7 38.4 34.6 45.0 42.1 36.6 40.6 41.0 Universal 42.1 46.5 45.5 41.1 44.3 42.7 37.9 40.6 32.4 45.3 42.6 37.9 40.1 43.1
+
+(+1.1) (+2.8) (+2.8) (–0.4) (+0.7) (+1.5) (+2.2) (+2.2) (–2.2) (+0.3) (+0.5) (+1.3) (–0.5) (+2.1)
+
+lvs nld nob pol por ron rus slk slv spa srp swe ukr Average
+
+Uniform 42.3 42.7 42.3 38.4 41.0 40.8 41.0 42.4 39.5 42.5 42.4 42.9 40.9 41.0 Universal 40.5 42.7 42.8 39.8 43.8 41.2 41.4 43.5 41.8 43.8 43.4 43.4 40.0 41.9
+
+(–1.8) (+0.0) (+0.5) (+1.4) (+2.8) (+0.4) (+0.4) (+1.1) (+2.3) (+1.3) (+1.0) (+0.5) (–0.9) (+0.9)
+
+Table 2: Comparison of Universal vs. Uniform tokenizer performance on Belebele, when used for pretraining of Euro cluster model. In tokenizer training, we use all the languages (67 languages; primary and expanded subsets) and only vary the language weighting. Universal tokenizer with balanced weighting using language buckets outperforms Uniform weighting in 21 European languages out of 27, with a relative gain of 2.2% (41.9 vs 41.0) on average.
+
+3 Results on Pretraining Performance
+
+Section Findings
+
+• Pretraining with Universal tokenizer produces well-rounded models with competitive results on a variety of tasks for the primary languages, differing from the Cluster tokenizer models by no more than 0.5% average accuracy across tasks and clusters.
+
+• Our specialized tokenizer weighting that uses language buckets to balance the data availability, leads to better pretraining performance up to 2.8 accuracy increase as measured in the Euro cluster model.
+
+In this section, we first benchmark the performance of our pretrained models, to ensure that using a Universal tokenizer doesn’t cause degradations in performance, as may be expected when using a tokenizer optimized for a broader set of languages than the primary set.
+
+Universal tokenizer does not compromise performance on primary languages. As seen in Table 1, we find that our expanded Universal tokenizer is remarkably competitive against Cluster across the geo-cluster models. The difference in pretraining performance is less than at most 1% average accuracy in English tasks. The highest performance difference between Universal and Cluster tokenizers for multilingual tasks is only 1.6% average accuracy on Belebele for ME- Indic cluster (38.1% vs 36.5 %). Overall, we observe minimal trade-offs in performance on primary cluster languages switching to Universal tokenizer.
+
+7
+
+Cluster Tokenizer Dolly Win Rates (%)
+
+Primary Expanded
+
+European Cluster 42.8 17.6
+
+Universal 42.8 37.4 (+19.9)
+
+Asian Cluster 41.7 11.7
+
+Universal 41.8 29.5 (+17.8)
+
+Middle East Cluster 39.7 22.8 & Indic Universal 40.2 41.8 (+18.9)
+
+Table 3: Win rates after continued pretraining on primary and expanded language subsets. The Universal tokenizer matches Cluster performance on primary languages and shows large gains (up to 19.9%) on average of expanded language subsets across all clusters.
+
+Cluster Universal
+
+European 27.2 37.4 (+10.2) Asian 18.8 34.3 (+15.7) Middle East & Indic 23.31 41.1 (+17.8)
+
+Table 4: Win rates on expanded languages after targeted adaptation. The Universal tokenizer shows better performance (up to 17.8%) across all clusters over the baseline Cluster tokenizer.
+
+In fact, we observe that the Universal tokenizer leads to a slight increase on average on Belebele for Euro cluster (41.9 vs 41.4) and achieves much closer performance for Asian cluster (38.1 vs 38.2). As additional validation, Figure 6 in Appendix C.1 shows the progression of average Bele- bele performance for both tokenizers for Euro cluster models during pretraining. The Universal tokenizer achieves approximately similar performance throughout the whole pretraining, also sug- gesting the same trend in a longer pretraining run. Overall, these results showcase that using a Universal tokenizer doesn’t spell any significant performance degradation in pretraining for the primary languages.
+
+Balanced language weighting with language buckets for tokenizer training leads to bet- ter pretraining performance. As described in Section 2.3 on tokenizer training, we weight the languages using buckets formed by script and language family, balanced against data availability. In order to motivate this weighting scheme, we compare pretraining performance of Universal to- kenizer against a baseline tokenizer (Uniform), where all languages are uniformly weighted except English.1 We conduct this ablation in the Euro cluster, where the number of primary languages is the highest. In tokenizer training, we use all the languages (62 languages; primary and expanded subsets) and only vary the language weighting. As shown in Table 2, Universal tokenizer with bal- anced weighting using language buckets outperforms Uniform weighting in 21 European languages out of 27, with a relative gain of 2.2% (41.9 vs 41.0) on average. Further validating pretraining results, we provide the comparison for compression performance between these two tokenizers in Appendix D, where the results show better overall compression in Universal tokenizer.
+
+1For both tokenizers’ weighting, we use a fixed proportion of 30% for English due to much larger data volume and much higher diversity in available data. This also ensures a fair comparison between tokenizer weighting.
+
+8
+
+4 Results on Enhanced Multilingual Plasticity
+
+4.1 Benefits of Plasticity in Continued Pretraining
+
+Section Findings
+
+• The Universal tokenizer leads to significantly higher plasticity over the Cluster specific tokenizers in continued pretraining (on primary & expanded languages) with an average increase in win rate of 18.9% for the expanded language subsets across clusters.
+
+• The Universal tokenizer enables adaptation boost with no drop in primary languages compared to Cluster tokenizer, with a near identical performance (with a slight increase of 0.3% on average) on downstream open-ended generations.
+
+In this section, we ask: Does varying the approach for the tokenizer lead to plasticity benefits after continued pretraining on both primary and expanded languages?
+
+Models trained with the Universal tokenizer demonstrate significantly higher win rates on the expanded subset. Figure 2 and Table 3 show results of evaluation across the Euro, Asian, and ME-Indic clusters, with 5 languages belonging to each primary language subset and 10 in the expanded subset belonging to the other two clusters. We see that the Universal tokenizer achieves an average gain of 18.9% in win rates across all three geo-cluster models on the expanded subsets, compared to models trained with the Cluster tokenizer. Improvement is consistent across clusters, where we find +19.9%, +17.8%, and +18.9% increase in win rate for Euro, Asian, and ME-Indic cluster models, respectively. Among all the expanded languages, Persian (+25.8%), Hindi (+23.3%), and Vietnamese (+22.0%) show the highest benefit from the Universal tokenizer in the Euro, Asian, and ME-Indic clusters, respectively.
+
+Universal tokenizer preserves performance on multiple clusters. While the Universal tokenizer provides significant gains on the expanded languages, in Figure 2, we observe that the performance on primary languages is nearly the same across both tokenizers in all three clusters. There is only a 0.3% win rate difference across all clusters for primary languages when comparing tokenizers, where Universal tokenizer even leads to a slight increase over the Cluster tokenizer in the European, Asian, and ME-Indic models by 0.3%, 0.1%, and 0.5%, respectively. This is beneficial, as it suggests no trade-offs of improving plasticity for an expanded set of languages by using the Universal tokenizer for the primary languages a provider is interested in when developing a model.
+
+4.2 Benefits of Plasticity in Targeted Adaptation
+
+Section Findings
+
+• For the targeted language adaptation through SFT, where only the expanded language data is introduced, the Universal tokenizer is much more performant than the Cluster tokenizer with 14.6% average increase across languages and geo-clusters.
+
+• Universal tokenizer enables multilingual plasticity not only for languages seen during tokenizer training but also for fully unseen languages with an average improvement of 2% on 7 under-resourced languages over the Cluster tokenizer.
+
+9
+
+universal
+
+(b) Fully unseen languages.
+
+Figure 3: Language-specific results after targeted adaptation through SFT for the Euro cluster model to expanded languages (a) and fully unseen languages (b). Universal tokenizer outperforms the Cluster tokenizer in both language subsets, where the relative gains over the cluster-specific tokenizer go up to 22% on expanded languages (Hindi), and 5% on unseen languages (Kazakh).
+
+An experimental setting of great interest is the more realistic scenario where a downstream developer only has access to data in the expanded languages. To mimic this scenario, we evaluate the impact of our interventions when only supervised fine-tuning only on the expanded language subset is feasible.
+
+Universal tokenizer outperforms Cluster tokenizers by high margins in targeted adaptation for expanded language set. Table 4 shows average win rates of Universal and Cluster tokenizers for each geo-cluster. Universal tokenizer achieves 10.2%, 15.7%, and 17.8% relative win rate gains over the Cluster-specific tokenizers for Euro, Asian, and ME-Indic clusters, respectively. In Figure 3a, we also plot individual language gains for the Euro cluster. Universal consistently enables higher plasticity than Cluster tokenizer where the relative gains go up to 22.0% and 20.0% in Hindi and Farsi, respectively.
+
+Universal tokenizer also provides large gains in targeted adaptation for fully unseen language set. In the most extreme setting, we evaluate the benefits of our tokenizer intervention for adaptation to languages that are fully unseen in both tokenizer and pretraining. Figure 3b shows results on supervised fine-tuning experiments on 7 unseen languages.2 It is critical that all these languages are extremely under-resourced, and this adaptation is performed in a low-data environment, as this is representative of the constraints faced by developers in these languages.
+
+In the most extreme setting, Universal tokenizer enables unseen language gains. We find that Universal tokenizer enables improvements over the Cluster tokenizer on the unseen languages with an average gain of 2.0% in win rates, where it goes up to 5.0% in Nepali. Given that the downstream performance is generally lower for these languages due to their absence in the tokenizer and pretraining, and also constraints on available data (only 15k per language), we find this to be a promising direction of future research and another reason to invest in more flexible tokenizer design.
+
+2Afrikaans, Kazakh, Belarusian, Cantonese, Nepali, Armenian, Sinhala
+
+10
+
+7142128354249Win Rate (%)
+
+48
+
+46
+
+cluster
+
+42
+
+universal 40
+
+37
+
+38 37
+
+37 37
+
+34
+
+35
+
+32
+
+32
+
+30 29 27
+
+23
+
+20
+
+8
+
+(a) Expanded languages
+
+25
+
+zho ind pes vie tur jpn heb kor hin arb
+
+36912151821Win Rate (%)
+
+16
+
+15 15
+
+9
+
+afr yue bel kaz sin npi hye
+
+cluster
+
+19
+
+18
+
+16
+
+14 14
+
+12 11
+
+9
+
+6
+
+4
+
+(b) Expanded languages
+
+Figure 4: Win rates after continued pretraining, comparing Cross-lingual Vocabulary Adaptation (CVA) through tokenizer replacement. After the pretraining, the Cluster tokenizer is replaced with the Univer- sal tokenizer, the embeddings for the shared tokens are preserved and the new tokens are either randomly initialized (random) or by the average of shared embeddings (mean). The Universal tokenizer significantly outcompetes both CVA approaches on expanded languages.
+
+5 Key Discussions
+
+5.1 Comparison with cross-lingual vocabulary adaptation
+
+Section Findings
+
+• Universal tokenizer outperforms cross-lingual vocabulary adaptation (CVA) by 7% in the expanded languages where the vocabulary is replaced (before the continued pretraining), and the new tokens are initialized by average embeddings of the shared tokens.
+
+• CVA through tokenizer replacement fails to achieve competitive performance even with the Cluster tokenizer when the new tokens are initialized randomly. CVA (random) only reaches 2.2% win rate in the expanded languages and falls behind the Universal tokenizer by 35.2% relative drop in win rate.
+
+Cross-lingual vocabulary adaptation (CVA) \[Yamaguchi et al., 2024b\] aims to adapt the existing tokenizer and hence the token embeddings to the new languages through expansion or replacement after pretraining, and is a common approach for language adaptation. A more detailed overview of CVA can be found in Section 6.2. In this ablation, we ask: how does the Universal tokenizer compare with CVA for adapting new languages?
+
+To have a fully comparable setup with our body of experiments, we took the pretrained Euro cluster model that is trained with the Cluster tokenizer and replaced the tokenizer with the Universal tokenizer. Token embeddings that are shared between Cluster and Universal tokenizers are preserved, and new tokens are either randomly initialized by sampling from a normal distribution (random), or with the average of the shared embeddings (mean). After vocabulary replacement and token initialization, we follow the same continued pretraining described in Section 2.1.
+
+The results for this ablation are given in Figure 4. We find that when randomly initializing the new tokens, CVA (tokenizer replacement) fails to achieve comparable performance even against the Cluster tokenizer, and significantly lags behind the Universal tokenizer by 15.4% and 35.2% win
+
+11
+
+(a) Primary languages.
+
+2042.0 50
+
+50
+
+41.5
+
+4040+19.9
+
+\+12.8 +15.1 41.0
+
+3030Tokenizer Tokenizer
+
+40.5
+
+universal
+
+universal cluster
+
+cluster 20100k 175k 250k
+
+0% 1% 5%
+
+0% 1% 5%
+
+(a) Effect of vocabulary size.
+
+(b) Effect of the expanded language data in pretraining
+
+Figure 5: (a) Universal tokenizer requires a larger vocabulary size to achieve the same (or better) pretraining performance with the Cluster tokenizers on primary languages, as evaluated in Belebele. (b) Universal tokenizer exhibits significantly higher adaptation gains over the Cluster tokenizer even when there is no data from the expanded languages added in pretraining.
+
+rates for primary and expanded languages respectively. Notably, initializing the new tokens with the mean of the shared vocabulary (mean in Figure 4), outperforms random initialization. While tokenizer replacement (mean) is an improvement over the unadapted Cluster tokenizer by 12.8% relative increase in win rates for expanded languages, our Universal tokenizer leads to better adaptation performance by 7% difference in average win rate (37.4% vs 30.4%). Interestingly, CVA (mean) achieves slightly higher performance in the primary languages by 2.1% average win rate. Overall, these results show that it is more effective to use a Universal tokenizer from the start, rather than substituting it in after pretraining.
+
+5.2 Adaptation Efficiency with the Universal Tokenizer
+
+Section Findings
+
+• Universal tokenizer enables +8x faster adaptation in terms of sample efficiency and +2x higher performance for downstream adaptation compared to Cluster tokenizer.
+
+In this ablation, we evaluate how much faster adaptation takes place with the Universal tokenizer. Faster adaptation means much fewer resources necessary, namely cost, which is of great interest to practitioners who want to adapt an LLM to expanded language coverage.
+
+To evaluate the adaptation speed, in comparison to Cluster tokenizer, we evaluated the interme- diate checkpoints on the expanded languages during continued pretraining for Euro cluster models. Figure 1 shows average win rates on 10 expanded languages. As seen in the plot, in only 300 steps Universal tokenizer reaches the level of performance that Cluster achieves at 2500 steps, show- ing +8x faster adaptation. Given that 300 steps correspond to nearly 150K samples (compared to 1.3M at 2500 steps), Universal tokenizer requires also much less data to achieve the same performance with the end performance of the baseline, confirming the effectiveness of our proposal.
+
+12
+
+5.3 Necessity of Large Vocabulary Size
+
+Section Findings
+
+• The Universal tokenizer demonstrates effectiveness without compromising pretraining performance for primary languages, but it necessitates a large vocabulary size, such as 250,000 subwords, to achieve optimal results.
+
+In the previous sections, we establish greater performance in multilingual plasticity with the Uni- versal compared to Cluster tokenizer. In this ablation, we ask: What is the required vocabulary size for the Universal tokenizer to avoid performance degradation on primary pretraining lan- guages?
+
+To determine the optimal vocabulary size, we run additional pretraining experiments where we vary the vocabulary size from 100,000 tokens to 250,000 tokens while adjusting the model parameters so that the total number of trainable parameters remains constant. We evaluate the performance for the primary pretraining languages on Belebele. Results are shown in Figure 5a. The models trained with Cluster tokenizers don’t vary much in performance, and surpass the Universal tokenizer at small vocabulary sizes (100k and 175k). However, the Universal tokenizer scales performance with the vocabulary size, and overtakes the Cluster tokenizer at 250k vocabulary size. Our findings are consistent with previous work that shows the benefits of large vocabularies \[Tao et al., 2024; Huang et al., 2025\], and suggests investment in universal tokenizers require a reallocation of weights to ensure a proper vocabulary budget. Based on this ablation, we use the vocabulary size of 250k in our main pretraining runs.
+
+5.4 Presence of Expanded Language Subset in Pretraining
+
+Section Findings
+
+• The Universal tokenizer achieves a performance boost of 12.8% over the Cluster tokenizer for the expanded languages even there is no pretraining data is used for these languages. However, including a minimal data up to 5% increases adaptation performance on the expanded languages from 12.8% to 19.8% win rates, without hurting performance in primary pretraining languages.
+
+In the large and often noisy datasets used to train LLMs, there is often language contamination \[Blevins & Zettlemoyer, 2022\]. Therefore, it can be difficult to claim a language is truly “new”. In our final ablation, to test the robustness of our claims of plasticity under different assumptions of multilingual data presence, we evaluate 0%, 1%, and 5% proportion of expanded languages in pretraining for the European cluster.
+
+Figure 5b shows that even in the most conservative case of 0% multilingual percentage for the new languages (the expanded subset), the Universal tokenizer exhibits 12.8% gain in win rate as compared to the Cluster tokenizer. Notably, increasing this percentage up to 5% does not hurt performance in primary pretraining languages, but increases adaptation performance on the expanded languages from 12.8% to 19.8% win rates.
+
+13
+
+6 Related Work
+
+6.1 Multilingual Tokenizers
+
+Tokenization remains a key challenge for multilingual models, particularly due to inefficiencies and disparities across scripts. Petrov et al. \[2023\] show that many standard or English-centric tokeniz- ers disproportionately fragment non-Latin scripts, sometimes producing up to 15 times more tokens than for equivalent English content. These imbalances can lead to practical consequences such as increased API usage costs \[Ahia et al., 2023; Petrov et al., 2023\], longer inference times \[Hof- mann et al., 2022; Sun et al., 2023\], and reduced usable context window for non-English languages \[Velayuthan & Sarveswaran, 2025; Ahia et al., 2023\], and degraded downstream task performance \[Goldman et al., 2024; Gow-Smith et al., 2022; Fujii et al., 2023\]. Moreover, inefficient tokenization for non-English languages can inflate training costs by up to 68% \[Ali et al., 2024\].
+
+To support multilinguality, the mT5 model introduced a 250k SentencePiece vocabulary with byte- fallback, pretrained on 101 languages using temperature-based sampling to balance high- and low- resource languages \[Xue et al., 2021\]. Additionally, recent work has explored tokenization approaches tailored to better reflect the structure of diverse writing systems. For example, Grapheme-aware tokenization, using Unicode grapheme clusters as atomic units via methods like Grapheme Pair Encoding (GPE) \[Velayuthan & Sarveswaran, 2025\] or MYTE, a segmentation strategy motivated by morphemes \[Limisiewicz et al., 2024\], offers improved representation for complex scripts.
+
+6.2 Language Adaptation Post-Training
+
+There are a number of ways that language adaption of pretrained language models (PLMs) is commonly approached. In terms of additional training, continued pretraining (CPT) and supervised fine-tuning (SFT) are the most common methods. Continued pretraining involves extended training on the adaptation language corpora \[Han & Eisenstein, 2019; Muller et al., 2021\], but requires a significant amount of data, which may not be accessible for lower-resourced languages. Supervised fine-tuning is also a standard approach \[Kumar et al., 2022; Adelani et al., 2021; Cahyawijaya et al., 2021\], requiring less data than CPT, but possibly leading to catastrophic forgetting of capabilities from pretraining \[Rolnick et al., 2019; Chaudhry et al., 2019\]. In particular, instruction fine-tuning is popular in order to impart instruction-following capabilities as well \[Gala et al., 2024\]. Claims as to the advantages of one over the other are mixed- Ebrahimi & Kann \[2021\] find that in their setup, CPT is more effective than SFT, and Yong et al. \[2023\] find the opposite.
+
+A primary challenge is unsupported scripts and languages in the tokenizer. Cross-lingual vocabulary adaptation (CVA) modifies the existing tokenizer to accommodate additional languages \[Yamaguchi et al., 2024a\], and requires continued pretraining in the target language to sufficiently adapt \[Fujii et al., 2024\]. There are two common approaches to CVA – vocabulary expansion, where new tokens are added from the target and shared tokens are reused \[Wang et al., 2020; Pfeiffer et al., 2021\], or vocabulary replacement, where the vocabulary is entirely replaced. Embeddings corresponding to new tokens may be initialized randomly, using heuristics such as the average of some corresponding tokens in the original vocabulary \[Minixhofer et al., 2022; Dobler & de Melo, 2023; Downey et al., 2023\], or based on auxiliary models \[Ostendorff & Rehm, 2023\]. Switching out the tokenizer is cumbersome; one possible method is by training a hypernetwork that maps vocab of the new tokenizer to existing embeddings \[Minixhofer et al., 2025\]. This method requires continued training to close the performance gap, but even then doesn’t surpass it. It has also been proposed to transliterate languages to Latin script to circumvent unsupported scripts \[Muller et al., 2021\], but this approach is limited by transliteration performance.
+
+14
+
+It’s also possible to elicit competitive performance in unseen languages without additional training or fine-tuning steps. Tanzer et al. \[2024\] leverage long context lengths of SoTA language models to unlock translation capabilities in an extremely low-resource, entirely unseen language, including con- text from a grammar book on the language in the prompt. Cahyawijaya et al. \[2024\] use in-context learning cross-lingually, incorporating task examples from different higher-resourced languages in the prompt to enable transfer of task-specific capabilities to a lower-resourced language.
+
+Conclusion
+
+In this work, we explore what cheap interventions in pretraining can increase plasticity in down- stream optimization stages. We conduct an extensive study involving different tokenization strate- gies, three language adaptation strategies involving different assumptions about data access across 70 different languages. We find that in all cases, a model trained using a universal tokenizer with broad language coverage is able to adapt to languages outside of the primary pretraining set far better, with average win rate improvements up to 20.2% in continued pretraining and 17.8% in targeted adaptation to expanded languages. Even in the challenging low-data setting of com- pletely unseen languages, the universal tokenizer shows gains up to 5%. At the same time, there is negligible performance impact to the primary pretraining languages. Investing in a massively multilingual tokenizer up-front pays off in language adaptation down the line.
+
+7 Limitations
+
+Language coverage. Our experiments involve 69 languages covering a diverse range of languages and scripts, where we systematically investigate the impact of multilingual data on tokenizer train- ing. Although we use a comprehensive list of languages, there are many more languages in the world, which requires attention of the research community. We hope our work encourages even broader language coverage in state-of-the-art language models.
+
+Tokenization algorithm. In this work, we focused only on the BPE algorithm for tokenizer training, which is the most widely used method for language models. This choice was dictated by the high computational cost of each ablation, which required significant compute resources. However, we believe our findings on multilingual coverage would apply to the other tokenizers, such as Unigram tokenizer \[Kudo, 2018\] or byte or character-level tokenization \[Xue et al., 2022; Clark et al., 2022\]. We leave this exploration to future research.
+
+Model size. All of our pretraining experiments were conducted on 3.3B parameter models with a 100B token budget, which is already an enormous undertaking for resources and compute costs. Given that our results hold for this scale, we anticipate they would also apply to larger models and token budgets, as supported by previous research \[Biderman et al., 2023; Longpre et al., 2024; Aryabumi et al., 2024\].
+
+8 Acknowledgments
+
+We thank Julia Kreutzer, John Dang, Roman Castagné, Aakanksha, and other colleagues at Cohere and Cohere Labs for their support and thoughtful feedback. We also thank Shayne Longpre for his feedback on the preprint.
+
+15
+
+References
+
+Aakanksha, Arash Ahmadian, Seraphina Goldfarb-Tarrant, Beyza Ermis, Marzieh Fadaee, and Sara Hooker. Mix data or merge models? optimizing for diverse multi-task learning, 2024. URL https://arxiv.org/abs/2410.10801.
+
+David Ifeoluwa Adelani, Jade Abbott, Graham Neubig, Daniel D’souza, Julia Kreutzer, Constan- tine Lignos, Chester Palen-Michel, Happy Buzaaba, Shruti Rijhwani, Sebastian Ruder, Stephen Mayhew, Israel Abebe Azime, Shamsuddeen H. Muhammad, Chris Chinenye Emezue, Joyce Nakatumba-Nabende, Perez Ogayo, Aremu Anuoluwapo, Catherine Gitau, Derguene Mbaye, Je- sujoba Alabi, Seid Muhie Yimam, Tajuddeen Rabiu Gwadabe, Ignatius Ezeani, Rubungo Andre Niyongabo, Jonathan Mukiibi, Verrah Otiende, Iroro Orife, Davis David, Samba Ngom, Tosin Adewumi, Paul Rayson, Mofetoluwa Adeyemi, Gerald Muriuki, Emmanuel Anebi, Chiamaka Chukwuneke, Nkiruka Odu, Eric Peter Wairagala, Samuel Oyerinde, Clemencia Siro, Tobius Saul Bateesa, Temilola Oloyede, Yvonne Wambui, Victor Akinode, Deborah Nabagereka, Maurice Katusiime, Ayodele Awokoya, Mouhamadane MBOUP, Dibora Gebreyohannes, Henok Tilaye, Kelechi Nwaike, Degaga Wolde, Abdoulaye Faye, Blessing Sibanda, Orevaoghene Ahia, Bonaven- ture F. P. Dossou, Kelechi Ogueji, Thierno Ibrahima DIOP, Abdoulaye Diallo, Adewale Akin- faderin, Tendai Marengereke, and Salomey Osei. Masakhaner: Named entity recognition for african languages. Transactions of the Association for Computational Linguistics, 9:1116–1131, 10 2021.
+
+Orevaoghene Ahia, Sachin Kumar, Hila Gonen, Jungo Kasai, David Mortensen, Noah Smith, and Yulia Tsvetkov. Do all languages cost the same? tokenization in the era of commercial language models. In Houda Bouamor, Juan Pino, and Kalika Bali (eds.), Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing, pp. 9904–9923, Singapore, December 2023. Association for Computational Linguistics. doi: 10.18653/v1/2023.emnlp-main.614. URL https://aclanthology.org/2023.emnlp-main.614/.
+
+Arash Ahmadian, Chris Cremer, Matthias Gallé, Marzieh Fadaee, Julia Kreutzer, Olivier Pietquin, Ahmet Üstün, and Sara Hooker. Back to basics: Revisiting REINFORCE-style optimization for learning from human feedback in LLMs. In Lun-Wei Ku, Andre Martins, and Vivek Srikumar (eds.), Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pp. 12248–12267, Bangkok, Thailand, August 2024. Association for Computational Linguistics. doi: 10.18653/v1/2024.acl-long.662. URL https://aclanthology.o rg/2024.acl-long.662/.
+
+Joshua Ainslie, James Lee-Thorp, Michiel de Jong, Yury Zemlyanskiy, Federico Lebron, and Sumit Sanghai. GQA: Training generalized multi-query transformer models from multi-head checkpoints. In Houda Bouamor, Juan Pino, and Kalika Bali (eds.), Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing, pp. 4895–4901, Singapore, December 2023. Association for Computational Linguistics. doi: 10.18653/v1/2023.emnlp-main.298. URL https://aclanthology.org/2023.emnlp-main.298/.
+
+Mehdi Ali, Michael Fromm, Klaudia Thellmann, Richard Rutmann, Max Lübbering, Johannes Leveling, Katrin Klug, Jan Ebert, Niclas Doll, Jasper Buschhoff, Charvi Jain, Alexander Weber, Lena Jurkschat, Hammam Abdelwahab, Chelsea John, Pedro Ortiz Suarez, Malte Ostendorff, Samuel Weinbach, Rafet Sifa, Stefan Kesselheim, and Nicolas Flores-Herr. Tokenizer choice for LLM training: Negligible or crucial? In Kevin Duh, Helena Gomez, and Steven Bethard (eds.), Findings of the Association for Computational Linguistics: NAACL 2024, pp. 3907–3924, Mexico City, Mexico, June 2024. Association for Computational Linguistics. doi: 10.18653/v1/2024.fin dings-naacl.247. URL https://aclanthology.org/2024.findings-naacl.247/.
+
+16
+
+Mikel Artetxe, Sebastian Ruder, and Dani Yogatama. On the cross-lingual transferability of mono- lingual representations. In Dan Jurafsky, Joyce Chai, Natalie Schluter, and Joel Tetreault (eds.), Proceedings of the 58th Annual Meeting of the Association for Computational Lin- guistics, pp. 4623–4637, Online, July 2020. Association for Computational Linguistics. doi: 10.18653/v1/2020.acl-main.421. URL https://aclanthology.org/2020.acl-main.421/.
+
+Viraat Aryabumi, Yixuan Su, Raymond Ma, Adrien Morisot, Ivan Zhang, Acyr Locatelli, Marzieh Fadaee, Ahmet Üstün, and Sara Hooker. To code, or not to code? exploring impact of code in pre-training, 2024. URL https://arxiv.org/abs/2408.10914.
+
+Lucas Bandarkar, Davis Liang, Benjamin Muller, Mikel Artetxe, Satya Narayan Shukla, Donald Husa, Naman Goyal, Abhinandan Krishnan, Luke Zettlemoyer, and Madian Khabsa. The belebele benchmark: a parallel reading comprehension dataset in 122 language variants. In Lun-Wei Ku, Andre Martins, and Vivek Srikumar (eds.), Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pp. 749–775, Bangkok, Thailand, August 2024. Association for Computational Linguistics. doi: 10.18653/v1/2024.acl-l ong.44. URL https://aclanthology.org/2024.acl-long.44/.
+
+Stella Biderman, Hailey Schoelkopf, Quentin Gregory Anthony, Herbie Bradley, Kyle O’Brien, Eric Hallahan, Mohammad Aflah Khan, Shivanshu Purohit, USVSN Sai Prashanth, Edward Raff, et al. Pythia: A suite for analyzing large language models across training and scaling. In International Conference on Machine Learning, pp. 2397–2430. PMLR, 2023.
+
+Yonatan Bisk, Rowan Zellers, Ronan Le Bras, Jianfeng Gao, and Yejin Choi. Piqa: Reasoning about physical commonsense in natural language. In Thirty-Fourth AAAI Conference on Artificial Intelligence, 2020.
+
+Terra Blevins and Luke Zettlemoyer. Language contamination helps explains the cross-lingual capabilities of English pretrained models. In Yoav Goldberg, Zornitsa Kozareva, and Yue Zhang (eds.), Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing, pp. 3563–3574, Abu Dhabi, United Arab Emirates, December 2022. Association for Computational Linguistics. doi: 10.18653/v1/2022.emnlp-main.233. URL https: //aclanthology.org/2022.emnlp-main.233/.
+
+James Bradbury, Roy Frostig, Peter Hawkins, Matthew James Johnson, Chris Leary, Dou- gal Maclaurin, George Necula, Adam Paszke, Jake VanderPlas, Skye Wanderman-Milne, and Qiao Zhang. JAX: composable transformations of Python+NumPy programs, 2018. URL http://github.com/jax-ml/jax.
+
+Samuel Cahyawijaya, Genta Indra Winata, Bryan Wilie, Karissa Vincentio, Xiaohong Li, Adhiguna Kuncoro, Sebastian Ruder, Zhi Yuan Lim, Syafri Bahar, Masayu Khodra, Ayu Purwarianti, and Pascale Fung. IndoNLG: Benchmark and resources for evaluating Indonesian natural language generation. In Marie-Francine Moens, Xuanjing Huang, Lucia Specia, and Scott Wen-tau Yih (eds.), Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing, pp. 8875–8898, Online and Punta Cana, Dominican Republic, November 2021. Association for Computational Linguistics. doi: 10.18653/v1/2021.emnlp-main.699. URL https://aclantholo gy.org/2021.emnlp-main.699/.
+
+Samuel Cahyawijaya, Holy Lovenia, and Pascale Fung. LLMs are few-shot in-context low-resource language learners. In Kevin Duh, Helena Gomez, and Steven Bethard (eds.), Proceedings of the 2024 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers), pp. 405–433, Mexico City, Mexico, June 2024. Association for Computational Linguistics. doi: 10.18653/v1/2024.naacl-long.24. URL https://aclanthology.org/2024.naacl-long.24/.
+
+17
+
+Arslan Chaudhry, Marcus Rohrbach, Mohamed Elhoseiny, Thalaiyasingam Ajanthan, Puneet K. Dokania, Philip H. S. Torr, and Marc’Aurelio Ranzato. On tiny episodic memories in continual learning, 2019. URL https://arxiv.org/abs/1902.10486.
+
+Yihong Chen, Kelly Marchisio, Roberta Raileanu, David Adelani, Pontus Lars Erik Saito Stene- torp, Sebastian Riedel, and Mikel Artetxe. Improving language plasticity via pretraining with active forgetting. In A. Oh, T. Naumann, A. Globerson, K. Saenko, M. Hardt, and S. Levine (eds.), Advances in Neural Information Processing Systems, volume 36, pp. 31543–31557. Curran Associates, Inc., 2023. URL https://proceedings.neurips.cc/paper\_files/paper/2023/fi le/6450ea28ebbc8437bc38775157818172-Paper-Conference.pdf.
+
+François Chollet. On the measure of intelligence, 2019. URL https://arxiv.org/abs/1911.01547.
+
+Aakanksha Chowdhery, Sharan Narang, Jacob Devlin, Maarten Bosma, Gaurav Mishra, Adam Roberts, Paul Barham, Hyung Won Chung, Charles Sutton, Sebastian Gehrmann, et al. Palm: Scaling language modeling with pathways. Journal of Machine Learning Research, 24(240):1–113, 2023.
+
+Christopher Clark, Kenton Lee, Ming-Wei Chang, Tom Kwiatkowski, Michael Collins, and Kristina Toutanova. Boolq: Exploring the surprising difficulty of natural yes/no questions. In NAACL, 2019.
+
+Jonathan H. Clark, Dan Garrette, Iulia Turc, and John Wieting. Canine: Pre-training an efficient tokenization-free encoder for language representation. Transactions of the Associa- tion for Computational Linguistics, 10:73–91, 2022. doi: 10.1162/tacl\_a\_00448. URL https://aclanthology.org/2022.tacl-1.5/.
+
+Team Cohere, Aakanksha, Arash Ahmadian, Marwan Ahmed, Jay Alammar, Yazeed Alnumay, Sophia Althammer, Arkady Arkhangorodsky, Viraat Aryabumi, Dennis Aumiller, Raphaël Ava- los, Zahara Aviv, Sammie Bae, Saurabh Baji, Alexandre Barbet, Max Bartolo, Björn Bebensee, Neeral Beladia, Walter Beller-Morales, Alexandre Bérard, Andrew Berneshawi, Anna Bialas, Phil Blunsom, Matt Bobkin, Adi Bongale, Sam Braun, Maxime Brunet, Samuel Cahyawijaya, David Cairuz, Jon Ander Campos, Cassie Cao, Kris Cao, Roman Castagné, Julián Cendrero, Leila Chan Currie, Yash Chandak, Diane Chang, Giannis Chatziveroglou, Hongyu Chen, Claire Cheng, Alexis Chevalier, Justin T. Chiu, Eugene Cho, Eugene Choi, Eujeong Choi, Tim Chung, Volkan Cirik, Ana Cismaru, Pierre Clavier, Henry Conklin, Lucas Crawhall-Stein, Devon Crouse, Andres Felipe Cruz-Salinas, Ben Cyrus, Daniel D’souza, Hugo Dalla-Torre, John Dang, William Darling, Omar Darwiche Domingues, Saurabh Dash, Antoine Debugne, Théo Dehaze, Shaan Desai, Joan Devassy, Rishit Dholakia, Kyle Duffy, Ali Edalati, Ace Eldeib, Abdullah Elkady, Sarah Elsharkawy, Irem Ergün, Beyza Ermis, Marzieh Fadaee, Boyu Fan, Lucas Fayoux, Yan- nis Flet-Berliac, Nick Frosst, Matthias Gallé, Wojciech Galuba, Utsav Garg, Matthieu Geist, Mohammad Gheshlaghi Azar, Seraphina Goldfarb-Tarrant, Tomas Goldsack, Aidan Gomez, Vic- tor Machado Gonzaga, Nithya Govindarajan, Manoj Govindassamy, Nathan Grinsztajn, Nikolas Gritsch, Patrick Gu, Shangmin Guo, Kilian Haefeli, Rod Hajjar, Tim Hawes, Jingyi He, Sebas- tian Hofstätter, Sungjin Hong, Sara Hooker, Tom Hosking, Stephanie Howe, Eric Hu, Renjie Huang, Hemant Jain, Ritika Jain, Nick Jakobi, Madeline Jenkins, JJ Jordan, Dhruti Joshi, Ja- son Jung, Trushant Kalyanpur, Siddhartha Rao Kamalakara, Julia Kedrzycki, Gokce Keskin, Edward Kim, Joon Kim, Wei-Yin Ko, Tom Kocmi, Michael Kozakov, Wojciech Kryściński, Ar- nav Kumar Jain, Komal Kumar Teru, Sander Land, Michael Lasby, Olivia Lasche, Justin Lee, Patrick Lewis, Jeffrey Li, Jonathan Li, Hangyu Lin, Acyr Locatelli, Kevin Luong, Raymond Ma, Lukas Mach, Marina Machado, Joanne Magbitang, Brenda Malacara Lopez, Aryan Mann, Kelly Marchisio, Olivia Markham, Alexandre Matton, Alex McKinney, Dominic McLoughlin, Jozef Mokry, Adrien Morisot, Autumn Moulder, Harry Moynehan, Maximilian Mozes, Vivek Muppalla,
+
+18
+
+Lidiya Murakhovska, Hemangani Nagarajan, Alekhya Nandula, Hisham Nasir, Shauna Nehra, Josh Netto-Rosen, Daniel Ohashi, James Owers-Bardsley, Jason Ozuzu, Dennis Padilla, Gloria Park, Sam Passaglia, Jeremy Pekmez, Laura Penstone, Aleksandra Piktus, Case Ploeg, Andrew Poulton, Youran Qi, Shubha Raghvendra, Miguel Ramos, Ekagra Ranjan, Pierre Richemond, Cé- cile Robert-Michon, Aurélien Rodriguez, Sudip Roy, Laura Ruis, Louise Rust, Anubhav Sachan, Alejandro Salamanca, Kailash Karthik Saravanakumar, Isha Satyakam, Alice Schoenauer Sebag, Priyanka Sen, Sholeh Sepehri, Preethi Seshadri, Ye Shen, Tom Sherborne, Sylvie Chang Shi, Sanal Shivaprasad, Vladyslav Shmyhlo, Anirudh Shrinivason, Inna Shteinbuk, Amir Shukayev, Mathieu Simard, Ella Snyder, Ava Spataru, Victoria Spooner, Trisha Starostina, Florian Strub, Yixuan Su, Jimin Sun, Dwarak Talupuru, Eugene Tarassov, Elena Tommasone, Jennifer Tracey, Billy Trend, Evren Tumer, Ahmet Üstün, Bharat Venkitesh, David Venuto, Pat Verga, Maxime Voisin, Alex Wang, Donglu Wang, Shijian Wang, Edmond Wen, Naomi White, Jesse Willman, Marysia Winkels, Chen Xia, Jessica Xie, Minjie Xu, Bowen Yang, Tan Yi-Chern, Ivan Zhang, Zhenyu Zhao, and Zhoujie Zhao. Command a: An enterprise-ready large language model, 2025. URL https://arxiv.org/abs/2504.00698.
+
+Mike Conover, Matt Hayes, Ankit Mathur, Jianwei Xie, Jun Wan, Sam Shah, Ali Ghodsi, Patrick Wendell, Matei Zaharia, and Reynold Xin. Free dolly: Introducing the world’s first truly open instruction-tuned llm, 2023. URL https://www.databricks.com/blog/2023/04/12/dolly-fir st-open-commercially-viable-instruction-tuned-llm.
+
+Yiming Cui, Ziqing Yang, and Xin Yao. Efficient and effective text encoding for chinese llama and
+
+alpaca, 2024. URL https://arxiv.org/abs/2304.08177.
+
+Viet Dac Lai, Chien Van Nguyen, Nghia Trung Ngo, Thuat Nguyen, Franck Dernoncourt, Ryan A Rossi, and Thien Huu Nguyen. Okapi: Instruction-tuned large language models in multiple languages with reinforcement learning from human feedback. arXiv e-prints, pp. arXiv–2307, 2023.
+
+John Dang, Shivalika Singh, Daniel D’souza, Arash Ahmadian, Alejandro Salamanca, Madeline Smith, Aidan Peppin, Sungjin Hong, Manoj Govindassamy, Terrence Zhao, Sandra Kublik, Meor Amer, Viraat Aryabumi, Jon Ander Campos, Yi-Chern Tan, Tom Kocmi, Florian Strub, Nathan Grinsztajn, Yannis Flet-Berliac, Acyr Locatelli, Hangyu Lin, Dwarak Talupuru, Bharat Venkitesh, David Cairuz, Bowen Yang, Tim Chung, Wei-Yin Ko, Sylvie Sh

@@ -1,0 +1,2384 @@
+B[FM]2: Brain Foundation Model via
+Flow Matching with SplitUNet
+
+arXiv:2606.20812v1 [cs.LG] 18 Jun 2026
+
+Jaedong Hwang1 Kathleen Zhang1 Wei Dai1 Konstantinos Kontras1,2
+Maarten Vanmarcke2 Maarten De Vos2 Ila Fiete1 Paul Pu Liang1
+1
+Massachusetts Institute of Technology 2 KU Leuven
+
+Abstract
+EEG foundation models can learn generalizable representations from large-scale
+EEG corpora to enable single-backbone transfer across diverse clinical and braincomputer interface tasks. Existing models typically discretize the continuous multichannel EEG waveform into patches or codebook tokens and train a transformer
+with masked self-supervision. Recognizing that this discretization fragments
+continuous brain rhythms and obscures fine-grained temporal dynamics, we present
+B[FM]2 (Brain Foundation Model via Flow Matching), whose inductive bias aligns
+with the data by pretraining directly on the raw signal using continuous-time flow
+matching without patches, tokenization, or masking. However, multi-channel EEG
+signals pose an architectural challenge for flow matching: time is densely sampled
+and highly autocorrelated (thousands of timepoints), while the electrode axis is
+short (tens of channels) at distinct scalp positions. To address this time-electrode
+asymmetry, we introduce SplitUNet, a velocity network that factorizes each block
+into separate 1D temporal and 1D electrode convolutions and downsamples only
+along time, preserving electrode topology throughout the hierarchy. B[FM]2
+sets a new state of the art on 7 of 9 standard downstream EEG classification
+tasks, using a pretraining budget of only 36,895 segments (≈ 307 h), 1-2 orders
+of magnitude (≈ 30×) less than required by existing EEG foundation models.
+Further, it generates synthetic EEGs that two board-certified neurologists cannot
+distinguish from brain data (Cohen’s κ = −0.096)1 .
+
+1
+
+Introduction
+
+Brain foundation models (BFMs) can enable general-purpose EEG (electroencephalogram) analysis
+without task-specific supervision, successfully transferring a single pretrained backbone across diverse tasks like seizure detection and sleep staging. Driven by large open corpora [Obeid and Picone,
+2016] and the adoption of vision and language architectures [He et al., 2022, Liu et al., 2023, Radford
+et al., 2019], the field has seen rapid progress. However, to leverage these architectures, existing
+BFMs [Jiang et al., 2024, Kostas et al., 2021, Ouahidi et al., 2025, Yang et al., 2023a] have universally adopted a rigid training paradigm imported directly from computer vision: continuous neural
+waveforms are forcibly discretized into patches or learned codebooks, and a Transformer [Vaswani
+et al., 2017] is trained via discrete masked reconstruction or contrastive prediction.
+However, for scalp EEG, this discretization introduces a fundamental representational mismatch.
+Brain rhythms are continuous, dynamic processes, yet existing approaches fragment them into
+arbitrary tokens with artificial boundaries. Consequently, the self-supervised objective is forced to
+model transitions between discrete chunks rather than capturing the underlying continuous temporal
+evolution of the neural signal [Rubanova et al., 2019, Zeng et al., 2023]. Furthermore, random
+patch masking obscures the fine-grained temporal variations that are crucial for downstream clinical
+tasks [Dong et al., 2023].
+1 https://jd730.github.io/projects/BFM2
+
+Preprint.
+
+Flow-Matching
+
+SplitUNet
+
+Pretrain: EEG Reconstruction
+
+Up
+sample
+
+Velocity Field
+
+Conti. Over Scalp
+
+Pretrain: EEG + Noise
+
+Continuous in Time
+
+Real
+
+Down
+sample
+
++
+
+Finetune: Downstream EEG
+
+Recon. EEG
+
+Conv(1+1)D
+
+Clinician
+Evaluation
+
+Real EEG
+
+AdaLN
+
+Real EEG
+
+Down
+sample
+
+Up
+sample
+Self
+Attn
+
+Up
+sample
+
+Conv(1+1)D
+
+Finetune: Downstream Tasks
+Features
+
+Down
+sample
+
+Seizure Detection
+Sleep Analysis
+
+…
+
+Figure 1: Continuous-time generative pretraining for EEG. (Top) The flow matching process maps
+Gaussian noise (t = 0.0) to continuous, multi-channel EEG signals (t = 1.0) along a continuous
+trajectory. (Left/Center) During pretraining, our proposed SplitUNet — a UNet velocity network in
+which every spatiotemporal convolution is factorized into a 1D temporal followed by a 1D electrode
+conv, with downsampling restricted to time — operates directly on the unpatched waveform to learn
+a denoising velocity field vθ (xt , t). (Right) The generative objective produces a highly realistic EEG,
+validated by blinded clinician evaluation. The penultimate-layer activation (a C × E × T tensor
+from a single layer) is used as the feature input to a linear classification head for downstream clinical
+applications such as seizure detection and sleep analysis.
+
+To resolve this mismatch, we introduce B[FM]2 (Brain Foundation Model via Flow Matching), which
+eliminates the discretization entirely. We directly pretrain on the continuous multi-channel waveform
+via flow matching [Lipman et al., 2023, Tong et al., 2024]. By corrupting the signal across all
+electrodes and timepoints simultaneously along a trajectory from Gaussian noise to data, the model
+learns a denoising vector field that inherently captures the continuous multi-scale dynamics of the
+brain. While continuous-time generative frameworks have yielded strong semantic representations in
+vision [Baranchuk et al., 2022, Tang et al., 2023, Xu et al., 2023], porting them to multi-channel EEG
+presents a distinct architectural challenge: dense temporal dynamics are observed only through the
+small, anatomically-constrained set of scalp electrodes that the EEG montage permits.
+To address this challenge, we propose SplitUNet, a velocity-network backbone designed for multichannel EEG, where dense temporal dynamics are observed through a small, fixed set of electrodes.
+Each convolutional block factorizes spatiotemporal mixing into a 1D temporal convolution followed
+by a 1D electrode convolution; the encoder downsamples only along time, preserving the electrode
+dimension at every layer; and the network operates directly on the raw waveform—no patches,
+codebooks, or masking. With a continuous-time flow-matching objective, this backbone generates
+EEG by integrating a velocity field vθ (xt , t) from Gaussian noise to the data manifold, producing
+a single velocity prediction over the full multi-channel signal at each step. Figure 1 depicts the
+pretraining-and-finetuning pipeline.
+B[FM]2 achieves the state-of-the-art performance on 7 of 9 downstream tasks, outperforming prior
+models by up to 7.2 pp. Crucially, this is achieved with a pretraining set of only 36,895 segments
+(≈ 307 h), one to two orders of magnitude smaller than corpora used by recent EEG foundation
+models. This establishes continuous-time flow matching as a markedly more sample-efficient
+pretraining framework than masked-token reconstruction. Furthermore, the resulting generative
+model produces highly realistic EEG that board-certified neurologists failed to distinguish from real
+TUEG data.
+To summarize, the contributions of this paper are four-fold:
+2
+
+• We introduce a continuous-time flow matching paradigm [Lipman et al., 2023, Tong et al.,
+2024] for EEG foundation models, replacing the standard discrete masked-token framework.
+By operating directly on the raw multi-channel waveform, this generative pretext proves
+highly sample-efficient, requiring pretraining on only 36,895 segments.
+• We propose SplitUNet, an architecture tailored for continuous brain signals that factorizes
+temporal and electrode convolutions, preserving electrode topology end-to-end without
+relying on patches or self-attention.
+• We demonstrate that B[FM]2 achieves state-of-the-art performance on 7 of 9 tasks across a
+diverse downstream suite.
+• Simultaneously, B[FM]2 can generate synthetic EEGs, which are demonstrated to be clinically indistinguishable from real TUEG data to board-certified neurologists.
+
+2
+
+B[FM]2 : Architecture and Pretraining
+
+2.1
+
+Preliminary: Flow Matching
+
+We pretrain a velocity network vθ on multi-channel EEG waveforms x ∈ RE×T , where E is the
+number of electrodes and T the number of timepoints. The training objective is the optimal-transport
+conditional flow-matching (OT-CFM) loss [Tong et al., 2024].
+Conditional flow matching. Flow matching [Lipman et al., 2023] learns a velocity field vθ (x, t) :
+RE×T × [0, 1] → RE×T whose induced flow transports an isotropic Gaussian prior q0 into the data
+distribution q1 . Following the two-endpoint formulation of Tong et al. [2024], we specify a coupling
+π—a joint distribution of (x0 , x1 ) with marginals q0 and q1 , i.e. a rule for pairing noise with data
+samples—and a conditional probability path pt (x | x0 , x1 ) with conditional velocity ut (x | x0 , x1 ).
+The conditional flow-matching loss,
+2
+LCFM (θ) = Et∼U [0,1], (x0 ,x1 )∼π, x∼pt (·|x0 ,x1 ) ∥vθ (x, t) − ut (x | x0 , x1 )∥
+(1)
+shares the same gradient as the marginal flow-matching objective, meaning its minimizer is the true
+generative velocity. We take the straight interpolant xt = (1 − t)x0 + tx1 , for which pt (· | x0 , x1 )
+is the Dirac delta at xt and ut (x | x0 , x1 ) = x1 − x0 . Consequently, Eq. (1) reduces to regressing
+vθ (xt , t) onto the displacement x1 − x0 . The choice of coupling π is the only remaining free
+parameter. At inference, we sample by integrating ẋt = vθ (xt , t) from x0 ∼ N (0, I) at t=0 to t=1
+using an off-the-shelf ordinary differential equation (ODE) solver.
+Optimal transport coupling. Under the independent coupling π = q0 ⊗ q1 , straight-line interpolants between random noise-data pairs cross in RE×T , and the marginal velocity at crossing points
+must average incompatible conditional velocities. This inflates gradient variance and curves the
+learned flow. OT-CFM [Tong et al., 2024] replaces π with the minibatch optimal-transport plan
+under squared-Euclidean cost, pairing each noise sample with its nearest data sample inside the batch.
+The resulting velocity field is straighter under the coupling, and few-step ODE sampling becomes
+accurate without distillation. We solve the assignment exactly with the Hungarian algorithm and use
+the resulting permuted pairs in Eq. (1).
+2.2
+
+SplitUNet: A Factorized Spatiotemporal Backbone for Multi-Channel Brain Signals
+
+Generative pretraining has converged on two dominant backbones: Transformers [Ma et al., 2024,
+Peebles and Xie, 2023] and UNets [Ho et al., 2020, Karras et al., 2022]. However, Transformers [Vaswani et al., 2017] require tokenizing the signal, thereby reintroducing the very discretization
+our continuous-time objective is designed to avoid (Section 1). A UNet-1D [Ronneberger et al., 2015]
+on the raw waveform removes that constraint, but, applied channel-wise, misses the inter-electrode
+correlations that carry most of the EEG’s spatial information. A UNet-2D over the (electrode, time)
+tensor restores electrode coupling, and a rectangular kernel (ke ≫ kt ) can, in principle, match the
+per-axis scale—time is locally autocorrelated and benefits from a wide temporal receptive field, while
+the electrode axis is short (only 19 channels in the 10–20 montage).
+We propose SplitUNet, a velocity-network backbone in which every kt × ke 2D convolution of a
+standard DDPM-style UNet [Ho et al., 2020] is replaced by the factorized (1+1)D operator (Figure 2)
+conv(1+1)D (z) = convelectrode (σ(convtime (z) ) )
+(2)
+3
+
+SplitUNet
+
++
+linear
+attn
+
+Electrode Conv1D
+
+Conv(1+1)D
+
+Temporal Conv1D
+
+AdaLN
+
+Conv (1+1)D
+
+Conv(1+1)D
+
+UNet Block
+
+FP1
+
+FP1
+
+vs.
+
+Cz
+C4
+P3
+
+Residual Block
+
+Cz
+C4
+P3
+
+Conv (1+1)D
+
+Conv 2D
+
+Figure 2: Architecture of SplitUNet. (left) Four encoder stages halve only the time axis (electrode
+dimension preserved); a self-attention bottleneck mixes globally; the decoder mirrors the encoder
+with skip connections and time-only upsampling. (center) Each UNet block contains two residual subblocks separated by a linear-attention layer [Shen et al., 2021]; each sub-block alternates Conv(1+1)D
+operators with AdaLN modulation conditioned on the flow time t. (right) Conv(1+1)D factorizes
+a 2D convolution into a temporal Conv1D (blue, kernel kt ) followed by an electrode Conv1D (red,
+kernel ke , sliding over electrodes in the standard 10–20 order); on an EEG snippet, this contrasts with
+the joint (electrode, time) patch of a Conv 2D (green, kernel ke × kt ).
+
+where z ∈ RC×E×T , the temporal convolution slides a kernel of size kt along the time axis (weights
+shared across electrodes), the electrode convolution slides a kernel of size ke along the electrode
+axis (weights shared across timepoints), and σ is a non-linear activation. This factorization, used in
+R(2+1)D for 3D video [Tran et al., 2018], has two advantages over the unfactorized 2D kernel: it
+interleaves a non-linearity between temporal and electrode mixing (doubling non-linear depth at no
+extra parameter cost), and it uses kt + ke weights per filter rather than kt · ke , redirecting the saved
+parameters into width or depth. Empirically, it outperforms a UNet-2D on 7 of 9 tasks (Table 5),
+consistent with EEG’s temporal dynamics and inter-electrode coupling being largely separable; we
+do not claim a 2D kernel is universally inferior.
+Beyond the factorization, SplitUNet reflects two properties of multi-channel EEG: time is densely
+sampled, and the electrode axis is short, with each channel anatomically meaningful—compressing it
+would discard distinct brain-region information. (i) Time-only compression. The encoder halves only
+the temporal resolution at each of four stages and preserves the electrode dimension at E throughout.
+(ii) Attention placement. Each resolution stage uses an efficient linear-attention block [Shen et al.,
+2021] for in-stage mixing, with a single full self-attention block at the bottleneck (where the time axis
+has been compressed by 8×) so that both axes are mixed once their dimensions are commensurate.
+The decoder mirrors the encoder with skip connections and time-only upsampling. Implementation
+details are in Appendix B, and the full architecture is illustrated in Figure 2.
+
+2.3
+
+Pretraining and Feature Extraction
+
+We minimize the OT-CFM loss of Eq. (1) on the pretraining dataset (TUEG [Obeid and Picone,
+2016]). Noise endpoints x0 are drawn from an isotropic Gaussian of matching shape, data endpoints
+x1 are sampled windows, and each minibatch is re-paired by an exact Hungarian algorithm before
+forming interpolants. Time t is sampled uniformly on [0, 1].
+For downstream transfer, we evaluate the velocity network on the input data x at t = 0. We extract
+features from the penultimate layer (immediately preceding the final output projection), yielding an
+activation tensor of shape C × E × T , where C is the feature channel width, E is the number of
+electrodes, and T is the number of timepoints. Applying global average pooling or flattening over
+both the electrode and time axes produces a fixed-size feature vector, which is then passed to a single
+linear classification head. The complete finetuning protocol is described in Section 3.1.
+4
+
+Table 1: Overview of downstream tasks and datasets.
+Task
+
+Dataset
+
+# Channels
+
+Duration
+
+# Samples
+
+Rate
+
+# Classes
+
+Mental Disorder
+Mental Stress
+Seizure Detection
+
+Mumtaz
+MAT
+Siena
+ISRUC
+HMC
+TUEV
+TUAB
+SEED-V
+BCIC-IV-2a
+
+19
+20
+29
+6
+4
+16
+16
+62
+22
+
+5s
+5s
+10 s
+30 s
+30 s
+5s
+10 s
+1s
+4s
+
+7,143
+1,707
+51,307
+89,240
+137,243
+112,491
+409,455
+117,744
+5,184
+
+256 Hz
+500 Hz
+512 Hz
+200 Hz
+256 Hz
+256 Hz
+256 Hz
+1000 Hz
+250 Hz
+
+2
+2
+2
+5
+5
+6
+2
+5
+4
+
+Sleep staging
+Event Type
+Abnormal Detection
+Emotion Recognition
+Motor Imagery
+
+3
+
+Experiment
+
+B[FM]2 replaces the masked-token recipe of existing EEG foundation models with continuoustime flow matching on the raw multi-channel waveform; we test this swap with two questions:
+(Q1) Downstream task performance: Does the same pretrained backbone, with no task-specific
+architectural changes, transfer competitively to standard EEG classification benchmarks under
+matched finetuning, despite using no patches, no codebooks, and no masking (Section 3.2)? (Q2)
+Clinical indistinguishability: Does the same model also produce clinically realistic EEG, i.e.,
+samples indistinguishable from real held-out TUEG to two board-certified neurologists (Section 3.3)?
+Implementation details and hyperparameters are in Appendix B.
+3.1
+
+Experimental Setup
+
+Pretraining corpus and preprocessing. We pretrain on the Temple University Hospital EEG
+Corpus [Obeid and Picone, 2016] (TUEG): 69,652 recordings (27,062 h) from 14,987 subjects
+across 26,846 sessions. We follow established preprocessing pipelines [Jiang et al., 2024, Ouahidi
+et al., 2025, Wang et al., 2025] (band-pass and notch filtering segmentation, amplitude thresholding,
+normalization; full settings in Appendix B) on the standard 19-channel 10–20 montage [Klem, 1999],
+yielding 1,109,545 non-overlapping 30 s segments (≈ 9,000 h).
+From this pool we randomly sample a pretraining subset of 36,895 segments (≈ 307 h)—roughly
+3.3% of the preprocessed pool and 1% of the TUEG hours—which is 1–2 orders of magnitude
+smaller than the corpora used by recent baselines (LaBraM: 2,500 h [Jiang et al., 2024]; CBraMod:
+9,000 h [Wang et al., 2025]; REVE: 60,000 h (25,000 subjects across multiple corpora) [Ouahidi
+et al., 2025]).
+Pretraining. The velocity network is trained by minimizing the OT-CFM loss (Eq. (1)) with an
+MSE regression target. Each minibatch is re-paired by an exact optimal-transport assignment using
+the Hungarian algorithm before forming interpolants; t is sampled uniformly on [0, 1]. We train for
+70 epochs with batch size 4 and maintain an exponential moving average of the weights for sampling
+and downstream feature extraction. Optimizer settings are in Appendix B.
+Downstream tasks. We evaluate on nine classification tasks spanning anomaly, seizure, and sleepstage detection, motor imagery, and emotion/stress recognition (Table 1). We strictly follow published
+preprocessing pipelines, class-balance policies, and train/val/test splits: Zhou et al. [2025] for Siena,
+HMC, and SEED-V; prior work [Wang et al., 2025, Yang et al., 2023a, Jiang et al., 2024, Ouahidi
+et al., 2025] for the remainder. Dataset specifics are in Appendix C.
+Baselines. We compare B[FM]2 against two groups: task-specific supervised architectures trained
+from scratch on each dataset, and pretrained EEG foundation models adapted by full-network
+finetuning. The supervised group comprises EEGNet [Lawhern et al., 2018], EEGConformer [Song
+et al., 2022], SPaRCNet [Jing et al., 2023], ContraWR [Yang et al., 2023b], a CNN–Transformer
+hybrid [Peh et al., 2022], FFCL [Li et al., 2022], and ST-Transformer [Song et al., 2021]. The
+foundation-model group comprises BIOT [Yang et al., 2023a], LaBraM-Base [Jiang et al., 2024],
+CBraMod [Wang et al., 2025], REVE [Ouahidi et al., 2025], and CSBrain [Zhou et al., 2025]. All
+baseline numbers are taken directly from Ouahidi et al. [2025] and Zhou et al. [2025]; both papers
+5
+
+Table 2: Balanced accuracy (± std) across nine downstream classification tasks; best per task in bold,
+second-best underlined. B[FM]2 reaches the highest suite-averaged balanced accuracy (0.754), sets a
+new state of the art on 7 of 9 tasks, is within 1.5 pp on TUAB, and achieves second-best performance
+on BCIC-IV-2a (motor imagery on healthy subjects).
+Methods
+
+Mumtaz
+
+MAT
+
+Siena
+
+ISRUC
+
+HMC
+
+EEGNet
+EEGConformer
+SPaRCNet
+ContraWR
+CNN-Transformer
+FFCL
+ST-Transformer
+
+0.923 ± 0.010
+0.931 ± 0.012
+0.932 ± 0.009
+0.919 ± 0.011
+0.930 ± 0.007
+0.931 ± 0.004
+0.913 ± 0.010
+
+0.677 ± 0.012
+0.680 ± 0.012
+0.688 ± 0.011
+0.663 ± 0.010
+0.678 ± 0.027
+0.680 ± 0.014
+0.663 ± 0.017
+
+0.749 ± 0.052
+0.756 ± 0.021
+0.657 ± 0.038
+0.655 ± 0.031
+0.698 ± 0.056
+0.662 ± 0.039
+0.753 ± 0.038
+
+0.715 ± 0.012
+0.740 ± 0.013
+0.749 ± 0.007
+0.740 ± 0.013
+0.736 ± 0.009
+0.728 ± 0.018
+0.738 ± 0.021
+
+0.653 ± 0.012
+0.715 ± 0.009
+0.476 ± 0.111
+0.424 ± 0.054
+0.657 ± 0.014
+0.443 ± 0.070
+0.256 ± 0.014
+
+BIOT
+LaBraM-Base
+CBraMod
+REVE
+CSBrain
+
+0.936 ± 0.005
+0.941 ± 0.008
+0.956 ± 0.006
+0.964 ± 0.010
+0.964 ± 0.015
+
+0.688 ± 0.019
+0.691 ± 0.013
+0.726 ± 0.013
+0.766 ± 0.035
+0.756 ± 0.011
+
+0.735 ± 0.067
+0.708 ± 0.033
+0.732 ± 0.065
+0.740 ± 0.007
+0.766 ± 0.047
+
+0.753 ± 0.012
+0.763 ± 0.010
+0.786 ± 0.011
+0.782 ± 0.008
+0.792 ± 0.003
+
+0.686 ± 0.004
+0.728 ± 0.010
+0.727 ± 0.004
+0.740 ± 0.007
+0.735 ± 0.005
+
+B[FM]2 (ours)
+
+1.000 ± 0.000
+
+0.840 ± 0.022
+
+0.776 ± 0.010
+
+0.806 ± 0.001
+
+0.764 ± 0.002
+
+TUEV
+
+TUAB
+
+BCIC-IV-2a
+
+SEED-V
+
+Average
+
+EEGNet
+EEGConformer
+SPaRCNet
+ContraWR
+CNN-Transformer
+FFCL
+ST-Transformer
+
+0.388 ± 0.014
+0.407 ± 0.016
+0.416 ± 0.026
+0.438 ± 0.035
+0.409 ± 0.016
+0.398 ± 0.010
+0.398 ± 0.023
+
+0.764 ± 0.004
+0.776 ± 0.005
+0.790 ± 0.002
+0.775 ± 0.004
+0.778 ± 0.002
+0.785 ± 0.004
+0.797 ± 0.002
+
+0.448 ± 0.009
+0.470 ± 0.011
+0.464 ± 0.012
+0.468 ± 0.013
+0.460 ± 0.011
+0.447 ± 0.014
+0.458 ± 0.015
+
+0.296 ± 0.010
+0.354 ± 0.011
+0.295 ± 0.008
+0.355 ± 0.011
+0.368 ± 0.008
+0.364 ± 0.009
+0.305 ± 0.007
+
+0.624 ± 0.020
+0.648 ± 0.013
+0.607 ± 0.041
+0.604 ± 0.025
+0.635 ± 0.023
+0.604 ± 0.029
+0.587 ± 0.019
+
+BIOT
+LaBraM-Base
+CBraMod
+REVE
+CSBrain
+
+0.528 ± 0.022
+0.641 ± 0.006
+0.667 ± 0.011
+0.676 ± 0.023
+0.690 ± 0.006
+
+0.796 ± 0.006
+0.814 ± 0.002
+0.829 ± 0.002
+0.832 ± 0.001
+0.817 ± 0.004
+
+0.475 ± 0.009
+0.487 ± 0.009
+0.514 ± 0.007
+0.640 ± 0.009
+0.566 ± 0.007
+
+0.384 ± 0.019
+0.398 ± 0.014
+0.409 ± 0.010
+0.405 ± 0.002
+0.420 ± 0.003
+
+0.664 ± 0.026
+0.686 ± 0.014
+0.705 ± 0.023
+0.727 ± 0.015
+0.723 ± 0.017
+
+B[FM]2 (ours)
+
+0.715 ± 0.013
+
+0.819 ± 0.004
+
+0.570 ± 0.008
+
+0.492 ± 0.009
+
+0.754 ± 0.010
+
+score every baseline under finetuning on the same train/val/test splits we use, so the numbers in
+Table 2 are directly comparable to ours.
+Finetuning protocol. We finetune the pretrained B[FM]2 end-to-end on each downstream task with
+cross-entropy. The backbone is conditioned on a fixed timestep t=0; its output features are passed
+through a single linear head. The UNet-1D (joint) variant has an electrode-count-dependent first
+convolution, which we reinitialize per dataset before finetuning; the other backbones are electrodecount-invariant. All downstream results are averaged over five seeds, with each run reported at its
+best-validation checkpoint. Please refer to Appendix B for more details.
+3.2
+
+Downstream Classification
+
+We address Q1 (downstream transfer) by finetuning the pretrained B[FM]2 backbone end-to-end on
+each of the nine tasks under the protocol of Section 3.1. Table 2 reports balanced accuracy per task;
+per-task breakdowns with task-appropriate companion metrics (Cohen’s κ, Weighted F1, AUC-PR,
+AUROC) are provided in Appendix G. B[FM]2 achieves a new state of the art on 7 of the 9 tasks
+(Mumtaz, MAT, Siena, ISRUC, HMC, TUEV, and SEED-V), and trails the leading model by less
+than 1.5 pp on TUAB. However, a performance gap remains on the motor imagery task, BCIC-IV-2a,
+where B[FM]2 achieves the second-best performance but lags behind REVE (0.570 vs. 0.640). This
+gap is largely attributable to differences in the pretraining corpora. REVE explicitly leverages four
+motor imagery datasets [Cho et al., 2017, Ofner et al., 2017, Liu et al., 2024, Zhou et al., 2016] during
+pretraining, making its downstream evaluation on this task effectively in-domain. In contrast, B[FM]2
+is pretrained exclusively on TUEG—a clinical corpus of resting-state and pathological EEG. Thus,
+6
+
+NASION
+Fp1
+F7
+
+Fp2
+
+F3
+
+Fz
+
+C3
+
+T3
+
+T5
+
+F4
+
+C4
+
+Cz
+
+Pz
+
+P3
+
+F8
+
+P4
+
+T4
+
+T6
+
+O2
+
+O1
+INION
+
+10-20 System
+
+Figure 3: Real vs. B[FM]2 EEG segments. A 30-second held-out TUEG segment (middle) and
+an unconditional B[FM]2 sample (right), displayed in the 19-channel referential 10–20 montage
+(left; electrode layout from Ferrell et al. [2020]). Both panels exhibit both spatial and temporal
+coherence characteristic of clinical EEG. For example, notice how adjacent electrodes in the same
+brain region (e.g., the frontal red traces or the occipital purple traces) share rhythmically aligned
+activity and correlated amplitude envelopes, rather than exhibiting independent, per-channel noise.
+The two sources are visually difficult to distinguish at a glance, consistent with the blinded neurologist
+evaluation in Table 3. Calibration: 1 s, 50 µV.
+Table 3: Blinded neurologist rating of B[FM]2 samples. Two board-certified neurologists evaluated
+50 randomly interleaved 30-second windows each (25 real held-out TUEG and 25 B[FM]2 samples).
+Realness was scored on a 5-point Likert scale (1 = definitely real, 5 = definitely fake). Readers
+failed to distinguish synthetic samples from real segments, rating B[FM]2 outputs as slightly more
+realistic on average.
+Reader
+
+Mean realness (↓ for real, ↑ for fake)
+2
+
+Mann-Whitney U
+
+Agreement
+
+U
+
+p
+
+ρ
+
+Cohen’s κ
+
+2.60 ± 1.04
+2.32 ± 0.80
+
+251.5
+188.5
+
+0.204
+0.011
+
+0.052
+
+-0.096
+
+2.46 ± 0.93
+
+876.0
+
+0.007
+
+-
+
+-
+
+Real Data
+
+B[FM]
+
+R1
+R2
+
+2.96 ± 1.02
+3.08 ± 1.12
+
+Pooled
+
+3.02 ± 1.06
+
+while REVE enjoys target-domain familiarity, B[FM]2 still achieves highly competitive cross-domain
+transfer, successfully adapting to motor imagery signals during finetuning despite never encountering
+them during pretraining.
+3.3
+
+Clinical Indistinguishability of Generated Samples
+
+To address Q2 (clinical indistinguishability), we generate unconditional samples using the same pretrained B[FM]2 from Section 3.2. As shown in the example traces (Figure 3 and Appendix Figure 5),
+the generated signals are visually compelling; in a blinded reading, two board-certified neurologists
+could not reliably distinguish them from real, held-out TUEG segments (Table 3). Appendix 3.4 additionally showcases physiologically diverse patterns—sharp-wave transients, slow-wave activity, and
+posterior α rhythm—identified in generated samples (Figure 4). The two neurologists each evaluated
+50 randomly interleaved 30-second segments (25 real held-out TUEG and 25 unconditional B[FM]2
+samples). Segments were presented in the longitudinal bipolar 10–20 montage with the standard
+clinical display settings under which they habitually read EEG. The neurologists scored each segment
+on a 5-point Likert scale of perceived realness (1 = definitely real, 3 = unsure, 5 = definitely fake).
+Pooled across readers, the mean realness score was 3.02 ± 1.06 for real segments versus 2.46 ± 0.93
+for B[FM]2 samples (Mann–Whitney U = 876.0, p = 0.007). This statistically significant gap points
+in an unexpected direction: B[FM]2 samples were rated slightly more real-looking than the actual
+held-out EEG segments. Furthermore, at the segment level, the raters failed to agree on the origin
+of the samples (Spearman ρ = 0.052, Cohen’s κ = −0.096). Neither reader could reliably classify
+an individual segment as real or synthetic, indicating that the perceptual cues they relied upon were
+largely uncorrelated. The full reading protocol and clinical interface are detailed in Appendix D.
+7
+
+Spike / sharp-wave
+
+Slow-wave ( -dominant)
+
+Fp1
+Fp2
+F7
+F3
+Fz
+F4
+F8
+T7
+C3
+Cz
+C4
+T8
+P7
+P3
+Pz
+P4
+P8
+O1
+O2
+
+0
+
+5
+
+10
+
+15
+
+time (s)
+
+20
+
+25
+
+50 V
+1s
+30
+
+Eyes-closed
+
+Fp1
+Fp2
+F7
+F3
+Fz
+F4
+F8
+T7
+C3
+Cz
+C4
+T8
+P7
+P3
+Pz
+P4
+P8
+O1
+O2
+
+0
+
+5
+
+10
+
+15
+
+time (s)
+
+20
+
+25
+
+50 V
+1s
+30
+
+Fp1
+Fp2
+F7
+F3
+Fz
+F4
+F8
+T7
+C3
+Cz
+C4
+T8
+P7
+P3
+Pz
+P4
+P8
+O1
+O2
+
+0
+
+5
+
+10
+
+15
+
+time (s)
+
+20
+
+25
+
+50 V
+1s
+30
+
+Figure 4: B[FM]2 generates physiologically diverse EEG patterns. Three B[FM]2 samples
+illustrating distinct brain-state patterns, curated from the unconditional generation pool by simple
+heuristics and displayed in the canonical 10–20 montage. (left) a sharp-wave / spike-like transient
+at ∼20 s. (center) δ-dominant slow-wave activity across all electrodes, characteristic of slow-wave
+sleep. (right) eyes-closed posterior α rhythm, with stronger 8–13 Hz power over O1/O2. Calibration
+bar: 1 s and 50 µV.
+3.4
+
+Recognizable Brain-State Patterns from Unconditional Generation
+
+B[FM]2 captures recognizable brain-state structure from a fully unconditional objective. Mining its
+generation pool with simple band-power heuristics (Appendix E), we recover three canonical EEG
+patterns: a sharp-wave transient, δ-dominant slow-wave activity, and posterior α rhythm (Figure 4).
+Each appears alongside spatially coherent activity across adjacent electrodes (Figure 3), as expected
+of clinical recordings. This kind of qualitative inspection is itself uncommon in the EEG foundationmodel literature: tokenized masked-token backbones [Jiang et al., 2024, Wang et al., 2025, Ouahidi
+et al., 2025, Yang et al., 2023a] are not designed to generate novel waveforms in the input space
+and so cannot be probed for what they have learned about brain dynamics. That B[FM]2 reveals
+interpretable structure without any class or pattern labels also points to a natural extension—classand subject-conditional synthesis to augment scarce, long-tailed clinical EEG corpora (Section 4).
+3.5
+
+Ablation Studies
+
+Holding the pretraining objective and corpus fixed, we ablate the velocity network with three
+alternatives that progressively add electrode coupling. UNet-1D (joint) keeps a 1D temporal backbone
+but mixes electrodes once, by treating the E electrodes as the input-channel dimension of the first
+convolution; for finetuning, this layer is reinitialized to match each downstream dataset’s electrode
+count. UNet-1D (indep.) treats each electrode as an independent univariate signal: every 1D temporal
+convolution is applied per-electrode, and no information crosses electrodes anywhere in the network.
+UNet-2D convolves jointly over (time, electrode) at every layer. We compare these three against
+SplitUNet on sample quality and downstream transfer.
+Sample generation. We draw 5,000 unconditional samples from each architecture and measure
+the Wasserstein-1 (W1 ) distance between their log-band-power distributions and those of held-out
+TUEG segments, across the five canonical bands (δ through γ); PSNR and SSIM [Wang et al., 2004]
+are reported for completeness. We do not run a blinded neurologist reading for this ablation: W1
+already cleanly discriminates the three architectures, and board-certified neurologists are a constrained
+resource whose time we reserve for the headline real-vs.-B[FM]2 comparison in Section 3.3.
+As shown in Table 4, SplitUNet achieves the lowest mean band-power Wasserstein distance
+(W1 =0.195, versus 0.256 for UNet-1D (joint) and 0.248 for UNet-2D); PSNR and SSIM are nearly
+identical across the three architectures. This pattern reinforces the architectural argument of Section 2.2: UNet-1D (joint) mixes electrodes only at the first convolution, while UNet-2D pays for
+cross-axis weights at every layer that the data does not require. The (1+1)D factorization successfully
+recovers what 1D loses without paying for what 2D wastes.
+8
+
+Table 4: Sample quality of B[FM]2 with three backbones (UNet-1D (joint), SplitUNet, UNet-2D)
+against held-out real TUEG segments (n=5000, mean ± std). Real-vs-Real is a noise-floor baseline
+drawn from a different chunk. Bold marks the best generator per column (excluding the baseline).
+Pairwise PSNR/SSIM are computed without correspondence and are nearly identical across rows —
+they are not discriminative for unconditional generation and are reported only for completeness.
+Backbone
+
+BandPower W1 ↓
+
+PSNR ↑
+
+SSIM ↑
+
+Real-vs-Real
+
+0.156 ± 0.028
+
+16.32 ± 0.26
+
+0.021 ± 0.003
+
+UNet-1D (indep.)
+UNet-1D (joint)
+UNet-2D
+SplitUNet (ours)
+
+1.903 ± 0.098
+0.256 ± 0.002
+0.248 ± 0.001
+0.195 ± 0.002
+
+6.74 ± 0.07
+16.88 ± 0.03
+17.14 ± 0.01
+17.16 ± 0.02
+
+0.001 ± 0.000
+0.025 ± 0.001
+0.024 ± 0.001
+0.026 ± 0.001
+
+Table 5: Downstream balanced accuracy (± std) of B[FM]2 with four velocity-network backbones,
+finetuned end-to-end on the nine-task suite; best per dataset in bold. SplitUNet wins 7 of 9 tasks and
+leads the suite average; UNet-1D (indep.)’s collapse on motor imagery and emotion shows electrode
+coupling is essential, while UNet-2D’s failure to beat UNet-1D (joint) on average shows full spatial
+cross-mixing is not.
+Backbone
+
+Mumtaz
+
+MAT
+
+Siena
+
+ISRUC
+
+HMC
+
+UNet-1D (indep.)
+UNet-1D (joint)
+UNet-2D
+
+0.896 ± 0.003
+0.895 ± 0.006
+0.909 ± 0.004
+
+0.588 ± 0.078
+0.711 ± 0.035
+0.715 ± 0.067
+
+0.710 ± 0.038
+0.745 ± 0.016
+0.723 ± 0.022
+
+0.789 ± 0.004
+0.801 ± 0.001
+0.800 ± 0.006
+
+0.727 ± 0.007
+0.745 ± 0.005
+0.749 ± 0.005
+
+SplitUNet (ours)
+
+1.000 ± 0.000
+
+0.840 ± 0.022
+
+0.776 ± 0.010
+
+0.806 ± 0.001
+
+0.764 ± 0.002
+
+TUEV
+
+TUAB
+
+BCIC-IV-2a
+
+SEED-V
+
+Average
+
+UNet-1D (indep.)
+UNet-1D (joint)
+UNet-2D
+
+0.675 ± 0.023
+0.559 ± 0.021
+0.519 ± 0.016
+
+0.800 ± 0.004
+0.826 ± 0.004
+0.817 ± 0.004
+
+0.458 ± 0.029
+0.420 ± 0.013
+0.468 ± 0.007
+
+0.485 ± 0.009
+0.438 ± 0.013
+0.470 ± 0.011
+
+0.674 ± 0.153
+0.682 ± 0.170
+0.686 ± 0.161
+
+SplitUNet (ours)
+
+0.715 ± 0.013
+
+0.819 ± 0.004
+
+0.570 ± 0.008
+
+0.492 ± 0.009
+
+0.754 ± 0.150
+
+Downstream transfer. We finetune each architecture end-to-end on the nine-task downstream
+suite under the protocol of Section 3.1 (Table 5). UNet-1D (indep.), with no electrode mixing at
+all, underperforms substantially across the suite, confirming that some form of electrode coupling is
+essential. Pushing all electrode mixing to the first convolution (UNet-1D (joint)) closes most of that
+gap. Convolving jointly across (electrode, time) at every layer (UNet-2D) does not improve further
+on average. SplitUNet, the (1+1)D factorization that interleaves a temporal and an electrode 1D
+convolution at every layer, opens the largest leads, with margins of 5–25 pp on Mumtaz, MAT, TUEV,
+and SEED-V. On suite-averaged balanced accuracy, SplitUNet reaches 0.754, versus 0.682 (UNet-1D
+(joint)) and 0.686 (UNet-2D), and wins seven of nine tasks (TUAB and BCIC-IV-2a within 1 pp).
+
+4
+
+Conclusion
+
+We propose B[FM]2 , a brain foundation model that pretrains directly on the continuous multichannel EEG waveform via flow matching. However, pretraining on EEG data presents a challenge
+of integrating two distinctive dimensions: a high-resolution temporal dimension and a fixed, lowresolution electrode dimension. We introduced SplitUNet, a velocity-network backbone that factorizes
+each 2D spatiotemporal convolution into a 1D temporal and a 1D electrode convolution and preserves
+the electrode dimension at every layer. B[FM]2 establishes a new state of the art on 7 of 9 standard
+EEG downstream tasks, outperforming the standard practice of discretizing EEG into patches [Ouahidi
+et al., 2025, Zhou et al., 2025] or tokens [Jiang et al., 2024]. Crucially, we achieve this using only
+36,895 segments—roughly 3.3 % of the pretraining pool—while unconditionally generating samples
+that two board-certified neurologists cannot reliably distinguish from real clinical data. Beyond EEG,
+SplitUNet may extend naturally to other multi-channel time series with structured sensor arrays such
+as MEG and ECoG. Class- and subject-conditional extensions also open the potential to synthesize
+rare clinical cases, accelerating clinical neuroscience research.
+9
+
+Acknowledgment
+We thank the MIT Office of Research Computing and Data (ORCD) for support through ORCD
+Seed Fund Grants, which provided access to GPUs and additional funding support. This work was
+supported by the Flemish Government under METHUSALEM grant METH/26/003 (MethusalemBioMedAI-Explainable and generative AI for accelerating biomedical discoveries: from genome to
+function) and VLAIO project HBC.2025.0582 (MediSynth).
+
+References
+Diego Alvarez-Estevez and Roselyne M Rijsman. Inter-database validation of a deep learning approach for
+automatic sleep scoring. PloS one, 16(8):e0256111, 2021.
+Abdul Fatir Ansari, Lorenzo Stella, Ali Caner Turkmen, Xiyuan Zhang, Pedro Mercado, Huibin Shen, Oleksandr Shchur, Syama Sundar Rangapuram, Sebastian Pineda Arango, Shubham Kapoor, Jasper Zschiegner,
+Danielle C. Maddix, Hao Wang, Michael W. Mahoney, Kari Torkkola, Andrew Gordon Wilson, Michael
+Bohlke-Schneider, and Bernie Wang. Chronos: Learning the language of time series. TMLR, 2024. ISSN
+2835-8856.
+Dmitry Baranchuk, Andrey Voynov, Ivan Rubachev, Valentin Khrulkov, and Artem Babenko. Label-efficient
+semantic segmentation with diffusion models. In ICLR, 2022.
+Jingjing Chen, Xiaobin Wang, Chen Huang, Xin Hu, Xinke Shen, and Dan Zhang. A large finer-grained affective
+computing eeg dataset. Scientific Data, 10(1):740, 2023.
+Ting Chen, Simon Kornblith, Mohammad Norouzi, and Geoffrey Hinton. A simple framework for contrastive
+learning of visual representations. In ICML, 2020.
+Hohyun Cho, Minkyu Ahn, Sangtae Ahn, Moonyoung Kwon, and Sung Chan Jun. Eeg datasets for motor
+imagery brain–computer interface. GigaScience, 6(7):gix034, 2017.
+Abhimanyu Das, Weihao Kong, Rajat Sen, and Yichen Zhou. A decoder-only foundation model for time-series
+forecasting. arXiv preprint arXiv:2310.10688, 2023.
+Paolo Detti, Giampaolo Vatti, and Garazi Zabalo Manrique de Lara. Eeg synchronization analysis for seizure
+prediction: A study on data of noninvasive recordings. Processes, 8(7):846, 2020.
+Jiaxiang Dong, Haixu Wu, Haoran Zhang, Li Zhang, Jianmin Wang, and Mingsheng Long. Simmtm: A simple
+pre-training framework for masked time-series modeling. NeurIPS, 2023.
+Sean Ferrell, Vineetha Mathew, Matthew Refford, Vincent Tchiong, Tameem Ahsan, Iyad Obeid, and Joseph
+Picone. The temple university hospital eeg corpus: Electrode location and channel labels. Institute for Signal
+and Information Processing Report, 1(1), 2020.
+Ary L Goldberger, Luis AN Amaral, Leon Glass, Jeffrey M Hausdorff, Plamen Ch Ivanov, Roger G Mark,
+Joseph E Mietus, George B Moody, Chung-Kang Peng, and H Eugene Stanley. Physiobank, physiotoolkit,
+and physionet: components of a new research resource for complex physiologic signals. circulation, 101(23):
+e215–e220, 2000.
+Albert Gu, Karan Goel, and Christopher Ré. Efficiently modeling long sequences with structured state spaces.
+In ICLR, 2022.
+Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollár, and Ross Girshick. Masked autoencoders are
+scalable vision learners. In CVPR, 2022.
+Jonathan Ho, Ajay Jain, and Pieter Abbeel. Denoising diffusion probabilistic models. NeurIPS, 2020.
+Ji-Hoon Jeong, Jeong-Hyun Cho, Young-Eun Lee, Seo-Hyun Lee, Gi-Hwan Shin, Young-Seok Kweon, José
+del R Millán, Klaus-Robert Müller, and Seong-Whan Lee. 2020 international brain–computer interface
+competition: A review. Frontiers in human neuroscience, 16:898300, 2022.
+Weibang Jiang, Liming Zhao, and Bao liang Lu. Large brain model for learning generic representations with
+tremendous EEG data in BCI. In ICLR, 2024.
+Ming Jin, Shiyu Wang, Lintao Ma, Zhixuan Chu, James Y. Zhang, Xiaoming Shi, Pin-Yu Chen, Yuxuan Liang,
+Yuan-Fang Li, Shirui Pan, and Qingsong Wen. Time-LLM: Time series forecasting by reprogramming large
+language models. In ICLR, 2024.
+
+10
+
+Jin Jing, Wendong Ge, Shenda Hong, Marta Bento Fernandes, Zhen Lin, Chaoqi Yang, Sungtae An, Aaron F
+Struck, Aline Herlopian, Ioannis Karakis, et al. Development of expert-level classification of seizures and
+rhythmic and periodic patterns during eeg interpretation. Neurology, 100(17):e1750–e1762, 2023.
+Tero Karras, Miika Aittala, Timo Aila, and Samuli Laine. Elucidating the design space of diffusion-based
+generative models. NeurIPS, 2022.
+Sirvan Khalighi, Teresa Sousa, José Moutinho Santos, and Urbano Nunes. Isruc-sleep: A comprehensive public
+dataset for sleep researchers. Computer methods and programs in biomedicine, 124:180–192, 2016.
+George H Klem. The ten-twenty electrode system of the international federation. the international federation of
+clinical neurophysiology. Electroencephalogr. Clin. Neurophysiol. Suppl., 52:3–6, 1999.
+Marcel Kollovieh, Abdul Fatir Ansari, Michael Bohlke-Schneider, Jasper Zschiegner, Hao Wang, and Bernie
+Wang. Predict, refine, synthesize: Self-guiding diffusion models for probabilistic time series forecasting. In
+NeurIPS, 2023.
+Marcel Kollovieh, Marten Lienen, David Lüdke, Leo Schwinn, and Stephan Günnemann. Flow matching with
+gaussian process priors for probabilistic time series forecasting. In ICLR, 2025.
+Zhifeng Kong, Wei Ping, Jiaji Huang, Kexin Zhao, and Bryan Catanzaro. Diffwave: A versatile diffusion model
+for audio synthesis. In ICLR, 2021.
+Demetres Kostas, Stephane Aroca-Ouellette, and Frank Rudzicz. Bendr: Using transformers and a contrastive
+self-supervised learning task to learn from massive amounts of eeg data. Frontiers in Human Neuroscience,
+15:653659, 2021.
+Vernon J Lawhern, Amelia J Solon, Nicholas R Waytowich, Stephen M Gordon, Chou P Hung, and Brent J
+Lance. EEGNet: a compact convolutional neural network for EEG-based brain–computer interfaces. Journal
+of Neural Engineering, 2018.
+Hongli Li, Man Ding, Ronghua Zhang, and Chunbo Xiu. Motor imagery eeg classification algorithm based on
+cnn-lstm feature fusion network. Biomedical signal processing and control, 72:103342, 2022.
+Xiang Li, Yixiang Dai, and Qing Qu. Return of the CG: Unconditional diffusion models are strong representation
+learners. NeurIPS, 2024.
+Yaron Lipman, Ricky T. Q. Chen, Heli Ben-Hamu, Maximilian Nickel, and Matthew Le. Flow matching for
+generative modeling. In ICLR, 2023.
+Haijie Liu, Penghu Wei, Haochong Wang, Xiaodong Lv, Wei Duan, Meijie Li, Yan Zhao, Qingmei Wang,
+Xinyuan Chen, Gaige Shi, et al. An eeg motor imagery dataset for brain computer interface in acute stroke
+patients. Scientific Data, 11(1):131, 2024.
+Haotian Liu, Chunyuan Li, Qingyang Wu, and Yong Jae Lee. Visual instruction tuning. NeurIPS, 2023.
+Wei Liu, Jie-Lin Qiu, Wei-Long Zheng, and Bao-Liang Lu. Comparing recognition performance and robustness
+of multimodal deep learning models for multimodal emotion recognition. IEEE Transactions on Cognitive
+and Developmental Systems, 14(2):715–729, 2021.
+Jingying Ma, Feng Wu, Qika Lin, Yucheng Xing, Chenyu Liu, Ziyu Jia, and Mengling Feng. Codebrain:
+Bridging decoupled tokenizer and multi-scale architecture for EEG foundation model. In ICLR, 2026.
+Nanye Ma, Mark Goldstein, Michael S Albergo, Nicholas M Boffi, Eric Vanden-Eijnden, and Saining Xie. Sit:
+Exploring flow and diffusion-based generative models with scalable interpolant transformers. In ECCV, 2024.
+Wajid Mumtaz, Likun Xia, Syed Saad Azhar Ali, Mohd Azhar Mohd Yasin, Muhammad Hussain, and
+Aamir Saeed Malik. Electroencephalogram (eeg)-based computer-aided technique to diagnose major depressive disorder (mdd). Biomedical Signal Processing and Control, 31:108–115, 2017.
+Alexander Quinn Nichol and Prafulla Dhariwal. Improved denoising diffusion probabilistic models. In ICML,
+2021.
+Iyad Obeid and Joseph Picone. The temple university hospital eeg data corpus. Frontiers in neuroscience, 10:
+196, 2016.
+Patrick Ofner, Andreas Schwarz, Joana Pereira, and Gernot R Müller-Putz. Upper limb movements can be
+decoded from the time-domain of low-frequency eeg. PloS one, 12(8):e0182578, 2017.
+
+11
+
+Yassine El Ouahidi, Jonathan Lys, Philipp Thölke, Nicolas Farrugia, Bastien Pasdeloup, Vincent Gripon, Karim
+Jerbi, and Giulia Lioi. Reve: A foundation model for eeg–adapting to any setup with large-scale pretraining
+on 25,000 subjects. In NeurIPS, 2025.
+William Peebles and Saining Xie. Scalable diffusion models with transformers. In ICCV, 2023.
+Wei Yan Peh, Yuanyuan Yao, and Justin Dauwels. Transformer convolutional neural networks for automated
+artifact detection in scalp eeg. In EMBC, 2022.
+Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, Ilya Sutskever, et al. Language models are
+unsupervised multitask learners. OpenAI blog, 1(8):9, 2019.
+Olaf Ronneberger, Philipp Fischer, and Thomas Brox. U-net: Convolutional networks for biomedical image
+segmentation. In MICCAI, 2015.
+Yulia Rubanova, Ricky TQ Chen, and David K Duvenaud. Latent ordinary differential equations for irregularlysampled time series. NeurIPS, 2019.
+Zhuoran Shen, Mingyuan Zhang, Haiyu Zhao, Shuai Yi, and Hongsheng Li. Efficient attention: Attention with
+linear complexities. In WACV, 2021.
+Yonghao Song, Xueyu Jia, Lie Yang, and Longhan Xie. Transformer-based spatial-temporal feature learning for
+eeg decoding. arXiv preprint arXiv:2106.11170, 2021.
+Yonghao Song, Qing Zheng, Bingchuan Liu, and Xiaorong Gao. EEG conformer: Convolutional transformer
+for EEG decoding and visualization. IEEE Transactions on Neural Systems and Rehabilitation Engineering,
+2022.
+Luming Tang, Menglin Jia, Qianqian Wang, Cheng Perng Phoo, and Bharath Hariharan. Emergent correspondence from image diffusion. NeurIPS, 2023.
+Michael Tangermann, Klaus-Robert Müller, Ad Aertsen, Niels Birbaumer, Christoph Braun, Clemens Brunner,
+Robert Leeb, Carsten Mehring, Kai J Miller, Gernot R Müller-Putz, et al. Review of the bci competition iv.
+Frontiers in neuroscience, 6:55, 2012.
+Yusuke Tashiro, Jiaming Song, Yang Song, and Stefano Ermon. CSDI: Conditional score-based diffusion models
+for probabilistic time series imputation. NeurIPS, 2021.
+Alexander Tong, Kilian FATRAS, Nikolay Malkin, Guillaume Huguet, Yanlei Zhang, Jarrid Rector-Brooks, Guy
+Wolf, and Yoshua Bengio. Improving and generalizing flow-based generative models with minibatch optimal
+transport. TMLR, 2024. ISSN 2835-8856. Expert Certification.
+Du Tran, Heng Wang, Lorenzo Torresani, Jamie Ray, Yann LeCun, and Manohar Paluri. A closer look at
+spatiotemporal convolutions for action recognition. In CVPR, 2018.
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser,
+and Illia Polosukhin. Attention is all you need. NeurIPS, 2017.
+Guagnyu Wang, Wenchao Liu, Yuhong He, Cong Xu, Lin Ma, and Haifeng Li. Eegpt: Pretrained transformer
+for universal and reliable representation of eeg signals. NeurIPS, 2024.
+Jiquan Wang, Sha Zhao, Zhiling Luo, Yangxuan Zhou, Haiteng Jiang, Shijian Li, Tao Li, and Gang Pan.
+CBramod: A criss-cross brain foundation model for EEG decoding. In ICLR, 2025.
+Zhou Wang, Alan C Bovik, Hamid R Sheikh, and Eero P Simoncelli. Image quality assessment: from error
+visibility to structural similarity. TIP, 13(4):600–612, 2004.
+Peter Welch. The use of fast fourier transform for the estimation of power spectra: A method based on time
+averaging over short, modified periodograms. IEEE Transactions on audio and electroacoustics, 15(2):70–73,
+1967.
+Gerald Woo, Chenghao Liu, Akshat Kumar, Caiming Xiong, Silvio Savarese, and Doyen Sahoo. Unified training
+of universal time series forecasting transformers. In ICML, 2024.
+Jiarui Xu, Sifei Liu, Arash Vahdat, Wonmin Byeon, Xiaolong Wang, and Shalini De Mello. Open-vocabulary
+panoptic segmentation with text-to-image diffusion models. In CVPR, 2023.
+Chaoqi Yang, M Westover, and Jimeng Sun. Biot: Biosignal transformer for cross-data learning in the wild.
+NeurIPS, 2023a.
+
+12
+
+Chaoqi Yang, Cao Xiao, M Brandon Westover, and Jimeng Sun. Self-supervised electroencephalogram
+representation learning for automatic sleep staging: model development and evaluation study. JMIR AI, 2(1):
+e46769, 2023b.
+Ailing Zeng, Muxi Chen, Lei Zhang, and Qiang Xu. Are transformers effective for time series forecasting? In
+AAAI, 2023.
+Daoze Zhang, Zhizhang Yuan, Yang Yang, Junru Chen, Jingjing Wang, and Yafeng Li. Brant: Foundation model
+for intracranial neural signal. NeurIPS, 2023.
+Bangyan Zhou, Xiaopei Wu, Zhao Lv, Lei Zhang, and Xiaojin Guo. A fully automated trial selection method for
+optimization of motor imagery based brain-computer interface. PloS one, 11(9):e0162657, 2016.
+Yuchen Zhou, Jiamin Wu, Zichen Ren, Zhouheng Yao, Weiheng Lu, Kunyu Peng, Qihao Zheng, Chunfeng
+Song, Wanli Ouyang, and Chao Gou. Csbrain: A cross-scale spatiotemporal brain foundation model for eeg
+decoding. NeurIPS, 2025.
+Igor Zyma, Sergii Tukaev, Ivan Seleznov, Ken Kiyono, Anton Popov, Mariia Chernykh, and Oleksii Shpenkov.
+Electroencephalograms during mental arithmetic task performance. Data, 4(1):14, 2019.
+
+13
+
+A
+
+Related Work
+
+A.1
+
+Brain Foundation Model
+
+EEG foundation models aim to learn a general representation from large-scale brain signals (i.e.,
+EEG) to have better performance on diverse downstream tasks, as opposed to task-specific methods [Lawhern et al., 2018, Song et al., 2022]. Training approaches for current models are generally
+classified into two categories: contrastive learning [Chen et al., 2020] and masked reconstruction [He
+et al., 2022]. Early contrastive approaches, such as BENDR [Kostas et al., 2021] and Brant [Zhang
+et al., 2023], demonstrated the feasibility of joint representation learning for physiological signals.
+Concurrently, BIOT [Yang et al., 2023a] uses Transformer [Vaswani et al., 2017] with mask reconstruction [He et al., 2022], which becomes a standard technique for subsequent methods [Jiang et al.,
+2024, Ouahidi et al., 2025, Wang et al., 2024, 2025, Zhou et al., 2025]. Recent works focus on incorporating spatio-temporal information self-attention [Yang et al., 2023a] or bottleneck attention [Zhou
+et al., 2025]. On the other hand, Ouahidi et al. [2025] proposes a unified framework for multiple
+pretraining datasets via 4D electrode positional encoding with block masking. CodeBrain [Ma et al.,
+2026] tokenizes both waveform and frequency for richer representation and leverages a state-space
+model [Gu et al., 2022].
+Across these models, discrete tokenization and masked autoencoding remain central. However,
+discretizing continuous EEG signals into fixed temporal units creates a structural mismatch, forcing
+models to reconstruct proxy representations rather than the raw waveform. The representation
+operates at patch granularity, with cross-patch interactions summarized at the patch level—coarser
+than the time scale at which EEG dynamics actually unfold. In contrast, we eliminate discretization
+entirely, modeling EEG directly in continuous time via a generative objective.
+A.2
+
+Continuous-Time Generative Models
+
+Continuous-time generative models learn a transport path from a simple prior to the data distribution
+by regressing onto a chosen interpolant. Diffusion-based variants [Ho et al., 2020, Karras et al.,
+2022, Nichol and Dhariwal, 2021] simulate a stochastic process during training, whereas flow
+matching [Lipman et al., 2023] simplifies this by defining a regression target along a deterministic
+path, thereby removing the need for a noise schedule. Both frameworks have been applied to
+neural audio waveforms [Kong et al., 2021] as well as multivariate time-series imputation and
+forecasting [Tashiro et al., 2021, Kollovieh et al., 2023, 2025]. We adopt the optimal-transport
+conditional flow-matching (OT-CFM) [Tong et al., 2024], which pairs each noise sample with its
+nearest data sample within a minibatch; the resulting velocity field is provably straighter, enabling
+accurate, few-step sampling without the need for distillation.
+Beyond synthesis, continuous-time generative pretraining has emerged as a robust approach for
+representation learning. Features from unconditional diffusion or flow models support label-efficient
+segmentation [Baranchuk et al., 2022, Xu et al., 2023], dense visual correspondence [Tang et al.,
+2023], and discriminative classification on par with contrastive features [Li et al., 2024]. B[FM]2
+extends this paradigm to multi-channel EEG waveforms, where the continuous-time generative
+objective serves as the foundation-model training signal.
+A.3
+
+Time Series Foundation Model
+
+Time-series foundation models pretrain a single backbone on large multi-domain time-series corpora
+to enable zero-shot forecasting and downstream task adaptation. Approaches in this space include
+autoregressive next-token Transformers [Ansari et al., 2024, Das et al., 2023], masked-encoder
+Transformers [Woo et al., 2024], and large-language-model adaptations [Jin et al., 2024]. While these
+differ in architecture, they all tokenize the input series—either into a vocabulary of quantized values
+or into a sequence of fixed-length patches—and the backbone operates on tokens rather than on raw
+continuous samples. Continuous-time generative pretraining on raw signals has not yet been adopted
+in this literature; diffusion- and flow-matching-based forecasting [Tashiro et al., 2021, Kollovieh
+et al., 2025] has remained task-specific rather than foundation-model-scale. B[FM]2 differs in both
+respects: it operates on the raw multi-channel waveform without tokenization, and pretrains the
+backbone via continuous-time flow matching.
+14
+
+B
+
+Implementation Details
+
+We provide additional details from Section 3.1.
+Backbone. Our velocity network is a 6 M-parameter SplitUNet adapted from the UNet of Ho
+et al. [2020], via the widely-used denoising-diffusion-pytorch reimplementation2 , with two
+EEG-driven modifications. (a) (1+1)D Factorization. Every 3×3 2D convolution is replaced by
+a pair of 1D convolutions: a temporal convolution along the time axis followed by an electrodemixing convolution along the electrode axis with a (3, 1) kernel and (1, 0) padding. The initial input
+convolution uses a wider (1, 7) kernel with (0, 3) padding to widen the temporal receptive field.
+(b) Time-only downsampling. Down- and upsampling act only along time, using (1, 4) kernels at
+stride (1, 2) with (0, 1) padding, preserving the number of electrodes and their topology rather than
+collapsing them at the bottleneck.
+The network operates on input tensors of shape (B, 1, E, T ) where E and T denote the number of
+electrodes and time points, with base feature width 32, channel multipliers (1, 2, 4, 8) across four
+encoder stages, and a mirrored decoder. Per-stage linear-attention blocks [Shen et al., 2021] use 4
+heads of 32 dimensions; a single bottleneck full-self-attention block acts where the time axis has
+been compressed by 8×. The sinusoidal flow-time embedding (θ = 10,000) feeds an MLP of width
+128, injected into every residual block as a per-channel scale-and-shift on the post-normalization
+activations [Nichol and Dhariwal, 2021]. Self-conditioning is disabled and dropout is set to zero.
+Preprocessing. Recordings are resampled to 200 Hz, band-pass filtered to 0.3–75 Hz, notch-filtered
+at 60 Hz to remove signal from the US powerline, and partitioned into non-overlapping 30 s segments.
+Segments with any timepoint exceeding 100 µV in absolute amplitude are discarded; remaining
+segments are normalized to [−1, +1] by dividing by 100 µV. We retain the 19 channels of the
+international 10–20 system [Klem, 1999], excluding the ear references A1 and A2: Fp1, Fp2, F7, F3,
+Fz, F4, F8, T3, C3, Cz, C4, T4, T5, P3, Pz, P4, T6, O1, O2.
+Pretraining hyperparameters. We optimize with Adam (β1 =0.9, β2 =0.99, no weight decay) at
+a constant learning rate of 8 × 10−5 , with gradient clipping at ∥g∥2 ≤ 1.0. Each step uses a batch
+of 4 segments on a single NVIDIA H100 80 GB GPU with fp16 mixed-precision training (Hugging
+Face Accelerate) and no gradient accumulation. The flow time t ∼ U[0, 1] is rescaled by 1000 before
+entering the time MLP. We train for 70 epochs and maintain an EMA of the weights with decay 0.995
+updated every 10 optimizer steps; the EMA copy is used for all sampling and downstream feature
+extraction.
+Finetuning hyperparameters. We optimize cross-entropy with AdamW (β1 =0.9, β2 =0.999,
+weight decay 0.01) and gradient clipping at ∥g∥2 ≤ 1.0. Training uses a batch size of 32 and
+runs for 40 epochs. For each task, we tune the learning rate (5 · 10−5 , 10−4 , or 2 · 10−4 ) and the
+feature-aggregation strategy (mean pooling across both electrode and time axes vs. flattening) based
+on validation performance. We report the test balanced accuracy of the checkpoint and configuration
+that achieved the highest validation balanced accuracy.
+
+C
+
+Downstream Datasets
+
+All recordings are resampled to 200 Hz before windowing. Sample counts below are rounded; precise
+values appear in Table 1.
+TUAB. A binary normal-vs-abnormal benchmark drawn from the TUH EEG Corpus [Obeid and
+Picone, 2016], with labels assigned by clinical neurologists. We adopt the 16-channel bipolar montage
+of the CBraMod [Wang et al., 2025] pipelines and 10 s non-overlapping windows on the released
+subject-disjoint split: ∼ 409k windows from ∼ 2,993 patients.
+TUEV. Six-class event classification from the same TUH EEG Corpus [Obeid and Picone, 2016]:
+SPSW (spike and sharp wave), GPED, PLED, EYEM (eye movement), ARTF (artefact), BCKG
+2 https://github.com/lucidrains/denoising-diffusion-pytorch
+
+15
+
+Figure 5: Real vs. B[FM]2 EEG segments. Three 30 s held-out TUEG segments (top row) and three
+unconditional B[FM]2 samples (bottom row), shown in the 19-channel referential 10–20 montage
+used for pretraining. Readers in the blinded study (Table 3; full protocol in Appendix D) received
+no examples in advance and viewed segments at standard clinical display settings with randomly
+interleaved order. The traces shown here are illustrative; subtle textural differences (e.g., apparent
+smoothness in synthetic samples) are illustrated in Figure 4. Calibration bar: 1 s and 50 µV.
+
+(background). Same montage as TUAB; 5 s windows; subject-disjoint split; ∼ 112k events. Class
+frequencies are strongly skewed toward BCKG.
+PhysioNet-MI. Four-class motor imagery [Goldberger et al., 2000]: imagined left-fist, right-fist,
+both-fists, and both-feet movements from 109 subjects. We retain the original 64 channels (resampling
+160 → 200 Hz) and take 4 s cue-aligned trials on the subject-wise split of CBraMod [Wang et al.,
+2025]: ∼ 9,800 trials.
+BCIC-IV-2a. The four-class motor-imagery competition benchmark of Tangermann et al. [2012]: 9
+subjects imagining left-hand, right-hand, both-feet, or tongue movements at 22 channels and 250 Hz.
+After resampling and 4 s windowing on the released competition partition: 5,184 trials.
+ISRUC. Five-class AASM sleep staging from 100 subjects in subgroup 3 of Khalighi et al. [2016].
+The released recordings include a chin EMG channel that CBraMod [Wang et al., 2025] pipelines
+treat as EEG; following Ouahidi et al. [2025] we drop it and keep the six EEG derivations only.
+Subject-wise split, 30 s window from ∼ 89k samples.
+Mumtaz. Binary major-depressive-disorder vs. healthy-control classification [Mumtaz et al., 2017]
+on 19 MDD patients and 15 controls, 19-channel 10–20 EEG at 256 Hz. The released subject-wise
+split with 5 s non-overlapping windows: ∼ 7,100 samples.
+MAT (Mental Arithmetic). Binary stress-vs-rest contrast [Zyma et al., 2019]: 36 subjects performing timed serial subtraction against eyes-closed baseline, 20-channel EEG at 500 Hz, 5 s windowed.
+The smallest task in our suite at 1,707 samples and consequently the noisiest probe.
+Siena. Binary seizure detection on 14 adult patients of Detti et al. [2020] (512 Hz, 10–20 montage).
+We retain the 29 channels available across all subjects and use 10 s windows (51,307 samples).
+Subjects PN16 and PN17 are held out as the test set; the remaining 12 are split 8 : 2 for training and
+validation.
+16
+
+HMC. Five-class AASM sleep staging from the 151-subject PSG corpus of Alvarez-Estevez and
+Rijsman [2021]. We use the four EEG channels (F4-M1, C4-M1, O2-M1, C3-M2) at 200 Hz with
+30 s epochs on a subject-wise split: 137,243 samples.
+SEED-V. Five-state emotion classification (happy, sad, neutral, disgust, fear) on the 16-subject
+corpus of Liu et al. [2021], three sessions per subject, 62 channels at 1000 Hz. We segment into 1 s
+windows on a subject-wise split: 117,744 samples.
+
+D
+
+Neurologist Rating Protocol
+
+We recruited two board-certified neurologists for the evaluation. Stimuli were presented through a
+single-page web application (Figure 6) at standard clinical display settings (10 mm/s paper speed,
+7 µV/mm sensitivity, 0.3–70 Hz bandpass, 60 Hz notch). Although the original data and generated
+samples are in a referential montage, we convert them to a longitudinal bipolar montage to match the
+neurologists’ routine reading convention. Real and generated segments were matched in duration
+and post-preprocessing amplitude range and rendered identically; readers saw no metadata and were
+blind to provenance throughout. The full Likert anchors are 1= definitely real, 2= probably real, 3=
+unsure, 4= probably fake, 5= definitely fake; ratings were entered by mouse or via 1–5 keyboard
+shortcuts.
+We report, per reader and pooled, the mean realness score separately for the real held-out and
+B[FM]2 -generated subsets, and the difference between the two subset means with its Mann–Whitney
+U test p value (an unpaired test, since real and synthetic segments are independent draws). We assess
+segment-level discriminability using two agreement statistics: Cohen’s κ between each reader’s
+binarized rating (real vs. fake) and the true real/synthetic label, and Spearman ρ between the two
+readers’ per-segment ratings. Samples are deemed indistinguishable from real if neither reader can
+reliably classify individual segments—that is, if Cohen’s κ is near zero and inter-reader Spearman ρ
+is low—rather than from a failure to reject equality of means, which would not establish equivalence.
+
+17
+
+(a) Welcome screen.
+
+(b) Per-trial rating screen.
+
+Figure 6: Blinded neurologist rating interface. (a) Welcome screen describing the task, the
+5-point realness Likert, and selecting the longitudinal bipolar (“double banana”) montage—the
+standard clinical reading layout, which removes reference-electrode artifacts and matches neurologists’
+habitual reading view. (b) Per-trial rating screen: a 30 s segment in the bipolar montage at clinical
+display settings, with a 50 µV scale bar and the Likert buttons below; trial index and an opaque
+stimulus identifier appear at the top so the reader cannot infer provenance. The interface randomly
+interleaves real held-out TUEG segments and unconditional B[FM]2 samples and submits responses
+automatically; readers saw no metadata at any point.
+
+18
+
+E
+
+Heuristics for Brain-State Pattern Mining for Qualitative Samples
+
+Figure 4 shows the top-scoring generated sample for each of three brain-state patterns: a sharp-wave
+/ spike-like transient, δ-dominant slow-wave activity, and an eyes-closed posterior α rhythm. We
+mine these samples from B[FM]2 ’s unconditional generation pool by ranking them with simple
+hand-crafted scores built from spectral and amplitude features. Each score is a product of (i) a shape
+term—a ratio that fires when the spatial or spectral profile of a target pattern is present—and (ii) a
+magnitude term log(1 + ·) that suppresses low-amplitude samples which happen to satisfy the shape
+term by chance. The pattern labels are suggestive (“δ-rich”), not diagnostic.
+Features. For each E×T generated sample (the standard 10–20 montage [Klem, 1999], 30 s at
+200 Hz), we estimate the per-channel power spectral density P (f ) using Welch’s method [Welch,
+1967] with a 256-point Hann window and 50% overlap, and integrate it to obtain band powers in the
+three canonical EEG bands relevant to our targets:
+bδ =
+
+R4
+0.5
+
+P (f ) df,
+
+bα =
+
+R 13
+8
+
+P (f ) df,
+
+bβ =
+
+R 30
+13
+
+P (f ) df.
+
+For the sharp-wave / spike-like transient pattern we use two amplitude features instead of band power:
+the median per-channel peak-to-peak amplitude App and the count Nσ of large-amplitude excursions
+(|z| > 5 in the per-channel z-scored signal).
+Pattern scores. Let ⟨·⟩S denote channel-averaging over an electrode subset S, where ‘all’ is the
+full 19-electrode set. The three pattern scores are:
+
+sspike = Nσ · log 1 + App
+(sharp-wave / spike-like transient)
+sslow =
+
+
+⟨bδ ⟩all
+· log 1 + ⟨bδ ⟩all
+⟨bδ ⟩all + ⟨bα ⟩all + ⟨bβ ⟩all
+
+(δ-dominant slow-wave activity)
+
+seye =
+
+
+⟨bα ⟩{O1, O2}
+· log 1 + ⟨bα ⟩all
+⟨bα ⟩all
+
+(posterior α rhythm).
+
+The first score fires when many large-amplitude excursions co-occur with high overall amplitude (as
+in interictal sharp-wave or spike-like transients); the second when low-frequency δ power dominates
+the spectrum (as in slow-wave sleep); and the third when α power is concentrated over the occipital
+electrodes (posterior dominant rhythm of eyes-closed wakefulness).
+
+F
+
+Band-Power Distribution
+
+The five canonical bands are delta (1–4 Hz), theta (4–8 Hz), alpha (8–13 Hz), beta (13–30 Hz), and
+gamma (30–50 Hz). The per-channel log-power is computed in each band, and the Wasserstein-1
+distance is averaged across channels and bands to give the single value reported in Table 4. Table 6
+reports the per-band breakdown.
+Table 6: Sample quality of B[FM]2 trained with three velocity-network backbones, measured as the
+Wasserstein-1 distance between log-band-power distributions of generated and held-out real TUEG
+segments (n=5,000 each; mean ± standard deviation across seeds). Real-vs-Real is a noise-floor
+baseline computed between two disjoint TUEG shards. Best generator in each column (excluding the
+baseline) in bold.
+Backbone
+
+δ
+
+θ
+
+α
+
+β
+
+γ
+
+Average
+
+Real-vs-Real
+
+0.147 ± 0.064 0.147 ± 0.029 0.180 ± 0.039 0.165 ± 0.076 0.141 ± 0.060 0.156 ± 0.028
+
+UNet 1D (joint)
+UNet 1D (identity)
+UNet 2D
+SplitUNet
+
+0.266 ± 0.004
+1.379 ± 0.135
+0.279 ± 0.002
+0.227 ± 0.005
+
+0.337 ± 0.004
+1.842 ± 0.200
+0.158 ± 0.003
+0.160 ± 0.004
+
+0.231 ± 0.004
+1.944 ± 0.190
+0.262 ± 0.010
+0.126 ± 0.005
+
+19
+
+0.218 ± 0.003
+1.973 ± 0.019
+0.230 ± 0.009
+0.197 ± 0.008
+
+0.227 ± 0.004
+2.375 ± 0.054
+0.309 ± 0.010
+0.265 ± 0.005
+
+0.256 ± 0.002
+1.903 ± 0.098
+0.248 ± 0.001
+0.195 ± 0.002
+
+G
+
+Per-task detailed results
+
+For each of the ten downstream tasks we report balanced accuracy and two task-appropriate companion metrics (Cohen’s κ and Weighted F1 for multi-class; AUC-PR and AUROC for binary).
+External-baseline numbers are taken directly from Ouahidi et al. [2025] and Zhou et al. [2025].
+All B[FM]2 entries are mean ± standard deviation over five seeds. Dataset descriptions are in
+Appendix C.
+
+G.1
+
+Mumtaz (Mental Disorder Diagnosis)
+
+Table 7: Mumtaz (2-class, MDD vs. healthy control). External-baseline numbers from Ouahidi et al.
+[2025].
+Method
+
+G.2
+
+Balanced Accuracy
+
+AUC-PR
+
+AUROC
+
+EEGNet
+EEGConformer
+SPaRCNet
+ContraWR
+CNN-Transformer
+FFCL
+ST-Transformer
+
+0.923 ± 0.010
+0.931 ± 0.012
+0.932 ± 0.009
+0.919 ± 0.011
+0.930 ± 0.007
+0.931 ± 0.004
+0.913 ± 0.010
+
+0.963 ± 0.009
+0.968 ± 0.011
+0.975 ± 0.006
+0.959 ± 0.010
+0.976 ± 0.007
+0.972 ± 0.002
+0.958 ± 0.009
+
+0.964 ± 0.009
+0.970 ± 0.010
+0.978 ± 0.008
+0.962 ± 0.009
+0.974 ± 0.006
+0.975 ± 0.003
+0.959 ± 0.006
+
+BIOT
+LaBraM-Base
+CBraMod
+REVE
+CSBrain
+
+0.936 ± 0.005
+0.941 ± 0.008
+0.956 ± 0.006
+0.964 ± 0.010
+0.964 ± 0.015
+
+0.974 ± 0.003
+0.980 ± 0.009
+0.992 ± 0.003
+0.996 ± 0.001
+0.994 ± 0.003
+
+0.976 ± 0.004
+0.978 ± 0.006
+0.992 ± 0.003
+0.996 ± 0.002
+0.996 ± 0.002
+
+B[FM]2 (ours)
+
+1.000 ± 0.000
+
+1.000 ± 0.000
+
+1.000 ± 0.000
+
+MAT (Mental Stress Detection)
+
+Table 8: MAT (2-class, mental arithmetic vs. rest). External-baseline numbers from [Ouahidi et al.,
+2025].
+Method
+
+Balanced Accuracy
+
+AUC-PR
+
+AUROC
+
+EEGNet
+EEGConformer
+SPaRCNet
+ContraWR
+CNN-Transformer
+FFCL
+ST-Transformer
+
+0.677 ± 0.012
+0.680 ± 0.012
+0.688 ± 0.011
+0.663 ± 0.010
+0.678 ± 0.027
+0.680 ± 0.014
+0.663 ± 0.017
+
+0.576 ± 0.010
+0.583 ± 0.013
+0.583 ± 0.019
+0.579 ± 0.016
+0.578 ± 0.029
+0.579 ± 0.027
+0.567 ± 0.026
+
+0.732 ± 0.011
+0.742 ± 0.013
+0.742 ± 0.013
+0.733 ± 0.008
+0.726 ± 0.034
+0.733 ± 0.020
+0.713 ± 0.017
+
+BIOT
+LaBraM-Base
+CBraMod
+REVE
+CSBrain
+
+0.688 ± 0.019
+0.691 ± 0.013
+0.726 ± 0.013
+0.766 ± 0.035
+0.756 ± 0.011
+
+0.600 ± 0.019
+0.600 ± 0.015
+0.627 ± 0.010
+0.747 ± 0.081
+0.670 ± 0.022
+
+0.754 ± 0.014
+0.772 ± 0.009
+0.790 ± 0.007
+0.845 ± 0.051
+0.848 ± 0.030
+
+B[FM]2 (ours)
+
+0.840 ± 0.022
+
+0.598 ± 0.059
+
+0.840 ± 0.022
+
+20
+
+G.3
+
+Siena (Seizure Detection)
+
+Table 9: Siena (2-class, seizure vs. normal). External-baseline numbers from [Zhou et al., 2025].
+Method
+
+G.4
+
+Balanced Accuracy
+
+AUC-PR
+
+AUROC
+
+EEGNet
+EEGConformer
+SPaRCNet
+ContraWR
+CNN-Transformer
+FFCL
+ST-Transformer
+
+0.749 ± 0.052
+0.756 ± 0.021
+0.657 ± 0.038
+0.655 ± 0.031
+0.698 ± 0.056
+0.662 ± 0.039
+0.753 ± 0.038
+
+0.375 ± 0.087
+0.209 ± 0.079
+0.316 ± 0.066
+0.371 ± 0.041
+0.384 ± 0.071
+0.394 ± 0.090
+0.364 ± 0.025
+
+0.869 ± 0.053
+0.816 ± 0.026
+0.733 ± 0.086
+0.782 ± 0.060
+0.872 ± 0.040
+0.815 ± 0.116
+0.888 ± 0.009
+
+BIOT
+LaBraM-Base
+CBraMod
+REVE
+CSBrain
+
+0.735 ± 0.067
+0.708 ± 0.033
+0.732 ± 0.065
+0.740 ± 0.007
+0.766 ± 0.047
+
+0.381 ± 0.089
+0.312 ± 0.098
+0.411 ± 0.072
+0.381 ± 0.053
+0.487 ± 0.034
+
+0.903 ± 0.030
+0.881 ± 0.033
+0.904 ± 0.022
+0.875 ± 0.030
+0.908 ± 0.012
+
+B[FM]2 (ours)
+
+0.776 ± 0.010
+
+0.202 ± 0.029
+
+0.776 ± 0.010
+
+ISRUC (Sleep Staging)
+
+Table 10: ISRUC (5-class, sleep staging). External-baseline numbers from [Ouahidi et al., 2025].
+REVE numbers use the corrected six-channel montage described in Section 3.1.
+Balanced Accuracy
+
+Cohen’s κ
+
+Weighted F1
+
+EEGNet
+EEGConformer
+SPaRCNet
+ContraWR
+CNN-Transformer
+FFCL
+ST-Transformer
+
+0.715 ± 0.012
+0.740 ± 0.013
+0.749 ± 0.007
+0.740 ± 0.013
+0.736 ± 0.009
+0.728 ± 0.018
+0.738 ± 0.021
+
+0.704 ± 0.017
+0.714 ± 0.016
+0.710 ± 0.013
+0.718 ± 0.016
+0.713 ± 0.012
+0.702 ± 0.029
+0.701 ± 0.035
+
+0.751 ± 0.012
+0.763 ± 0.015
+0.762 ± 0.009
+0.761 ± 0.014
+0.772 ± 0.011
+0.761 ± 0.020
+0.768 ± 0.018
+
+BIOT
+LaBraM-Base
+CBraMod
+REVE
+CSBrain
+
+0.753 ± 0.012
+0.763 ± 0.010
+0.786 ± 0.011
+0.782 ± 0.008
+0.792 ± 0.003
+
+0.719 ± 0.023
+0.723 ± 0.018
+0.744 ± 0.015
+0.750 ± 0.016
+0.741 ± 0.010
+
+0.779 ± 0.015
+0.781 ± 0.013
+0.801 ± 0.010
+0.800 ± 0.013
+0.799 ± 0.009
+
+B[FM]2 (ours)
+
+0.806 ± 0.001
+
+0.780 ± 0.005
+
+0.829 ± 0.004
+
+Method
+
+21
+
+G.5
+
+HMC (Sleep Staging)
+
+Table 11: HMC (5-class, sleep staging). External-baseline numbers from [Zhou et al., 2025].
+Method
+
+G.6
+
+Balanced Accuracy
+
+Cohen’s Kappa
+
+Weighted F1
+
+EEGNet
+EEGConformer
+SPaRCNet
+ContraWR
+CNN-Transformer
+FFCL
+ST-Transformer
+
+0.653 ± 0.012
+0.715 ± 0.009
+0.476 ± 0.111
+0.424 ± 0.054
+0.657 ± 0.014
+0.443 ± 0.070
+0.256 ± 0.014
+
+0.589 ± 0.020
+0.643 ± 0.005
+0.315 ± 0.132
+0.234 ± 0.055
+0.596 ± 0.011
+0.254 ± 0.065
+0.050 ± 0.018
+
+0.654 ± 0.017
+0.708 ± 0.004
+0.411 ± 0.131
+0.299 ± 0.029
+0.690 ± 0.006
+0.290 ± 0.049
+0.143 ± 0.012
+
+BIOT
+LaBraM-Base
+CBraMod
+REVE
+CSBrain
+
+0.686 ± 0.004
+0.728 ± 0.010
+0.727 ± 0.004
+0.740 ± 0.007
+0.735 ± 0.005
+
+0.629 ± 0.011
+0.681 ± 0.005
+0.668 ± 0.010
+0.698 ± 0.008
+0.682 ± 0.005
+
+0.709 ± 0.015
+0.745 ± 0.003
+0.740 ± 0.009
+0.764 ± 0.007
+0.751 ± 0.004
+
+B[FM]2 (ours)
+
+0.764 ± 0.002
+
+0.711 ± 0.004
+
+0.775 ± 0.004
+
+TUEV (Event Type Classification)
+
+Table 12: TUEV (6-class, epileptiform event). External-baseline numbers from [Ouahidi et al., 2025].
+Balanced Accuracy
+
+Cohen’s κ
+
+Weighted F1
+
+EEGNet
+EEGConformer
+SPaRCNet
+ContraWR
+CNN-Transformer
+FFCL
+ST-Transformer
+
+0.388 ± 0.014
+0.407 ± 0.016
+0.416 ± 0.026
+0.438 ± 0.035
+0.409 ± 0.016
+0.398 ± 0.010
+0.398 ± 0.023
+
+0.358 ± 0.015
+0.397 ± 0.019
+0.423 ± 0.018
+0.391 ± 0.024
+0.382 ± 0.013
+0.373 ± 0.019
+0.377 ± 0.031
+
+0.654 ± 0.012
+0.698 ± 0.015
+0.702 ± 0.010
+0.689 ± 0.014
+0.685 ± 0.029
+0.678 ± 0.012
+0.682 ± 0.019
+
+BIOT
+LaBraM-Base
+CBraMod
+REVE
+CSBrain
+
+0.528 ± 0.022
+0.641 ± 0.006
+0.667 ± 0.011
+0.676 ± 0.023
+0.690 ± 0.006
+
+0.527 ± 0.025
+0.664 ± 0.009
+0.677 ± 0.010
+0.678 ± 0.020
+0.683 ± 0.005
+
+0.749 ± 0.008
+0.831 ± 0.005
+0.834 ± 0.006
+0.845 ± 0.013
+0.833 ± 0.006
+
+B[FM]2 (ours)
+
+0.715 ± 0.013
+
+0.625 ± 0.019
+
+0.806 ± 0.010
+
+Method
+
+22
+
+G.7
+
+TUAB (Abnormal Detection)
+
+Table 13: TUAB (binary normal vs. abnormal). External-baseline numbers from [Ouahidi et al.,
+2025].
+Method
+
+G.8
+
+Balanced Accuracy
+
+AUC-PR
+
+AUROC
+
+EEGNet
+EEGConformer
+SPaRCNet
+ContraWR
+CNN-Transformer
+FFCL
+ST-Transformer
+
+0.764 ± 0.004
+0.776 ± 0.005
+0.790 ± 0.002
+0.775 ± 0.004
+0.778 ± 0.002
+0.785 ± 0.004
+0.797 ± 0.002
+
+0.830 ± 0.004
+0.843 ± 0.005
+0.841 ± 0.002
+0.842 ± 0.010
+0.843 ± 0.004
+0.845 ± 0.006
+0.852 ± 0.003
+
+0.841 ± 0.003
+0.845 ± 0.004
+0.868 ± 0.001
+0.846 ± 0.007
+0.846 ± 0.001
+0.857 ± 0.005
+0.871 ± 0.002
+
+BIOT
+LaBraM-Base
+CBraMod
+REVE
+CSBrain
+
+0.796 ± 0.006
+0.814 ± 0.002
+0.829 ± 0.002
+0.832 ± 0.001
+0.817 ± 0.004
+
+0.879 ± 0.002
+0.896 ± 0.002
+0.926 ± 0.001
+0.928 ± 0.001
+0.900 ± 0.007
+
+0.881 ± 0.004
+0.902 ± 0.001
+0.923 ± 0.001
+0.924 ± 0.001
+0.896 ± 0.005
+
+B[FM]2 (ours)
+
+0.819 ± 0.004
+
+0.741 ± 0.006
+
+0.819 ± 0.004
+
+BCI-IV-2a (Motor Imagery)
+
+Table 14: BCIC-IV-2a (4-class, motor imagery) dataset. External-baseline numbers from [Ouahidi
+et al., 2025].
+Bal. Acc.
+
+κ
+
+W-F1
+
+EEGNet
+EEGConformer
+SPaRCNet
+ContraWR
+CNN-Transformer
+FFCL
+ST-Transformer
+
+0.448 ± 0.009
+0.470 ± 0.011
+0.464 ± 0.012
+0.468 ± 0.013
+0.460 ± 0.011
+0.447 ± 0.014
+0.458 ± 0.015
+
+0.269 ± 0.012
+0.292 ± 0.014
+0.285 ± 0.015
+0.290 ± 0.016
+0.280 ± 0.015
+0.263 ± 0.018
+0.273 ± 0.020
+
+0.423 ± 0.011
+0.453 ± 0.013
+0.443 ± 0.013
+0.441 ± 0.014
+0.446 ± 0.011
+0.424 ± 0.014
+0.447 ± 0.014
+
+BIOT
+LaBraM-Base
+CBraMod
+REVE
+CSBrain
+
+0.475 ± 0.009
+0.487 ± 0.009
+0.514 ± 0.007
+0.640 ± 0.009
+0.566 ± 0.007
+
+0.300 ± 0.014
+0.316 ± 0.015
+0.352 ± 0.009
+0.519 ± 0.013
+0.421 ± 0.009
+
+0.461 ± 0.013
+0.476 ± 0.010
+0.498 ± 0.009
+0.634 ± 0.011
+0.564 ± 0.009
+
+B[FM]2 (ours)
+
+0.570 ± 0.008
+
+0.427 ± 0.011
+
+0.567 ± 0.008
+
+Method
+
+23
+
+G.9
+
+SEED-V (Emotion Recognition)
+Table 15: SEED-V (5-class, emotion). External-baseline numbers from [Zhou et al., 2025].
+Balanced Accuracy
+
+Cohen’s κ
+
+Weighted F1
+
+EEGNet
+EEGConformer
+SPaRCNet
+ContraWR
+CNN-Transformer
+FFCL
+ST-Transformer
+
+0.296 ± 0.010
+0.354 ± 0.011
+0.295 ± 0.008
+0.355 ± 0.011
+0.368 ± 0.008
+0.364 ± 0.009
+0.305 ± 0.007
+
+0.101 ± 0.014
+0.177 ± 0.017
+0.112 ± 0.014
+0.191 ± 0.019
+0.207 ± 0.018
+0.208 ± 0.020
+0.108 ± 0.012
+
+0.275 ± 0.010
+0.349 ± 0.014
+0.298 ± 0.008
+0.354 ± 0.012
+0.364 ± 0.009
+0.364 ± 0.013
+0.283 ± 0.011
+
+BIOT
+LaBraM-Base
+CBraMod
+REVE
+CSBrain
+
+0.384 ± 0.019
+0.398 ± 0.014
+0.409 ± 0.010
+0.405 ± 0.002
+0.420 ± 0.003
+
+0.226 ± 0.026
+0.239 ± 0.021
+0.257 ± 0.014
+0.262 ± 0.002
+0.279 ± 0.003
+
+0.386 ± 0.020
+0.397 ± 0.011
+0.410 ± 0.011
+0.414 ± 0.002
+0.428 ± 0.002
+
+B[FM]2 (ours)
+
+0.492 ± 0.009
+
+0.355 ± 0.016
+
+0.468 ± 0.019
+
+Method
+
+H
+
+Compute Resources
+
+Pretraining, finetuning, and sampling were run on a single NVIDIA H100 GPU with PyTorch 2.6.0
+(CUDA 12.4) and Hugging Face Accelerate; data were served from LMDB on a shared parallel
+filesystem.
+
+I
+
+Use of Existing Assets
+
+Datasets. The Temple University Hospital EEG Corpus (TUEG) [Obeid and Picone, 2016] is
+available for research after registration at the TUH EEG portal. The downstream datasets, summarized
+per-dataset in Appendix C, are released under the following terms: PhysioNet-MI [Goldberger et al.,
+2000], Siena [Detti et al., 2020], and MAT [Zyma et al., 2019] are available under the Open Data
+Commons Attribution License via PhysioNet; HMC [Alvarez-Estevez and Rijsman, 2021] and
+FACED [Chen et al., 2023] are provided under the Creative Commons Attribution 4.0 International
+license; TUAB and TUEV [Obeid and Picone, 2016] follow the TUH EEG terms, matching those
+of TUEG; ISRUC [Khalighi et al., 2016] and SEED-V [Liu et al., 2021] require a research-use
+agreement and registration; Mumtaz [Mumtaz et al., 2017] is available for research use under
+terms listed on its repository; BCIC-IV-2a [Tangermann et al., 2012] is released under the Creative
+Commons Attribution-NoDerivatives 4.0 International license; and BCIC2020-3 [Jeong et al., 2022]
+is provided under the 2020 International BCI Competition data license agreement.
+Code and libraries. Our implementation builds on PyTorch (BSD-3), NumPy
+(NumPy License),
+SciPy (BSD-3,
+used for the Hungarian assignment via
+scipy.optimize.linear_sum_assignment), scikit-learn (BSD), and Hugging Face Accelerate (Apache 2.0).
+The training loop and EMA scaffolding are adapted from the
+denoising-diffusion-pytorch implementation3 (MIT). MNE-Python (BSD) is used for
+EEG rendering in the neurologist-rating web interface.
+External-baseline numbers. External-anchor numbers in Table 2 and the per-task tables in Appendix G are taken directly from Ouahidi et al. [2025] and Zhou et al. [2025]. Both source papers
+evaluate the publicly released checkpoints for BIOT [Yang et al., 2023a], LaBraM [Jiang et al., 2024],
+CBraMod [Wang et al., 2025], and REVE [Ouahidi et al., 2025]; the CSBrain paper additionally
+evaluates its own checkpoint. All baselines are reported on the same train/val/test splits our model
+uses, with the single ISRUC chin-EMG correction described in Section 3.1.
+
+3 https://github.com/lucidrains/denoising-diffusion-pytorch
+
+24
+
+

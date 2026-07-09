@@ -1,0 +1,543 @@
+An electroencephalographic signature predicts antidepressant response in major depression 
+
+ARTICLES
+
+https://doi.org/10.1038/s41587-019-0397-3
+
+An electroencephalographic signature predicts antidepressant response in major depression
+
+Wei Wu1,2,3,4, Yu Zhang 2,3,4, Jing Jiang2,3,4, Molly V. Lucas2,3,4, Gregory A. Fonzo2,3,4, Camarin E. Rolle2,3,4, Crystal Cooper5,6, Cherise Chin-Fatt5,6, Noralie Krepel7,8, Carena A. Cornelssen2,3,4, Rachael Wright 2,3,4, Russell T. Toll2,3,4, Hersh M. Trivedi 2,3,4, Karen Monuszko2,3,4, Trevor L. Caudle2,3,4, Kamron Sarhadi2,3,4, Manish K. Jha5, Joseph M. Trombello 5,6, Thilo Deckersbach9, Phil Adams10, Patrick J. McGrath10, Myrna M. Weissman10, Maurizio Fava9, Diego A. Pizzagalli 9, Martijn Arns 7,11,12, Madhukar H. Trivedi 5,6,13 and Amit Etkin 2,3,4,13 ✉
+
+Antidepressants are widely prescribed, but their efficacy relative to placebo is modest, in part because the clinical diagnosis of major depression encompasses biologically heterogeneous conditions. Here, we sought to identify a neurobiological signa- ture of response to antidepressant treatment as compared to placebo. We designed a latent-space machine-learning algorithm tailored for resting-state electroencephalography (EEG) and applied it to data from the largest imaging-coupled, placebo- controlled antidepressant study (n = 309). Symptom improvement was robustly predicted in a manner both specific for the antidepressant sertraline (versus placebo) and generalizable across different study sites and EEG equipment. This sertra- line-predictive EEG signature generalized to two depression samples, wherein it reflected general antidepressant medication responsivity and related differentially to a repetitive transcranial magnetic stimulation treatment outcome. Furthermore, we found that the sertraline resting-state EEG signature indexed prefrontal neural responsivity, as measured by concurrent tran- scranial magnetic stimulation and EEG. Our findings advance the neurobiological understanding of antidepressant treatment through an EEG-tailored computational model and provide a clinical avenue for personalized treatment of depression.
+
+Major criteria biological depression and phenotypesencompasses is currently 1. defined on the basis of clinical a heterogeneous mix of neuro- This heterogeneity may account
+
+complex multivariate relationships existing within rsEEG data. An effective predictive rsEEG computational model, however, must deal with three critical challenges. The first is a smearing for the modest superiority of antidepressant medication over pla-
+
+of signal and noise resulting from volume conduction due to cebo (Cohen’s d of \~0.3)2–6. Work over the past two decades has
+
+each electrode picking up neural signals from multiple sources, suggested that resting-state EEG (rsEEG) may be able to identify
+
+and adjacent electrodes detecting neural signals from the same treatment-predictive heterogeneity in depression7–10. Specific atten-
+
+sources14. Second, there is a risk of overfitting the model given tion has been paid to prefrontal and parietal signals carried by the
+
+the high spatiotemporal dimensionality and noisiness of EEG ϑ (4–7 Hz) and α (8–12 Hz) frequency bands7–13. However, due to
+
+data15,16. Third, there are challenges in simultaneously optimizing lack of cross-validation and small sample sizes, previous studies
+
+feature identification and fitting of predictive regression models have either identified nonspecific predictors that do not differenti-
+
+due to the nonlinearity of the error function with respect to the ate between response to drug versus placebo, such as rostral ante-
+
+model parameters17. rior cingulate ϑ current density11–13 or failed to yield robust (that is,
+
+To address each of these challenges, we developed a machine- generalizable) and reproducible neural signatures that are predic-
+
+learning algorithm that we called Sparse EEG Latent SpacE tive at the individual patient level8. As such, we still lack a robust
+
+Regression (SELSER). The data were derived from four studies. neurobiological signature for an antidepressant-responsive pheno-
+
+First, we established the rsEEG predictive signature by training type that could identify which patients will derive a large benefit
+
+SELSER on data derived from the largest neuroimaging-coupled from medication. Delineating such a signature would advance both
+
+placebo-controlled randomized clinical study of antidepressant effi- a neurobiological understanding of treatment response and yield
+
+cacy (n = 309). We then used three additional datasets to validate important clinical implications.
+
+our findings. Together, these efforts aimed to reveal a treatment- To identify a robust antidepressant-responsive depression
+
+responsive phenotype in depression, dissociate between medication phenotype, machine learning can be used to combine across the
+
+and placebo response, establish its mechanistic significance and
+
+1School of Automation Science and Engineering, South China University of Technology, Guangzhou, Guangdong, China. 2Department of Psychiatry and Behavioral Sciences, Stanford University, Stanford, CA, USA. 3Wu Tsai Neuroscience Institute, Stanford University, Stanford, CA, USA. 4Veterans Affairs Palo Alto Healthcare System and the Sierra Pacific Mental Illness, Research, Education and Clinical Center (MIRECC), Palo Alto, CA, USA. 5Department of Psychiatry, University of Texas Southwestern Medical Center, Dallas, TX, USA. 6O’Donnell Brain Institute, University of Texas Southwestern Medical Center, Dallas, TX, USA. 7Research Institute Brainclinics, Brainclinics Foundation, Nijmegen, the Netherlands. 8Department of Cognitive Neuroscience, Faculty of Psychology and Neuroscience, Maastricht University, Maastricht, the Netherlands. 9Department of Psychiatry, Harvard Medical School and McLean Hospital, Belmont, MA, USA. 10New York State Psychiatric Institute & Department of Psychiatry, College of Physicians and Surgeons of Columbia University, New York, NY, USA. 11Department of Experimental Psychology, Utrecht University, Utrecht, the Netherlands. 12neuroCare Group Netherlands, Nijmegen, the Netherlands. 13These authors contributed equally: Madhukar H. Trivedi, Amit Etkin. ✉e-mail: amitetkin@stanford.edu
+
+NATuRE BioTECHNoLoGY | VOL 38 | APRIL 2020 | 439–447 | www.nature.com/naturebiotechnology 439
+
+ARTICLES NATURE BIOTECHNOLOGY
+
+provide initial evidence for the potential for treatment selection on the basis of an rsEEG signature.
+
+Results Development of SELSER. We developed SELSER (Fig. 1 and Methods) to address the challenges mentioned above and identify a robust signature from EEG data that could predict response to anti- depressants. Signal identification and mitigation of volume conduc- tion are accomplished by amplifying signal-to-noise ratio through use of spatial filters18. Each spatial filter transforms the multichannel EEG data into a single latent signal, the power of which is used as a feature for the machine-learning algorithm. Because model fitting is performed under a sparse constraint on the number of spatial filters, this also serves to reduce the dimension of the underlying latent sig- nals and thus, decrease the chance of overfitting. Finally, we math- ematically formulated the outcome prediction framework as solving a convex problem that related EEG time series to the treatment out- come directly, yielding a single and globally optimal solution19. This approach can be contrasted, for example, with regression models being applied to channel-level rsEEG power measures, which does little to mitigate volume conduction. Likewise, conventional latent- space methods, such as independent-component analysis (ICA)20 and principal-component analysis (PCA) are not optimal, in that they are unsupervised approaches not directly related to optimizing the model fit to the treatment outcome prediction target. In light of previous rsEEG work7–9, we predicted that SELSER-established neural signals drawn from ϑ and α frequency bands would most strongly predict treatment outcome.
+
+Data were drawn from four studies. Establishment of the treat- ment-predictive rsEEG signature was accomplished with data from the Establishing Moderators and Biosignatures of Antidepressant Response in Clinic Care (EMBARC) study21. EMBARC is the larg- est neuroimaging-coupled placebo-controlled randomized clini- cal trial (RCT) in depression to date and involved randomization of 309 medication-free depressed outpatients (n = 228 with high quality rsEEG data) to receive either the selective serotonin reup- take inhibitor sertraline or placebo for 8 weeks (Supplementary Fig. 1). Eyes-open and eyes-closed EEG data were collected before randomization at four sites in the United States, each of which used a different high-density EEG system and/or electrode mon- tage (60 or more electrodes). Clinical outcome was assessed on the 17-item clinician-administered Hamilton Depression Rating Scale (HAMD17).
+
+Pretreatment EEG
+
+C1C1C2C1F1C2C2F2F1Pz F2F1Pz F2Pz
+
+( · )2
+
+ʃt C1C2SSu1 bjeSc2 t
+
+F1F2Pz SN
+
+( · )2 ʃtFig. 1 | End-to-end prediction of the treatment outcome with a latent-space model. The model consists of three stages: (1) spatial filtering that linearly transforms the EEG signals to the latent signals; (2) band power feature extraction that computes the band power of each latent signal; and (3) linear regression that uses the band powers to predict the treatment outcome. By solving a convex optimization problem, all the unknown parameters (spatial filters and linear regression weight coefficients) are optimized in conjunction under a unified objective function that trades off between the prediction error and dimensionality of the latent signals. S1, S2 and SN refer to Subject 1, Subject 2 and the Nth Subject, respectively. C1, C2, F1, F2 and Pz refer to example electrode locations according to the 10/10 international system. (·)2 denotes the square operator and ∫t denotes the average of a time series over time.
+
+The generalizability of the antidepressant-predictive signature was then tested in a second independent sample of depressed patients (n = 72), for whom we had historical information about treatment response during the current depressive episode, as well as rsEEG data. A third independent sample of depressed patients (n = 24) was used to assess two features of the treatment-predictive rsEEG signature: convergent validity and neurobiological significance. Specifically, we tested whether expression of our rsEEG signature correlated with another machine-learning signature we developed based on task-based functional magnetic resonance imaging (fMRI) activation in EMBARC22, as this would provide further convergent validation of the rsEEG signature identified here. We also tested in the third sample whether regions that were prominent in the rsEEG signature reflected individual differences in cortical responsivity, as directly assessed through single-pulse transcranial magnetic stimu- lation (TMS) during concurrent EEG recording.
+
+Finally, in a fourth depressed sample (n = 152) that was treated with either 10-Hz left dorsolateral prefrontal repetitive TMS (rTMS) or 1-Hz right dorsolateral prefrontal rTMS (both with concurrent psychotherapy), we tested whether the strength of the EMBARC- trained rsEEG signature predicted outcome with an antidepressant treatment that has a putatively different mechanism of action. This allowed us to test the generalizability of our results and open up the potential for treatment selection by defining the neural predictors of antidepressant response.
+
+Treatment prediction from pretreatment resting EEG using SELSER. We built prediction models using pretreatment rsEEG by applying SELSER to each of four canonical EEG frequency bands (ϑ, 4–7 Hz; α, 8–12 Hz; β, 13–30 Hz; γ, 31–50 Hz) in each resting condition (two 2-min blocks each of eyes open or eyes closed). Treatment outcome was quantified as the pre- minus post- treatment values imputed difference to maintain in HAMDan intent-to-treat 17 scores, with framework. missing endpoint Model performance was tested using tenfold cross-validation (Fig. 1 and Supplementary Fig. 2; Methods).
+
+For the sertraline arm, only α signals from the resting eyes open (REO) condition were significantly predictive of the observed treatment score changes during cross-validation (Fig. 2a; Pearson’s r = 0.60, r.m.s. error (r.m.s.e.) = 5.68, Bonferroni-corrected P = 2.88 × 10−11; permutation test-verified using 1,000 permuta- tions, P \< 10−3). When the sertraline-trained model was applied to the placebo arm, however, outcome could not be predicted (Fig. 2b;
+
+440
+
+NATuRE BioTECHNoLoGY | VOL 38 | APRIL 2020 | 439–447 | www.nature.com/naturebiotechnology
+
+Spatial filtering
+
+Convex optimization to minimize prediction error
+
+Band power
+
+Linear
+
+Treatment feature extraction
+
+regression
+
+outcome
+
+e moctuod etciderPS1 S2 SN Subject
+
+ARTICLES NATURE BIOTECHNOLOGY
+
+a Train Test b Train Test
+
+cLatent SER SER SER PBO
+
+d
+
+e f
+
+Fig. 2 | Prediction of outcome specific to sertraline using SELSER on REo α-frequency range data. a, A 10 × 10 stratified cross-validation prediction of HAMD17 change in the sertraline arm (n = 109) using SELSER. Pearson’s r = 0.60, Bonferroni-corrected P = 2.88 × 10−11 based on the one-sided test against the alternative hypothesis that r \> 0. b, Application of the sertraline-trained model to the placebo arm (n = 119) failed to predict outcome, demonstrating the specificity of the model for sertraline prediction. Pearson’s r = −0.03, P = 0.63 based on the one-sided test against the alternative hypothesis that r \> 0. c, Scalp spatial patterns of the SELSER latent signals, with the most positive (β = 759.31; left) and negative (β = −853.13; right) regression weights, respectively (n = 109). d, Cortical spatial patterns of the SELSER latent signals, with the most positive (β = 759.31; left) and negative (β = −853.13; right) regression weights, respectively (n = 109). e, Purely for the purpose of visualizing the utility of the rsEEG predictive signature, patients in each arm were partitioned into the low and high groups by applying a median split on the cross-validated predicted HAMD17 score changes for sertraline response. The response rate was then calculated for each group (defined as a 50% or greater decrease in symptoms from baseline). SER, sertraline (blue); PBO, placebo (red). f, Treatment prediction across study sites in a leave-study-site-out cross-validation on the α REO sertraline model (n = 109). CU, Columbia University; TX, University of Texas Southwestern Medical Center; UM, University of Michigan; MG, Massachusetts General Hospital. Site effect was corrected for by removing the mean of the covariance matrix from each study site before the SELSER analysis. Pearson’s r = 0.45, Bonferroni-corrected P = 9.89 × 10−6 based on the one-sided test against the alternative hypothesis that r \> 0.
+
+Pearson’s r = −0.03, r.m.s.e. = 9.77, P = 0.63), thus demonstrating the specificity of this model for sertraline efficacy prediction (Fisher’s z-test: z = 4.94, P = 8 × 10−7). Application of SELSER to α-frequency REO rsEEG signals scores (Pearson’s r = signal with most
+
+positive regression weight Latent signal with most
+
+negative regression weight ) tsop– e rp(e gnahc20
+
+r = 0.60
+
+r = –0.03 P = 2.88 × 10–11 P = 0.63
+
+Scalp spatial pattern weights 20– 0 + 10
+
+10
+
+0
+
+0
+
+–10
+
+–10–10
+
+0 10
+
+20
+
+–10 0
+
+10 20 Cortical spatial pattern True HAMD17 change (pre – post)
+
+True HAMD17 change (pre – post) weights
+
+– 0 + 7060r = 0.45
+
+P = 9.89 × 10–6 CUTX50UMMG
+
+403020100SER
+
+–20 –20 –10 10 20 30 low
+
+True HAMD17 change (pre – post)
+
+Predicted HAMD17 change
+
+could 0.06, r.m.s.e. not, however, = 6.10, P predict = 0.27), baseline thus illustrating HAMD17 that the treatment-predictive model was not related to the severity of baseline depression.
+
+As a result of the algorithm-enforced low-dimensionality con- straint on the latent signals in SELSER, only a few latent signals were obtained in each model (Supplementary Fig. 3). For the sertraline α REO model, the scalp and cortical spatial maps of the two latent signals with the most positive and negative regres- sion weights are shown in Fig. 2c,d, respectively. The spatial pat- tern of the latent signal with the most positive regression weight was mainly centered around the right parietal-occipital regions, in line with previous work23. In contrast, the spatial pattern of the latent signal with the most negative regression weight was heavily concentrated in both the lateral prefrontal and parieto- occipital regions.
+
+NATuRE BioTECHNoLoGY | VOL 38 | APRIL 2020 | 439–447 | www.nature.com/naturebiotechnology 441
+
+30
+
+) %(r ednopseR2010D MAHd etciderP0–10 SER
+
+PBO
+
+PBO
+
+0
+
+high
+
+low
+
+high
+
+We also tested the effects of the amount of data on model fitting and found that performance began degrading when fewer than two blocks of 1.5 min each per patient were used (Supplementary Figs. 4 and 5).
+
+For the placebo arm, both α signals from the REO and resting eyes closed change (REC) (REO: conditions Fig. 3a, Pearson’s significantly r = 0.41, predicted r.m.s.e. = the 6.34, HAMDBonferroni- 17 score
+
+corrected P = 2.73 × 10−5; and REC: Fig. 3c, Pearson’s r = 0.31, r.m.s.e. = 7.60, Bonferroni-corrected P = 4.13 × 10−3; permutation test-validated P \< 10−3). The spatial maps of the two latent signals with the most positive and negative regression weights are shown in Supplementary Fig. 6 for the REO and REC conditions. For the REO condition, the spatial patterns of the latent signals were predominantly in the temporal and occipital regions, whereas for the REC condition, frontal-parietal and frontal regions were the most prominent. When applied to the sertraline arm, both regression models failed to predict outcome (Fig. 3b,d; Fisher’s z-test, z \> 2.98, P \< 3 × 10−3), demonstrat- ing the specificity of these models for placebo outcome prediction and distinction from the sertraline-predictive model above.
+
+ARTICLES NATURE BIOTECHNOLOGY
+
+Train Test
+
+Train Test PBO PBO
+
+PBO SER
+
+a b
+
+r = 0.41
+
+r = –0.13 ) tsop– e rp(e gnahcTo visualize how the SELSER predictions in Fig. 2a could be used for treatment stratification, we partitioned the patients in each arm by applying an arbitrary median split on the cross-validated predicted REO model. HAMDWe then 17 score calculated changes the derived rates of from treatment the sertraline response α
+
+(≥50% reduction in symptoms) for the portion of patients above the median (‘high’) and below the median (‘low’), respectively, based and Supplementary on the model-predicted Fig. 7). For the HAMDsertraline 17 change arm, P = 2.73 × 10–5 DMAHd etciderP7 1)tsop– e rp(e gnahcDMAHd etciderP7 1c d
+
+r = 0.31 ) tsop– e rp(e gnahcDMAHd etciderP7 120100 –10P = 4.13 × 10–3
+
+20100
+
+–10
+
+Fig. 3 | Prediction of outcome specific to placebo using SELSER on α-frequency range data. a,c, A 10 × 10 stratified cross-validation prediction of HAMD17 change in the placebo arm (n = 119) using SELSER on REO (Pearson’s r = 0.41, Bonferroni-corrected P = 2.73 × 10−5 based on the one-sided test against the alternative hypothesis that r \> 0) (a) and REC (Pearson’s r = 0.31, Bonferroni-corrected P = 4.13 × 10−3, based on the one-sided test against the alternative hypothesis that r \> 0) (c) α-frequency range data. b,d, Application of the REO (Pearson’s r = −0.13, P = 0.91, based on the one-sided test against the alternative hypothesis that r \> 0) (b) and REC (Pearson’s r = −0.08, P = 0.79, based on the one-sided test against the alternative hypothesis that r \> 0) (d) placebo-trained models to the sertraline arm (n = 109) failed to predict outcome, demonstrating specificity of the model for placebo prediction.
+
+scores (Fig. 2e the high group reached a response rate of 65%, which more than tripled the response rate (20%) in the low group and was considerably higher than the response rates in the placebo arm (35% and 34% for the high and low groups, respectively).
+
+Treatment prediction across study sites. To further assess the generalizability of the prediction models to unseen data collected with different EEG amplifiers, a leave-study-site-out analysis was performed by iteratively using three study sites’ data to train the model, and the fourth site’s data for testing the model. Since the four study sites’ EEG data were acquired with different EEG
+
+442
+
+NATuRE BioTECHNoLoGY | VOL 38 | APRIL 2020 | 439–447 | www.nature.com/naturebiotechnology ) tsop– e rp(e gnahcDMAHd etciderP7 120100 –10
+
+–10 0 10 20 –10 0
+
+10 20 True HAMD17 change (pre – post) True HAMD17 change (pre – post)
+
+r = –0.08
+
+20100
+
+–10
+
+–20
+
+–10 0 10 20 –20
+
+–10 0 10 20 True HAMD17 change (pre – post)
+
+True HAMD17 change (pre – post) amplifiers and/or electrode montages (Supplementary Table 2), marked variability of prediction performance was observed across study sites (Supplementary Fig. 8). To mitigate this site effect, the mean of the covariance matrix was removed from each study site before the SELSER analysis. For the sertraline arm, only the α REO model was significantly predictive of the treatment outcome when performing leave-study-site-out cross-validation (Fig. 2f; Pearson’s r = 0.45, r.m.s.e. = 7.02, Bonferroni-corrected P = 9.89 × 10−6; per- mutation test-validated using 1,000 permutations, P \< 10−3).This demonstrates the robustness of our model for unseen data from a different EEG amplifier (arguably a worst-case scenario with respect to testing through cross-validation). An equivalent fourfold cross- validation model sampling across all sites remained strongly predic- tive (Pearson’s r = 0.58, r.m.s.e. = 5.63, P = 1.59 × 10−11; permutation test-validated using 1,000 permutations, P \< 10−3). Further restrict- ing the sample size via twofold cross-validation across all sites yielded a lower yet still highly significant predictive performance (Pearson’s r = 0.38, r.m.s.e. = 6.32, P = 2.25 x 10−5). For the placebo arm, none of the REO and REC models was predictive of the treat- ment outcome when cross-validating between study sites (Pearson’s
+
+P = 0.91
+
+P = 0.79
+
+ARTICLES NATURE BIOTECHNOLOGY
+
+r \< 0.22, r.m.s.e. \> 7.90, Bonferroni-corrected P \> 0.07). The sertra- line leave-study-site-out α REO predictive model also still showed significantly greater specificity in predicting sertraline over placebo response (Fisher’s z-test, z = 3.83, P = 10−4).
+
+Comparison of SELSER predictions to previous methods. To benchmark SELSER against conventional machine-learning approaches that do not use latent-space modeling, we also trained linear regression models on eyes open rsEEG data by using a rel- evance vector machine (RVM)24 on channel-level α band power25,26, ϑ band power27,28 and ϑ cordance13,23 (Supplementary Figs. 9 and 10). However, none of the models was predictive of the treatment outcome on cross-validation (Pearson’s r \< −0.06, r.m.s.e. \> 8.20, P \> 0.74). Moreover, to demonstrate the improvement of SELSER over conventional latent-space modeling approaches, we also trained the RVM on α band power of the latent signals extracted with PCA29 (Supplementary Fig. 9d) or ICA25 (Supplementary Fig. 9e), which are among the most popular unsupervised meth- ods to derive spatial filters from EEG (Supplementary Fig. 10). Here also, both models failed to predict the treatment outcome (Pearson’s r \< 0.15, r.m.s.e. \> 7.17, P \> 0.09).
+
+Treatment prediction from symptoms. Assessing brain activa- tion for defining an individual’s sertraline-responsive phenotype may not be relevant in practice if lower-cost measures, such as clinical severity scores, demographic variables or historical factors like childhood trauma exposure could usefully predict outcome. This did not prove to be the case, however, as RVM trained with all of these was only modestly predictive (Supplementary Fig. 11; Pearson’s r = 0.26, r.m.s.e. = 7.93, P = 3 x 10−3 for sertraline, and Pearson’s r = 0.16, r.m.s.e. = 9.56, P = 0.05 for placebo) and worse if using only the Quick Inventory of Depressive Symptomatology (QIDS) scale (Pearson’s r = 0.12, r.m.s.e. = 6.85, P = 0.12 for ser- traline and Pearson’s r = 0.06, r.m.s.e. = 6.72, P = 0.26 for placebo). Sertraline outcome prediction with clinical measures was also significantly weaker than the α REO rsEEG model above (Fisher’s z-test, z = 3.11, P = 0.0019).
+
+Testing the generalization of the rsEEG sertraline-predictive sig- nature. We next tested the generalizability of the SELSER rsEEG sertraline-predictive signature from EMBARC in a second inde- pendent cohort of patients with depression. This cohort of patients were drawn from a naturalistic, longitudinal depression study in which rsEEG data were recorded at the baseline visit30. Patients also completed the Antidepressant Treatment Response Questionnaire (ATRQ), which provided historical information about the number of adequate antidepressant medication trials in the current episode, as well as whether patients responded to them or not. Following con- ventional groupings, patients were categorized as either treatment resistant (two or more failed antidepressant trials; n = 21) or as par- tial responders (partial response to at least one medication; n = 51). The mean-removal site correction procedure was performed for the rsEEG data, as for the leave-study-site-out analysis of the EMBARC study. We then applied the EMBARC-trained sertraline α-band rsEEG for each model individual, to each which patient, reflects yielding their a strength predicted of expression HAMD17 change of the sertraline-predictive rsEEG signature. As expected, the predicted HAMDtreatment-resistant 17 change was group higher (Fig. for 4), the demonstrating partial-responder the generalizability group than the
+
+of the EMBARC rsEEG sertraline signature to the broader construct of treatment responsiveness and resistance to antidepressant medica- tion. Moreover, information on the number of within-episode failed antidepressant trials was available for 45 of the 72 patients. Also as expected, we found a negative correlation between the number of failed trials and the magnitude of the rsEEG sertraline signature- predicted HAMD17 improvement (Pearson’s r = −0.34, P = 0.023).
+
+2520\) tsop– e rp(e gnahc15105D MAHd etciderP0 –5
+
+–10
+
+–15Partial responder Treatment resistant
+
+Fig. 4 | Prediction of treatment outcome by the EMBARC-trained sertraline rsEEG model, applying to baseline eyes open rsEEG of the second depression study cohort. The plot shows the predicted HAMD17 change for patients who are partial responders (n = 51) or resistant to treatment (n = 21). These data demonstrate that the predicted HAMD17 change is significantly larger in patients who are partial responders than in those who are treatment resistant (two-sample and two-sided Student’s t-test P = 0.016). Error bars depict s.e.m.
+
+Convergence between rsEEG- and task-fMRI-derived machine- learning predictions. To test the convergent validity of the sertra- line rsEEG model from EMBARC, we examined a separate dataset of 24 patients with depression who were assessed in a cross-sec- tional manner (without treatment) using both rsEEG and task- based fMRI with the emotional conflict task22. The reason for doing so is that we could test whether the predicted based on the EMBARC-trained sertraline rsEEG HAMDmodel correlated 17 change
+
+with conflict the task-based predicted HAMDmachine-learning 17 change based model on that an we fMRI established emotional in a separate analysis of EMBARC data22 (Methods). Since the EEG data were recorded with yet another amplifier distinct from those used in EMBARC, the mean-removal site correction procedure was performed. The rsEEG and task-fMRI predictions were signifi- cantly correlated with each other in these independent data (Fig. 5a; Pearson’s r = 0.44, P = 0.02). This finding provides convergent sup- port, across fMRI and EEG, for the existence of a treatment-respon- sive neurobiological phenotype in major depressive disorder across populations and across assessment modalities.
+
+TMS and EEG correlates of rsEEG phenotype. Next, to provide further insight into the neural signals driving our sertraline-predic- tive rsEEG-defined phenotype, we analyzed concurrent single-pulse TMS and EEG (spTMS and EEG)31 data from the third indepen- dent depression sample as used above. Specifically, we sought to test whether cortical responsivity, as assessed by direct stimula- tion using spTMS and EEG to regions either prominent or mini- mal within the spatial patterns of the rsEEG latent signals, induced neural responses that correlated with the rsEEG-defined treatment- predictive phenotype. The stimulated regions were the bilateral pos- terior dorsolateral prefrontal cortices (pDLPFC), anterior DLPFC (aDLPFC), along with primary visual cortex (V1) and bilateral primary motor cortices (M1) as the control regions (Fig. 5b). We localized pDLPFC and aDLPFC using neuronavigation on the basis of their being nodes within the frontoparietal and salience resting- state networks, respectively, as we have conducted in our previous work32. To quantify the correlation between the spTMS and EEG responses and the sertraline-predictive rsEEG phenotype, we again
+
+NATuRE BioTECHNoLoGY | VOL 38 | APRIL 2020 | 439–447 | www.nature.com/naturebiotechnology 443
+
+ARTICLES NATURE BIOTECHNOLOGY
+
+a br = 0.44 20P = 0.02 n oitciderpI RMf-ksaT10c
+
+0
+
+aDLPFC
+
+pDLPFC
+
+aDLPFC
+
+pDLPFC
+
+3
+
+2.5
+
+–10
+
+–10 0 10 20
+
+2Resting EEG prediction
+
+1.5
+
+10.5
+
+Fig. 5 | Alignment of predicted HAMD17 change calculated by the rsEEG model and predicted HAMD17 change calculated by a machine-learning model trained on task-based fMRi activation from a separate analysis on EMBARC data, as well as neural responsivity assessed through concurrent spTMS and EEG. a, The EMBARC-trained rsEEG and task-fMRI models were applied to an independent major depressive disorder dataset that had both data types and the ensuing predicted HAMD17 changes from both models were correlated with each other. Pearson’s r = 0.44, P = 0.02 based on the one-sided test against the alternative hypothesis that r \> 0 (n = 24). b, Concurrent spTMS and EEG correlates of the rsEEG phenotype in the independent depressed dataset, analyzed using SELSER. TMS was delivered to pDLPFC (part of the frontoparietal control network), aDLPFC (part of the ventral attention network), M1 and V1. These sites were identified on the basis of ICAs on resting-state fMRI data from a separate cohort. aDLPFC, anterior dorsolateral prefrontal cortex; pDLPFC, posterior dorsolateral prefrontal cortex. c, A significance plot of the correlation between the concurrent spTMS and EEG responses and sertraline-predictive rsEEG SELSER signature, as indexed by the leave-one-out cross-validated Pearson’s correlation coefficients between the predicted rsEEG phenotype (using concurrent spTMS and EEG responses) and the true rsEEG phenotype, for each of the stimulation sites (n = 24). The SELSER analysis was performed separately for the same set of frequency bands as used in the rsEEG prediction analysis and for three time windows relative to the TMS pulse (0–200 ms, 200–400 ms, 400–600 ms), followed by an FDR correction across all tests. Only right aDLPFC stimulation (α band, 200–400 ms: Pearson’s r = 0.60, P = 5.5 × 10−4, based on the one-sided test against the alternative hypothesis that r \> 0), left pDLPFC stimulation (γ band, 200–400 ms: Pearson’s r = 0.58, P = 8 × 10−4, based on the one-sided test against the alternative hypothesis that r \> 0) and right pDLPFC stimulation (β band, 0–200 ms: Pearson’s r = 0.60, P = 4.6 × 10−4, based on the one-sided test against the alternative hypothesis that r \> 0) survived FDR correction (denoted by asterisks). The plot shows −log10(P) of the correlation of the SELSER-predicted rsEEG phenotype with the true rsEEG phenotype.
+
+employed SELSER to relate spTMS and EEG data to the sertra-
+
+EMBARC-trained sertraline rsEEG model (expressed as predicted line rsEEG signature (Fig. 5c). Correlations between the sertraline rsEEG phenotype and spTMS and EEG responses to stimulation
+
+HAMDabove. Symptoms 17 change) were using assessed the same with mean the Beck site removal Depression procedure Inventory as
+
+observed at three of four prefrontal cortical regions survived correc-
+
+(BDI) and the three subscales of the Depression, Anxiety and Stress tion for multiple comparisons. This included right aDLPFC stimu-
+
+Scale (DASS), separately by an rTMS protocol, using linear mixed lation (α band, 200–400 ms, Pearson’s r = 0.60, false discovery rate
+
+models and a Bonferroni correction for eight comparisons (two fre- (FDR)-corrected P = 5.5 × 10−4), left pDLPFC stimulation (γ band,
+
+quencies and four outcome measures). One relationship survived, 200–400 ms, Pearson’s r = 0.58, FDR-corrected P = 8 × 10−4) and right pDLPFC stimulation (β band, 0–200 ms, Pearson’s r = 0.60,
+
+wherein less was associated rsEEG-predicted with greater response HAMDto 17 1-Hz change rTMS with on the sertraline DASS FDR-corrected P = 4.6 × 10−4). Correlation of responses to stimula- tion of primary motor or visual cortices did not survive correction.
+
+(rsEEG-predicted F(1,128) = 9.02, P = HAMD4 × 10−317 ; Fig. sertraline 6). This change suggests × time interaction: that patients who fail to respond to sertraline may be more amenable to 1-Hz right Sertraline signature assessment in a combined repetitive TMS
+
+DLPFC rTMS, providing a potential evidence-based treatment and psychotherapy treatment study. In light of the sertraline rsEEG
+
+selection approach for depression. This relationship was also spe- phenotype indexing cortical responsivity to stimulation at several
+
+cific to 1-Hz right DLPFC rTMS, as we found a treatment protocol DLPFC locations, we next considered whether the strength of this phenotype could predict outcome with rTMS treatment in depres-
+
+× both predicted arms in HAMDa linear 17 regression change × (F(1,126) time interaction = 4.54, P = when 0.035).
+
+including
+
+sion. Analyses were performed on a fourth previously reported dataset of patients with depression and pretreatment rsEEG record-
+
+Discussion ings, who received at least ten sessions of simultaneous rTMS
+
+Here we developed an rsEEG-optimized latent space computational and psychotherapy and were on a stable medication regimen33,34.
+
+model, called SELSER, with which we obtained robust prediction Treatment involved rTMS applied with either a 10-Hz protocol over
+
+of antidepressant outcome and moderation (differential predic- the left DLPFC (n = 64) or a 1-Hz protocol over the right DLPFC
+
+tion) between outcome with an antidepressant versus placebo in (n = 88; Methods). We computed each patient’s expression of the
+
+a large placebo-controlled study. The antidepressant-predictive
+
+444
+
+NATuRE BioTECHNoLoGY | VOL 38 | APRIL 2020 | 439–447 | www.nature.com/naturebiotechnology
+
+θαβγ
+
+0–200 ms 200–400 ms 400–600 ms 0–200 ms 200–400 ms 400–600 ms 0–200 ms 200–400 ms 400–600 ms 0–200 ms 200–400 ms 400–600 ms
+
+aDLPFC pDLPFC M1 V1
+
+Left Right
+
+M1 M1 V1
+
+\*
+
+\*
+
+\*
+
+ARTICLES NATURE BIOTECHNOLOGY
+
+signature identified using SELSER on α frequency range eyes-open rsEEG data was superior to conventional machine-learning mod- els or latent modeling methods, such as ICA or PCA. This signa- ture was furthermore superior to a model trained on clinical data alone, was able to predict outcome on rsEEG data acquired at a study site not included in the model training set and which used a different EEG amplifier and/or electrode montage and related to general antidepressant responsiveness and resistance in a separate depression sample. The attributes of our SELSER model support its potential utility in the context of real-world clinical care and with regard to stratification of future depression studies based on the expected antidepressant-specific treatment outcome for that indi- vidual. Critically, though promising and highly influential signals for antidepressant prediction with rsEEG have been reported for the past two decades7–9,35, previous signals neither moderated between outcome with an antidepressant versus placebo, nor provided robust individual patient-level prediction. Our present work is thus distinguished from previous findings on both fronts.
+
+We also found evidence of multimodal convergent validity for our rsEEG antidepressant-response signature in a third depression dataset by virtue of its correlation with expression of a task-based fMRI signature that we recently identified using EMBARC data22. The strength of our rsEEG signature also correlated with prefrontal neural responsivity, as indexed by direct stimulation with spTMS and EEG. This led us to test the relationship between the sertraline rsEEG model and treatment outcome with rTMS in a fourth sample. There, we found an opposite relationship between sertraline-pre- dicted improvement and observed treatment outcome with 1-Hz right DLPFC rTMS. This finding also opens an exciting avenue for neural signature-driven treatment selection in depression.
+
+From a neural mechanism perspective, we note that the sertraline SELSER model revealed both positively and negatively weighted pos- terior cortical eyes open rsEEG signals, but only heavily negatively
+
+40
+
+weighted prefrontal signals. Considering suggestions that resting α power reflects inhibitory tone in a brain region36,37, the negative weighting of prefrontal α in our sertraline model suggests that the prefrontal cortices of better treatment responders are more active 30or excitable than those of poor responders. The positive and nega-
+
+SSADe urTA 20tive weights for posterior signals suggests that optimizing the bal- ance of distinct posterior predictive signals may be what is critical to establishing a robust computational model. Prediction analysis using electrodes exclusively from posterior regions corroborates this claim (Supplementary Fig. 12). Our results are broadly in line with previous 10reports of better outcomes being associated with greater posterior cortical α power23. However, a large-scale study that lacked a placebo control arm failed to replicate these findings38. Thus, as our RVM model trained on channel-level α power failed to predict outcome, 0the critical element in attaining individual-level robust outcome pre-
+
+Pre Post Pre Post
+
+diction may be the use of a latent-space computational model.
+
+Below median Above median
+
+Predicted HAMD17 change (pre – post)
+
+Perhaps somewhat surprising is that only eyes open α rsEEG, but not eyes closed, was predictive of the treatment outcome, given that the α rhythm is more strongly present in the eyes closed
+
+Fig. 6 | Prediction of treatment outcome with right DLPFC 1-Hz rTMS treatment by the EMBARC-trained sertraline rsEEG model, applying to pre-rTMS eyes open rsEEG. The scatterplot shows the pre and post- treatment scores for patients on the Anxiety subscale of the DASS (DASSA). To visualize the linear mixed model relating rsEEG-predicted HAMD17 change to observed changes in DASSA scores, shown here is a median split of the predicted HAMD17 change values. These data demonstrate that the degree of pre-to-post change in DASSA symptoms due to 1-Hz rTMS treatment is greater in those patients with lower expected HAMD17 change scores using the EMBARC-trained sertraline rsEEG model.
+
+condition. One explanation is that the increasing α rhythm dur- ing the eyes closed condition is indicative of cortical areas being deactivated39 and thus may contribute to background noise rather than predictive signal. This view is consistent with motor inten- tion decoding work, wherein the goal has been to enhance the dif- ference between the μ motor rhythm, while suppressing the more broadly distributed α rhythm40,41.
+
+The present work does not directly inform the cognitive and emotional information processing relevance of the antidepressant- response rsEEG signature. However, the relationship between the rsEEG signature and one derived from task-based fMRI data from EMBARC22 suggests that individuals with stronger expression of the rsEEG signature may be better able to regulate emotional conflict.
+
+We utilized a range of cross-validation methods (including on data from entirely unseen study sites and collected on different EEG equipment), compared prediction of outcome with sertraline versus placebo across cross-validation methods and tested for generaliza- tion of the signals across a number of complimentary datasets. As such, our data provide neurobiological evidence that an antidepres- sant-responsive phenotype exists within the biological heterogene- ity characteristic of the broader clinical diagnosis of depression. These findings thereby not only advance a ‘personalized’ approach to depression1,5,42, but also demonstrate that antidepressants only seem to be modestly more effective than placebo because they are typically given to an unselected sample of patients with depression. If replication and extension of this phenotype to other antide- pressant medications is successful in progressively larger and more diverse datasets, the rsEEG signature we identified may be helpful in deciding whether a patient should continue further medication trials after an initial failure with an antidepressant medication or switch to treatments with putatively different mechanisms of action (such as rTMS, electroconvulsive therapy (ECT) or psychotherapy). Indeed, patients with depression often undergo many medication trials before advancing to other treatments, such as rTMS43,44, which are effective for some medication-resistant patients45,46. This could result in potentially avoidable morbidity and economic cost if they are switched to another intervention earlier on the basis of evidence of little expected benefit with an antidepressant using our rsEEG signature.
+
+Our finding of an opposite relationship between predicted change with sertraline, and treatment outcome with 1-Hz rTMS and concurrent psychotherapy, directly supports the potential for these findings to guide treatment selection in depression, pend- ing further replication. Furthermore, as the sertraline-predictive rsEEG signature did not predict outcome with 10-Hz rTMS dur- ing concurrent psychotherapy, this suggests that it is the effect of the specific rTMS protocol that is being predicted rather than the
+
+NATuRE BioTECHNoLoGY | VOL 38 | APRIL 2020 | 439–447 | www.nature.com/naturebiotechnology 445
+
+ARTICLES NATURE BIOTECHNOLOGY
+
+effects of psychotherapy, though further investigation with rTMS treatment without psychotherapy is needed for this to be conclusive. Of note, this opposite direction prediction between antidepressants and rTMS is consistent with our previous work as well as that of oth- ers. More intact default-mode network connectivity in the iSPOT-D study predicted better treatment outcome with antidepressant treat- ment47, whereas more disrupted default-mode network connectivity predicted outcome with rTMS in a clinic-based cohort48.
+
+There are also several limitations to consider. First, our specific prediction findings remain to be replicated in an entirely inde- pendent sample and it is not known whether the sertraline signa- ture predicts outcome with a broader class of selective serotonin reuptake inhibitors or antidepressant medication more generally. Second, EMBARC assessed all patients while they were medication- free at baseline. Thus, while this removes potential confounders from the experimental design, it also limits generalizability to typi- cal outpatients, who are often already on an antidepressant. Finally, SELSER is a static latent-space modeling approach that does not consider resting EEG dynamics. Dynamic latent-space models have been recently developed to predict mood from multisite intracorti- cal human brain signals49.
+
+In summary, we developed a rsEEG-optimized latent-space computation model that was capable of robustly predicting treat- ment outcome with the antidepressant sertraline and distinguish- ing between response to sertraline versus placebo at the individual patient level and which may furthermore support treatment selec- tion between medication and rTMS. Together, these findings ground in individual-level neurobiology a treatment-responsive phenotype obscured within the broader clinical diagnosis of depression and its associated biological heterogeneity and lay a path toward machine-learning-driven personalized approaches to treatment in depression.
+
+online content Any methods, additional references, Nature Research reporting summaries, source data, extended data, supplementary informa- tion, acknowledgements, peer review information; details of author contributions and competing interests; and statements of data and code availability are available at https://doi.org/10.1038/s41587- 019-0397-3.
+
+Received: 8 December 2018; Accepted: 17 December 2019; Published online: 10 February 2020
+
+References 1. Drysdale, A. T. et al. Resting-state connectivity biomarkers define
+
+neurophysiological subtypes of depression. Nat. Med. 23, 28–38 (2017). 2. Cipriani, A. et al. Comparative efficacy and acceptability of 21 antidepressant drugs for the acute treatment of adults with major depressive disorder: a systematic review and network meta-analysis. Lancet 391, 1357–1366 (2018). 3. Fournier, J. C. et al. Antidepressant drug effects and depression severity:
+
+a patient-level meta-analysis. JAMA 303, 47–53 (2010). 4. Khan, A. & Brown, W. A. Antidepressants versus placebo in major depression: an overview. World Psychiatry 14, 294–300 (2015). 5. Kirsch, I. The Emperor’s New Drugs: Exploding the Antidepressant Myth
+
+(Random House, 2009). 6. Kirsch, I. et al. Initial severity and antidepressant benefits: a meta-analysis
+
+of data submitted to the food and drug administration. PLoS Med. 5, e45 (2008). 7. Wade, E. C. & Iosifescu, D. V. Using electroencephalography for treatment guidance in major depressive disorder. Biol. Psychiatry Cogn. Neurosci. Neuroimaging 1, 411–422 (2016). 8. Widge, A. S. et al. Electroencephalographic biomarkers for treatment
+
+response prediction in major depressive Illness: a meta-analysis. Am. J. Psychiatry 2018, 17121358 (2018). 9. Olbrich, S. & Arns, M. EEG biomarkers in major depressive disorder:
+
+discriminative power and prediction of treatment response. Int. Rev. Psychiatry 25, 604–618 (2013). 10. Jaworska, N., de la Salle, S., Ibrahim, M.-H., Blier, P. & Knott, V. Leveraging
+
+machine-learning approaches for predicting antidepressant treatment
+
+response using electroencephalography (EEG) and clinical data. Front. Psychiatry 9, 768 (2019). 11. Pizzagalli, D. A. et al. Pretreatment rostral anterior cingulate cortex theta
+
+activity in relation to symptom improvement in depression: a randomized clinical trial. JAMA Psychiatry 75, 547–554 (2018). 12. Korb, A. S., Hunter, A. M., Cook, I. A. & Leuchter, A. F. Rostral anterior
+
+cingulate cortex theta current density and response to antidepressants and placebo in major depression. Clin. Neurophysiol. 120, 1313–1319 (2009). 13. Leuchter, A. F., Cook, I. A., Witte, E. A., Morgan, M. & Abrams, M. Changes
+
+in brain function of depressed subjects during treatment with placebo. Am. J. Psychiatry 159, 122–129 (2002). 14. Nunez, P.L. & Srinivasan, R. Electric Fields of the Brain: The Neurophysics of
+
+EEG (Oxford Univ. Press, 2006). 15. Müller, K.-R. et al. Machine learning for real-time single-trial EEG-analysis: from brain–computer interfacing to mental state monitoring. J. Neurosci. Methods 167, 82–90 (2008). 16. Wu, W., Nagarajan, S. & Chen, Z. Bayesian machine learning: EEG/MEG
+
+signal processing measurements. IEEE Signal Process. Mag. 33, 14–36 (2016). 17. Schirrmeister, R. T. et al. Deep learning with convolutional neural
+
+networks for EEG decoding and visualization. Hum. Brain Mapp. 38, 5391–5420 (2017). 18. Haufe, S. et al. On the interpretation of weight vectors of linear models in
+
+multivariate neuroimaging. Neuroimage 87, 96–110 (2014). 19. Boyd, S. & Vandenberghe, L. Convex Optimization (Cambridge Univ. Press,
+
+2004). 20. Bell, A. J. & Sejnowski, T. J. An information-maximization approach to blind separation and blind deconvolution. Neural Comput. 7, 1129–1159 (1995). 21. Trivedi, M. H. et al. Establishing moderators and biosignatures of
+
+antidepressant response in clinical care (EMBARC): rationale and design. J. Psychiatr. Res. 78, 11–23 (2016). 22. Fonzo, G. A. et al. Brain regulation of emotional conflict differentiates
+
+response to antidepressants versus placebo in depression. Nat. Hum. Behav. 3, 1319–1331 (2019). 23. Bruder, G. E. et al. Electroencephalographic α measures predict therapeutic response to a selective serotonin reuptake inhibitor antidepressant: pre-and post-treatment findings. Biol. Psychiatry 63, 1171–1177 (2008). 24. Tipping, M. E. Sparse Bayesian learning and the relevance vector machine.
+
+J. Mach. Learn. Res. 1, 211–244 (2001). 25. Grin-Yatsenko, V. A., Baas, I., Ponomarev, V. A. & Kropotov, J. D.
+
+Independent component approach to the analysis of EEG recordings at early stages of depressive disorders. Clin. Neurophysiol. 121, 281–289 (2010). 26. Pozzi, D., Golimstock, A., Petracchi, M., García, H. & Starkstein, S.
+
+Quantified electroencephalographic changes in depressed patients with and without dementia. Biol. Psychiatry 38, 677–683 (1995). 27. Iosifescu, D. V. et al. Frontal EEG predictors of treatment outcome in major
+
+depressive disorders. Eur. Neuropsychopharmacol. 19, 772–777 (2009). 28. Arns, M., Drinkenburg, W. H., Fitzgerald, P. B. & Kenemans, J. L.
+
+Neurophysiological predictors of non-response to rTMS in depression. Brain Stimul. 5, 569–576 (2012). 29. Tipping, M. E. & Bishop, C. M. Probabilistic principal component analysis.
+
+J. R. Stat. Soc. B 61, 611–622 (1999). 30. Trivedi, M. H. et al. Comprehensive phenotyping of depression disease trajectory and risk: rationale and design of Texas Resilience Against Depression study (T-RAD). J. Psychiatric Res. 122, 22–32 (2020). 31. Hill, A. T., Rogasch, N. C., Fitzgerald, P. B. & Hoy, K. E. TMS-EEG: a window into the neurophysiological effects of transcranial electrical stimulation in non-motor brain regions. Neurosci. Biobehav. Rev. 64, 175–184 (2016). 32. Chen, A. C. et al. Causal interactions between fronto-parietal central
+
+executive and default-mode networks in humans. Proc. Natl Acad. Sci. USA 110, 19944–19949 (2013). 33. Donse, L., Padberg, F., Sack, A. T., Rush, A. J. & Arns, M. Simultaneous
+
+rTMS and psychotherapy in major depressive disorder: clinical outcomes and predictors from a large naturalistic study. Brain Stimul. 11, 337–345 (2018). 34. Krepel, N. et al. Non-replication of neurophysiological predictors of
+
+non-response to rTMS in depression and neurophysiological data-sharing proposal. Brain Stimul. 11, 639–641 (2018). 35. Leuchter, A. F. et al. Comparative effectiveness of biomarkers and
+
+clinical indicators for predicting outcomes of SSRI treatment in major depressive disorder: results of the BRITE-MD study. Psychiatry Res. 169, 124–131 (2009). 36. Klimesch, W., Sauseng, P. & Hanslmayr, S. EEG α oscillations: the inhibition–
+
+timing hypothesis. Brain Res. Rev. 53, 63–88 (2007). 37. Jensen, O. & Mazaheri, A. Shaping functional architecture by oscillatory α
+
+activity: gating by inhibition. Front. Hum. Neurosci. 4, 186 (2010). 38. Arns, M. et al. EEG α asymmetry as a gender-specific predictor of outcome
+
+to acute treatment with different antidepressant medications in the randomized iSPOT-D study. Clin. Neurophysiol. 127, 509–519 (2016). 39. Lehtonen, J. & Lehtinen, I. α rhythm and uniform visual field in man.
+
+Electroencephalogr. Clin. Neurophysiol. 32, 139–147 (1972).
+
+446
+
+NATuRE BioTECHNoLoGY | VOL 38 | APRIL 2020 | 439–447 | www.nature.com/naturebiotechnology
+
+ARTICLES NATURE BIOTECHNOLOGY
+
+40\. Hari, R. & Salmelin, R. Human cortical oscillations: a neuromagnetic view
+
+through the skull. Trends Neurosci. 20, 44–49 (1997). 41. Ramoser, H., Müller-Gerking, J. & Pfurtscheller, G. Optimal spatial filtering
+
+of single trial EEG during imagined hand movement. IEEE Trans. Rehabil. Eng. 8, 441–446 (2000). 42. Kraemer, H. C. Messages for clinicians: moderators and mediators of treatment
+
+outcome in randomized clinical trials. Am. J. Psychiatry 173, 672–679 (2016). 43. Nguyen, K. H. & Gordon, L. G. Cost-effectiveness of repetitive transcranial
+
+magnetic stimulation versus antidepressant therapy for treatment-resistant depression. Value Health 18, 597–604 (2015). 44. Voigt, J., Carpenter, L. & Leuchter, A. Cost effectiveness analysis comparing
+
+repetitive transcranial magnetic stimulation to antidepressant medications after a first treatment failure for major depressive disorder in newly diagnosed patients: a lifetime analysis. PLoS ONE 12, e0186950 (2017). 45. O’Reardon, J. P. et al. Efficacy and safety of transcranial magnetic stimulation
+
+in the acute treatment of major depression: a multisite randomized controlled trial. Biol. Psychiatry 62, 1208–1216 (2007).
+
+46\. George, M. S. et al. Daily left prefrontal transcranial magnetic stimulation
+
+therapy for major depressive disorder: a sham-controlled randomized trial. Arch. Gen. Psychiatry 67, 507–516 (2010). 47. Williams, L. M., Debattista, C., Duchemin, A., Schatzberg, A. & Nemeroff, C.
+
+Childhood trauma predicts antidepressant response in adults with major depression: data from the randomized international study to predict optimized treatment for depression. Transl. Psychiatry 6, e799 (2016). 48. Liston, C. et al. Default mode network mechanisms of transcranial magnetic
+
+stimulation in depression. Biol. Psychiatry 76, 517–526 (2014). 49. Sani, O. G. et al. Mood variations decoded from multi-site intracranial
+
+human brain activity. Nat. Biotechnol. 36, 954–961 (2018).
+
+Publisher’s note Springer Nature remains neutral with regard to jurisdictional claims in published maps and institutional affiliations.
+
+© The Author(s), under exclusive licence to Springer Nature America, Inc. 2020
+
+NATuRE BioTECHNoLoGY | VOL 38 | APRIL 2020 | 439–447 | www.nature.com/naturebiotechnology 447
+
+ARTICLES ARTICLES NATURE NATURE BIOTECHNOLOGY BIOTECHNOLOGY
+
+Methods EMBARC study. Trial registration. Establishing Moderators and Biosignatures of Antidepressant Response for Clinical Care for Depression (EMBARC) is registered with ClinicalTrials.gov (identifier: NCT 01407094).
+
+Participants and treatment. Written informed consent was obtained from each participant under institutional review board (IRB)-approved protocols at each of the four study sites: University of Texas Southwestern Medical Center, Massachusetts General Hospital, Columbia University and University of Michigan. Data reported here are based on EMBARC participants who were randomly assigned to sertraline or placebo during stage 1 of the trial (N = 309 total). Key eligibility for the study included the following: being 18–65 years old; having major depression as a primary diagnosis by the Structured Clinical Interview for DSM-IV Axis I Disorders (SCID); at least moderate depression severity with a score ≥14 on the QIDS Self Report scale at screening and randomization; a major depressive episode beginning before age 30; either a chronic recurrent episode (duration ≥2 years) or recurrent major depressive disorder (at least two lifetime episodes); no antidepressant failure during the current episode. Exclusion criteria included the following: current pregnancy, breastfeeding or no use of contraception; lifetime history of psychosis or bipolar disorder; substance dependence in the past 6 months or substance abuse in the past 2 months; unstable psychiatric or general medical conditions requiring hospitalization; study medication contraindication; clinically significant laboratory abnormalities; history of epilepsy or condition requiring an anticonvulsant; ECT, vagal nerve stimulation, TMS or other somatic treatments in the current episode; medications (including but not limited to antipsychotics and mood stabilizers); current psychotherapy; high suicide risk; or failure to respond to any antidepressant at an adequate dose and duration in the current episode.
+
+Clinical trial. EMBARC used a double-blind design, wherein participants were randomized to an 8-week course of sertraline or placebo. Randomization was stratified by site, depression severity and chronicity using a block randomization procedure. Sertraline dosing began at 50 mg using 50 mg capsules and was increased as tolerated if the patient did not respond until a maximum dose of 200 mg. A similar dosing approach was used for placebo capsules.
+
+Clinical outcome lacking an endpoint conducted in R measure. Our primary outcome using HAMDthe package 17, multiple mice50imputation . The was by the chained HAMDequations 17. For participants
+
+was following observed variables were utilized to impute regression: baseline week and Symptom 4 HAMDQuestionnaire 17, week HAMD6 endpoint HAMD17, subscale week 17HAMD, baseline 1 HAMDscores 17 values QIDS for 17, week Anxious for total missing 2 HAMDscore, Arousal, data baseline 17, via Bayesian
+
+week Mood
+
+3 HAMD17,
+
+Anhedonic Depression and General Distress, Snaith–Hamilton Pleasure Scale total score, age, years of education, sex and Wechsler Abbreviated Scale of Intelligence t-scores for Vocabulary and Matrix Reasoning.
+
+Resting-state EEG acquisition. An rsEEG was recorded from each of the four study sites. The EEG amplifier settings are summarized in Supplementary Table 1. At all study sites, amplifier calibrations were performed. Experimenters were certified by the Columbia EEG team after demonstrating accurate EEG cap placement and delivery of task instructions via video conference and then submitting satisfactory EEG data from a pilot subject.
+
+An rsEEG was recorded during four 2-min blocks (two blocks for eyes-closed and two blocks for eyes open) in a counterbalanced order. Participants were instructed to remain still and minimize blinks or eye movements and to fixate on a centrally presented cross during the eyes-open condition.
+
+Resting-state EEG preprocessing. The recorded rsEEG data were cleaned offline with our in-house fully automated artifact rejection pipeline, thereby minimizing the biases in preprocessing possible with manual rejection of artifacts. The steps are briefly described as follows: (1) EEG data were resampled to 250 Hz; (2) the 60-Hz AC line noise artifact was removed using CleanLine (www.nitrc.org/projects/ cleanline); (3) nonphysiological slow drifts in the EEG recordings were removed using a 0.01-Hz high-pass filter; (4) the spectrally filtered EEG data were then re- referenced to the common average; (5) bad epochs were rejected by thresholding the magnitude of each epoch. Bad channels were rejected based on thresholding the spatial correlations among channels. Subjects with more than 20% bad channels were discarded. The rejected bad channels were then interpolated from the EEG of adjacent channels via the spherical spline interpolation; (6) remaining artifacts were removed using ICA. Independent components (ICs) related to the scalp muscle artifact, ocular artifact and ECG artifact, were automatically rejected using a pattern classifier trained on expert-labeled ICs from another independent EEG dataset; and (7) EEG data were re-referenced to the common average. After artifact rejection, 54 EEG channels common to all four study sites were identified and extracted for each subject. Subjects whose total powers across all the channels were beyond three s.d. of the mean total power were discarded. Consequently, of the 266 patients with pretreatment EEG recordings, 228 had usable EEG data for analyses. The baseline sociodemographic and clinical information of these 228 patients is provided in Supplementary Table 1. The 38 patients with unusable EEG
+
+recordings mainly had too many bad EEG channels and exceedingly large total power across channels.
+
+Second dep

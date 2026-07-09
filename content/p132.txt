@@ -1,0 +1,58 @@
+The need to approximate the use-case in clinical machine learning
+
+GigaScience, 6, 2017, 1–9
+doi: 10.1093/gigascience/gix019
+Advance Access Publication Date: 15 March 2017
+Research
+
+The need to approximate the use-case in clinical machine learning
+Sohrab Saeb, Luca Lonini, Arun Jayaraman, David C. Mohr, and Konrad P. Kording
+
+Abstract
+The availability of smartphone and wearable sensor technology is leading to a rapid accumulation of human subject data, and machine learning is emerging as a technique to map those data into clinical predictions. As machine learning algorithms are increasingly used to support clinical decision making, it is vital to reliably quantify their prediction accuracy. Cross-validation (CV) is the standard approach where the accuracy of such algorithms is evaluated on part of the data the algorithm has not seen during training. However, for this procedure to be meaningful, the relationship between the training and the validation set should mimic the relationship between the training set and the dataset expected for the clinical use. Here we compared two popular CV methods: record-wise and subject-wise. While the subject-wise method mirrors the clinically relevant use-case scenario of diagnosis in newly recruited subjects, the record-wise strategy has no such interpretation. Using both a publicly available dataset and a simulation, we found that record-wise CV often massively overestimates the prediction accuracy of the algorithms. We also conducted a systematic review of the relevant literature, and found that this overly optimistic method was used by almost half of the retrieved studies that used accelerometers, wearable sensors, or smartphones to predict clinical outcomes. As we move towards an era of machine learning-based diagnosis and treatment, using proper methods to evaluate their accuracy is crucial, as inaccurate results can mislead both clinicians and data scientists.
+
+Keywords: Machine learning; cross-validation; clinical outcomes; rehabilitation outcomes; prediction accuracy; diagnosis; smartphones; wearable technology
+
+Introduction
+Machine learning has evolved as the branch of artificial intelligence that studies how to solve tasks by learning from examples rather than being explicitly programmed. In medicine, a great hope for machine learning is to automatically detect or predict disease states as well as assist doctors in diagnosis, using data collected by phones and wearable sensors. An increasing number of studies apply machine learning to the data collected from these devices for clinical prediction purposes. Examples include detecting cardiovascular diseases, falls, measuring rehabilitation outcomes in stroke and amputees, monitoring Parkinson's disease (PD) symptoms, and detecting depression.
+
+The majority of machine learning algorithms used for clinical predictions use the supervised learning approach: first, a set of features is computed from the raw data. Features are then fed into a machine learning classifier, whose parameters are adjusted to map each input data point (feature vector or record) to its corresponding label, e.g., "healthy". Once the classifier is trained on enough data, it can be used to perform predictions on new subjects.
+
+A crucial stage is to assess the prediction accuracy of the trained machine learning algorithm. The standard approach is cross-validation (CV), where the data is split into training and test subsets. Methods include leave-one-out, leave-p-out, k-fold, and Monte-Carlo sampling.
+
+For CV to be valid, training and test sets need to be independent. The definition of independence depends on the use-case scenario. If the use-case is diagnosis (global models for new subjects), CV must be subject-wise: training and test sets contain records from different subjects. If the goal is prognosis (personal models predicting future clinical states of a given subject), we can split by time. In more complex scenarios, we may want to generalize from one clinical site to another, requiring CV across sites.
+
+In a diagnosis scenario, we want a model that generalizes to new subjects; thus we must use subject-wise CV. Nevertheless, one can employ record-wise CV, which randomly splits data regardless of subject. Records from the same subject are present in both training and test sets. The machine learning algorithm can find an association between unique features of a subject (e.g., walking speed) and their clinical state, which automatically improves its prediction accuracy. As a consequence, record-wise CV can overestimate the prediction accuracy.
+
+Hypothetical example: four subjects, two healthy (walking speeds 1 m/s and 0.4 m/s) and two PD (0.6 m/s and 0.2 m/s). Subject-wise CV gives roughly 50% accuracy. Record-wise CV with 10 records per subject gives 100% accuracy because subject identification replaces disease recognition.
+
+Aims: (i) demonstrate the potential bias caused by using inappropriate CV methods for clinical prediction, and (ii) examine how widespread the problem is.
+
+Human activity recognition
+We chose a publicly available human activity recognition dataset containing 30 subjects performing 6 activities: sitting, standing, walking, stair climbing up/down, and laying down. Data from accelerometer and gyroscope of a smartphone. Each record = 561 features over 2.56 s window. Total 10,299 records, average 343 per subject. We used random forests in MATLAB R2015a. For each method we used 2, 10, or 30 subjects, and k-fold CV with k = 2, 10, or 30. Number of trees = 50. Training repeated 100 times.
+
+Analyses: subject-wise CV: with 2 folds and 2 subjects, error started at 27%, decreasing to 9% at 30 subjects, leveling around 7% at 30 folds. Record-wise CV: error started at 2% with only two subjects and did not significantly change. Record-wise CV significantly overestimated classification accuracy.
+
+Simulated clinical prediction
+Generative model: y(s,r,n) = a*beta_s + b*u(s,n) + c*v(s,r,n) + d*eps_n. beta_s encodes disease effects (1 for patients, -1 healthy). u(s,n)~N(0,1) cross-subject variability; v(s,n,r)~N(0,1) within-subject variability; eps_n~N(0,1) population-level feature-generating process. Datasets with 4 to 32 subjects. N=10 features, R=100 records. a=0.5, d=0.1. b and c varied 0 to 2 in increments of 0.1.
+
+Analyses: for small b and c, classification error was small (disease effect dominates). Higher c increased errors, especially subject-wise. Increasing cross-subject variability b alone did not increase error for record-wise (small number of subjects) but dramatically increased error for subject-wise. Record-wise CV underestimated classification error relative to subject-wise. Subject-wise CV error was closer to the true error (from a held-out dataset of 10 subjects). The difference between record-wise and subject-wise errors was largest when the number of subjects was small.
+
+Systematic review
+Searched literature (PRISMA). Google Scholar query: (intitle:wearable OR intitle:smartphone OR intitle:smartphones OR intitle:accelerometer) AND (diagnosis OR disease OR rehabilitation) "Cross-Validation" (from 2010).
+
+Eligibility criteria: peer-reviewed English; used ML to predict clinical/rehab outcome; used CV; more than one record per subject; not personal models; not review/book chapter; CV type not unknown.
+
+Determining CV type - subject-wise if: used term "subject-wise" or "leave-one-subject-out"; tested on subjects not in training; no overlap between subject IDs. Record-wise if: number of CV folds greater than number of subjects; randomly split whole dataset; overlap between subject IDs.
+
+Analyses: 369 papers retrieved, screened first 200. 113 excluded on title/abstract. 87 full-text assessed, 25 excluded. 62 included. 28 used record-wise, 34 subject-wise (about 45% record-wise). Accuracies from 47 papers: subject-wise median classification error 13.00%, record-wise 5.60% (P<0.01 Wilcoxon rank sum). Median citations: subject-wise 10.5, record-wise 9.0 (close).
+
+Discussion
+Record-wise CV produces misleadingly high accuracy for global models. About 45% of studies used record-wise CV. Accuracies reported by record-wise (inappropriate) were higher than subject-wise (correct). A significant proportion of studies are dramatically overstating ML ability to predict clinical outcomes. Also discussed hyperparameter tuning: should divide training set into training and validation subsets. Clinical records often include physical/physiological characteristics (waist size, blood type) that don't vary over time; record-wise CV lets algorithms exploit shortcuts. Proper validation is crucial to avoid irreproducibility.
+
+Availability: Project name Cross-validation Project; home page https://github.com/sosata/CrossValidation; MATLAB; MIT License. Human activity recognition dataset from UC Irvine ML Repository. Systematic review results in review_results.xlsx, GigaDB repository.
+
+Abbreviations: CV: Cross-validation; PD: Parkinson's Disease.
+Funding: NIH grants 5R01NS063399, P20MH090318, R01MH100482. AJ and LL supported by CBrace 80795 Otto Bock Healthcare Products.
+Author contributions: Design: SS, LL, KK. Data analysis: SS, LL, KK. Systematic review: SS, LL. Writing: SS, LL, AJ, DM, KK.
+Editor's note: accompanying review by Max A Little et al. on using and understanding cross-validation strategies.

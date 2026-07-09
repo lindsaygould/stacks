@@ -1,0 +1,777 @@
+REFORMS: Consensus-based Recommendations for Machine-learning-based Science 
+
+Science AdvAnceS | Review
+
+RESEARCH METHODS
+
+copyright © 2024 The REFORMS: Consensus- based Recommendations for Machine- learning- based Science
+
+Authors, some rights reserved; exclusive licensee American Association for the Advancement of Sayash Kapoor1,2\*, Emily M. Cantrell3,4, Kenny Peng5, Thanh Hien Pham1,2, Christopher A. Bail6,7,8, Odd Erik Gundersen9,10, Jake M. Hofman11, Jessica Hullman12, Michael A. Lones13, Momin M. Malik14,15,16, Priyanka Nanayakkara12,17, Russell A. Poldrack18, Inioluwa Deborah Raji19,
+
+Science. no claim to original U.S. Government works. distributed under a Michael Roberts20,21, Matthew J. Salganik2,3,22, Marta Serra- Garcia23, Brandon M. Stewart2,3,22,24,
+
+creative commons Gilles Vandewiele25, Arvind Narayanan1,2
+
+Attribution noncommercial Machine learning (ML) methods are proliferating in scientific research. However, the adoption of these methods
+
+License 4.0 (cc BY- nc). has been accompanied by failures of validity, reproducibility, and generalizability. These failures can hinder scientific progress, lead to false consensus around invalid claims, and undermine the credibility of ML- based science. ML methods are often applied and fail in similar ways across disciplines. Motivated by this observation, our goal is to provide clear recommendations for conducting and reporting ML- based science. Drawing from an extensive review of past literature, we present the REFORMS checklist (recommendations for machine- learning- based science). It consists of 32 questions and a paired set of guidelines. REFORMS was developed on the basis of a consensus of 19 researchers across computer science, data science, mathematics, social sciences, and biomedical sciences. REFORMS can serve as a resource for researchers when designing and implementing a study, for referees when reviewing papers, and for journals when enforcing standards for transparency and reproducibility.
+
+INTRODUCTION
+
+between explanatory and predictive modeling (28). The hype and Machine learning (ML) methods are being widely adopted for
+
+overoptimism about commercial artificial intelligence (AI) may spill scientific research (1–11). Compared to older statistical methods,
+
+over into scientific research (29). In addition, publication biases that they offer increased predictive accuracy (1), the ability to process
+
+have led to past reproducibility crises (30) are also present in ML large amounts of data (12), and the ability to use different types of
+
+research (31, 32). If left unchecked, these flaws can lead to a feedback data for scientific research, such as text, images, and video (7). How-
+
+loop of overoptimism because nonreplicable findings are cited more ever, the rapid uptake of ML methods has been accompanied by
+
+than replicable ones (33). There is an urgent need to systematically concerns of validity, reproducibility, and generalizability (13–20).
+
+address errors in ML- based science rather than finding errors in There are several reasons for concern. Performance evaluation is
+
+individual studies after publication. notoriously tricky in ML (21–24). ML code tends to be complex and
+
+Here, we focus on a specific subset of ML applications: ML- based as yet lacks standardization (25, 26), leading to a lack of computa-
+
+science. We use this term to refer to research that makes a scientific tional reproducibility (27). Subtle pitfalls arise from the differences
+
+claim using the performance of an ML model as evidence. For example, Salganik et al. (34) use ML models to investigate the predictability of life outcomes. This contrasts with ML methods research, which 1department of computer Science, Princeton University, Princeton, nJ 08544, USA. 2center for information Technology Policy, Princeton University, Princeton, nJ 08544, USA. 4School USA. 3of department Public and of international Sociology, Princeton Affairs, Princeton University, University, Princeton, Princeton, nJ 08544, nJ 08544, 14850, USA. USA. 6department 5department of of Sociology, computer duke Science, University, cornell durham, University, nc 27708, ithaca, USA. nY 7School department of Public of Political Policy, duke Science, University, duke University, durham, durham, nc 27708, nc USA. 27708, 9department USA. 8Sanford of computer Science, norwegian University of Science and Technology, Trondheim,
+
+involves improving widely applicable ML methods instead of making scientific claims using ML models. In the next section (“The scope of our claims: ML- based science”), we clarify the distinctions between ML methods research and ML- based science and outline the scope of the paper in greater detail. Box 1 summarizes this discussion.
+
+One promising way to detect and prevent errors in scientific research is by improving standards for conducting and reporting norway. USA. 12department 10Aneo AS, Trondheim, of computer norway. Science, 11Microsoft northwestern Research, University, new York, evanston, nY 10012, iL 60208, sity, edinburgh, USA. 13School UK. 14of center Mathematical for digital and Health, computer Mayo Sciences, clinic, Rochester, Heriot- watt Mn Univer- 55905, USA. 15School of Social Policy & Practice, University of Pennsylvania, Philadelphia, PA 19104, USA. 16institute in critical Quantitative, computational, ologies, Johns Hopkins University, Baltimore, Md 21218, USA. & 17department Mixed Method- of communication ment of Psychology, Studies, Stanford northwestern University, University, Stanford, evanston, cA 94305, iL USA. 60208, 19department USA. 18depart- of
+
+science (35–37). Clear expectations for using ML methods can allow researchers and referees to spot errors early. Despite the use of ML methods across disciplines, there are no widely applicable best prac- tices for reporting the design, implementation, and evaluation of ML- based science. This leads to different, and often no fixed stan- dards for conducting and reporting research in each field adopting ML methods. As a result, common failure modes in using ML methods computer Science, University of california, Berkeley, Berkeley, cA 94720, USA. 20cambridge, department cambridge, of Applied UK. Mathematics 21department and of Medicine, Theoretical University Physics, of University cambridge, of
+
+cambridge, 08544, USA. UK. 23Rady 22Office School of Population of Management, Research, University Princeton of University, california, Princeton, San diego, nJ
+
+La 08544, Jolla, USA. cA 92093, 25department USA. 24department of information of Politics, Technology, Princeton Ghent University, University, Princeton, Ghent, nJ
+
+Belgium. \*corresponding author. email: sayashk@ princeton. edu
+
+recur across disciplines (38, 39).
+
+Here, we introduce a checklist for ML- based science, with the goal of preventing known but common errors that occur when ML is used in scientific research. To that end, we review the literature on best practices and common errors in ML- based science. We introduce the REFORMS checklist for reporting ML- based science, which consists of 32 items across eight modules (Table 1). We accompany
+
+Kapoor et al., Sci. Adv. 10, eadk3452 (2024) 1 May 2024
+
+1 of 17
+
+Science AdvAnceS | Review
+
+Alongside the checklist, we release guidelines paired with each Box 1.
+
+item in the checklist (text S1). Similar guidelines have been included What is ML- based science?
+
+in past efforts at establishing standards. For instance, the STROBE- RDS ML- based science refers to scientific research that uses ML models to contribute to scientific knowledge. This includes making predictions, conducting measurements, or performing other tasks that help answer scientific questions. ML- based science could use various ML techniques such as supervised
+
+statement (37) included an “explanation and elaboration” document to clarify expectations for each item in the checklist. Our guidelines aim to increase the usability of the REFORMS checklist and to pro- vide pointers to best practices for ML- based science. learning, unsupervised learning, and reinforcement learning. The research
+
+The REFORMS checklist can help address common failure modes should be geared toward answering a scientific question of interest. Exclusions. not all ML research and applications qualify. For example, ML methods research and predictive analytics fall outside the scope. Similarly, quantitative research not using ML methods, such as explanatory
+
+that lead to errors in ML- based science. To guard against corners being cut because of time and publication pressures, the standards provide a set of clear expectations. To aid researchers new to ML- modeling and simulations, do not qualify as ML- based science.
+
+based science, the guidelines for each item identify resources and Applicability. Our checklist for ML- based science will be more useful for some types of research than others. For instance, research on the use of ML for predictions may benefit more than research on using ML for search tasks within vast and complex spaces.
+
+relevant past literature. While no single document would be enough to familiarize researchers with all the nuances of ML- based science, our hope is that the guidelines can be one useful pedagogical re- source. Finally, there are many steps involved in successfully reporting ML- based science. It is hard to keep all of these items in mind when writing up a study. REFORMS provides all 32 items in one docu- ment to prevent omission errors. REFORMS with a detailed set of guidelines to set expectations for each item (text S1).
+
+Checklists have been adopted in many scientific fields (35–37,
+
+THE SCOPE OF OUR CLAIMS: ML- BASED SCIENCE 40), and they have been impactful in improving reporting practices
+
+We define ML- based science as scientific research that uses the (41, 42). In 2014, the U.S. National Institutes of Health (NIH)
+
+performance of an ML model as evidence for a scientific claim. created principles to improve reproducibility and rigor, endorsed by
+
+This includes, but is not limited to, making predictions, con- several journals. One item was the creation of guidelines and checklists
+
+ducting measurements, or performing other tasks that contribute for journals (43). The EQUATOR network collects reporting guidelines
+
+to the body of scientific knowledge. This definition has two for health research and includes more than 500 checklists (44). Several
+
+parts: First, the research should be geared toward answering a sci- checklists have been proposed in ML methods research (32, 45, 46).
+
+entific question of interest. This means that other types of ML REFORMS differs from this large body of past work in crucial
+
+research and applications do not fit under the umbrella of ML- ways. First, past checklists for scientific research are field or method
+
+based science: specific. For example, the CLAIM checklist (35) provides best prac- tices for reporting research on AI in medical imaging. As a result,
+
+ML methods research many items in thechecklist do not apply to other scientific fields
+
+Research focusing on developing and refining ML methods, such as adopting ML methods. Because ML methods are being rapidly
+
+a typical NeurIPS paper, does not constitute ML- based science. adopted across fields, and research that uses ML methods suffers
+
+While such work does contribute new ML methods, the main objective from similar errors, we aimed to make the REFORMS checklist field
+
+is not to solve specific scientific problems of interest about general- agnostic. We selected items that broadly apply to fields that use ML
+
+izable populations. (Still, elements of the REFORMS checklist could methods. Second, past checklists for ML methods research focus on
+
+be valuable to ML methods research. This is particularly the case common errors in developing ML methods. However, these errors
+
+when these newly developed methods are evaluated on benchmarks differ from the ones that arise in scientific research (see Box 1 for the
+
+that directly influence their application in scientific contexts despite distinction between ML methods research and ML- based science).
+
+not being representative of real problems.) For instance, the checklist provided by Pineau et al. (32) does not include questions about the distribution about which the claims are
+
+Predictive analytics made, because ML methods research often focuses on improving a
+
+Many real- world applications of ML models emphasize predictive model’s performance on a benchmark dataset (47). In contrast,
+
+accuracy but are not conducted to gain scientific insights. For ex- clearly specifying the distribution of interest is core to a scientific
+
+ample, social media platforms use ML to predict if a user will click claim. Still, past work in both scientific research and ML methods
+
+on ads millions of times a day. There are many differences between research has helped inform our checklist.
+
+predictive analytics and ML- based science. In predictive analytics, We present findings from an extensive review of past research on
+
+the population or distribution of interest may not be clearly defined. best practices and common shortcomings relevant to each of the
+
+The relationships found using ML models only need to hold within eight checklist modules. Notably, the REFORMS checklist repre-
+
+a company or organization and need not generalize. Relative accu- sents consensus- based recommendations for ML- based science.
+
+racy is more important than absolute accuracy numbers because the These recommendations subtly differ from reporting guidelines: While
+
+decision to deploy a model has often already been made—so the reporting guidelines only include items that can be addressed by
+
+only question being answered by the modeling activity is which of a authors after a study has been conducted, consensus- based rec-
+
+given set of models should be deployed in production. In addition, ommendations, such as the REFORMS checklist, also inform readers
+
+verifying whether the predictions later come true is often easy. This of best practices and can take a stance on how certain research ac-
+
+feedback is a better test for whether an application works as intended tivities should be conducted.
+
+(compared to using a checklist).
+
+Kapoor et al., Sci. Adv. 10, eadk3452 (2024) 1 May 2024
+
+2 of 17
+
+Science AdvAnceS | Review
+
+Table 1. The REFORMS checklist for ML- based science. See text S1 for guidelines on how to use the checklist. Alongside each item, authors should report the section or page number where the item is reported. Some items in the ReFORMS checklist could be hard to report for specific studies. instead of requiring strict adherence for each item, authors and referees should decide which items are relevant for a study and how details can be reported better. To that end, we hope that the checklist can offer a useful starting point for authors and referees working on ML- based science.
+
+Module Item
+
+Study goals 1a. State the population or distribution about which the scientific claim is made.
+
+1b. describe the motivation for choosing this population or distribution (1a.). 1c. describe the motivation for the use of ML methods in the study. Computational reproducibility 2a. describe the dataset used for training and evaluating the model and provide a link or dOi to
+
+uniquely identify the dataset. 2b. Provide details about the code used to train and evaluate the model and produce the results reported in the paper along with link or dOi to uniquely identify the version of the code used. 2c. describe the computing infrastructure used. 2d. Provide a ReAdMe file which contains instructions for generating the results using the provided dataset and code. 2e. Provide a reproduction script to produce all results reported in the paper. 3a. describe source(s) of data, separately for the training and evaluation datasets (if applicable), Data quality
+
+along with the time when the dataset(s) are collected, the source and process of ground- truth annotations, and other data documentation. 3b. State the distribution or set from which the dataset is sampled (i.e., the sampling frame). 3c. Justify why the dataset is useful for the modeling task at hand. 3d. State the outcome variable of the model, along with descriptive statistics (split by class for a categorical outcome variable) and its definition. 3e. State the sample size and outcome frequencies. 3f. State the percentage of missing data, split by class for a categorical outcome variable. 3g. Justify why the distribution or set from which the dataset is drawn (3b.) is representative of the one about which the scientific claim is being made (1a.). Data preprocessing 4a. describe whether any samples are excluded with a rationale for why they are excluded.
+
+4b. describe how impossible or corrupt samples are dealt with. 4c. describe all transformations of the dataset from its raw form (3a.) to the form used in the model, for instance, treatment of missing data and normalization—preferably through a flow chart. Modeling 5a. describe, in detail, all models trained.
+
+5b. Justify the choice of model types implemented. 5c. describe the method for evaluating the model(s) reported in the paper, including details of train- test splits or cross- validation folds. 5d. describe the method for selecting the model(s) reported in the paper. 5e. For the model(s) reported in the paper, specify details about the hyperparameter tuning. 5f. Justify that model comparisons are against appropriate baselines. Data leakage 6a. Justify that preprocessing (Module 4) and modeling (Module 5) steps only use information
+
+from the training dataset (and not the test dataset). 6b. describe methods used to address dependencies or duplicates between the training and test datasets (e.g. different samples from the same patients are kept in the same dataset partition). 6c. Justify that each feature or input used in the model is legitimate for the task at hand and does not lead to leakage.
+
+Metrics and uncertainty
+
+3 of 17 7a. State all metrics used to assess and compare model performance (e.g., accuracy, AUROc etc.). Justify that the metric used to select the final model is suitable for the task. 7b. State uncertainty estimates (e.g., confidence intervals, standard deviations), and give details of how these are calculated. 7c. Justify the choice of statistical tests (if used) and a check for the assumptions of the statistical test. Generalizability and limitations 8a. describe evidence of external validity.
+
+8b. describe contexts in which the authors do not expect the study’s findings to hold.
+
+Kapoor et al., Sci. Adv. 10, eadk3452 (2024) 1 May 2024
+
+Science AdvAnceS | Review
+
+The second criteria for ML- based science is that the research
+
+instance, verifying the properties of a new drug in a lab), our checklist should use ML methods. By this, we refer to a variety of techniques
+
+might be less useful than such verification, though it could help including, but not limited to, supervised learning, unsupervised
+
+ensure the validity of the experiments before verification. learning, and reinforcement learning. Consequently, other types of quantitative research not using these methods do not fall under the umbrella of ML- based science:
+
+METHODS To develop the REFORMS checklist, we started with a focus on Explanatory modeling
+
+steps in a canonical ML pipeline, drew from previous checklists Such research uses traditional statistical methods for improving our
+
+used in other domains, and went through a consensus process with understanding of real- world phenomena rather than predicting out-
+
+all authors, involving multiple rounds of feedback and a virtual dis- comes (48). This is an example of quantitative scientific research that
+
+cussion. Table 2 lists the modules in our checklist and the corre- does not use ML methods. For more information about how explan-
+
+sponding stages in the ML pipeline. For each module, we focus on atory modeling differs from ML methods, see the section on item 1c
+
+three goals: (i) establishing the scientific claim and its relationship to (“Motivation for the use of ML methods in the study”). While
+
+the ML modeling process; (ii) providing an overview of the best explanatory modeling suffers from many shortcomings (13), errors
+
+practices and common shortcomings in building ML models cor- in this domain are subtly different compared to ML- based science,
+
+rectly; and (iii) enabling the verification of the results by an inde- which means that much of our checklist does not apply to explana-
+
+pendent researcher. In other words, we aim to decrease the likelihood tory modeling research.
+
+of errors of interpretation (goal 1) or execution (goal 2) and to make it easier for independent researchers to spot errors (goal 3). Box 2 Simulation
+
+outlines these goals in more detail. Box 3 summarizes how different Similarly, physics- based models and simulation methods are sometimes
+
+stakeholders—authors, referees, and journals—can use the checklist. evaluated iteratively by output and by their fidelity with existing
+
+To build on previous efforts at improving the reporting quality of theory (49, 50) and do not involve ML or fitting models to data—
+
+research, we used three past checklists to ensure our coverage of im- except potentially as a tool to understand and summarize the simu-
+
+portant items in reporting an ML model. Pineau et al. (32) provided lation results. As a result, many items in the REFORMS checklist do
+
+the checklist used alongside papers submitted to NeurIPS 2020, a promi- not apply. Note that some algorithms used in ML, like Markov chain
+
+nent ML methods conference. Collins et al. (40) provided the TRIPOD Monte Carlo, are examples of numerical simulations; however, these
+
+checklist for prediction models in health research. Mongan et al. are used only to fit models to data, which is different to simulating
+
+(35) introduced the CLAIM checklist for AI models in clinical an underlying phenomenon of interest.
+
+imaging. We chose these checklists because they covered diverse In sum, we call research at the intersection of ML methods and
+
+modeling approaches and were applicable in different settings—ML quantitative science “ML- based science.” The work of Salganik et al.
+
+methods research, models for individual diagnosis and prognosis, on the Fragile Families Challenge (34) is an example of this category.
+
+and ML for medical imaging, respectively. They used ML to predict children’s life outcomes and answer scientific questions about the predictability of outcomes studied by sociologists.
+
+Consensus process for developing the REFORMS checklist We discuss many other examples in our review.
+
+Once we had an initial set of items, authors met virtually for a dis- The checklist is broadly applicable to research where the scientific
+
+cussion. One of the main outcomes of the discussion was the need claim is supported by the accuracy of an ML model on an out- of-
+
+for a paired set of guidelines alongside each item to clarify how these sample test set. The specific ML method used is not important. As
+
+items should be reported, which we discuss in more detail below. Then, an example, research using logistic regression models would be
+
+the authors collaboratively edited the checklist to choose commonly within scope if the accuracy of the logistic regression model on an
+
+applicable items across disciplines. We paid close attention to usability: out- of- sample dataset is used to support the scientific claim of interest. See the section on item 1c (“Motivation for the use of ML methods in the study”).
+
+In some cases, our checklist may be applicable to scientific work
+
+Table 2. Stages of ML- based science and corresponding checklist with foundation models (51), which are a type of ML model, al-
+
+modules. though our focus in this paper is more general. There are several challenges with using proprietary foundation models for scientific Stage of scien- tific study research. For example, they are nondeterministic and can change without adequate notice (52, 53). This could lead to hard- to- resolve shortcomings in computational reproducibility. Foundation models are one example of a gray area in the definition of ML- based science. In such cases, we leave it up to the authors and referees to decide whether the REFORMS checklist is useful.
+
+Note that our checklist will likely be more helpful for some types of ML- based science than others. For instance, it is likely to be more useful for predictive modeling compared to research that uses ML methods for search tasks in vast and complex spaces, such as the search for new materials or new phases of matter (54). In cases where verifying the result of an ML- based experiment is easy (for
+
+4 of 17 Section of the checklist
+
+Study design Study goals (Module 1)
+
+computational reproducibility (Module 2) Data collection and preparation
+
+data quality (Module 3)
+
+data preprocessing (Module 4)
+
+Modeling Modeling decisions (Module 5) Evaluation data leakage (Module 6)
+
+Metrics and uncertainty quantification (Module 7) Scope and limitations Generalizability and limitations (Module 8)
+
+Kapoor et al., Sci. Adv. 10, eadk3452 (2024) 1 May 2024
+
+Science AdvAnceS | Review
+
+To decrease the time and cognitive load that using the checklist would Box 2.
+
+entail, we removed items that were too specific and would apply to a What is ML- based science?
+
+small subset of ML- based science. Last, the authors independently Goal 1: Establish the scientific claim and its relation to the ML task. A key feature of our checklist, distinguishing it from those used in ML methods research, is its focus on using ML to support scientific claims. in such research, it is necessary to establish the intended scientific claim as well as how the performance of the ML model supports that claim. For
+
+flagged unclear items to improve the quality of the checklist.
+
+A recurring theme in our conversation was making the checklist easy to use. To that end, we developed a set of accompanying guide- lines to help researchers understand the motivation for each section example, it is necessary to state the population of interest and justify why
+
+and clarify what is expected for each item in REFORMS. The guide- the dataset used in the ML task represents this population. This is as opposed to ML methods research, where the performance of a model on a benchmark dataset is often itself the main claim made in a paper. Goal 2: Ensure that the ML task is executed correctly and that the
+
+lines (text S1) are based on our review of past literature for items in the checklist (this review is presented next). We include references to key prior work to help onboard researchers new to using ML performance is reported in sufficient detail. To establish that the
+
+methods. This includes a mix of peer- reviewed scientific research performance of the specified ML model supports the intended scientific claim, it is necessary to ensure that the performance of the model is calculated correctly. There are many ways in which the performance of a model can be misleading. For example, a common error in ML research is evaluating a model on data it was trained on, resulting in overly optimistic
+
+that details best practices, as well as resources from the ML methods community that outline common shortcomings and ways to address them. Crucially, we do not take prescriptive stances on matters of ongoing methodological debate. Instead, we present best practices results. in addition, reporting uncertainty is necessary to interpret model performance correctly.
+
+to minimize and detect known types of errors in ML- based science.
+
+Goal 3: Enable an independent scientist to verify results. Finally, our checklist is designed to help ensure that all resources and descriptions needed for verifying a study are provided alongside the paper. Thus, our
+
+Organization of the paper In the remainder of the paper, we present the REFORMS checklist. checklist helps ensure that independent researchers can understand and
+
+They comprise eight modules based on the stages of an ML- based evaluate a given study. The three goals listed above are not intended to be disjoint and often support one another. They can help orient the reader when navigating our checklist, and they reveal how our checklist is tailored to ML- based science.
+
+science study (see Table 2). For each module, we motivate why items in this module are important to address in ML- based science. For each item, we include expectations about what it means to address the item sufficiently. In our review, we draw from past literature on best practices and common errors in ML- based science. We also occasionally draw on literature about science with traditional statis- tical methods, as best practices and shortcomings are shared in many aspects of ML- based science and other quantitative science. In Table 1, we provide a template for the REFORMS checklist. In text S1, we Box 3.
+
+distill the guidelines for filling out the checklist as a standalone doc- How authors, referees, and journals can use REFORMS. Our recommendations can help improve the quality of ML- based science in multiple ways.
+
+ument. In text S2, we present a table with additional details on the references used in our review.
+
+Authors can self- regulate by using the ReFORMS to identify errors and preemptively address concerns about using ML methods in their paper (42). This can also help increase the credibility of their paper, especially in fields that are newly adopting ML methods. we expect that ReFORMS will be useful to authors throughout the study—during conceptualization, implementation, and communication of the results (see Table 2 for a list of checklist modules corresponding to these goals). The checklist can be
+
+MODULE 1: STUDY GOALS This section focuses on stating a study’s goals. This is motivated by recent research that shows that reporting study goals in adequate depth and clarity is not trivial or common (55). Studies that appear included as part of the supplementary materials released alongside a
+
+to ask the same research question may actually have subtle differences paper. The guidelines can help authors learn how to correctly apply the ReFORMS checklist in their own work and introduce them to underlying
+
+in their questions which lead to substantially different findings (28).
+
+theories of evidence. Referees can use ReFORMS to determine whether a study they are reviewing falls short. if they have concerns about a study, they can ask
+
+1a) Population or distribution about which the scientific claim is made researchers to include the filled- out checklist in a revised version. For example, Roberts et al. (15) use the cLAiM checklist (35) to filter papers for a systematic review based on compliance with the checklist. Journals can require authors to submit a checklist along with their papers to improve standards for ML- based science. Similar checklists are in place
+
+The population of interest is the group to which the researchers in- tend the findings of the study to generalize. In the parlance of ML methods research, population is analogous to a “distribution” of scientific interest. That is, scientific claims are often made about data in a number of journals (90, 91); however, they are usually used for specific
+
+sampled from a certain distribution (56), rather than a specific popula- disciplines rather than for methods that are prevalent across disciplines (192). Because ML- based science is proliferating across disciplines, ReFORMS offers a method- specific (rather than discipline- specific) intervention. note that the ReFORMS checklist is additive to field- specific norms. it is not a replacement for existing requirements within fields, such as
+
+tion of individuals. For example, the performance of an image clas- sification tool might be made in the context of images taken from various distributions, such as satellite images of a certain region, instead of human populations. For brevity, we treat population and preregistration, ethics reviews, or using discipline- specific checklists for other parts of the research process. it might seem burdensome to ask researchers to adhere to another set of standards, but our work was born out of painful necessity: Studies across fields have repeatedly found reproducibility errors in ML- based science (39), and in the absence of a
+
+distribution interchangeably.
+
+The population is typically broader than the sampling frame and sample, which are discussed in Module 3. Defining the population of interest is important because it shapes the article’s conclusions, systematic intervention, this is likely to worsen.
+
+places boundaries on those conclusions, and provides the basis for metrics of significance and uncertainty that derive from the concept
+
+Kapoor et al., Sci. Adv. 10, eadk3452 (2024) 1 May 2024
+
+5 of 17
+
+Science AdvAnceS | Review
+
+of sampling from a population (55, 57, 58). Unfortunately, research arti-
+
+motivation for using ML methods will help readers better under- cles do not always clearly state their population of interest (55, 59, 60).
+
+stand a study’s goals. Considering the differences and similarities between Breiman’s two cultures may be useful to researchers when 1b) Motivation for choosing this population or distribution
+
+motivating the use of ML methods. In addition, many recent articles The choice of a particular population of interest may be motivated
+
+provide guidance on the value of ML methods for science (1, 7, 48, by pure scientific interest or by a need for applied knowledge. Ex-
+
+62, 67–71). plaining the motivation for studying the population of interest helps the reader understand the importance of the study and contextualize its results.
+
+MODULE 2: COMPUTATIONAL REPRODUCIBILITY We acknowledge that the motivation for choosing a particular
+
+Computational reproducibility refers to the ability of an indepen- population of interest may arise from what data is available. The
+
+dent researcher to get the same results as reported in a paper or development of the motivation depends on whether researchers fol-
+
+manuscript. It is an essential part of computational research (72). lowed a deductive, inductive, or iterative approach (61). In a deduc-
+
+Computational reproducibility can help independent researchers tive approach, researchers begin with a theory and a population of
+
+evaluate the findings in a paper and verify whether they hold up interest and then select or create a dataset based on the data’s ability
+
+under scrutiny. The availability of reproducibility materials has led to test that theory for that population. In an inductive approach,
+
+to several errors being spotted (73–78). Conversely, if the code and researchers begin with a dataset and then determine what research
+
+data for reproducing all results in a study are not available, then questions and populations of interest that dataset can address. In an
+
+identifying the precise sources of errors in a study becomes hard iterative approach, researchers iterate between data collection, data
+
+(79–81). analysis, and theory until they develop a hypothesis, and then collect additional data to test that hypothesis (61). The deductive approach
+
+Current computational reproducibility standards fall short is the most widely accepted approach in the scientific community,
+
+Some journals require authors to make their computational repro- but Grimmer et al. (61) argue that there is also great value in inductive
+
+ducibility materials available after publication without requiring and iterative approaches and that it is important to communicate
+
+these materials at the time of publication. However, such measures which approach was used.
+
+can miss the mark. Stodden et al. (82) attempted to contact the authors of 204 papers published in the journal Science to obtain 1c) Motivation for the use of ML methods in the study
+
+reproducibility materials. Only 44% of authors responded. Similarly, The research questions asked in ML- based studies often differ from
+
+Gabelica et al. (83) studied papers published in 333 open- access those asked with traditional statistical methods. Breiman (12) fa-
+
+journals indexed on BioMed Central in January 2019. Of the 1792 mously argued that there are “two cultures” in statistical modeling:
+
+papers that claimed they would share data upon request, 1669 did the “data modeling” culture and the “algorithmic modeling” culture.
+
+not share the data. That is, they were unable to get the data for 93% In the data modeling culture, which is aligned with traditional sta-
+
+of the papers. This indicates the importance of requiring computa- tistical methods, researchers’ focus is on estimating the parameters
+
+tional materials at the time of publication rather than at the authors’ of a function that is meant to meaningfully represent the process by
+
+discretion later. which input data produces output data in the world. This includes
+
+Vasilevsky et al. (84) studied the data- sharing policies at 318 bio- describing relationships between quantities of interest (“descriptive
+
+medical journals. They found that almost a third of these journals modeling”) and estimating causal effects (“explanatory modeling”)
+
+had no data- sharing policies in place. Even the journals that did (48). For example, researchers might ask, “what is the relationship
+
+have data- sharing policies did not have clear guidelines for authors between household income and the likelihood of experiencing clinical
+
+to comply with their policies. depression?,” and estimate the magnitude and direction of that
+
+ML methods research has also struggled to ensure computational relationship using a logistic regression model. In the “algorithmic
+
+reproducibility (85, 86). Gundersen and Kjensmo (18) systematically modeling” culture, which aligns with much of ML- based research,
+
+analyzed 400 papers that were published at leading conferences. In the focus is on building a model that reliably maps input data to
+
+addition to code and dataset availability, they evaluated the docu- output data. In this culture, the parameters do not necessarily need
+
+mentation of methods in a paper’s text, for instance, whether the to provide a faithful and interpretable description of patterns in the
+
+experimental setup is described. They found that none of the 400 papers world; rather, the goal is to accurately predict output data when
+
+satisfied all of their reproducibility criteria, and in general, papers given a new sample of input data that is separate from the original
+
+only satisfied 20 to 30% of the criteria. data sample in which the model was trained. For example, researchers
+
+Pineau et al. (32) found that only around half of the papers might ask, “given all the data available about a person in a particular
+
+submitted to NeurIPS 2018, a leading ML conference, contained the dataset, how accurately can we predict whether that person will
+
+code and data needed to reproduce results. To improve reproduc- experience clinical depression?,” and test a variety of models to find
+
+ibility, they introduced a checklist that was used in NeurIPS 2019. In the one with the best predictive accuracy. (This could include pre-
+
+the checklist, including reproducibility materials was optional but dictions made with simple models like linear or logistic regression.)
+
+recommended. Still, after the checklist was introduced, more than Breiman’s proposition was that more scientific research should use
+
+75% of the papers included reproducibility materials along with the algorithmic modeling (12). Several responses to Breiman have argued
+
+submissions. Similar checklists have become the standard at several for the value of merging the two cultures or moving iteratively
+
+ML conferences (87–89). While ML methods research differs from between them (48, 62–66).
+
+ML- based science in its goals and practices, we can learn from these Because non- ML (data modeling) methods are currently the
+
+experiences to emphasize the importance of computational repro- standard approach in many scientific disciplines, explaining the
+
+ducibility in ML- based science.
+
+Kapoor et al., Sci. Adv. 10, eadk3452 (2024) 1 May 2024
+
+6 of 17
+
+Science AdvAnceS | Review
+
+Ensuring computational reproducibility in
+
+a study, documentation for the dataset is also important. For in- ML- based science is challenging
+
+stance, authors can include data dictionaries (97) or datasheets (98). ML methods used in scientific research can be complex and often
+
+Such documentation should report basic details about the proper- require numerous packages and dependencies. This makes computa-
+
+ties and format of the data. tional reproducibility challenging (27). Liu and Salganik (25) describe
+
+Some datasets could contain sensitive information and cannot be their experiences ensuring computational reproducibility while
+
+publicly released. To address this, authors have previously released editing a special issue in Socius on the Fragile Families Challenge.
+
+synthetic datasets when working with sensitive data (99–102). However, The Fragile Families Challenge was a prediction competition where
+
+a limitation of synthetic data is that we can never know the patterns inher- multiple participants tried to predict children’s life outcomes on the
+
+ent to the original data to check if those patterns are preserved in the same dataset (34). The special issue published papers based on a few
+
+synthetic data (103, 104). As a result, we cannot understand whether of the resulting models. Liu and Salganik wanted to ensure that the
+
+important relationships and properties of the original data have code and data alongside every publication were verified to ensure
+
+been preserved. that they produced the same results as those presented in the paper. Despite spending 13 months working on achieving computational
+
+2b) Code reproducibility and exchanging dozens of emails with the authors,
+
+Similarly, it is important to report the exact version of code used they were unable to verify the computational reproducibility of all
+
+for running the experiments and producing the results in a paper papers. Even preliminary steps, like installing the correct versions of
+
+(105). Authors can accomplish this by providing a Digital Object each package, were nontrivial when a large number of packages were
+
+Identifier (DOI), commit tag (for instance, from code repositories used in a study. They could eventually verify the computational repro-
+
+such as GitHub, GitLab, or BitBucket), or other documentation to ducibility of 7 of the 12 papers. They published the rest with the code
+
+precisely identify the version of the code used to train and evaluate and data available at the time of publication.
+
+the model and produce the results reported in the paper. Note that using archiving systems that provide permanent identifiers for the Interventions adopted by journals
+
+code used, like Dataverse, is likely to aid long- term reproducibility Journals have adopted several measures to improve computational
+
+(106, 107). reproducibility (90–92). The Transparency and Openness Promo- tion standards introduced by the Open Science Foundation (93)
+
+2c) Computing environment have a few sections that focus on computational reproducibility in
+
+Different computational experiments require different amounts of scientific research. They are divided into three levels: Level 1 re-
+
+computing resources. To help readers understand the precise quires stating whether the computational reproducibility materials
+
+computing requirements for reproducing the study, authors should are available. If they are, authors should provide details about how to
+
+report details about the hardware (CPU, RAM, and disk space), soft- access them. Level 2 requires the materials to be available in a trusted
+
+ware (operating system, programming language, and version num- repository at the time of publication. Level 3 requires the materials
+
+ber for each package used), and computing resources (time taken to to be verified by the journal to ensure that they generate the results
+
+generate the results) used to generate their results. Stodden and reported in the paper before publication.
+
+Miguez (108) provide best practices to document computing Several social science journals use the Data and Code Availability
+
+infrastructure. Standards for computational reproducibility (94). Other journals have taken additional measures to verify whether the code is correct.
+
+2d) Documentation For instance, Nature Methods conducts code reviews in addition to
+
+Good documentation helps researchers unfamiliar with a project by peer reviews for papers that provide computational artifacts (95).
+
+walking them through the steps of setting up and running the code In our checklist, we include the basic details that can enable inde-
+
+provided, starting from environment requirements and installation, pendent researchers to verify the computational reproducibility of a
+
+to examples of usage and expected results (109, 110). result. Our checklist requires information about the dataset, code, computing environment, documentation for how to get the results
+
+2e) Reproduction script in a study, and a reproduction script to automatically run the code
+
+A script to produce all results reported in the paper using the re- and generate results. We acknowledge that computational reproduc-
+
+producibility materials can substantially reduce the time it takes ibility is hard and that some items in this module are more challeng-
+
+for an independent researcher to reproduce the results reported in ing compared to others. For instance, it is not always possible to
+
+a study. Reproduction scripts can download packages with the version release private datasets. When one aspect of computational repro-
+
+numbers needed to run the code, set the right dependencies, ducibility cannot be entirely met, researchers can still aim to satisfy
+
+download and store datasets in the correct location, set up the comput- the other aspects (e.g., provide a reproduction script even when data
+
+ing environment, and run the code to produce the results reported cannot be made available). Researchers can also address limitations
+
+in the paper. through alternative means. We provide some such options below,
+
+Authors can implement such scripts in several ways, such as such as providing a synthetic imitation of the data when the real
+
+using a bash script (111) or using an online reproducibility platform data cannot be publicly released.
+
+such as CodeOcean (112). Note that this is a high bar for computa- tional reproducibility. In some cases, it might not be possible to 2a) Dataset
+
+provide a script that would allow an independent researcher to re- Peng et al. (96) and Nosek et al. (93) highlight the importance of
+
+produce all results—for instance, if the analysis is run on an aca- citing datasets with permanent links to clarify which version of a
+
+demic high- performance computing cluster or if the dataset does dataset is used in a study. If an original dataset is provided alongside
+
+not allow for programmatic download.
+
+Kapoor et al., Sci. Adv. 10, eadk3452 (2024) 1 May 2024
+
+7 of 17
+
+Science AdvAnceS | Review
+
+MODULE 3: DATA QUALITY
+
+The outcome variable is typically an empirical proxy for an un- This module helps readers and referees understand and evaluate the
+
+observable theoretical construct (119). For example, researchers quality of the data used in the study. Using poor- quality data or data
+
+might pose a question about the construct “academic performance” that is not suitable for answering a research question can lead to
+
+and use grade point average as measured in school administrative results that are meaningless or misleading.
+
+data as the empirical proxy for this construct. The outcome variable is usually not a perfect match for the theoretical construct it repre- 3a) Data source(s)
+
+sents. Thus, to allow readers to evaluate a paper’s claims, authors Describing a study’s data source(s) allows readers to evaluate the data’s
+
+should describe precisely how their outcome variable is measured strengths and weaknesses and to judge whether the data is appropriate
+
+and note any ways in which this outcome variable might not align for the study’s goals. Most studies provide descriptions of their data source,
+
+with the associated construct. This is especially important because but those descriptions sometimes lack important details (113–115).
+
+mismatches between variables and the constructs they are purported In addition, the quality of reporting about ground- truth annotation
+
+to represent can create fairness issues (120). methods in ML- based science varies widely (116). To ensure a minimum
+
+Our checklist also asks for descriptive statistics about the outcome level of information about data sources is reported, our checklist asks
+
+variable. Reviews of prior literature have found that descriptive researchers to report when, where, and how data was collected, and how
+
+statistics are not always sufficiently reported (121, 122). Descriptive ground- truth annotations were performed on the dataset, if applicable.
+
+statistics about the outcome variable help readers to understand the context being studied and to identify concerns related to rare values 3b) Sampling frame
+
+or skewed data. A sampling frame is a list of people or units from which a sample is drawn. Because of practical limitations, the sampling frame in many
+
+3e) Number of samples in the dataset studies does not include all members of the target population. It is
+
+Reporting sample size is important because a study must have important to describe a study’s sampling frame so that readers
+
+sufficient sample size to achieve its objectives. Some research objectives understand the boundaries of the study’s sample and how that sample
+
+can be achieved with small to moderate- sized samples: for example, relates to the target population (discussed further under checklist
+
+detecting large differences between groups. Other objectives generally item 3g: Dataset for evaluation is representative).
+
+require large samples: for example, studying rare events, studying Some research papers do not provide a clear description of their
+
+heterogeneity, or detecting small differences (118). sampling frame or eligibility criteria for inclusion in the sample (59,
+
+Note that there can be downsides to large sample sizes. When the 113, 117). Furthermore, one review article found that when papers
+
+sampling frame is unrepresentative, increasing the sample size can stated information about their sampling frame or eligibility criteria
+
+shrink confidence intervals without decreasing bias in estimates, thus was available in a prior publication, the prior publication was not
+
+giving false confidence (123). Furthermore, if a study exposes par- always accessible, and the relevant information was often extremely
+
+ticipants to any level of risk, larger samples may magnify harms (118). difficult or impossible to find (117).
+
+Scientific literature is generally consistent about reporting total sample size (59, 124). However, reporting on sample size for sub- 3c) Justification for why the dataset is useful for the
+
+groups or sample size after attrition in longitudinal research is less modeling task
+
+consistent (59). To ensure clear reporting, our checklist asks that in Our checklist asks researchers to justify why the dataset is useful for
+
+addition to the total sample size, researchers who are conducting a the modeling task because the appropriateness of a data source will
+
+classification task report the number of samples in each class. This depend on the research question. For example, while biased or
+
+follows recent calls for more granular details about data, such as by incomplete data is inappropriate for some research questions, such
+
+Gebru et al. (98). We also ask researchers to distinguish between the data can work well for other research questions as long as the re-
+
+number of individuals in the dataset and the number of rows in searcher understands how these shortcomings affect the analysis
+
+the dataset, in cases where an individual can appear in more than and communicates the limitations (61). A broad claim like “this is
+
+one row. the best dataset available on this topic” does not help readers un- derstand the strengths and weaknesses of the data for the study’s
+
+3f) Missingness research question; researchers should be specific about why the
+
+Missing data is highly prevalent in many research domains and can dataset is well suited to the question.
+
+affect the results (34, 125, 126). It is important for researchers to Modern ML- based research often relies on repurposed data sources,
+
+report the prevalence of missing data in their dataset and to specify which are sometimes termed “big data:” for example, social media data,
+
+how they handled missingness (125). Missingness is particularly im- digital trace data, or digital administrative records (118). Salganik (118)
+
+portant to address carefully when it is nonrandom (127). Extensive describes 10 common characteristics of “big data” that result in differ-
+
+literature across multiple fields has established that research articles ing strengths and weaknesses compared to traditional data sources. Re-
+
+frequently provide insufficient information about the presence and searchers who are using ML with repurposed data can use these 10
+
+handling of missing data (59, 113, 126, 128–132). characteristics as a guide when justifying why the data source is appro-
+
+Checklist item 3f focuses on reporting the prevalence of missing priate for their research goals and identifying shortcomings of the data.
+
+data. Reporting how missing data is handled is covered in item 4c: Data transformations. 3d) Outcome variable Our checklist asks researchers to report how their outcome variable
+
+3g) Dataset for evaluation is representative is defined. The outcome or target variable is the quantity that the
+
+This item asks researchers to justify that their sample is representative model is used to predict, detect, classify, or estimate.
+
+of the target population defined in Module 1. Representativeness is
+
+Kapoor et al., Sci. Adv. 10, eadk3452 (2024) 1 May 2024
+
+8 of 17
+
+Science AdvAnceS | Review
+
+important for the study’s ability to generalize from the sample to the
+
+the threshold of popularity used to determine the subset of posts target population. Lack of representativeness in the sampling process is
+
+considered plays a large role in influencing the predictability of sometimes underreported; for example, one review of past literature
+
+cascade size. The scientific claim—regarding the predictability found underreporting of information about selection bias (59).
+
+of the success of a post—depends on what data are included and Probability sampling is a common approach for achieving repre-
+
+excluded. We ask authors to justify why the particular subset of data sentativeness. However, probability sampling is not always necessary.
+
+used was chosen. Because of coverage errors and nonresponse in probability sampling, the differences between probability sampling and nonprobability
+
+4b) How impossible or corrupt samples are dealt with sampling are not always as large as they first appear (118). For stud-
+
+A dataset may contain erroneous or undesirable data points. Data ies that use nonprobability sampling, researchers may be able to make
+
+may be impossible (e.g., a person whose height is recorded as 10 feet) a reasonable argument for representativeness by comparing sample
+
+or corrupted (e.g., a survey response filled out by a bot). Different characteristics with population characteristics (57). Researchers can
+
+techniques have been developed to detect such cases (133, 134). also use statistical methods to adjust for nonprobability sampling
+
+Attempting to filter such data can be important to ensure the data- (or to adjust for errors in probability sampling), such as post-
+
+set represents the intended population of the study. Data detected as stratification, sample matching, propensity score weighting, and
+
+impossible or corrupt may be removed or transformed—our checklist calibration (118).
+
+asks authors to report such steps in items 4a and 4c, respectively. In some studies, the dataset will not be representative of the target population. Reasons a sample might fail to be representative
+
+4c) Data transformations of the target population depend on the type of data collected. For
+
+Once the set of data points to be used is decided upon, researchers example, Salganik (118) describes three types of representation er-
+
+could transform the data in various ways: for example, by normalizing ror in survey data, and Grimmer et al. (61) describe four sources of
+
+or augmenting data, or imputing missing data. Both imputing miss- bias in sample selection for text analysis. A nonrepresentative sam-
+
+ing data and under/oversampling from a subpopulation—if done ple is okay for certain research goals. For example, Salganik argues
+
+improperly—can harm the validity of model performance in rela- that research that aims to make out- of- sample generalizations gen-
+
+tion to the scientific claim made. For example, mean imputation and erally requires representative data, but research that aims to make
+
+oversampling must be done separately on each fold of a dataset. Failing within- sample comparisons can be well suited to nonrepresentative
+
+to do so can result in overoptimistic results (78). data (118). Concerns about nonrepresentativeness should be noted
+
+Specifying preprocessing steps is also important for ensuring the under checklist item 8a: Evidence of external validity.
+
+reproducibility of the results. Choices in preprocessing technique can substantially affect the properties of the resulting model, including accuracy and interpretability (135, 136). MODULE 4: DATA PREPROCESSING Preprocessing is the series of steps taken to convert the dataset from its rawest available form into the final form used in the modeling
+
+MODULE 5: MODELING process. This includes data cleaning and selection (i.e., selecting a
+
+Researchers make several choices in creating an ML model. The set of samples from the dataset to be included in the modeling pro-
+
+exact specification of the model is important to consider with re- cess) as well as other transformations of the data, such as imputing
+
+spect to the particular scientific claim being made. In addition, missing data and normalizing feature values.
+
+because of the large number of choices involved in creating an ML Our checklist focuses on two broad components of preprocessing:
+
+model, it is important to report exact details of how an ML mod- first, the subset of data to consider (i.e., which rows of a dataset are
+
+el is created—otherwise, reproducibility by independent research- considered), and second, the transformations that are subsequently
+
+ers could be hindered. Raff (137) attempted to reproduce ML results applied to the data (i.e., how entries of a dataset might be altered).
+
+from 255 papers using only the paper’s text (i.e., without using Each of these components has implications on the scope and validity
+
+the code accompanying a paper), and found that 93 could not be of resulting scientific claims and are essential for ensuring the
+
+reproduced. reproducibility of the results. As discussed in Module 3, preprocessing
+
+Modeling choices are also closely related to choices involving methods are often not specified in papers.
+
+evaluation. Model selection—the process of choosing the model(s) whose results are reported in a study—often depends on the evalua- 4a) Excluded data and rationale
+
+tion setup. An improper approach to evaluation or model selection Researchers might exclude some samples from the dataset—for
+
+can result in exaggerated performance estimates. instance, to remove outliers or to only focus on certain subsets.
+
+Major ML conferences, such as NeurIPS and International Thus, the resulting scientific claims should be made in r

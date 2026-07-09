@@ -1,0 +1,780 @@
+Esketamine disinhibits brain networks in depression: Evidence from oscillatory and aperiodic activity 
+
+Available online 5 July 2025 0278-5846/© 2025 Elsevier Inc. All rights are reserved, including those for text and data mining, AI training, and similar technologies.
+
+Esketamine disinhibits brain networks in depression: Evidence from oscillatory and aperiodic activity
+
+Verina Guirguis a,b, Sanvi Korsapathy a,b, Francesca Pupillo a,b, Robert K. McClure a, David Zarzar a, Mengsen Zhang c, Flavio Frohlich a,b,1, Tobias Schwippel a,b,\*,1
+
+a Department of Psychiatry, University of North Carolina at Chapel Hill, Chapel Hill, NC 27599, USA b Carolina Center for Neurostimulation, University of North Carolina at Chapel Hill, Chapel Hill, NC 27599, USA c Department of Computational Mathematics, Science and Engineering, Michigan State University, East Lansing, MI 48824, USA
+
+A R T I C L E I N F O
+
+Keywords: Esketamine Major depressive disorder Brain oscillations Aperiodic exponent Disinhibition
+
+A B S T R A C T
+
+Background: Nasal Esketamine is a rapid-acting intervention for depression, hypothesized to exert its effects through cortical disinhibition. However, the spatio-temporal dynamics of brain network activity and their relationship to the subjective drug experience following Esketamine administration remain elusive. This obser- vational study aims to delineate brain network-level effects of Esketamine by analyzing changes in oscillatory and aperiodic EEG activity within 90 min following nasal Esketamine treatment in depression. Methods: Eight individuals with major depressive disorder undergoing regular Esketamine treatment participated in the study. High-density, eyes-open resting state EEG was recorded before and subsequently five times up to 90 min post-administration. Before each recording, individuals completed ratings of individual drug experience. EEG spectral features were separated into canonical frequency bands and aperiodic exponent. Primary outcomes were changes in neural activity and their association with individual drug experience. Results: Following Esketamine administration, we observed a marked decrease of frontoparietal alpha power and central beta and a significant increase of frontal midline delta and low gamma power, indicative of cortical disinhibition and reduction of top-down control. Correspondingly, the aperiodic exponent decreased, suggestive of a shift of the excitation/inhibition balance towards excitation. These electrophysiological changes were accompanied by an increase in subjective ratings of highness and happiness, and a decrease in tension. Further analyses revealed significant relationships between changes in neural activity and subjective drug experience. Conclusion: Our findings suggest that Esketamine induces brain network disinhibition and reduces top-down control. These neurophysiological changes closely correlate with individual drug experience, providing valu- able insights into the neural mechanisms underlying Esketamine’s immediate behavioral effects.
+
+1\. Introduction
+
+Since its initial FDA approval in 2019 (Havlik et al., 2023), Esket- amine, the S-Enantiomer of the dissociative anesthetic Ketamine, has been utilized as a new rapid-acting treatment for depression. Unlike traditional antidepressants that target monoamine neurotransmitters, Esketamine uniquely modulates glutamatergic signaling. In particular, its nasal application (Spravato) is increasingly used and has proven effective in reducing depression symptoms (Calder et al., 2024; Papa- kostas et al., 2020; Daly et al., 2019).
+
+Nasal Esketamine has a rapid onset of action, reaching peak plasma
+
+concentration within 20 to 40 min before declining (Perez-Ruixo et al., 2021; Walter et al., 2014). Its primary effects are thought to be due to preferential blocking of glutamate N-methyl-D-aspartate (NMDA) re- ceptors on GABAergic interneurons (Zanos and Gould, 2018), leading to an increase in glutamatergic neurotransmission and network-level excitation via α-amino-3-hydroxy-5-methyl-4-isoxazolepropionic acid (AMPA) receptors (Lazzaro et al., 2003; Zhou et al., 2014). It has been hypothesized that the interaction of molecular effects leads to an overall shift in the excitation/inhibition (E/I) balance (Nguyen et al., 2023) causing network-level disinhibition, known as the disinhibition hy- pothesis (Zanos and Gould, 2018; Borsellino et al., 2023). This
+
+\* Corresponding author at: 100 Market Street, Chapel Hill, NC 27516, USA.
+
+E-mail address: schwippel@gmail.com (T. Schwippel). 1 Authors contributed equally
+
+Progress in Neuropsychopharmacology & Biological Psychiatry 140 (2025) 111438
+
+Contents lists available at ScienceDirect Progress in Neuropsychopharmacology & Biological Psychiatry
+
+journal homepage: www.elsevier.com/locate/pnp
+
+https://doi.org/10.1016/j.pnpbp.2025.111438 Received 3 October 2024; Received in revised form 26 March 2025; Accepted 3 July 2025
+
+V. Guirguis et al. Progress in Neuropsychopharmacology & Biological Psychiatry 140 (2025) 111438
+
+2 disinhibition may correct the E/I imbalance implicated in depression
+
+infusion (Nugent et al., 2019). Meanwhile, an EEG study noted a (Sanacora et al., 2012; Hu et al., 2023) and is followed by downstream
+
+reduction in alpha and theta power immediately following Ketamine effects leading to complex network-level interactions at short and long
+
+infusion, alongside an increase in gamma power both immediately and time scales (Aleksandrova and Phillips, 2021; Zanos, 2017; Williams
+
+2 h post-administration (de la Salle et al., 2022). McMillan and col- et al., 2019; Zarate et al., 2006; Kang et al., 2022; Duman et al., 2016).
+
+leagues continuously measured EEG for seven minutes during Ketamine However, the direct mapping from molecular effects to network-level
+
+infusion and reported increased theta, high beta, low and high gamma dynamics, and further, to behavioral-level changes remains elusive.
+
+power, and decreased delta, alpha, and low beta power (McMillan et al., Network dynamics in the brain are frequently studied at the meso-
+
+2020). Despite the lack of consistency in methodology, a recent review scopic scale using electroencephalography (EEG) to observe oscillatory
+
+highlighted the association between clinical response and increased activity. Neural oscillations, arising from synchronous depolarization of
+
+frontal-parietal gamma power after Ketamine administration (Medeiros neuronal populations, serve the function of network-level integration
+
+et al., 2023). With regard to aperiodic neural activity, two recent studies and communication across spatio-temporal scales (Frohlich, 2016;
+
+found that Ketamine infusion anesthesia in healthy participants reduced Helfrich and Knight, 2016), thereby enabling higher-order cognitive
+
+the aperiodic exponent, indicating an E/I balance shift towards excita- functions. Specifically, slower oscillations, such as delta (2–4 Hz) and
+
+tion, consistent with the disinhibition hypothesis (Colombo et al., 2019; theta (4–8 Hz), facilitate long-range integration and coordination across
+
+Waschke et al., 2021). brain regions, while alpha oscillations regulate attention, top-down
+
+However, major gaps remain in the understanding of the effect of processing, and inhibition (Helfrich and Knight, 2016; Jensen and
+
+nasal Esketamine on brain network dynamics. First, existing studies Mazaheri, 2010). Faster gamma oscillations (\~30–100 Hz) are associ-
+
+focused on racemic ketamine, which cannot be directly generalized to ated with neural excitation and local processing (Buzs´aki and Wang,
+
+Esketamine due to their distinct pharmacokinetic profiles (Johnston 2012).
+
+et al., 2024). Furthermore, the absence of high-density EEG and multi- Importantly, altered brain oscillations are often associated with
+
+timepoint behavioral and neurophysiological assessments post- mental disorders. In depression, an excess and imbalance of prefrontal
+
+Ketamine administration prevents a comprehensive understanding of alpha oscillations have been observed (Fingelkurts and Fingelkurts,
+
+spatio-temporal dynamics and their relation to different dimensions of 2015). By targeting alpha oscillations, FDA-approved 10 Hz repetitive
+
+subjective experience. Finally, not accounting for aperiodic activity in transcranial magnetic stimulation (rTMS) has demonstrated symptom
+
+the neural signal might confound the interpretation of oscillatory ac- improvements, underscoring the significance of oscillatory activity
+
+tivity (Donoghue et al., 2022; Donoghue et al., 2020) and contribute to (Leuchter et al., 2013). Additionally, transcranial alternating current
+
+discrepant findings. To bridge these gaps, the present study employed a stimulation (tACS) successfully renormalized alpha oscillations, which
+
+series of high-density EEG measures to capture the spatio-temporal dy- correlated with clinical improvement (Alexander et al., 2019; Schwippel
+
+namics of brain network activity following the administration of nasal et al., 2024). Similarly, gamma oscillations, which represent locally
+
+Esketamine at multiple time points up to 90 min. Changes in oscillatory synchronized neural activity (Buzs´aki and Wang, 2012), are increasingly
+
+and aperiodic neural activity were modeled separately and evaluated as recognized as relevant to depression symptomatology (Fitzgerald and
+
+predictors of participants’ subjective drug experience. Based on the Watson, 2018). Recent studies have demonstrated that changes in delta
+
+disinhibition hypothesis, we predict that Esketamine administration will and theta power are associated with clinical outcomes following phar-
+
+shift the E/I balance towards excitation. This shift is expected to mani- macological treatment for depression (Schwartzmann et al., 2024).
+
+fest as a reduction in alpha oscillatory activity, an increase in gamma Consequently, investigating the impact of Esketamine on brain network
+
+oscillatory activity, and a decrease in the aperiodic exponent. Further- oscillations is vital for comprehending its mechanisms in depression
+
+more, we anticipate that individual subjective drug experiences will treatment.
+
+correlate with these neural changes. Recently, aperiodic neural activity has been recognized for its po- tential role in cognitive processes (He et al., 2010), making it relevant
+
+2\. Methods for neuropsychiatric disorders. Previously considered noise, it shares characteristics with other complex systems, including a power law dis-
+
+This observational study utilized resting state, high-density, 128- tribution (1/fx) where the power is inversely proportional to the fre-
+
+channel EEG to investigate neural dynamics in individuals with major quency f. In EEG power spectra, it is observed as a negative linear trend
+
+depressive disorder (MDD) treated with nasal Esketamine. The Institu- underlying the peaks of oscillatory activities in the log-log scale (Fig. 4).
+
+tional Review Board at the University of North Carolina at Chapel Hill This trend is considered to stem from stochastic excitatory and inhibi-
+
+(IRB \#22–0696) approved the study. Clinicians in the Interventional tory currents in the brain (Gao et al., 2017) from which brain oscillations
+
+Neuropsychiatry Clinic of the Department of Psychiatry at UNC emerge (Freeman, 2000). The aperiodic exponent (slope) of the trend
+
+recruited participants. Each participant’s study visit took place during may reflect the E/I balance (Gao et al., 2017; Lombardi et al., 2017). The
+
+their routine Esketamine treatment appointment, with study protocols potential clinical relevance of the aperiodic exponent for neuropsychi-
+
+extending the visit by approximately three hours. All participants pro- atric disorders was recently demonstrated by the renormalization of the
+
+vided written informed consent and received monetary compensation. aperiodic exponent through the NMDA receptor blocker Memantine in
+
+The study protocol was registered on the International Clinical Trials individuals with schizophrenia (Molina et al., 2020) and in a study
+
+Registry Platform (NCT06012916). involving individuals with ADHD (Robertson et al., 2019). For depres- sion specifically, a change of the aperiodic exponent has been discussed
+
+2.1. Participants as a potential biomarker for depression severity (Hacker et al., 2023). Thus, examining the spatio-temporal effect of Esketamine on the
+
+Clinicians recruited eight participants with treatment-resistant MDD, aperiodic exponent may further elucidate the role of altered E/I balance
+
+defined as at least two unsuccessful medication trials in the current in depression and its treatment.
+
+episode. Participants received a mean of 25 (SD = 27.61) Esketamine Existing evidence of Ketamine’s effect on neural activity stems pre-
+
+treatments prior to the study visit (Table S2). Participants were 18 years dominantly from racemic Ketamine infusion studies. Ketamine infusion
+
+or older and receiving Esketamine for the treatment of MDD in the studies in healthy participants have consistently reported increased
+
+Department of Psychiatry of the University of North Carolina at Chapel gamma activity, while findings for other frequency bands have varied
+
+Hill. No specific exclusion criteria applied apart from the inability to (Shaw et al., 2015; Curic et al., 2021; Zacharias et al., 2020; De la Salle
+
+give informed consent. et al., 2016). In individuals with depression, a magnetoencephalography (MEG) study reported increased gamma oscillations 6-8 h post Ketamine
+
+V. Guirguis et al. Progress in Neuropsychopharmacology & Biological Psychiatry 140 (2025) 111438
+
+2.2. Experimental procedure
+
+Researchers obtained a resting state EEG measurement (2 min, eyes- open) approximately 10 min before Esketamine administration (base- line). Five additional measurements (2 min, eyes-open) were taken at 15, 35, 50, 75, and 90 min post-Esketamine administration (Fig. 1).
+
+2.3. Pre-treatment neuropsychological questionnaires
+
+At the beginning of their in-person study session, participants completed the following computerized questionnaires: Patient Health Questionnaire (PHQ-9), Generalized Anxiety Disorder-7 (GAD-7), Snaith-Hamilton Pleasure Scale (SHAPS), State-Trait Anxiety Inventory (STAI), and Quality of Life, Enjoyment, and Satisfaction Questionnaire- Short Form (Q-LES-Q-SF). In accordance with their regular treatment protocol, individuals were assessed by their clinicians using the Ham- ilton Depression Rating Scale-17 (HDRS-17) prior to receiving Esketamine.
+
+2.4. Individual drug experience and ketamine side effects
+
+Participants rated their individual drug experiences on a scale from 0 to 100 using seven Visual Analogue Mood Scales (VAMS) (“happy”, “sad”, “calm”, “tense”, “energetic”, “sleepy”, plus “high”) before each EEG measurement (Luria, 1975). Additionally, researchers administered the Ketamine Side Effects Tool (KSET) at baseline, 50 and 90 min post- administration. In contrast to the KSET, which employs a 4-point scale and primarily focuses on physical symptoms, the VAMS provides a more nuanced assessment of current mood states through its continuous scale. Its simple design enables rapid administration, making it ideally suited for clinical settings and for repeated assessments of drug effects, including when participants are strongly affected by Esketamine (Arruda et al., 1996).
+
+2.5. EEG recording and preprocessing
+
+We collected eyes-open resting state EEG data using a high-density 128-channel system at 1000 Hz sampling rate (NetAmps 410, Elec- trical Geodesics Inc., OR, USA). Before the experiment, an electrolyte gel was administered below the electrodes to reduce impedances to \<50 kΩ. We implemented a semi-automatic preprocessing pipeline that included a high-pass filter at 1 Hz, a low-pass filter at 80 Hz, and com- mon average re-referencing. We automatically removed power line
+
+3
+
+Fig. 1. Study Design.
+
+artifacts and manually rejected noisy channels, which were then inter- polated spherically. After performing Independent Component Analysis (ICA), we used a combined automatic and manual component rejection process (see Supplementary Methods). Welch’s smooth spectral decomposition method was performed to estimate the power spectral density (PSD). Next, we used FOOOF toolbox (Donoghue et al., 2020) to fit the power spectra with aperiodic and periodic components with a fitting range of 2–80 Hz and a maximum of ten peaks allowed. We fitted all spectra with a fixed aperiodic mode, extracted the aperiodic signal, and analyzed the flattened PSD. From the aperiodic model fit, the aperiodic exponent was computed, which represents the slope of the linear model fit in log-log space. For analyses, the delta band was defined as 2–4 Hz, theta as 4–8 Hz, alpha as 8–12 Hz, beta as 12–30 Hz, low gamma as 30–58 Hz, and high gamma as 62–78 Hz.
+
+2.6. Statistical analysis
+
+Statistical analyses were conducted in MATLAB (version 2023) and R (version 4.1, R Core Team). The significance level was set at α \< 0.05 for all analyses.
+
+2.6.1. EEG analysis
+
+Flattened PSD and aperiodic exponent from 90 EEG head channels were extracted for each subject. Cluster permutation testing using the cluster\_perm1 function from the Mass Univariate ERP toolbox (version 1.0.4) across timepoints and channels was performed (Groppe et al., 2011) computing 10,000 permutations with a cluster significance level of 0.05, family-wise error rate of 0.05 and fixed seed. Clustermass correction was employed. Separately, we utilized a random-intercept Linear Mixed Effects Model (LMM) with treatment contrast including averaged whole-brain aperiodic exponent as the dependent variable and timepoint as a fixed effect predictor.
+
+2.6.2. Behavioral analysis
+
+We employed LMMs to investigate changes in individual drug experience over time, incorporating timepoint as fixed effect and random intercept for participant. Treatment contrasts were applied to compare subsequent timepoints with baseline. Due to the study’s exploratory nature, no correction for multiple comparisons was imple- mented in the behavioral analyses.
+
+2.6.3. Brain-behavior relation analysis
+
+We selected previously significant EEG frequency bands and
+
+V. Guirguis et al. Progress in Neuropsychopharmacology & Biological Psychiatry 140 (2025) 111438
+
+behavioral results and employed a random intercept LMM with behavior
+
+Table 2 as the dependent variable and PSD / aperiodic exponent as a fixed effect
+
+Psychiatric Symptom Severity predictor. Specifically, PSD and aperiodic exponent were extracted from
+
+Score (M ± SD) significant channels following cluster permutation testing at any time- point post-Esketamine administration (“lme4” package in R (Bates et al., 2015)).
+
+4
+
+PHQ-9 HDRS-17 GAD-7 12.38 ± 6.67 10.38 ± 5.34 7.00 ± 7.35 SHAPS 42.75 ± 9.92 3. Results
+
+STAI
+
+State 47.75 ± 15.41
+
+Eight participants with a mean age of 51 years (SD = 18.7) were
+
+Trait Q-LES-Q-SF 52.25 ± 18.82 40.38 ± 13.21 included in the data analysis. Further demographic and clinical infor- mation are provided in Tables 1, 2, and S1, S2.
+
+Patient Health Questionnaire (PHQ-9), Hamilton Depression Rating Scale-17 (HDRS-17), Generalize Anxiety Disorder-7 (GAD-7), Snaith-Hamilton Pleasure 3.1. Esketamine effects on individual drug experience
+
+Scale (SHAPS), State-Trait Anxiety Inventory (STAI), Quality of Life, Enjoyment, and Satisfaction Question- Random intercept LMMs with treatment contrast were employed
+
+naire- Short Form (Q-LES-Q-SF). with VAMS score as the dependent variable and timepoint as the inde- pendent variable (Fig. 2). LMMs revealed that highness significantly increased as early as 15 min post-Esketamine administration (β = 7.787, SE = 1.41, p \< 0.001), peaked at 35 min (β = 8.287, SE = 1.41, p \< 0.001) and remained elevated at 50 min (β = 6.275, SE = 1.41, p \< 0.001) and 75 min post-administration (β = 4.350, SE = 1.41, p = 0.004). Happiness peaked at 15 min post-Esketamine administration (β = 2.0875, SE = 0.70, p = 0.005) and this increase was sustained up to 35 min (β = 2.000, SE = 0.70, p = 0.007). Lastly, tension significantly decreased at 35 min post-administration (β = − 2.438, SE = 1.16, p = 0.042). All other individual drug experiences assessed with VAMS showed a numerical reduction immediately after Esketamine adminis- tration and gradually returned to baseline values (Fig. S1).
+
+3.2. Esketamine effects on oscillatory activity
+
+Separate cluster permutation tests identified significant clusters for a change in alpha, beta, low gamma and delta PSD up to 90 min post- Esketamine administration (Fig. 3). In contrast, theta and high gamma oscillations did not exhibit significant clusters. Specifically, alpha PSD showed a significant decrease that was maintained consistently at each measurement point up to 90 min (clustermass = − 1033.53, p = 0.014). Reduction started primarily occipital-parietal at 15 min, then extended to bilateral prefrontal cortices encompassing nearly all EEG head channels (35, 55 min). At 75 min and 90 min post-Esketamine admin- istration, the prefrontal cluster diminished, and the significant cluster predominantly included occipital-parietal channels again. Beta PSD significantly decreased post-Esketamine administration, exhibiting a significant cluster at each timepoint (clustermass = − 776.71, p = 0.007). The early cluster (15 min) included posterior and central- midline channels which extended into frontal midline channels. Over time, the cluster narrowed towards midline, including channels from prefrontal to parietal cortex. Delta PSD was significantly increased post-
+
+Esketamine administration (clustermass = 257.87, p = 0.032), yielding significant clusters up to 75 min. Delta PSD cluster exhibited a more restricted topography, with early frontal and posterior channels (15, 35 min) and predominantly frontal-midline channels after 55 and 75 min. Delta PSD returned to baseline after 90 min post-Esketamine adminis- tration. Low gamma PSD significantly increased after Esketamine administration (clustermass = 132.04, p = 0.031) up to 90 min. The cluster consisted of a small number of channels encompassing frontal- midline channels. Finally, we present results for non-fooofed and fooo- fed PSD of canonical frequency bands in the supplementary material (Table S3, S4). These results demonstrate that not accounting for aperiodic activity confounded the interpretation of non-fooofed oscil- lations, particularly affecting frequencies below 8 Hz and above 30 Hz. The supplementary material provides additional data, including videos that illustrate the spatio-temporal dynamics of Esketamine effects across various frequency bands and the aperiodic exponent for indi- vidual participants (Video S1–7).
+
+3.3. Esketamine effects on aperiodic activity
+
+First, we analyzed whole-brain changes in the aperiodic exponent over time. The random intercept LMM revealed that the aperiodic exponent decreased significantly at 15 min (β = − 0.2187, SE = 0.06, p \< 0.001), 35 min (β = − 0.2043, SE = 0.06, p = 0.002), 50 min (β = − 0.1764, SE = 0.06, p = 0.006), and 75 min (β = − 0.1828, SE = 0.06, p = 0.004) post-Esketamine administration (Fig. 4).
+
+Next, we applied the same cluster permutation algorithm to the aperiodic exponent as we did for oscillatory activity, yielding more precise spatial information. The aperiodic exponent significantly decreased post-Esketamine administration (clustermass = − 562.53, p = 0.022), exhibiting significant clusters up to 90 min. Topographically, the cluster initially included left frontal-parietal channels at 15 min, then extended to right frontal and left parietal channels at 35 min. Later Table 1
+
+timepoints (55, 75 and 90 min) included left frontal-central and left Demographic Information
+
+parietal channels (Fig. 3).
+
+Demographics n = 8
+
+Age (M ± SD) 50.75 ± 18.72
+
+3.4. Neural activity and individual drug experiences Gender (Female) 6 RaceAsian Black or African American 1 2
+
+For highness, the LMM revealed that a decrease in alpha PSD (β = − 16.429, SE = 4.35, p \< 0.001), beta PSD (β = − 18.625, SE = 6.00, p =
+
+Caucasian 3
+
+0.018), and the aperiodic exponent (β = − 13.673, SE = 3.33, p \< 0.001) Other 2
+
+increased highness. Conversely, an increase in low gamma PSD (β = Ethnicity Hispanic or Latino Not Hispanic or Latino Education
+
+1 7
+
+74.491, SE = 19.99, p \< 0.001) and delta PSD (β = 29.150, SE = 6.27, p \< 0.001) were linked to higher highness scores. Regarding happiness, a decrease in alpha PSD had a significant effect (β = − 6.570, SE = 2.18, p Some college or associate’s degree 2
+
+\= 0.004), as well as an increase in low gamma PSD (β = 38.109, SE = Bachelor’s degree Advanced degree (MD, PhD, Master’s) 2 4
+
+8.66, p \< 0.001) and delta PSD (β = 7.78, SE = 3.36, p = 0.025). For tension, the LMM showed that a decrease of beta PSD (β = 10.515, SE =
+
+V. Guirguis et al. Progress in Neuropsychopharmacology & Biological Psychiatry 140 (2025) 111438
+
+Fig. 2. Individual Drug Experience Over Time. Mean difference scores for significant Visual Analogue Mood Scales relative to baseline. All VAMS difference scores are provided in the supplementary material (Fig. S1). Error bars represent standard error. \*p \< 0.05, \*\*p \< 0.01, \*\*\*p \< 0.001.
+
+5 4.34, p = 0.027) and increase of low gamma PSD (β = − 37.037, SE =
+
+Additionally, asking about highness is intuitively understood and pro- 13.46, p = 0.009) were associated with lower tension.
+
+vides an easily measurable continuous variable. This was confirmed by the fact that a significant increase in the KSET dissociation item was only
+
+3.5. Esketamine side effects
+
+observed 50 min post-Esketamine administration. The small and tran- sient increase of happiness indicates its distinction from Esketamine’s
+
+The random intercept LMM with treatment contrast showed that KSET score significantly increased at 50 min post-Esketamine adminis-
+
+“rapid” antidepressive effect, which unfolds over hours to days (Bahji et al., 2021).
+
+tration (β = 3.8571, SE = 1.75, p = 0.048). However, we found no significant change from baseline at 90 min, indicating that Esketamine side effects resolved by this time. The dissociation item of the KSET also
+
+4.2. Oscillatory activity
+
+significantly 90 min.
+
+increased at 50 min (p = 0.015), but was not significant at
+
+We observed increased delta (2–4 Hz) and low gamma PSD (30–58 Hz), along with decreased beta (12–30 Hz) and alpha PSD (8–12 Hz)
+
+4\. Discussion
+
+following Esketamine administration in individuals with depression.
+
+This observational study provides preliminary evidence of the potent effects of nasal Esketamine on oscillatory and aperiodic neural activity, persisting up to 90 min post-administration in individuals with depres- sion. The observed decrease in alpha power spectral density (PSD), in- crease in low gamma PSD, and decrease in the aperiodic exponent suggest an E/I balance shift towards excitation, supporting the disinhi- bition hypothesis. Importantly, our findings include insights into the spatial localization of these effects, which correlated with individual drug experience, establishing an immediate link between mesoscale neural activity and behavior on the macroscale. Specifically, the expe- rience of highness arose from the complex interplay of loss of long-range top-down control (alpha, beta), increase in local excitation (gamma, aperiodic exponent) and inhibition of sensory input (delta).
+
+4.2.1. Gamma oscillations
+
+We noted an increase in low gamma PSD directly following Esket- amine administration (15, 35 min). This increase was primarily located in the left frontal midline and gradually returned to baseline activity at 90 min. Given that gamma oscillations result from the coordinated interaction of local excitatory and inhibitory neural activity, which is modulated by inhibitory interneurons (Buzs´aki and Wang, 2012), the observed increase in gamma PSD could signify a local disinhibition of neural activity (Buzs´aki and Wang, 2012). Fittingly, a gamma power increase has also been linked to depression symptom improvement (Noda et al., 2017). Notably, the significant gamma cluster was located in the left-central prefrontal cortex (PFC), a region implicated in depression (Pizzagalli and Roberts, 2022) and identified as an effective treatment target for excitatory rTMS treatments (Schwippel et al., 2019). The observed disparity between low and high gamma PSD in 4.1. Individual drug experience
+
+response to Esketamine might reflect a unique susceptibility of different oscillations, regulated by distinct inhibitory interneurons (Keeley et al., The increase in highness temporally aligned with the presumed peak
+
+2017). Esketamine plasma concentration. In contrast to dissociation, feeling “high” encompasses a broader spectrum of feelings and experiences,
+
+4.2.2. Beta oscillations reflecting a continuum of increasing detachment from external stimuli.
+
+Beta PSD immediately decreased following Esketamine
+
+V. Guirguis et al. Progress in Neuropsychopharmacology & Biological Psychiatry 140 (2025) 111438
+
+Fig. 3. Change of Oscillatory Activity and Aperiodic Exponent. Flattened PSD difference scores for six canonical frequency bands and the aperiodic exponent. Values represent difference scores by subtraction relative to baseline. Black dots represent channels within a significant cluster (p \< 0.05) for each frequency band across all channels, participants, and time points. Videos illustrating changes in oscillatory and aperiodic activity of selected individuals can be retrieved from the supplementary material (Video S1–7).
+
+administration and remained significantly reduced until 90 min exhib- iting a central-posterior cluster. Apart from their sensorimotor func- tions, beta oscillations have been implicated in stabilizing the current brain state, top-down processing and long-range communication (Spitzer and Haegens, 2017). Interestingly, it has been proposed that an excess of beta oscillations could lead to an ultra-stable brain state, resulting in a decrease of adaptive cognition and behavior (Engel and Fries, 2010) – a state that closely mirrors a depression phenotype and stands in contrast to a detached state of highness.
+
+4.2.3. Alpha oscillations
+
+Following the administration of Esketamine, we observed an im- mediate and widespread decrease in alpha oscillations, which gradually faded. However, a significant cluster remained present in the occipital- parietal and left frontal areas at 90 min. Alpha oscillations, which gate information processing via inhibition (Jensen and Mazaheri, 2010; Laufs et al., 2003), also modulate local gamma activity and long-range gamma synchronization through cross-frequency coupling. As anticipated, we found an anticorrelation between low gamma and alpha PSD after Esketamine administration, suggesting a state of disinhibition and reduced top-down control in the cortex. In the context of depression, an abnormal increase of alpha oscillations, especially in the left PFC, has been documented (Fingelkurts et al., 2006), and the targeted reduction of alpha oscillations in the PFC using repeated non-invasive brain stimulation has been investigated as a new treatment approach (Alexander et al., 2019; Schwippel et al., 2024).
+
+6
+
+4.2.4. Delta oscillations
+
+After a widespread increase at 15 min, delta PSD increase narrowed down to the left central PFC and reverted to baseline levels at 90 min. Interestingly, one could observe a temporal and spatial concurrence between the increase in delta and low gamma PSD. Also, the increase of theta PSD did not reach significance but exhibited a characteristic cen- tral midline pattern. Both oscillations have been implicated in guiding top-down behavior and integration of functional networks across brain areas (Helfrich et al., 2019), especially by hierarchically coordinating local gamma activity (Florin and Baillet, 2015). The correlation of delta PSD with highness could suggest that Esketamine shifts the brain’s state from engaged wakefulness towards a state of increasing detachment from external stimuli. Fittingly, studies report an increase in prefrontal delta oscillations during meditation (Faber et al., 2008), which was interpreted as a decoupling of brain networks leading to the subjective experience of detachment – a state not dissimilar to highness.
+
+4.3. Aperiodic exponent
+
+We observed an immediate reduction of the aperiodic exponent, most prominently in left central-frontal electrodes. This reduction diminished over time leaving a small significant cluster in the frontal- midline at 90 min. A decrease of the aperiodic exponent leads to a flatter power spectrum in the log-log scale, which has been linked to a E/ I balance shift towards excitation (Fig. 3) (Gao et al., 2017; Chini et al., 2022). Although E/I balance is considered to be a global variable, our
+
+V. Guirguis et al. Progress in Neuropsychopharmacology & Biological Psychiatry 140 (2025) 111438
+
+Fig. 4. Change of Aperiodic Exponent & Schematic Illustration of 1/f Activity. A. Change of Aperiodic Exponent: Experimental data. Mean whole brain aperiodic exponent difference scores relative to baseline. Error bars represent standard error. \*\*p \< 0.01, \*\*\*p \< 0.001. B. Schematic Illustration of 1/f Activity: Shifts in excitation/inhibition (E/I) balance due to changes in the aperiodic exponent. A reduction of the aperiodic exponent flattens the slope of the power spectrum in log/log scale and increases excitation. Illustration is based on the average aperiodic exponents at baseline (blue, Pre-Ket) and post treatment (red, Post-Ket) of our dataset. (For interpretation of the references to color in this figure legend, the reader is referred to the web version of this article.)
+
+7 high-density approach again hints at the involvement of the left PFC.
+
+to the experience of highness. Consistent with our findings, a recent preprint details intracranial re- cordings from the ventromedial prefrontal cortex (VMPFC) of five in-
+
+4.5. Limitations dividuals with depression. The authors observed flatter slopes of the aperiodic signal (smaller aperiodic exponent) during a more euthymic
+
+The generalizability of our study is constrained by the small number mood state (Hacker et al., 2023).
+
+of participants. To mitigate this, we implemented repeated measures within each participant, enhancing statistical power. The absence of a 4.4. Integration in theoretical framework
+
+placebo group impedes a causal interpretation of Esketamine effects, and our study sample exhibited considerable heterogeneity in terms of Following Esketamine administration, the immediate dynamics of
+
+depression severity and the number of Esketamine sessions already oscillatory and aperiodic neural activity point towards a state of tran-
+
+received. Our sample also included a disproportionate number of fe- sient disinhibition. Notably, the increase of gamma oscillations,
+
+males compared to males. Nevertheless, the robustness of our results in a reflecting local excitation, was accompanied by a widespread reduction
+
+clinical setting underscores the potent effect of Esketamine. Subsequent in alpha and beta oscillations. Given their role in top-down control and
+
+analyses could investigate cross-frequency coupling, and employ non- brain network integration, along with reports of overly coupled brain
+
+linear topological analysis methods (Zhang et al., 2023), which was networks in depression (Voytek and Knight, 2015), one could speculate
+
+beyond the scope of this study. that the experience of highness is mirrored by a functional decoupling of distributed brain networks. Furthermore, the increase in delta oscilla-
+
+4.6. Conclusion tions indicates an attentional shift towards internal processes (Harmony, 2013), aligning with the experienced detachment following Esketamine
+
+This study is the first to our knowledge to examine the spatio- administration. While this study only indirectly assessed decoupling
+
+temporal dynamics of oscillatory and aperiodic neural activity alongside disinhibition as a mechanism of action for Esketamine, it is
+
+following Esketamine treatment in depression. Our findings support the supported by Ketamine’s known effects, such as causing schizophrenia-
+
+disinhibition hypothesis and underscore Esketamine’s multiscale effects, like symptoms (Beck et al., 2020) and dysconnectivity in resting state
+
+which may lead to local disinhibition, reduction of top-down control fMRI (Adhikari et al., 2020). The notion of a potential Esketamine-
+
+potentially through network decoupling, and behavioral detachment. induced brain network decoupling is therefore consistent with disrup-
+
+Future studies may explore how the immediate neural state relates to tion of functional connectivity through psychedelics (Siegel et al., 2024)
+
+long-term clinical outcomes and investigate how interventions such as and the “relaxed beliefs under psychedelics” (REBUS) framework, which
+
+psychotherapy or brain stimulation can actively shape this state to suggests a breakdown of top-down control in response to psychedelics
+
+enhance the effectiveness and durability of Esketamine’s therapeutic (Carhart-Harris and Friston, 2019). Similar to our findings following
+
+effects. Esketamine, a reduction of alpha and beta oscillations under psyche-
+
+Supplementary data to this article can be found online at https://doi. delics has been reported, which has been closely linked to individual
+
+org/10.1016/j.pnpbp.2025.111438. experiences and interpreted as reduction of top-down control (Muthukumaraswamy et al., 2013; Carhart-Harris et al., 2016). More-
+
+Ethical statement over the REBUS/entropic brain hypothesis (Carhart-Harris, 2018) pro- poses that psychedelics increase the entropy of the neural signal.
+
+The Institutional Review Board at the University of North Carolina at Strikingly, our finding of Esketamine-induced aperiodic exponent
+
+Chapel Hill (IRB \#22–0696) approved the study. Clinicians in the reduction is in line with this hypothesis, implying a shift towards higher
+
+Interventional Neuropsychiatry Clinic of the Department of Psychiatry entropy and randomness of aperiodic neural activity, which was related
+
+at UNC recruited participants. All participants provided written
+
+V. Guirguis et al. Progress in Neuropsychopharmacology & Biological Psychiatry 140 (2025) 111438
+
+informed consent and received monetary compensation. The study protocol was registered on the International Clinical Trials Registry Platform (NCT06012916).
+
+Funding
+
+This study received no specific grant from any funding agency. It received financial support from the Department of Psychiatry, Univer- sity of North Carolina at Chapel Hill, NC, USA.
+
+Declaration of Generative AI in the writing process
+
+During the preparation of this work, Tobais Schwippel utilized Microsoft Copilot to enhance the English language usage. Following the use of this tool, the authors conducted a thorough review and made necessary edits to the content. No AI-assisted technology was used for data analysis or for writing the results or methods sections of the manuscript. The authors bear full responsibility for the content of the publication.
+
+CRediT authorship contribution statement
+
+Verina Guirguis: Visualization, Investigation, Conceptualization, Software, Formal analysis, Writing – original draft, Project administra- tion, Data curation. Sanvi Korsapathy: Investigation, Writing – review & editing, Conceptualization, Software. Francesca Pupillo: Writing – review & editing, Conceptualization, Software, Investigation. Robert K. McClure: Writing – review & editing, Resources, Investigation. David Zarzar: Writing – review & editing, Resources, Investigation. Mengsen Zhang: Writing – review & editing, Validation, Supervision. Flavio Frohlich: Writing – review & editing, Resources, Conceptualization. Tobias Schwippel: Supervision, Writing – original draft, Formal anal- ysis, Validation, Conceptualization.
+
+Declaration of competing interest
+
+Flavio Frohlich is a full-time employee of the University of North Carolina at Chapel Hill. Flavio Frohlich is the lead inventor of IP issued to UNC and licensed to Electromedical Products International (EPI). In the last twelve months, Flavio Frohlichhas received consulting hono- raria from the following entities: EPI, Insel Spital, and the University of Michigan. Flavio Frohlichis a shareholder of EPI. In the last twelve months, Flavio Frohlich has received royalties from Academic Press and the University of North Carolina at Chapel Hill. The work reported here is unrelated. Verina Guirguis, Sanvi Korsapathy, Francesca Pupillo, Robert McClure, David Zarzar, Mengsen Zhang and Tobias Schwippel report no potential conflicts of interest.
+
+Acknowledgements
+
+We would like to express our gratitude to all the individuals who participated in this study.
+
+Data availability statement
+
+Deidentified subject data and code for the statistical analysis are available upon request.
+
+References
+
+Adhikari, B.M., Dukart, J., Hipp, J.F., Forsyth, A., McMillan, R., Muthukumaraswamy, S. D., et al., 2020. Effects of ketamine and midazolam on resting state connectivity and comparison with ENIGMA connectivity deficit patterns in schizophrenia. Hum. Brain Mapp. 41, 767–778. Aleksandrova, L.R., Phillips, A.G., 2021. Neuroplasticity as a convergent mechanism of
+
+ketamine and classical psychedelics. Trends Pharmacol. Sci. 42, 929–942.
+
+8
+
+Alexander, M.L., Alagapan, S., Lugo, C.E., Mellin, J.M., Lustenberger, C., Rubinow, D.R., et al., 2019. Double-blind, randomized pilot clinical trial targeting alpha oscillations with transcranial alternating current stimulation (tACS) for the treatment of major depressive disorder (MDD). Transl. Psychiatry 9, 106. Arruda, J.E., Stern, R.A., Legendre, S.A., 1996. Assessment of mood state in patients
+
+undergoing electroconvulsive therapy: the utility of visual analog mood scales developed for cognitively impaired patients. J. ECT 12, 207. Bahji, A., Vazquez, G.H., Zarate, C.A., 2021. Comparative efficacy of racemic ketamine
+
+and esketamine for depression: a systematic review and meta-analysis. J. Affect. Disord. 278, 542–555. Bates, D., Maechler, M., Bolker, B., Walker, S., Christensen, R.H.B., Singmann, H., et al.,
+
+2015\. Package ‘lme4’. Convergence 12, 2. Beck, K., Hindley, G., Borgan, F., Ginestet, C., McCutcheon, R., Brugger, S., et al., 2020.
+
+Association of ketamine with psychiatric symptoms and implications for its therapeutic use and for understanding schizophrenia: a systematic review and meta- analysis. JAMA Netw. Open 3, e204693. Borsellino, P., Krider, R.I., Chea, D., Grinnell, R., Vida, T.A., 2023. Ketamine and the
+
+disinhibition hypothesis: neurotrophic factor-mediated treatment of depression. Pharmaceuticals 16, 742. Buzs´aki, G., Wang, X.-J., 2012. Mechanisms of gamma oscillations. Annu. Rev. Neurosci.
+
+35, 203–225. Calder, C.N., Kwan, A.T.H., Teopiz, K.M., Wong, S., Rosenblat, J.D., Mansur, R.B., et al.,
+
+2024\. Number needed to treat (NNT) for ketamine and esketamine in adults with treatment-resistant depression: a systematic review and meta-analysis. J. Affect. Disord. 356, 753–762. Carhart-Harris, R.L., 2018. The entropic brain - revisited. Neuropharmacology 142,
+
+167–178. Carhart-Harris, R.L., Friston, K.J., 2019. REBUS and the anarchic brain: toward a unified
+
+model of the brain action of psychedelics. Pharmacol. Rev. 71, 316–344. Carhart-Harris, R.L., Muthukumaraswamy, S., Roseman, L., Kaelen, M., Droog, W.,
+
+Murphy, K., et al., 2016. Neural correlates of the LSD experience revealed by multimodal neuroimaging. Proc. Natl. Acad. Sci. 113, 4853–4858. Chini, M., Pfeffer, T., Hanganu-Opatz, I., 2022. An increase of inhibition drives the
+
+developmental decorrelation of neural activity. eLife 11, e78811. Colombo, M.A., Napolitani, M., Boly, M., Gosseries, O., Casarotto, S., Rosanova, M.,
+
+et al., 2019. The spectral exponent of the resting EEG indexes the presence of consciousness during unresponsiveness induced by propofol, xenon, and ketamine. NeuroImage 189, 631–644. Curic, S., Andreou, C., Nolte, G., Steinmann, S., Thiebes, S., Polomac, N., et al., 2021. Ketamine alters functional gamma and Theta resting-state connectivity in healthy humans: implications for schizophrenia treatment targeting the glutamate system. Front. Psychiatry 12. Daly, E.J., Trivedi, M.H., Janik, A., Li, H., Zhang, Y., Li, X., et al., 2019. Efficacy of
+
+esketamine nasal spray plus oral antidepressant treatment for relapse prevention in patients with treatment-resistant depression: a randomized clinical trial. JAMA Psychiatry 76, 893–903. De la Salle, S., Choueiry, J., Shah, D., Bowers, H., McIntosh, J., Ilivitsky, V., et al., 2016.
+
+Effects of ketamine on resting-state EEG activity and their relationship to perceptual/dissociative symptoms in healthy humans. Front. Pharmacol. 7, 348. de la Salle, S., Phillips, J.L., Blier, P., Knott, V., 2022. Electrophysiological correlates and
+
+predictors of the antidepressant response to repeated ketamine infusions in treatment-resistant depression. Prog. Neuro-Psychopharmacol. Biol. Psychiatry 115, 110507. Donoghue, T., Haller, M., Peterson, E.J., Varma, P., Sebastian, P., Gao, R., et al., 2020. Parameterizing neural power spectra into periodic and aperiodic components. Nat. Neurosci. 23, 1655–1665. Donoghue, T., Schaworonkow, N., Voytek, B., 2022. Methodological considerations for
+
+studying neural oscillations. Eur. J. Neurosci. 55, 3502–3527. Duman, R.S., Aghajanian, G.K., Sanacora, G., Krystal, J.H., 2016. Synaptic plasticity and depression: new insights from stress and rapid-acting antidepressants. Nat. Med. 22, 238–249. Engel, A.K., Fries, P., 2010. Beta-band oscillations — signalling the status quo? Curr.
+
+Opin. Neurobiol. 20, 156–165. Faber, P.L., Steiner, M.E., Lehmann, D., Pascual-Marqui, R.D., Jancke, L., Esslen, M., et al., 2008. Deactivation of the medial prefrontal cortex in experienced Zen meditators. Brain Topogr. 20, 172. Fingelkurts, A.A., Fingelkurts, A.A., 2015. Altered structure of dynamic
+
+electroencephalogram oscillatory pattern in major depression. Biol. Psychiatry 77, 1050–1060. Fingelkurts, A.A., Fingelkurts, A.A., Ryts¨al¨a, H., Suominen, K., Isomets¨a, E.,
+
+K¨ahk¨onen, S., 2006. Composition of brain oscillations in ongoing EEG during major depression disorder. Neurosci. Res. 56, 133–144. Fitzgerald, P.J., Watson, B.O., 2018. Gamma oscillations as a biomarker for major
+
+depression: an emerging topic. Transl. Psychiatry 8, 177. Florin, E., Baillet, S., 2015. The brain’s resting-state activity is shaped by synchronized
+
+cross-frequency coupling of neural oscillations. NeuroImage 111, 26–35. Freeman, W.J., 2000. A proposed name for aperiodic brain activity: stochastic chaos.
+
+Neural Netw. 13, 11–13. Frohlich, F., 2016. Network Neuroscience. Elsevier, Boston, MA. Gao, R., Peterson, E.J., Voytek, B., 2017. Inferring synaptic excitation/inhibition balance
+
+from field potentials. NeuroImage 158, 70–78. Groppe, D.M., Urbach, T.P., Kutas, M., 2011. Mass univariate analysis of event-related
+
+brain potentials/fields I: a critical tutorial review. Psychophysiology 48, 1711–1725. Hacker, C., Mocchi, M.M., Xiao, J., Metzger, B.A., Adkinson, J.A., Pascuzzi, B.R., et al., 2023. Aperiodic neural activity is a biomarker for depression severity. Preprint. medRxiv 2023.11.07.23298040.
+
+V. Guirguis et al. Progress in Neuropsychopharmacology & Biological Psychiatry 140 (2025) 111438
+
+9 Harmony, T., 2013. The functional significance of delta oscillations in cognitive
+
+Papakostas, G.I., Salloum, N.C., Hock, R.S., Jha, M.K., Murrough, J.W., Mathew, S.J., processing. Front. Integr. Neurosci. 7, 83.
+
+et al., 2020. Efficacy of Esketamine augmentation in major depressive disorder: a Havlik, J.L., Murphy, M.J., Gong, N., Tang, D., Krystal, J.H., 2023. Characteristics of
+
+Meta-analysis. J. Clin. Psychiatry 81, 19r12889. Esketamine prescribers among Medicare beneficiaries in the United States, 2019-
+
+Perez-Ruixo, C., Rossenu, S., Zannikos, P., Nandy, P., Singh, J., Drevets, W.C., et al., 2020. JAMA Netw. Open 6, e2311250.
+
+2021\. Population pharmacokinetics of esketamine nasal spray and its metabolite He, B.J., Zempel, J.M., Snyder, A.Z., Raichle, M.E., 2010. The temporal structures and
+
+noresketamine in healthy subjects and patients with treatment-resistant depression. functional significance of scale-free brain activity. Neuron 66, 353–369.
+
+Clin. Pharmacokinet. 60, 501–516. Helfrich, R.F., Knight, R.T., 2016. Oscillatory dynamics of prefrontal cognitive control.
+
+Pizzagalli, D.A., Roberts, A.C., 2022. Prefrontal cortex and depression. Trends Cogn. Sci. 20, 916–930.
+
+Neuropsychopharmacol 47, 225–246. Helfrich, R.F., Breska, A., Knight, R.T., 2019. Neural entrainment and network resonance
+
+Robertson, M.M., Furlong, S., Voytek, B., Donoghue, T., Boettiger, C.A., Sheridan, M.A., in support of top-down guided attention. Curr. Opin. Psychol. 29, 82–89.
+
+2019\. EEG power spectral slope differs by ADHD status and stimulant medication Hu, Y.-T., Tan, Z.-L., Hirjak, D., Northoff, G., 2023. Brain-wide changes in excitation-
+
+exposure in early childhood. J. Neurophysiol. 122, 2427–2437. inhibition balance of major depressive disorder: a systematic review of topographic
+
+Sanacora, G., Treccani, G., Popoli, M., 2012. Towards a glutamate hypothesis of patterns of GABA- and glutamatergic alterations. Mol. Psychiatry 28, 3257–3266.
+
+depression: an emerging frontier of neuropsychopharmacology for mood disorders. Jensen, O., Mazaheri, A., 2010. Shaping functional architecture by oscillatory alpha
+
+Neuropharmacology 62, 63–77. activity: gating by inhibition. Front. Hum. Neurosci. 4, 186.
+
+Schwartzmann, B., Chatterjee, R., Vaghei, Y., Quilty, L.C., Allen, T.A., Arnott, S.R., et al., Johnston JN, Zarate CA, Kvarta MD. Esketamine in depression: putative biomarkers from
+
+2024\. Modulation of neural oscillations in escitalopram treatment: a Canadian clinical research. Eur. Arch. Psychiatry Clin. Neurosci. 2024. 13 July 2024. doi:htt
+
+biomarker integration network in depression study. Transl. Psychiatry 14, 1–11. ps://doi.org/10.1007/s00406-024-01865-1.
+
+Schwippel, T., Schroeder, P.A., Fallgatter, A.J., Plewnia, C., 2019. Clinical review: the Kang, M.J.Y., Hawken, E., Vazquez, G.H., 2022. The mechanisms behind rapid
+
+therapeutic use of theta-burst stimulation in mental disorders and tinnitus. Prog. antidepressant effects of ketamine: a systematic review with a focus on molecular
+
+Neuro-Psychopharmacol. Biol. Psychiatry 92, 285–300. neuroplasticity. Front Psychiatr. 13.
+
+Schwippel, T., Pupillo, F., Feldman, Z., Walker, C., Townsend, L., Rubinow, D., et al., Keeley, S., Fenton, A.A., Rinzel, J., 2017. Modeling fast and slow gamma oscillations
+
+2024\. Closed-loop transcranial alternating current stimulation for the treatment of with interneurons of different subtype. J. Neurophysiol. 117, 950–965.
+
+major depressive disorder: an open-label pilot study. AJP. https://doi.org/10.1176/ Laufs, H., Krakow, K., Sterzer, P., Eger, E., Beyerle, A., Salek-Haddadi, A., et al., 2003.
+
+appi.ajp.2023083. Electroencephalographic signatures of attentional and cognitive default modes in
+
+Shaw, A.D., Saxena, N., E. Jackson L, Hall JE, Singh KD, Muthukumaraswamy SD., 2015. spontaneous brain activity fluctuations at rest. Proc. Natl. Acad. Sci. 100,
+
+Ketamine amplifies induced gamma frequency oscillations in the human cerebral 11053–11058.
+
+cortex. Eur. Neuropsychopharmacol. 25, 1136–1146. Lazzaro, V.D., Oliviero, A., Profice, P., Pennisi, M.A., Pilato, F., Zito, G., et al., 2003.
+
+Siegel, J.S., Subramanian, S., Perry, D., Kay, B.P., Gordon, E.M., Laumann TO, et al., Ketamine increases human motor cortex excitability to transcranial magnetic
+
+2024\. Psilocybin desynchronizes the human brain. Nature 632, 131–138. stimulation. J. Physiol. 547, 485–496.
+
+Spitzer, B., Haegens, S., 2017. Beyond the status quo: a role for Beta oscillations in Leuchter, A., Cook, I., Jin, Y., Phillips, B., 2013. The relationship between brain
+
+endogenous content (re)activation. eNeuro 4. oscillatory activity and therapeutic effectiveness of transcranial magnetic
+
+Voytek, B., Knight, R.T., 2015. Dynamic network communication as a unifying neural stimulation in the treatment of major depressive disorder. Front. Hum. Neurosci. 7.
+
+basis for cognition, development, aging, and disease. Biol. Psychiatry 77, Lombardi, F., Herrmann, H.J., de Arcangelis, L., 2017. Balance of excitation and
+
+1089–1097. inhibition determines 1/f power spectrum in neuronal networks. Chaos: an
+
+Walter, M., Li, S., Demenescu, L.R., 2014. Multistage drug effects of ketamine in the interdisciplinary. J. Nonlinear Sci. 27, 047402.
+
+treatment of major depression. Eur. Arch. Psychiatry Clin. Neurosci. 264, 55–65. Luria, R.E., 1975. The validity and reliability of the visual analogue mood scale.
+
+Waschke, L., Donoghue, T., Fiedler, L., Smith, S., Garrett, D.D., Voytek, B., et al., 2021. J. Psychiatr. Res. 1975.
+
+Modality-specific tracking of attention and sensory statistics in the human McMillan, R., Sumner, R., Forsyth, A., Campbell, D., Malpas, G., Maxwell, E., et al., 2020.
+
+electrophysiological spectral exponent. eLife 10, e70068. Simultaneous EEG/fMRI recorded during ketamine infusion in patients with major
+
+Williams, N.R., Heifets, B.D., Bentzley, B.S., Blasey, C., Sudheimer, K.D., Hawkins, J., depressive disorder. Prog. Neuro-Psychopharmacol. Biol. Psychiatry 99, 109838.
+
+et al., 2019. Attenuation of antidepressant and antisuicidal effects of ketamine by Medeiros, G.C., Matheson, M., Demo, I., Reid, M.J., Matheson, S., Twose, C., et al., 2023.
+
+opioid receptor antagonism. Mol. Psychiatry 24, 1779–1786. Brain-based correlates of antidepressant response to ketamine: a comprehensive
+
+Zacharias, N., Musso, F., Müller, F., Lammers, F., Saleh, A., London, M., et al., 2020. systematic review of neuroimaging studies. Lancet Psychiatry 10, 790–800.
+
+Ketamine effects on default mode network activity and vigilance: a randomized, Molina, J.L., Voytek, B., Thomas, M.L., Joshi, Y.B., Bhakta, S.G., Talledo, J.A., et al.,
+
+placebo-controlled crossover simultaneous fMRI/EEG study. Hum. Brain Mapp. 41, 2020. Memantine effects on electroencephalographic measures of putative
+
+107–119. excitatory/inhibitory balance in schizophrenia. Biol. Psychiatr.: Cognitive Neurosci.
+
+Zanos, P., 2017. NMDAR inhibition-independent antidepressant actions of ketamine Neuroimag. 5, 562–568.
+
+metabolites. Eur. Neuropsychopharmacol. 27, S528. Muthukumaraswamy, S.D., Carhart-Harris, R.L., Moran, R.J., Brookes, M.J., Williams, T.
+
+Zanos, P., Gould, T.D., 2018. Mechanisms of ketamine action as an antidepressant. Mol. M., Errtizoe, D., et al., 2013. Broadband cortical desynchronization underlies the
+
+Psychiatry 23, 801–811. human psychedelic state. J. Neurosci. 33, 15171–15183.
+
+Zarate, C.A., Singh, J.B., Carlson, P.J., Brutsche, N.E., Ameli, R., Luckenbaugh, D.A., Nguyen, T.M.L., Defaix, C., Mendez-David, I., Tritschler, L., Etting, I., Alvarez, J.-C.,
+
+et al., 2006. A randomized trial of an N-methyl-D-aspartate antagonist in treatment- et al., 2023. Intranasal (R, S)-ketamine delivery induces sustained antidepressant
+
+resistant major depression. Arch. Gen. Psychiatry 63, 856–864. effects associated with changes in cortical balance of excitatory/inhibitory synaptic
+
+Zhang, M., Chowdhury, S., Saggar, M., 2023. Temporal mapper: transition networks in activity. Neuropharmacology 225, 109357.
+
+simulated and real neural dynamics. Network Neurosci. 7, 431–460. Noda, Y., Zomorrodi, R., Saeki, T., Rajji, T.K., Blumberger, D.M., Daskalakis, Z.J., et al.,
+
+Zhou, W., Wang, N., Yang, C., Li, X.-M., Zhou, Z.-Q., Yang, J.-J., 2014. Ketamine-induced 2017. Resting-state EEG gamma power and theta–gamma coupling enhancement
+
+antidepressant effects are associated with AMPA receptors-mediated upregulation of following high-frequency left dorsolateral prefrontal rTMS in patients with
+
+mTOR and BDNF in rat hippocampus and prefrontal cortex. Eur. Psychiatry 29, depression. Clin. Neurophysiol. 128, 424–432.
+
+419–423. Nugent, A.C., Ballard, E.D., Gould, T.D., Park, L.T., Moaddel, R., Brutsche, N.E., et al.,
+
+2019\. Ketamine has distinct electrophysiological and behavioral effects in depressed and healthy subjects. Mol. Psychiatry 24, 1040–1052.
+
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#9](#9)   
+[\#8](#8)   
+[\#9](#9)   
+[\#9](#9)   
+[\#8](#8)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#8](#8)   
+[mailto:schwippel@gmail.com](mailto:schwippel@gmail.com)   
+<http://www.sciencedirect.com/science/journal/02785846>   
+<https://www.elsevier.com/locate/pnp>   
+<https://doi.org/10.1016/j.pnpbp.2025.111438>   
+<https://doi.org/10.1016/j.pnpbp.2025.111438>   
+<http://crossmark.crossref.org/dialog/?doi=10.1016/j.pnpbp.2025.111438&domain=pdf>   
+[\#9](#9)   
+[\#9](#9)   
+[\#8](#8)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#8](#8)   
+[\#8](#8)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#9](#9)   
+[\#8](#8)   
+[\#9](#9)   
+[\#9](#9)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#9](#9)   
+[\#9](#9)   
+[\#7](#7)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#8](#8)   
+[\#9](#9)   
+[\#8](#8)   
+[\#9](#9)   
+[\#8](#8)   
+[\#8](#8)   
+[\#9](#9)   
+[\#8](#8)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#8](#8)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#8](#8)   
+[\#8](#8)   
+[\#3](#3)   
+[\#9](#9)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#4](#4)   
+[\#5](#5)   
+[\#6](#6)   
+[\#7](#7)   
+[\#6](#6)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#8](#8)   
+[\#8](#8)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#8](#8)   
+[\#8](#8)   
+[\#9](#9)   
+[\#9](#9)   
+[\#8](#8)   
+[\#8](#8)   
+[\#6](#6)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#9](#9)   
+[\#9](#9)   
+[\#9](#9)   
+[\#8](#8)   
+[\#8](#8)   
+[\#9](#9)   
+[\#8](#8)   
+[\#9](#9)   
+[\#8](#8)   
+[\#8](#8)   
+[\#9](#9)   
+<https://doi.org/10.1016/j.pnpbp.2025.111438>   
+<https://doi.org/10.1016/j.pnpbp.2025.111438>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0005>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0005>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0005>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0005>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0010>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0010>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0015>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0015>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0015>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0015>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0020>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0020>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0020>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0025>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0025>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0025>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0030>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0030>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0035>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0035>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0035>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0035>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0040>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf0040>   
+<http://refhub.elsevier.com/S0278-5846(25)00192-7/rf004

@@ -1,0 +1,321 @@
+Mechanistic corticostriatal circuit model predicts learning-dependent fMRI dynamics and individual reward bias in humans 
+
+. CC-BY-NC-ND 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted June 9, 2026. ; https://doi.org/10.64898/2026.05.28.728582 doi: bioRxiv preprint
+
+Mechanistic corticostriatal circuit model predicts learning-dependent fMRI dynamics and individual reward bias in humans
+
+Simon Carter\*a,b,c, Zeming Kuang\*b,c,d, Anthony G Chesebrob,c,d, Haris Organtzidisb, Sadia A Jumanab,c,d, Stephen J Burkec, Anand Pathake, Eva-Maria Rataic, Earl K Millerf, Richard H Grangere, Helmut H Streyb,c,d, and Lilianne R Mujica-Parodib,c,d,g
+
+aDepartment of Applied Mathematics, State University of New York at Stony Brook; Stony Brook, NY USA; bLaufer Center for Physical and Quantitative Biology, State University of New York at Stony Brook; Stony Brook, NY USA; cAthinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital and Harvard Medical School; Boston, MA USA; dDepartment of Biomedical Engineering, State University of New York at Stony Brook; Stony Brook, NY USA; eDepartment of Psychological and Brain Sciences, Dartmouth College, Hanover, NH, USA; fDepartment of Brain and Cognitive Sciences, Massachusetts Institute of Technology, Cambridge, MA, USA; gSanta Fe Institute, Santa Fe, NM USA; \*These authors contributed equally to this work.
+
+This manuscript was compiled on June 9, 2026
+
+1Circuit-level computational models can do more than explain existing data; they can generate novel hypotheses and capture individual 2differences in human populations. We demonstrate this using a biophysical corticostriatal model, transforming simulated neuronal activity 3from local field potential (LFP) into functional magnetic resonance imaging (fMRI) signals via the balloon model, and finally generating 4behavioral outcomes. We then validate the results against those obtained from human subjects. The model generates a counterintuitive yet 5testable prediction. Although prefrontal–striatal coherence demonstrates an increase at the neural LFP scale during learning, the same circuit— 6passed through the hemodynamic transform—–predicts a decrease in prefrontal–striatal BOLD correlation, driven by category-selective 7representations that emerge in cortex but not striatum. This prediction is confirmed in fMRI data optimized for single-subject-level detection 8sensitivity. The model further enables single-subject fitting of a behavioral outcome, classifying individuals into those differentially responding 9to positive versus negative reward bias. Established biomarkers, including activation measured by the amplitude of low-frequency fluctuations 10and dopaminergic effects on hemodynamic latency, are also conserved across LFP and fMRI scales. These findings reposition circuit models 11as generative tools for human neuroscience, capable of producing mechanistically grounded hypotheses and parsing individual variation in
+
+12
+
+ways inaccessible to data-driven approaches alone.
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6 (1), Cexamples. built parameterize a ircuit-level iology, on mechanism this Dopaminergic and foundation distinct models the validated corticostriatal behavioral of offer signaling neural across mechanistic computation phenotypes, circuit encodes decades mediating specificity reward of Dand have non-human provide prediction long reinforcement and Rserved causal a primate basis errors as interpretability. interpretive for Alearning electrophysiology. that parsing drive represents Findividual frameworks updating They T one generate Biophysically variation of for of cortical the understanding explicit, most in and terms grounded thoroughly striatal directional of animal underlying representations circuit characterized electrophys- predictions, models circuit 7 dynamics (2). In human neuroimaging, however, such models have been largely displaced by data-driven machine learning 8 approaches that achieve impressive performance in pattern recognition and feature extraction but are agnostic to the underlying 9 circuitry. These approaches cannot distinguish primary neural mechanisms from secondary or epiphenomenal effects, and 10 because they do not parameterize the generative process, they cannot produce labeled training data tied to mechanistically 11 defined phenotypes. 12 While strides have been made in bridging circuit-level neural models to functional magnetic resonance imaging (fMRI) 13 blood oxygen level-related (BOLD) signals, none have closed the loop from independently validated neural-scale dynamics to 14 mechanistically interpretable cognitive effects in human subjects. Whole-brain spiking-network models do contain receptor- 15 specific synaptic detail (3–5), but their interface to fMRI is benchmarked against resting-state functional connectivity, a metric 16 that many different cellular configurations can match equally well, and they are not built around a systems-neuroscience-level 17 circuit with neurocognitive outputs. Mean-field and neural mass reductions (6–8) reach whole-brain scale only by collapsing 18 each region to one or two summary state variables. These models can be perturbed at an aggregate level to study circuit-level 19 dysfunction, as in work on schizophrenia-related thalamocortical impairment (9), but they cannot resolve how a specific 20 receptor subtype, cell class, or cortical layer would respond to an intervention. Task-specific circuit models couple biophysical 21 neural dynamics to a forward BOLD model by summing synaptic activity, or absolute synaptic currents, and convolving 22 with a hemodynamic response function (10–12). The neural dynamics range from spiking integrate-and-fire networks with 23 explicit AMPA, NMDA, and GABA currents (10) to population-level firing-rate units constrained by neurophysiology (11), 24 and the simulated BOLD reproduces qualitative features of task-evoked fMRI from the same paradigm. None of these models 25 is independently validated against electrophysiology from the circuit and task it represents, however, so matching simulation 26 outputs to those derived from fMRI BOLD does not by itself establish that the underlying neural dynamics are correct. Dynamic Please address all correspondence to LR Mujica-Parodi, mujica@lcneuro.org | June 9, 2026 | vol. XXX | no. XX | 1–13
+
+. CC-BY-NC-ND 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted June 9, 2026. ; https://doi.org/10.64898/2026.05.28.728582 doi: bioRxiv preprint
+
+Fig. 1. Schematic of task and circuit translated from macaque electrophysiology to human fMRI (A) Dot Category Learn Task, in which participants infer prototype-defined categories from ambiguous exemplars, by making choices that elicit either positive or negative monetary reward. (B) Corticostriatal circuit empirically validated for the Dot Category Learn Task in macaques with reduced circuit shown shaded in grey.
+
+Causal Modeling (13, 14) inverts neural-to-BOLD models from data, and recent extensions replace the bilinear single-state 27 formulation with neural-mass models that have several populations per region (15, 16), but the per-region representation 28 is still an aggregate summary of population activity, not a circuit whose receptor- and cell-type-level dynamics have been 29 independently validated against electrophysiology. Underlying all of these approaches, the hemodynamic interface itself remains 30 unresolved at the cellular scale: the Balloon-Windkessel family does not specify which aspect of neural activity drives BOLD 31 (17), and richer formulations incorporating astrocytic calcium and neuro-glio-vascular pathways (18) have thus far been shown 32 only in single-area implementations. The result is a literature in which circuit models reproduce coarse fMRI features but 33 have not yet been shown to deliver on what makes such models worth building in the first place: mechanistic predictions that 34 survive translation to human data and can be used to interpret individual subjects. 35 The stakes of closing this gap go beyond methodology. A circuit model that survives translation to human fMRI provides 36 something that no purely statistical approach can: a generative account in which individual differences are expressed as 37 differences in mechanistically grounded circuit parameters rather than as associations. That distinction matters for applications 38 like predicting how a novel drug acting on a specific receptor target would alter the BOLD signal, or interpreting the cellular-scale 39 consequences of a lesion or a developmental difference. Without such a model, fMRI in humans is restricted to description. 40 With one, the same imaging data becomes a powerful tool for simulating counterfactuals. 41 With this challenge in mind, we translate a corticostriatal circuit model previously independently validated (2) against 42 macaque electrophysiology (19) into simulated BOLD using only two transformations: the Balloon-Windkessel hemodynamic 43 model converts the simulated neural activity into a synthetic BOLD signal, and bandpass filtering constrains it to the temporal 44 frequencies of a real fMRI acquisition. We then compare the resulting fMRI-scale simulations against empirical 7-Tesla fMRI 45 data from human participants engaged in category learning (Figure 1; N=31, N=62 sessions). In the Dot Category Learn Task, 46 category prototypes are defined by spatially distinct patterns of random dots. These prototypes, unknown to participants, are 47 inferred from ambiguous exemplars: dot patterns that are imperfect representations of each prototype. Using a forced-choice 48 design (Is this exemplar Category A or Category B?), participant choices are reinforced by positive and negative feedback 49 coupled to monetary reward (gaining money when they classify the exemplar correctly and losing money when they classify 50 the exemplar incorrectly). Three key mechanistic signatures of the circuit survive the translation across scales. For both the 51 simulation and human data, brain activity-based learning signatures localize to the prefrontal cortex, dopaminergic dynamics 52 are preserved, and learning-induced PFC-striatal functional connectivity decreases, a circuit-based consequence of increased 53 cortical category selectivity. This last result is particularly striking because it demonstrates how “functional connectivity,” as 54 understood at the local field potential and fMRI scales, can fundamentally differ in sometimes counterintuitive ways. More 55 generally, this surprising result suggests the value of a multi-scale model for generating mechanistically-derived biomarkers at 56 each scale “bottom-up” rather than starting from fMRI-derived statistical outcomes and relying on intuitions to infer their 57 underlying basis in terms of circuit function. 58 Moreover, the translation enables the estimation of a behavior-predictive biomarker that would have been unattainable 59
+
+2 | Please address all correspondence to LR Mujica-Parodi, mujica@lcneuro.org Carter and Kuang et al.
+
+DRAFT
+
+. CC-BY-NC-ND 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted June 9, 2026. ; https://doi.org/10.64898/2026.05.28.728582 doi: bioRxiv preprint
+
+Fig. 2. Caudate dopamine dynamics are conserved between simulated and empirical data. (A) Simulated dopamine dynamics over reward-driven learning. (B) Simulated dopamine level for the learning versus the learned state. (C) Empirical caudate dopamine dynamics over five trials, sliding window from human fMRI (N = 61 scans from N = 31 participants, including partial-cohort scans from non-completers; see Methods E for participant flow). (D) Dopamine signaling level within learning versus learned windows.
+
+without a mechanistic model linking brain and behavior. Because the circuit explicitly parameterizes distinct reward-learning 60 phenotypes, its simulation generates labeled ground-truth training data unavailable to either measured neuroimaging or 61 behavioral data alone. Here, we demonstrate that a behavioral classifier trained entirely on simulated data stratifies human 62 participants by reward bias, with stratification independently validated by dopamine trajectory differences that were withheld 63 from training. To our knowledge, this is the first demonstration that a circuit model validated at the neuronal scale can be 64 translated into human fMRI in a way that preserves its mechanistic content and yields individual-subject behavioral outputs. 65 This proof of concept addresses a structural limitation of data-driven approaches to human neuroimaging, illustrating how 66 biophysical circuit models can stratify human individual variation in circuit function. 67
+
+Results 68
+
+A. Conserving Dynamics: Dopamine. For the Dot Category Learn Task, the corticostriatal model’s dopamine dynamics have 69 previously been shown (2), to start at a high concentration and decrease as learned patterns are consolidated. Specifically, 70 the model predicts an elevated average dopamine level during early learning that converges to a baseline once participants 71 identify the prototypes, a trajectory conserved at the fMRI scale (Figure 2A). To compare to its equivalent measured during 72 fMRI, we used hemodynamic speed (HS; see Methods for details) as an empirically-established (20) surrogate for dopamine. HS 73 demonstrates the same decrease in dopamine from the learning to the learned state (standardized regression coefficient β = 0.57, 74 p = 0.002) (Figure 2C, D). This suggests that the dopamine-driven feedback diminishes as participants adapt to a task. While 75 the model’s dopamine effects on synaptic plasticity do not translate to fMRI, the dopamine dynamics themselves survive. This 76 suggests that dopamine could serve as a viable pathway for identifying and analyzing dysregulation in task adaptation. We also 77 observed a reset of this signal when the task rule changed, consistent with dopamine’s proposed role in signaling prediction error 78 upon environmental restructuring. Together, these results confirm that the model’s dopamine surrogate captures empirically 79 measurable dynamics, providing a validated foundation for examining how learning-related signals are expressed across the 80 broader corticostriatal circuit. Participants showed no significant difference in accuracy (z = −1.506, p = 0.1) from day 1 to day 81 2 (Figure S1). Hemodynamic speed (HS) demonstrated statistically significant but comparatively lower test-retest reliability 82 (r = 0.45, p = 0.01), consistent with its sensitivity to state-dependent factors such as reward perception (Figure S2A). 83
+
+B. Simulation-Trained Classification of Individual Reward Bias. A central challenge in computational neuroscience is translating 84 circuit-level mechanisms into predictions about individual differences. To address this, we trained a classifier exclusively on the 85 corticostriatal circuit model’s simulated behavioral outputs, with no access to empirical data. These model-derived signatures 86 permitted us to partition participants into mechanistically defined reward-bias subgroups, with two parameter sets governing 87
+
+Carter and Kuang et al. | June 9, 2026 | vol. XXX | no. XX | 3
+
+A B
+
+C D
+
+DRAFT
+
+. CC-BY-NC-ND 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted June 9, 2026. ; https://doi.org/10.64898/2026.05.28.728582 doi: bioRxiv preprint
+
+B C
+
+Fig. 3. Simulation supported reward bias classification in a single subject level (A) Behavior classification of distinct reward biases in healthy individuals. (B) Simulation indicates consistent decreases in dopamine signal in negative reward bias while inconsistent changes in dopamine signal in positive reward bias. (C) A more significant and consistent decreasing trend is shown in individuals classified as negative reward bias over the course of learning than that in positive reward bias individuals.
+
+the magnitude of synaptic weight updates following reward (monetary gain) versus punishment (monetary loss). We then asked 88 whether these subgroups differed on independent fMRI-derived measures that were never considered during classifier design. 89 Of 31 participants, 18 were classified as negative reward bias and 13 as positive reward bias (Figure 3A). Having established 90 this partition purely from simulation, we then examined whether the groups differed in their empirical dopamine trajectories, a 91 signal orthogonal to the classifier’s training. In the simulation, negative reward bias is associated with a monotonic dopamine 92 decrease across learning, while positive reward bias is not (Figure 3B). Strikingly, this distinction was recovered in the empirical 93 data without ever being sought: negative reward bias participants showed robust declines in dopamine during learning (β = 94 0.66, p = 0.006), while positive reward bias participants exhibited variable trajectories (β = 0.50, p = 0.07; Figure 3C). Thus, 95 the simulation-trained behavioral classifier, applied to an independent empirical dataset, recovered subgroup differences in a 96 neurobiological signal that played no role in its construction. This suggests that reward bias reflects a genuine, mechanistically 97 grounded feature of dopaminergic learning dynamics, one identified by the model before it became visible in the data. Reward 98 bias classification did not affect HS test–retest reliability in either reward class (negative class: r = 0.46, p = 0.05; positive 99 class: r = 0.46, p = 0.1; Figure S2B). 100
+
+C. Conserving Regions: ALFF. Beyond validating dopamine dynamics, we asked whether the model reproduces the regional 101 pattern of neural activity changes during learning. Two questions motivated this analysis: which regions show consistency 102 between the circuit model and empirical ALFF measurements, and given that the circuit was derived from macaque electrode 103 recordings, how do these signals localize in the human brain? To address this, we simulated ALFF changes between the learning 104 and learned states, finding a clear increase in anterior cortex and a smaller increase in striatum (Figure 4A). We mapped these 105 to the human PFC and caudate, respectively, based on their functional roles and dopaminergic signatures (21–23) (Figure 4C, 106 E, F). Empirically, ALFF increased significantly in superior frontal cortex (β= 0.53, p = 0.003) and middle frontal cortex 107 (β = 0.45, p = 0.01), with a smaller increase in medial frontal (β = 0.38, p = 0.04), localizing the circuit’s anterior cortex 108 signal primarily to medial and superior frontal regions (Figure 4B, D). Beyond these frontal regions, the voxelwise map also 109 showed learning-related ALFF increases in precuneus and posterior cingulate cortex (Figure 4B); these midline regions fall 110 outside the corticostriatal circuit modeled here and were not part of the localization target, but their engagement is consistent 111 with their established involvement in category learning and value-based representation. Caudate ALFF showed no significant 112 change (β = 0.27, p = 0.2), consistent with the model’s prediction of minimal striatal activity change during this transition. 113 This convergence between simulation and imaging suggests the null caudate result reflects a genuine mechanistic property of 114 the circuit rather than a sensitivity limitation of fMRI. ALFF showed strong test–retest reliability (r = 0.89, p = 2 × 10−11; 115 r = 0.79, p = 1 × 10−7; r = 0.89, p = 3 × 10−11 in frontal regions; and r = 0.71, p = 9 × 10−6; r = 0.77, p = 4 × 10−7; r = 0.77, 116 p = 5 × 10−7 in striatal regions), with the highest stability observed in regions exhibiting robust learning-related signatures 117 (Figure S3, S4). 118
+
+4 | Please address all correspondence to LR Mujica-Parodi, mujica@lcneuro.org Carter and Kuang et al.
+
+A
+
+DRAFT
+
+. CC-BY-NC-ND 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted June 9, 2026. ; https://doi.org/10.64898/2026.05.28.728582 doi: bioRxiv preprint
+
+Fig. 4. Learning-related brain activity identifies human corticostriatal equivalent of the macaque-validated circuit. (A) Simulated fMRI time-series from the human reduced corticostriatal circuit model shows differential responses in the anterior cortex and striatum. (B) Voxelwise fMRI-derived activity using ALFF localizes the learning- minus-learned signature to equivalent regions in human participants. (C) Regional quantification of ALFF learning signatures across the prefrontal cortex’s superior and middle frontal subregions, (D) shown using voxel-wise identification of extracted regions using ALFF. Other ALFF-derived regions activated by learning include the medial frontal context as shown in (E), together with (F) the striatum’s caudate, putamen, and nucleus accumbens (NAcc)
+
+.
+
+D. Outcomes: Connectivity and Asynchrony in Brain Learning. The circuit model predicts that cortical and striatal dynamics 119 diverge as learning proceeds. Consistent with this, ALFF increases were confined to prefrontal regions. We next tested 120 whether this divergence extended to the functional connectivity between these structures. Comparing learning and learned 121 states revealed a consistent, statistically significant decrease in functional connectivity between prefrontal cortex and striatum 122 following task acquisition (Figure 5C). Across simulations, connectivity changes were heterogeneous, ranging from increases and 123 decreases to negligible shifts. Using the empirically observed decrease in connectivity as a filter on the stochastic simulation 124 space, we identified a subset of simulations whose dynamics matched the human data. These simulations were characterized 125 by significantly greater and more reliable category selectivity in PFC relative to striatum, compared to simulations showing 126 stable or increasing connectivity, motivating a formal analysis of preferential selectivity in the empirical data (Figure 5B). 127 Following learning, category selectivity increased in PFC, particularly in medial (β = 0.37, p = 0.04) and superior frontal 128 (β = 0.31, p = 0.08) regions, consistent with ALFF findings above and with model predictions, while striatal selectivity 129 remained statistically unchanged (Figure 5C). Functional connectivity between these PFC regions and striatum decreased 130 correspondingly (medial frontal–striatum: β = 0.43, p = 0.02; superior frontal–striatum: β = 0.35, p = 0.05). We propose 131 that this reflects a shift in PFC signal composition: prior to learning, PFC and striatum share a common input driving their 132 correlation; as learning proceeds, PFC acquires category-selective representations not present in striatum, reducing their shared 133 signal and decreasing functional connectivity even as PFC becomes more informative. These population-level findings raise the 134 question of whether individual variation in this corticostriatal divergence reflects meaningful differences in underlying circuit 135 parameters, a question we address directly by examining whether simulation-derived behavioral phenotypes predict distinct 136 neural signatures across participants (Figure 5A). As expected, preferential selectivity showed poor test–retest reliability 137 (r = −0.14, p = 0.4; r = 0.23, p = 0.2; r = −0.01, p = 1), reflecting variability in which stimulus category was preferentially 138 learned across sessions (Figure S5). Functional connectivity likewise showed limited test–retest reliability (r = 0.14, p = 0.4; 139 r = 0.33, p = 0.07; r = 0.30, p = 0.1), consistent with state-dependent learning differences (Figure S6). This dissociation from 140 the high between-session reliability of the trait-like ALFF and hemodynamic speed metrics makes sense: a metric that tracks 141 within-session learning-induced reorganization should not be strongly correlated across independent learning episodes from 142 different days, whereas regional indices of stable activity properties should be. We therefore interpret functional connectivity 143 and preferential selectivity as state markers of active learning, and ALFF and hemodynamic speed as more trait-like regional 144 indices. 145
+
+Discussion 146
+
+Here, we present a mechanistic account of task learning grounded in a corticostriatal circuit model, validated across multiple 147 levels of neural and behavioral measurement. Across four converging lines of evidence, we find that the model faithfully 148 captures key signatures of human learning dynamics—and, critically, that a classifier trained exclusively on simulated behavior 149
+
+Carter and Kuang et al. | June 9, 2026 | vol. XXX | no. XX | 5
+
+C D E
+
+A
+
+Superior Frontal
+
+Middle Frontal
+
+DRAFT
+
+B
+
+F
+
+Medial Frontal
+
+. CC-BY-NC-ND 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted June 9, 2026. ; https://doi.org/10.64898/2026.05.28.728582 doi: bioRxiv preprint
+
+Fig. 5. Category selectivity altered brain connectivity pattern.(A) Schematic of the preferential selectivity metric and signal mixture. (B) Simulated data showing preferential selectivity of the fMRI signal as a function of caudate–striatum correlation. Relationship between cortical asynchrony and prefrontal cortex (PFC)–striatum (STR) correlation in the corticostriatal model. (C) Corresponding metrics from empirical data.
+
+successfully stratifies real individuals by reward bias, with that stratification independently validated by dopaminergic signatures 150 never used during training. 151 First, we validated the model’s dopamine surrogate against empirical data. The model predicts elevated dopamine during 152 early learning that converges to baseline once the task is acquired—a pattern confirmed in subjects, with dopamine levels 153 showing a consistent decrease from the learning to the learned state. A reset of this signal following rule changes was also 154 observed, consistent with dopamine’s proposed role in signaling prediction error upon environmental restructuring. 155 Second, examining ALFF between learning and learned states, we observed PFC activity increases consistent with circuit 156 model predictions, localizing to medial and superior frontal cortex, with the absence of a corresponding caudate change 157 reflecting a genuine mechanistic property of the circuit rather than a resolution limitation of fMRI. It is important to note the 158 distinct roles played by different measures in this validation architecture. ALFF serves as the localization tool: because the 159 macaque-derived circuit nodes carry no direct anatomical label in human space, ALFF changes are used to identify which human 160 brain regions correspond to the simulated anterior cortex and striatal compartments. Once this localization is established, 161 functional connectivity and hemodynamic speed provide independent validation of the model in those regions—they are 162 methodologically distinct measures that were not used to define the regions of interest. The convergence of three independent 163 signals (ALFF, connectivity, and dopamine dynamics) within the same anatomical targets therefore constitutes genuine 164 cross-measure validation rather than circular confirmation. 165 Third, learning was associated with a counterintuitive decrease in PFC–striatum functional connectivity, driven by the 166 emergence of category-selective representations in PFC that were not mirrored in striatum—a prediction generated by the 167 model and confirmed empirically. The result is particularly striking because it runs in the opposite direction from the increase 168 in PFC–striatum coherence reported at the LFP scale during category learning (19), a finding that the same corticostriatal 169 model reproduces in simulation (2). A naive extrapolation from the LFP result would therefore have led the field to look for an 170 increase in BOLD correlation in human fMRI; i.e., the wrong feature. Pushed through the Balloon–Windkessel transform, the 171 model instead predicts a decrease, which is what the 7T data show, and the variance decomposition in Eqs. 1–6 makes the 172 mechanism explicit. 173 That a connectivity measure can invert in sign between the neural and BOLD scales is consistent with the well-established 174 complexity of the neural-to-hemodynamic mapping: although the BOLD signal is most closely coupled to local field potentials 175 rather than to spiking output (24), the transformation from neural activity to BOLD is nonlinear and neurovascularly mediated 176
+
+6 | Please address all correspondence to LR Mujica-Parodi, mujica@lcneuro.org Carter and Kuang et al.
+
+A
+
+B
+
+Category 1
+
+Category 2
+
+C
+
+Learning Learned
+
+Stimuli
+
+PFC STR PFC STR
+
+DRAFT
+
+Regions
+
+Increased BOLD after Learning
+
+Correlated Signal Uncorrelated Signal
+
+Increased Preferential Selectivity
+
+. CC-BY-NC-ND 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted June 9, 2026. ; https://doi.org/10.64898/2026.05.28.728582 doi: bioRxiv preprint
+
+rather 177 than a simple temporal filter (25). In our model the inversion arises not from a change in the underlying coupling but 178 from the redistribution of variance under the hemodynamic transform (Eqs. 1–6): learning-related low-frequency power added 179 to PFC inflates its variance and lowers the BOLD correlation even as the same connectivity measure increases at the neural 180 (LFP) scale. Consistent with reflecting the neural dynamics rather than a particular forward model, substituting a canonical 181 hemodynamic response function for the Balloon–Windkessel transform did not substantially alter the result. Thus, our results 182 reinforce the power of multiscale modeling while exposing the limitations of intuitively assuming a one-to-one mapping between 183 synaptic plasticity and fMRI-derived connectivity. The spatiotemporal distinctions between scales matter not only because 184 mechanistic detection sensitivity is lost in fMRI, but more fundamentally because they determine which fMRI signal we should 185 look for. Moreover, one benefit of being able to pre-specify an fMRI biomarker mechanistically is that it also increases our 186 statistical power to detect it. 187 Finally, and most importantly, a behavioral classifier trained entirely on simulated data successfully stratified empirical 188 subjects into positive and negative reward bias groups. The negative reward bias group showed significantly steeper and more 189 consistent dopamine declines—a signal orthogonal to classifier training—providing independent biological validation of the 190 classification. Together, these results demonstrate that a mechanistically grounded corticostriatal model can account for human 191 learning at the level of brain activity, neurochemistry, functional connectivity, and individual differences in reward processing. 192 Circuit Models as Generative Tools. A central challenge in translational neuroscience is bridging the mechanistic specificity of 193 animal models with the population-level measurements available in humans. Machine learning and AI approaches to fMRI 194
+
+195
+
+196
+
+197
+
+198
+
+199
+
+200
+
+201
+
+202
+
+203
+
+204
+
+205
+
+206
+
+207
+
+208
+
+209
+
+210
+
+211
+
+212
+
+213
+
+214 while analysis underlying offering corticostriatal about cortical Critically, correlation biologically informed interpretable underlying distinguishes the reduces be that artifacts, Dopamine dopaminergic fully Balloon-Windkessel replicate enabling the temporal resolved, little selectivity have the and trajectory as several biology—making circuit. due meaningful biomimetic classifier time-series insight activity across a speak model achieved direct Mechanistically-Grounded to but resolution, of This and increased directly the of used into the comparison these represents itself. dopaminergic functional impressive capacity transformation individual model statistics, circuit degree the here predictions it to and We causal cortical difficult (originally serves the models to a used regional to with practically connectivity, which and performance differences generalizability generate structure activity, as LDA selectivity, to human are the from were a distinguish model mappings validated principled Biomarker. likely classifier on Dpurely and important counterintuitive, the neuroimaging. of in catch22 predictions and in to the validate direction an and of against pattern reflect between descriptive primary weights crucially, independent phenomena bridge macaque-validated The Rthat features methodological non-obvious, robust and macaque validation survive recognition a between the map neural This classifier the data-driven regional most so circuit Adynamical they directly empirical that behavioral transformation this mechanisms electrophysiology) notably, scales, of characterize. mechanistically the transformation and advance. specificity trained and hemodynamic models onto Fapproaches. discriminant human properties dataset. preserving feature signatures that the from purely to Direct of is T dynamical anatomy human learning By not ALFF extraction, secondary Both of is grounded generates speed on The key contrast, measurement axis lossless itself the of simulation populations. changes, were dynamical distinct LFP-to-fMRI involve circuit should remains as properties an or a predictions as but explicit, confirmed. informative the epiphenomenal non-invasive hemodynamic rather assumptions reward the decrease remain biophysically a of output features linear dopamine relationship manipulated testable transformation than bias is agnostic The result. combination PFC–striatum would precisely of surrogate measurement phenotypes. that effects, predictions same smoothing the in grounded Features between humans recover cannot by circuit to what logic and the the via for of 215 typically requires PET imaging with specific tracers or invasive recording approaches, both of which impose substantial 216 constraints on experimental design and population accessibility. In contrast, hemodynamic speed can be derived from standard 217 fMRI data, providing a scalable alternative that remains sensitive to learning-related dopaminergic dynamics predicted by 218 circuit models. 219 The inference linking hemodynamic timing to dopaminergic physiology is supported by both mechanistic and empirical 220 evidence. Dopamine modulates neurovascular coupling and vascular tone through D1- and D2-receptor–mediated effects, 221 influencing cerebral blood flow dynamics and thereby shaping the temporal characteristics of the BOLD signal. Consistent 222 with this mechanism, recent work has shown that voxel-wise hemodynamic latency recovers established striatal dopaminergic 223 gradients and correlates with independent measures of dopamine function, including PET-derived indices and pharmacological 224 manipulation (26). 225 Within this framework, the present caudate-specific findings provide convergent support for the validity of hemodynamic 226 speed as a surrogate for dopaminergic signaling. The progressive decrease in signal during learning and subsequent stabilization 227 in well-learned states are consistent with canonical dopamine dynamics associated with prediction error updating and value 228 stabilization. The sensitivity of the metric to these structured learning phases, particularly within the caudate, aligns with its 229 established role in integrating dopaminergic signals for adaptive learning within frontostriatal circuits. 230 More broadly, these findings suggest that dopamine could serve as a viable pathway for identifying dysregulation in task 231 adaptation, even in contexts where the specific neural dynamics underlying that dysregulation are difficult to detect directly. 232 This is particularly relevant for conditions characterized by subtle or early-stage dopaminergic disruption, where conventional 233 biomarkers may lack sufficient sensitivity. Carter and Kuang et al. | June 9, 2026 | vol. XXX | no. XX | 7
+
+. CC-BY-NC-ND 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted June 9, 2026. ; https://doi.org/10.64898/2026.05.28.728582 doi: bioRxiv preprint
+
+Asymmetric 234 Specialization. To formalize this mechanism, we model the regional BOLD signals as composite time series with 235 separable components. Before learning: 236 PFC(t) = C(t) + εPFC(t) \[1\] 237 STR(t) = C(t) + εSTR(t) \[2\] 238 where C(t) represents common input signals (including arousal, global task engagement, dopaminergic modulation, and 239 correlated low-frequency hemodynamic fluctuations) and ε(t) represents region-specific, uncorrelated noise. In this initial state, 240 both regions are dominated by shared variance from C(t), resulting in high BOLD correlation (typically r ≈ 0.85 to 0.94 in our 241 data). After learning: 242 PFC(t) = C(t) + U(t) + εPFC(t) \[3\] 243 STR(t) = C(t) + εSTR(t) \[4\] 244 where U(t) represents learning-related activity in PFC that is uncorrelated with both C(t) and striatal activity. This component 245 corresponds to the increase in ALFF observed in the cortex following learning: low-frequency power grows in PFC but not in 246 the striatum, and because U(t) is uncorrelated with the striatal signal, it contributes exclusively to the uncorrelated portion of 247 the PFC variance. After learning, while the covariance between regions remains approximately constant, the standard deviation 248 of the PFC signal increases: 249 SD(PFC) ≈ pvar(C) + var(U) + var(ε) \[5\] 250
+
+251
+
+252
+
+253
+
+254
+
+255
+
+256
+
+257
+
+258
+
+259
+
+260
+
+261
+
+262
+
+263
+
+264
+
+265
+
+266
+
+267
+
+268
+
+269 This The with data), given of subregions mutually such caudate, circuit illustrates functional reflect coherence roles. providing encoding learning. the striatum denominator that this by: The specific proportional (specifically, the suppress suggesting interpretation, (27, averaging top-down a reflects integration prefrontal whose former, broader does 28). circuit constituent one increase the not These indicating the to guidance across neuroscientific that cortex properties another latter, develop the when cancellation neither the distinct magnitude while subregions develops they neurons, enabling absence for that (23, an of the the behavior, analogous develop computational 27–29). principle: the each of numerator model abstract of as yields of opposing efficient caudate. uncorrelated region observed striatal complementary This Dwhile nor increase a brain categorical signal communication category stays the has opponent The low-frequency the r roles in = regions empirical assumed in the that striatum constant low-frequency SD(PFC) caudate Runcorrelated are Cov(PFC,STR)
+
+macaque signals) representations suppression remains roles can reflected a data is maintains results simultaneously between × distinct Apower during anatomically rather LFP SD(STR) relatively showed low-frequency variance in prevents in growth data, the learning than computational regions reduced its that Fdecorrelated a role undifferentiated respond a added statistically generalize undergo compact, reflects either resolution (19, that in correlation T power, flexible to 30–32). category preferentially now a PFC. functional function. hemodynamic genuine and across limitation and significant serve action (typically The our throughout The this representation individual different mechanistic analyses full specialization decorrelated selection The can to of increase correlation opposing fMRI. be r increase signals ≈ learning. understood but stimuli average 0.45 through from This in property complementary observed BOLD categories and to in ALFF coefficient (29, dissociation dominating, 0.76 across Consistent oscillatory opponent enhanced in 33, signals in in of terms after two and 34), the our the \[6\] is 270 Behavioral Reward Bias Reveals Distinct Dopaminergic Learning Trajectories. When participants were behaviorally classified 271 into positive versus negative reward bias groups, distinct dopaminergic patterns emerged across learning states. In simulation, 272 where only phasic dopamine amplitude was manipulated, the negative reward bias group showed an overall higher dopamine 273 level compared to the positive group, along with a decreasing trend across learning. Because only phasic parameters were 274 altered, this baseline elevation likely reflects sustained reward prediction error signaling: slower value updating maintains 275 larger phasic bursts early in learning, which gradually diminish as contingencies stabilize (1, 35). In contrast, the positive bias 276 group exhibited a non-monotonic (up-down) dopamine trajectory, consistent with either efficient transfer of prediction error 277 signaling to cue-based value representations (1) or early salience amplification that normalizes with predictability (36, 37) - 278 two mechanistically distinct routes to the same behavioral outcome. 279 In human data, where the surrogate measure reflects caudate latency rather than amplitude (26), we do not observe a 280 robust overall level separation between groups. Instead, the defining feature is trajectory: the negative bias group shows a clean 281 monotonic increase in latency from early to learned states (p = 0.006), while the positive group shows a non-monotonic pattern 282 that does not reach significance (p = 0.07). Critically, this asymmetry is precisely what the simulation predicts: the model 283 generates a consistent, monotonic dopamine signature for negative reward bias and a variable, non-monotonic trajectory for 284 positive reward bias. The non-significance of the positive bias result is therefore not a failure of replication but the predicted 285 outcome—a group defined by trajectory variability should not, and does not, produce a consistent directional effect. This 286 predicted dissociation between groups, recovered in empirical data from a classifier that never had access to neural measures, 287 provides the key validation. We do not interpret this as evidence of the same underlying mechanism across species, but rather 288 as convergent support for the broader claim that reward bias indexes a genuine difference in dopaminergic learning dynamics 289 (38, 39). Notably, this distinction emerged from a classifier trained purely on simulated behavior, without ever being sought in 8 | Please address all correspondence to LR Mujica-Parodi, mujica@lcneuro.org Carter and Kuang et al.
+
+. CC-BY-NC-ND 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted June 9, 2026. ; https://doi.org/10.64898/2026.05.28.728582 doi: bioRxiv preprint
+
+the 290 empirical data, suggesting it reflects a mechanistically grounded feature of striatal engagement rather than an artifact of 291 the modeling approach. 292 Together, these findings point to a dissociation in how the two groups organize dopaminergic signaling across learning. 293 Negative bias is characterized by a consistent, monotonic signature: sustained outcome-driven prediction error signaling early in 294 learning that attenuates as contingencies stabilize (35, 40). Positive bias, by contrast, reflects a more variable trajectory whose 295 mechanistic interpretation remains open - it may index faster cue-based value transfer (1, 40), transient salience amplification 296 (36, 37), or heterogeneity in how individuals within this group weight recent outcomes (41, 42). This asymmetry in trajectory 297 consistency suggests that negative reward bias may offer cleaner mechanistic traction on dopamine-related dysregulations, 298 particularly those involving decoupling of reward prediction error from cue-based value representation (43, 44). 299 Individual Differences and Clinical Translation. Beyond group-level validation, the model supports single-subject classification, 300 distinguishing individuals according to positive versus negative reward bias based on behavioral data alone. The subsequent 301 observation that these behaviorally derived groups differ systematically in their dopamine trajectories, a signal not used during 302 classifier training, provides independent validation of the classification and suggests that reward bias captures a meaningful axis 303 of individual variation in the underlying circuit dynamics. The convergence of this pattern across both simulated and empirical 304 data further strengthens confidence in the classifier’s validity. The ability to distinguish between positive and negative reward 305 bias carries direct clinical resonance for mood disorders: relative insensitivity to reward, coupled with heightened sensitivity 306 to punishment, characterizes anhedonia in major depression (45, 46), whereas exaggerated reward sensitivity is a hallmark 307 of the (hypo)manic pole of bipolar disorder (47). A behaviorally derived classifier grounded in a mechanistic model could 308 offer a non-invasive means of stratifying participants (48), tracking treatment response (49), or identifying individuals at risk 309
+
+310
+
+311
+
+312
+
+313
+
+314
+
+315
+
+316
+
+317
+
+318
+
+319
+
+320
+
+321
+
+322
+
+323
+
+324
+
+325
+
+326
+
+327
+
+328
+
+329 via These The before controlled Limitations. dynamics assumptions cortex, recordings regional necessitate introduce implementation to the and suggesting modalities Future framework settings the analyses more degree limitations symptoms Directions. Balloon and predictions present systematic diverse learning in (58). in to that caution to Several its that reported macaques, which clinical which localization does model the become in cannot samples should Several task, limitations when in the cognitive core model not differences populations—including here, humans. (51) original and the be model clinically drawing dynamical be natural will in limits predictions introduces fully framework between-species understood demands the of be Fourth, transitions circuit. that the resolved; the necessary human direct extensions apparent scaling properties are generalizability hemodynamic remain survive the Second, is not comparisons not brain in in between lower procedure D(50). to easily principle particular, individuals differences as of relatively these establish the remains of deficiencies this task Although the dissociated distinct mapping work constraints smoothing warrant of resolution to extensible Rcorticostriatal the in the stable. ambiguous. with human the suggest cortical task cortical the single-subject of between robustness explicit Parkinson’s from the present Finally, and contexts behavioral and Athat to themselves. geometry approach clinical region genuine comparatively replicate Third, circuit acknowledgment. reduces circuit study the of (55), disease, Fof classification the cohorts. and between-species regions present the and the but are temporal is in constraining reward Most neural model limited circuit human preserved connectivity as schizophrenia, T slower and sample principled immediately, bias First, data was resolution, results human encompasses to data learning a the classifier of originally across variation (53), healthy the is 31 (52) generalizability (56). anatomical boundaries itself LFP-to-fMRI or subjects, as dynamics applying species may potentially substance these Future population both across a (54). derived strong limit anterior structures while discrepancies and on Fifth, populations the in work the from use transformation positive interpretation. of obscuring the measurement classification engaged sufficient the precision the with disorders— simulation and electrode involves findings current result, visual larger (57). may in fast for of a 330 would test whether reward bias and its associated dopaminergic signature are altered in conditions known to involve corticostriatal 331 dysfunction. Longitudinal application of the hemodynamic speed measure could enable tracking of dopaminergic changes over 332 the course of learning or treatment, providing a dynamic biomarker sensitive to individual trajectories rather than cross-sectional 333 snapshots. The scaling procedure developed here could in principle also be applied to other validated circuit models, extending 334 the generative approach to different cognitive domains and neural systems. Finally, integrating the behavioral classifier with 335 additional imaging modalities—such as PET or MRS—could provide convergent validation of the dopaminergic signal and 336 refine the mechanistic interpretation of individual differences in reward bias. 337 Methods 338 E. Participants and clinical assessment. Functional MRI data were acquired during a reward-driven learning task from a 339 cohort of healthy adults (N = 31; mean age = 30.33 ± 7.29 years; 12 females) aged 18–45 years to investigate learning-related 340 neural dynamics in the human brain. The study was registered on ClinicalTrials.gov (identifier: NCT06373016) and approved 341 by the Institutional Review Board (IRB) at Massachusetts General Hospital (Boston, MA), with additional approval from the 342 IRB at the State University of New York at Stony Brook (Stony Brook, NY). 343 Participants were recruited from the Boston metropolitan area through advertisements. Exclusion criteria included MRI 344 contraindications, neurological or psychiatric disorders, history of brain injury, recent recreational drug use, or heavy alcohol 345 consumption. 346 All participants provided written informed consent prior to participation. Participants underwent a physical examination 347 and completed the Standardized Mini-Mental State Examination (SMMSE) to confirm cognitive normalcy. All 31 enrolled Carter and Kuang et al. | June 9, 2026 | vol. XXX | no. XX | 9
+
+. CC-BY-NC-ND 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted June 9, 2026. ; https://doi.org/10.64898/2026.05.28.728582 doi: bioRxiv preprint
+
+participants 348 completed both scanning sessions and formed the primary analysis cohort, yielding 56 sessions. Dopamine-trajectory 349 analyses presented in Figure 2C additionally include partial-cohort scans contributed by the enrolled subjects who did not 350 complete the longitudinal protocol, for a total of N = 62 scans from N = 31 unique participants. Although motion-corrupted 351 scans were excluded (Methods H), region-specific analyses (ALFF, functional connectivity, and category selectivity; Figures 4 352 and 5) could draw on the entire cohort for individual unaffected components. These yielded region-specific sample sizes of up 353 to N = 62, which also varied by region due to IQR outlier removal (Methods N). 354 F. fMRI Acquisition. Brain images were acquired at an ultra-high-field (7T) MRI scanner at the Massachusetts General Hospital 355 Athinoula A. Martinos Center for Biomedical Imaging. Each participant follows the same protocol twice on two separate days. 356 The sequences include a brain localization, a 1 mm isotropic T1-weighted structural (multi-echo magnetization prepared rapid 357 gradient echo \[MEMPRAGE\]) image, and whole-brain BOLD (echoplanar imaging, EPI) for the task session. BOLD images 358 were acquired using the following protocol: Simultaneous multi-slice (SMS) slice acceleration factor = 5, R = 2 acceleration in 359 the primary phase encoding direction (62 reference lines) and online generalized autocalibrating partially parallel acquisition 360 (GRAPPA) image reconstruction, TR = 802 ms, echo time (TE) = 20 ms, flip angle = 33°, voxel size = 1.75 × 1.75 × 1.75 361 mm, slices = 85, and number of measurements = 780. The whole-brain T1-weighted structural volumes were acquired with 1 362 mm isotropic voxel size and four echoes with the following protocol parameters: TE1 = 1.61 ms, TE2 = 3.47 ms, TE3 = 5.33 363 ms, TE4 = 7.19 ms, TR = 2,530 ms, and flip angle = 7°, with R = 2 acceleration in the primary phase encoding direction (32 364 reference lines). 365
+
+366
+
+367
+
+368
+
+369
+
+370
+
+371
+
+372
+
+373
+
+374
+
+375
+
+376
+
+377
+
+378
+
+379
+
+380
+
+381
+
+382
+
+383
+
+384
+
+385 without were which with which ALFF version via G. implemented to prototypes, either the H. Nilearn displacement matter, from I. Scaling-Up the Each fMRI Dot monetary BDtools $1, expected whole participants participants positive two and Category 20.2.3 (https://nilearn.github.io/). CSF, Preprocessing. prior fMRI whereas categories FC; brain from (60) (FD) and in knowledge Procedure. (59). outcome run or to 0.009 macaques Learn which incorrect negative motion voxel gradually (https://github.com/hstrey/BDTools.jl). consisted greater were could Following were Hz Task. For was space they required of terminate parameters A to than reward. responses MRI pre-defined the presented (19). infer of schematic The 0.15 had to fMRIPrep, four underlying 0.5 images, region to task to categories Hz Participants mm early indicate consecutive infer Framewise (three or for was immediately but space of were subject-level failure to hemodynamic denoising categories the adapted Dclassification translations not proceed based the excluded follows full to displacement were shown. stimulus category respond scaling-up on from after was from to T1w Talairach instructed Rfrom their the and Instead, performed speed rule. a each sets. and imperfect assignment paradigm within next analysis. choices three (FD) fMRI Confound pipeline Within decision. On (26)), definition Ato trial. participants rotations) the each was using categorize images and exemplars. extensively All detrending, before allotted each is computed trial, An trial-by-trial scans removal, BrainDancer of shown Fwere stimulus inter-trial were gray stimulus a were dot-pattern time included stimulus preprocessed Across used in included matter for and T bandpass presented resulted Figure set, each in offset. monetary message (ALA standardization 20 in cognitive was regions two this trials as scan. images 6. in Correct using filtering confound presented Scientific) prototype with study We a then per Scans feedback, (61). $1 neuroscience fMRIPrep into distorted begin stimulus loss. met appeared responses (0.01 regressors. with for were one cleaning images this Feedback with which up a Hz of versions (https://fmriprep.org/), performed set, criterion. mean to for two the and were corresponding to implemented 2.3 participants consisted Parcellation up 0.1 previously categories previously indicating framewise rewarded s, of to Hz during White using these 1.6 for of s, 386 validated corticostriatal circuit model (2), which outputs at the level of spiking neurons, synaptic plasticity, local field potentials 387 (LFPs) and behavior, predicting electrophysiological and learning responses in the rhesus macaque (19). To bridge from this 388 mesoscale electrophysiological signal to the Blood-Oxygen-Level-Dependent (BOLD) signals measured by fMRI, we apply 389 the Balloon-Windkessel model (51, 62) to the simulated LFP output. Balloon model parameters follow the experimentally 390 derived values from (62), which attenuate high-frequency content more strongly than the theoretically derived parameter 391 set from the same paper. This behavior produces a closer match to the standard HRF and emphasizes the frequency range 392 considered neuronal in the fMRI literature (63). This yields a simulated hemodynamic response function for each region in 393 the circuit. To facilitate comparison with empirical fMRI data, we apply a 5th-order Butterworth bandpass filter retaining 394 frequencies in the 0.01–0.1 Hz range, consistent with the conventional resting-state fMRI band (63). We verified that replacing 395 the Balloon-Windkessel model with a standard canonical HRF convolution yielded no substantial differences in the resulting 396 timeseries, supporting the robustness of our approach to this modeling choice. 397 J. Hemodynamic Speed, a Time-Varying surrogate for Dopamine Dynamics. Dopamine dynamics from the human fMRI were 398 approximated using a previously validated hemodynamic latency metric (26). For each voxel, relative latency was computed 399 with respect to the global brain signal by identifying the temporal shift that maximized the cross-correlation between the voxel 400 time series and the global signal. To capture task-dependent state changes (e.g., learning vs. learned phases), fMRI time series 401 were segmented into sliding windows comprising five consecutive trials. Latency estimates were computed within each window 402 to characterize dynamic changes across task states. In the original method, hemodynamic latency was inversely associated with 403 putative dopamine signals. To aid in interpretability, we reversed the metric’s sign such that higher values (hemodynamic 404 speed) correspond to stronger dopamine-related effects. 10 | Please address all correspondence to LR Mujica-Parodi, mujica@lcneuro.org Carter and Kuang et al.
+
+. CC-BY-NC-ND 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted June 9, 2026. ; https://doi.org/10.64898/2026.05.28.728582 doi: bioRxiv preprint
+
+Fig. 6. Schematic of the scaling-up pipeline. The simulated LFP output from the corticostriatal circuit model is passed through the Balloon-Windkessel model to generate a hemodynamic signal, which is then bandpass filtered (0.01–0.1 Hz, 5th-order Butterworth) to produce simulated fMRI timeseries. Finally, ALFF-based biomarkers are used to localize the abstract circuit nodes to anatomical regions of the human brain.
+
+K. Amplitude of low frequency fluctuation (ALFF). ALFF reproduced learning signatures in empirical data and localized the 405 simulated anterior cortex in hypothesized human brain regions. Due to the nature of the corticostriatal circuit and its validation 406 in macaques, localization of individual simulated brain compartments was not obvious and required validation. ALFF and 407 functional connectivity are the most published metrics in fMRI. While functional connectivity is an edge level metric to infer 408 connectivity between regions, ALFF provides an indication of changes in neuronal signal variation for each brain region. Defined 409 as the variance of the signal after bandpass filtered 

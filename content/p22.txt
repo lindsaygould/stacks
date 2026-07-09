@@ -1,0 +1,457 @@
+NeuroShield: A Device-Agnostic Foundation Model for EEG Authentication 
+
+NeuroShield: A Device-Agnostic Foundation Model for EEG Authentication
+
+Matin Fallahi∗, Patricia Arias-Cabarcos†, and Thorsten Strufe∗ ∗Karlsruhe Institute of Technology (KIT), Karlsruhe, Germany †Joint Research Centre, European Commission
+
+Abstract—A central challenge in EEG authentication is that models are typically tied to the acquisition settings in which they are trained. In particular, variations in headset hard- ware, channel layout, and signal duration create heterogeneous recordings that existing models are not designed to handle, causing each new headset or dataset to be treated as a separate model-development problem. This fragmentation limits multi- dataset learning, hinders knowledge transfer, and reduces model reusability. To address this limitation, we present Neu- roShield, a reusable foundation model for EEG authentication that learns identity-discriminative embeddings from variable- channel and variable-length EEG recordings through a dual- stage transformer architecture. We pretrain NeuroShield on three public EEG datasets comprising 15,762 subjects and 28,116 sessions, and evaluate transfer on two unseen down- stream datasets. Our evaluations show that, after fine-tuning, NeuroShield reduces equal error rate by 0.44–8.06 percentage points relative to the state of the art. NeuroShield further generalizes to segments longer than those seen during training and operates across channel layouts not encountered during pretraining. These results establish NeuroShield as a reusable and adaptable EEG identity encoder across heterogeneous recording settings. We release NeuroShield as open source to support reproducibility and community adoption.
+
+Index Terms—EEG authentication, brainwave authentication, transformer, foundation model, cross-dataset generalization
+
+1\. Introduction
+
+EEG (electroencephalogram) authentication offers a dis- tinctive route to hands-free, continuous, and revocable verifi- cation as it uses brain activity recorded by wearable devices rather than static, externally visible traits \[1\]. As EEG acquisition moves beyond controlled laboratory settings toward wearable and consumer-grade devices, the central challenge is no longer only whether EEG contains subject- discriminative information, but whether authentication mod- els can preserve this information across recording condi- tions \[2\], \[3\]. Current EEG authentication research remains fragmented across datasets, headsets, and channel layouts 1, so models are usually developed for a single recording setup and transfer poorly beyond it \[3\], \[4\]. Consequently, the field
+
+Code and pretrained model: https://github.com/kit-ps/NeuroShield-FM
+
+POz
+
+O1 O2 Figure 1: Examples of heterogeneous EEG headset lay- outs. Differences in channel number, scalp coverage, and electrode placement motivate flexible-input authentication models.
+
+continues to rely on dataset-specific training pipelines rather than reusable models that can accumulate knowledge across studies and support deployment in heterogeneous settings.
+
+The technical source of this limitation is that most EEG authentication models are designed around a fixed input structure \[3\], \[5\], \[6\]. They typically assume a predefined channel set, a stable channel order, and a fixed temporal window. These assumptions are difficult to satisfy across datasets because EEG headsets differ in scalp coverage and channel layout, while acquisition protocols and deployment settings differ in how much usable signal is available for ver- ification. Existing studies usually handle these differences by adapting the model input separately for each dataset–and,
+
+F7 AF3 AF4
+
+F8 F3 F4 FC5 FC6
+
+T7 T8
+
+P7 P8
+
+O1 O2 Emotiv Epoc X
+
+AF7 AF8
+
+Muse 2
+
+TP9 TP9
+
+DSI-VR300
+
+FCzPO3 PO4
+
+Oz
+
+ultimately, for each hardware setup or potential deployment setting–for example by changing the expected channel con- figuration, restricting the input to selected channels, or fixing signal durations to those found in the various datasets \[4\], \[7\], \[8\]. This can produce strong results in tailored academic experiments, but such models do not transfer reliably when electrode positions, channel layout, number of channels, or signal timing change. As a result, direct inference on new datasets or deployment settings remains limited, perfor- mance can degrade when the input structure changes, and useful spatial or temporal information contained in EEG data may be discarded. As a result, each new dataset or headset remains a separate modeling problem rather than contributing to a reusable authentication model.
+
+To address this limitation, we introduce NeuroShield, a foundation model for EEG authentication that supports flex- ible inputs, including varying numbers of channels, diverse channel placements, and variable signal durations, through a dual-stage transformer architecture with temporal and spatial positional encoding mechanisms (Section 4). This flexible input design allows NeuroShield to be pretrained on three public EEG datasets comprising 15,762 subjects and 28,116 sessions spanning multiple channel layouts and acquisition systems (Section 5). We evaluate the advantage of the architecture through cross-dataset transfer, as well as temporal and spatial flexibility evaluations (Section 6.1), then investigate the effects of training-data composition and deployment-oriented robustness properties through further analyses (Sections 6.2.2 and 6.1.4). Finally, we compare NeuroShield with related studies and biometric standards, then conclude with limitations, availability, and future di- rections (Sections 6.3, and 7).
+
+Our main contributions are as follows:
+
+• We introduce NeuroShield as a reusable foundation- model for EEG authentication across heterogeneous channel layouts and signal durations, instantiated through a dual-stage transformer architecture (Sec- tion 4).
+
+• We demonstrate that NeuroShield supports cross- dataset zero-shot transfer and, after fine-tuning, re- duces downstream authentication error by 0.44%– 8.06% points relative to the reproduced benchmark baseline on the main downstream evaluations (Sec- tion 6.1).
+
+• We evaluate NeuroShield’s temporal and spatial in- put flexibility, showing that it operates across vari- able temporal window lengths, including windows longer than those used during training, and gener- alizes to new channel layouts (Sections 6.1.2 and 6.1.3).
+
+• We provide deployment-oriented analyses, show- ing that NeuroShield can tolerate about 10%–30% verification-time channel loss, with lower degrada- tion for headsets with a higher number of channels, and complementary training-data analyses showing that multi-session diversity is more valuable than simply adding more single-session samples (Sec-
+
+tions 6.2.2 and 6.1.4).
+
+• We make the NeuroShield foundation model and its evaluation pipeline open source on GitHub to support future EEG-authentication research and re- producible cross-dataset comparison.
+
+2\. Preliminaries
+
+This section introduces the background most relevant to NeuroShield, including biometric authentication, EEG as an authentication signal, transformer-based sequence modeling, and the threat model used in our evaluation.
+
+2.1. EEG for Biometric Authentication
+
+Authentication is the process of verifying whether a user is the legitimate holder of a claimed identity. In biometric authentication, this decision is based on physiological or behavioral characteristics rather than knowledge-based cre- dentials or physical tokens. A biometric authentication sys- tem typically involves two phases: enrollment and verifica- tion \[9\]. During enrollment, biometric samples are collected from a user and transformed into a stored template. During verification, a newly collected sample from the claimed user is verified against the enrolled template to decide whether the authentication attempt should be accepted or rejected. In real-world biometric use, enrollment is performed first, and verification follows after a time interval, such as days or weeks later. Many prior EEG authentication studies, however, evaluate enrollment and verification within a single recording session \[10\]–\[12\].
+
+Both enrollment and verification begin with collecting a biometric sample, followed by preprocessing to reduce noise and improve data quality \[9\]. Relevant features are then extracted and compared against the enrolled template to determine whether the sample belongs to the claimed user. Traditionally, biometric systems rely on handcrafted features designed using domain knowledge, which are sub- sequently used to train a classifier that distinguishes be- tween genuine users and impostors \[11\]. More recently, deep learning approaches have become dominant. Instead of manually designing features, a neural network is trained to learn subject-discriminative feature representations directly from the data \[3\]. The resulting embedding vectors capture identity-related characteristics and can be efficiently com- pared using similarity or distance measures, such as cosine similarity, to perform authentication.
+
+EEG is a non-invasive method for recording brain activ- ity through channels connected to electrodes on the scalp, termed scalp channels. Since its first human recordings by Hans Berger \[13\], EEG has become a standard tool in neuroscience and clinical neurophysiology. The recent advances in hardware have pushed EEG beyond specialized clinical settings toward wireless, wearable, and consumer- grade devices \[14\]. This shift has motivated interest in EEG as a biometric signal for user authentication, since it can support hands-free, implicit, and continuous authentication while relying on a live physiological signal that is more
+
+difficult to observe directly than external traits \[1\], \[3\]. At the same time, practical EEG authentication must cope with variation in channel layout, recording hardware, and usable signal duration across datasets and devices. These properties motivate models that can learn reusable subject representations across heterogeneous EEG settings rather than being tied to one fixed physical setup and acquisition protocol.
+
+EEG authentication studies acquire signals under dif- ferent recording tasks \[1\], \[15\]. These include resting- state recordings, in which users keep their eyes open or closed without responding to explicit stimuli; event-related paradigms, in which short EEG responses are recorded around external stimuli \[6\]; and cognitive tasks, such as memory or attention tasks, that elicit task-dependent brain activity over longer intervals \[3\], \[16\]. These paradigms differ in the amount and structure of usable EEG data. For example, event-related settings often provide short event- centered windows, whereas resting-state and cognitive pro- tocols can provide longer continuous segments ranging from a few seconds to tens of seconds in prior EEG-authentication studies \[3\], \[6\], \[16\].
+
+2.2. Transformer-based signal encoder
+
+Transformers were introduced by Vaswani et al. \[17\] for machine translation and other sequence modeling tasks, as an alternative to recurrent and convolutional sequence models. Their central mechanism is self-attention, which represents an input as a sequence of tokens and updates each token representation by aggregating information from other tokens in the sequence. This allows the model to capture long-range dependencies without processing the sequence strictly step by step. However, self-attention alone does not encode token order. Transformers therefore require posi- tional information so that the model can distinguish tokens according to their position in the sequence. This positional information can be provided through absolute positional en- codings, learned positional embeddings, or relative-position mechanisms. Among these, relative-position mechanisms encode position through distances between tokens, making them better suited when a model needs to extrapolate to longer sequences. Attention with Linear Biases (ALiBi) \[18\] implements this idea by adding fixed distance-dependent linear biases to the attention scores, encouraging the model to account for relative token distance while having been shown to support extrapolation to longer sequence lengths. Although transformers were originally introduced for language, the same principle is also effective for time-series signals: a signal can be divided into ordered tokens, and self- attention can model dependencies between these tokens over time \[19\], \[20\]. EEG signals for authentication can therefore be segmented and represented as tokens, enabling trans- former models to exploit information flow across tokens and capture temporal dependencies. Once temporal modeling is achieved with transformers, their ability to process variable- length inputs can be leveraged to build flexible-input models for EEG authentication.
+
+2.3. Threat Model
+
+This work introduces NeuroShield for the biometric matching layer. The objective is to investigate whether its learned EEG embedding space supports reliable subject veri- fication across devices, temporal configurations, and channel layouts, rather than to evaluate a complete deployed authen- tication system. Consistent with standards-oriented biomet- ric evaluation, including NIST SP 800-63B and ISO/IEC 30107-1 \[21\], \[22\], we focus on zero-effort impostor at- tempts as the baseline setting for characterizing biometric matching errors. In this setting, an impostor submits their own EEG signal for comparison against another subject’s enrollment template.
+
+We assume that the adversary knows the authentication procedure and may have access to comparable EEG acquisi- tion hardware, but can only interact with the system through the normal verification interface. The adversary cannot mod- ify the model parameters, preprocessing pipeline, enrollment procedure, stored templates, or biometric database. Under this threat model, the reported verification results quantify NeuroShield’s matching errors under standard zero-effort impostor conditions.
+
+Accordingly, the evaluation isolates the core biometric matching challenge in EEG authentication: whether another user’s own EEG embedding is similar enough to the target user’s enrollment template to be falsely accepted. In addi- tion, all subjects in the evaluated datasets perform the same acquisition tasks, so observing the task protocol does not provide target-specific information beyond what is already present in the evaluation setup. EEG signals are also not externally visible traits; to the best of our knowledge, no prior work shows that a human can intentionally imitate a target user’s brain activity in a way that provides an advantage in matching the target’s EEG template, unlike observable behaviors such as gestures.
+
+3\. Related Work
+
+EEG has been studied as a biometric signal for user authentication for more than a decade and has shown that brain activity can contain subject-discriminative informa- tion \[1\], \[23\], \[24\]. Early approaches mainly relied on handcrafted EEG features combined with subject-specific binary classifiers \[15\], \[23\]. More recent work has shifted toward deep models that learn discriminative representations directly from the signal \[7\], \[16\]. In particular, embedding- based verification pipelines map enrollment and verification samples into a shared representation space and compare their embeddings using a similarity metric. This is attractive because the model learns a general embedding function rather than a closed-set classifier over the training subjects. As a result, a new user can be enrolled by storing their embedding template, and later verification samples from that user can be compared against this template without retraining the full model \[7\], \[16\]. Together, these studies show that EEG contains subject-discriminative information suitable for user authentication.
+
+However, most prior EEG authentication studies are still developed and evaluated in isolated dataset-specific settings \[3\], \[16\], \[25\], \[26\]. Even when multiple datasets are considered, models are typically trained and evaluated separately from scratch rather than transferring knowledge across datasets in a reusable way for subsequent work \[4\], \[7\], \[8\], \[11\]. As a result, the literature provides many strong dataset-level systems, but little support for cross-dataset reuse.A key reason is the strong heterogeneity across EEG collections. Datasets differ substantially in channel layout, including both the number of available channels and their scalp coverage across devices and vendors. Even when headsets are guided by common standards such as the 10– 20 system \[27\], they may follow different variants or use different channel subsets, which still introduces substantial spatial variation across datasets. Datasets also differ in the amount of EEG available at verification time. For example, prior work has used different task protocols that produce EEG segments of different lengths: 5 s segments \[16\], 0.8– 4 s trial segments \[8\], and 1 s samples aggregated into longer verification attempts \[3\]. In practice, these differ- ences are often handled by adapting each dataset to a fixed model input, which helps explain the continued reliance on architectures such as CNN-based pipelines \[3\], \[7\], \[16\]. RNN-style alternatives have shown some promise toward temporal flexibility, but still fall short in performance \[3\]. Such input constraints make knowledge transfer difficult, since it cannot be assumed that the results on a model learned under one recording setting carries over to another with different channel layouts or authentication durations.
+
+Transformers offer a promising route toward flexible EEG modeling because they can process input sequences with varying numbers of tokens while using self-attention to model relationships among those tokens. This property is important in our setting, where an EEG authentication model must learn from heterogeneous datasets with varying channel layouts and input durations and generalize to unseen headset configurations. While prior EEG user-recognition studies have demonstrated promising results when using transformer architectures as core model building blocks \[10\], \[28\]–\[30\]. However, these works mainly focus on improving authentication or recognition performance within a given isolated dataset setting, rather than on supporting input flex- ibility across heterogeneous EEG collections. As a result, they are still designed and evaluated under fixed windowing and channel configurations. Even transformer studies that consider multiple datasets ultimately train and evaluate sep- arate dataset-specific models rather than reusing one model across heterogeneous inputs \[29\], \[30\].
+
+Taken together, prior EEG authentication studies show that EEG contains subject-discriminative information and that existing methods can perform well when training and evaluation use the same acquisition setting. However, these approaches are trained from scratch for each headset, dataset, or task because they assume a fixed channel layout and signal duration. This design limits reuse when chan- nel availability, electrode positions, or verification-window
+
+length change, and also prevents them from benefiting from other datasets to improve performance. Addressing this lim- itation requires a flexible-input authentication architecture that can learn across heterogeneous EEG collections and transfer to unseen acquisition settings. Although transform- ers can handle variable-length token sequences, prior EEG authentication and user-recognition studies have not used this property to build a reusable verification encoder for such input variation.
+
+4\. NeuroShield Design
+
+NeuroShield is designed as a foundation model for EEG authentication: a reusable encoder that maps heterogeneous EEG recordings into a shared subject-discriminative feature representation.
+
+The central design requirement is to produce a stable authentication representation even when EEG samples differ in available channel set, channel layout, and temporal length. To facilitate robust performance for variations in both signal duration and channel layout, we separate temporal modeling and spatial aggregation. Rather than using a fixed- input architecture that jointly models all channels and tem- poral samples as a single input, which limits knowledge transfer to headsets with different layouts or authentication settings with different signal durations, NeuroShield uses a dual-stage transformer architecture. In the first stage, the model learns a location-independent temporal encoding for each available EEG channel. Concretely, each single- channel waveform is divided into temporal patches, en- coded as a sequence of patch tokens, and passed through a temporal transformer that extracts within-channel tem- poral features. The resulting temporal classification token (CLS) token represents the channel-level embedding. Be- cause the temporal transformer operates on a sequence of patch tokens, it can process different numbers of tokens and therefore handle EEG segments of different lengths. In the second stage, the channel-level embeddings are combined across channels using geometry-aware channel embeddings derived from electrode positions. This allows NeuroShield to capture spatial relationships between electrodes without assuming a fixed channel order or a fixed channel layout.
+
+Following the workflow shown in Fig. 2, NeuroShield processes an EEG segment through the following stages:
+
+EEG input: Downstream EEG settings may differ in both channel availability and recording duration. Neu- roShield therefore represents each EEG segment as S ∈ RC×T, where (C) denotes the number of available channels and (T) denotes the number of temporal samples, and is designed to support variation in both (C) and (T). Here, temporal samples refer to the data points recorded for each channel, whose number depends on the segment duration and the sampling rate. To keep the sampling rate fixed across datasets, we resample all segments to 500 samples per second. Therefore, (T) varies with the segment duration; for example, a 3-second EEG segment contains 1500 temporal samples per channel.
+
+1 EEG input 2 Temporal Patching 3 Patch Encoder 4 Temporal transformer
+
+S ∈ R^(C×T)
+
+Patch ∈ R^(C×N×P)
+
+Token ∈ R^(C×N×D)
+
+C\_1
+
+p1p2 p3 p4 pN p\_jtokens per channel :
+
+CLS t\_1 t\_2 ... t\_N C\_2
+
+C\_i
+
+where p ∈ R^P
+
+5 Channel transformer 6 Embedding objective
+
+CLS t\_cls\_1 t\_cls\_2 ... t\_cls\_i
+
+D
+
+t\_j =
+
+Embed(p\_j) ∈ R^D
+
+Push D
+
+^RC+
+
+Pull
+
+E ooS rLdMCPE\_c E R^(C x D)
+
+LP pull same-subject together; push others apart
+
+Supervised Contrastive Loss
+
+Figure 2: Overview of the NeuroShield architecture. The input EEG segment is patchified along time and encoded into patch tokens. A temporal transformer with fixed ALiBi biases summarizes each channel into a temporal CLS token, and these channel summaries are fused with geometry-aware embeddings derived from 3D channel positions in a channel transformer. The resulting segment embedding is trained with supervised contrastive loss to increase subject separability in the learned metric space. To simplify the illustration, steps 2–4 are shown for a representative channel pathway, but in the actual model these operations are applied in parallel to all channels.
+
+Temporal Patching: The temporal transformer requires a sequence of temporal units as input, so that it can first encode local temporal patterns and then model longer- range temporal dependencies through self-attention. At this stage, the data from each channel is represented as a time-continuous waveform. NeuroShield therefore divides each channel waveform into smaller fixed-length temporal patches of length (P), following time-series transformer de- signs that use multi-timestamp inputs to preserve local tem- poral patterns where N is the \[31\], number \[32\]. of This temporal produces patches.
+
+Spatch ∈ RC×N×P,
+
+Patch encoder: After patchification, each temporal patch is still a raw signal fragment. Although patchification defines the temporal unit that each token should cover, the transformer cannot operate directly on raw sample values; it needs learned token representations in a shared latent space so that relationships between patches can be mod- eled through attention. NeuroShield therefore uses a patch encoder embedding, tokens are to then map yielding passed each Tpatch patch to the ∈ pRj temporal C×N×D∈ RP into a D-dimensional . These learned patch
+
+transformer. Temporal transformer: At this point, each channel is represented as a sequence of patch tokens. Authentication- relevant temporal patterns can be distributed across the segment and can also depend on their temporal order. Meanwhile, the number of patches may vary because the model is designed to support temporal input flexibility. To handle this, NeuroShield needs a compact temporal sum- mary. Therefore, for each channel, a temporal classification token (CLS) is prepended to the patch-token sequence, forming plied independently Ttemp ∈ RC×(N+1)×D, and self-attention is ap- within each channel to model long-
+
+Network
+
+P\_3D ∈ R^(C x 3)
+
+range temporal dependencies. To preserve temporal order while remaining compatible with variable sequence lengths, the temporal transformer uses fixed ALiBi biases, which provide a relative position signal and support input-length extrapolation only the temporal \[18\]. CLS After token Lt is temporal retained transformer from each channel, layers,
+
+resulting depth and in is Tselected cls ∈ RC×D. during Here, hyperparameter Lt denotes the temporal
+
+tuning. Channel transformer: After the temporal transformer, each channel is summarized into one temporal token. The next step is to aggregate these channel-level tokens into a final representation of the input. The challenge is that, to preserve channel flexibility, the model should not assume a fixed input channel set or a fixed channel order. To handle this, NeuroShield uses the 3D channel coordinates as input to a learned coordinate encoder, which maps each channel position to RC×D. These a geometry-aware embeddings are positional added to the embedding channel PEtokens, c ∈
+
+and a channel CLS token is placed at the beginning of the sequence, Self-attention giving is then Tchan applied = \[CLSacross c, Tcls + channels PEc\] ∈ R(C+1)×D. to aggregate spatially distributed subject information. The final channel CLS token is used as the summary of the full EEG input and the representation of the user.
+
+Embedding objective: After the channel transformer, the full EEG segment is summarized into one final channel CLS token. This token is an architectural summary of the input, but it is not yet a meaningful authentication represen- tation by itself. NeuroShield therefore trains this output as a subject-discriminative embedding: samples from the same user are encouraged to be close in the embedding space, while samples from different users are encouraged to be
+
+Self-Attention
+
+Network
+
+Multi-Head
+
+Repeat x L\_c
+
+keep channel CLS only
+
+Addition
+
+Residual
+
+Normalization
+
+Layer
+
+T\_temp ∈ R^(C x (N+1) x D)
+
+Multi-Head
+
+Positional Encoder ( ALiBi biases )
+
+Feed-Forward
+
+Addition
+
+Residual
+
+Self-Attention
+
+keep temporal CLS only per channel
+
+Addition
+
+Repeat x L\_t
+
+T\_cls ∈ R^(C x D)
+
+Residual
+
+Normalization
+
+Layer
+
+Feed-Forward
+
+Addition
+
+Residual
+
+separated. The resulting vector is used as the segment-level representation (e ∈ RD).
+
+We optimize this representation using supervised con- trastive loss (SupConLoss) \[33\]. SupConLoss uses subject labels to define positive and negative relations within each batch: for each anchor embedding, embeddings from the same subject act as positives, while embeddings from other subjects act as negatives. Compared with pairwise or triplet- based objectives, this batch-wise supervision uses multiple same-subject and different-subject relations simultaneously, encouraging compact same-subject clusters and clearer sep- aration between subjects. In our implementation, SupCon- Loss is combined with a Multi-Similarity Miner \[34\] to emphasize informative relations within each batch. This design choice is further supported by prior work \[3\], which benchmark metric-learning objectives for large-scale EEG biometrics and identify SupConLoss as the best-performing feature-extraction objective.
+
+5\. Experimental Protocol
+
+To evaluate NeuroShield as a reusable foundation model for EEG authentication across different headsets, channel layouts, and segment durations, we implement an EEG biometric evaluation pipeline. This pipeline first applies the preprocessing procedure used in prior state-of-the-art EEG authentication work, described in Appendix A. It then uses datasets that cover heterogeneous recording conditions, including different acquisition hardware, channel configu- rations, and session structures. Within this pipeline, Neu- roShield serves as the feature extractor that maps each EEG segment into an embedding representation. Authentication scores are computed using cosine similarity between en- rollment and verification embeddings, following prior EEG authentication work \[3\], and performance is measured using standard biometric metrics. Since reusable models may still require different degrees of target-dataset adaptation, we also specify the fine-tuning settings investigated in this work. Finally, we reproduce a state-of-the-art fixed-input baseline to provide a reference point for evaluating whether Neu- roShield improves over conventional dataset-specific EEG authentication pipelines.
+
+5.1. Datasets
+
+To develop and evaluate NeuroShield as a reusable EEG authentication encoder, we require two groups of datasets: source datasets for foundation-model training and target datasets for downstream transfer evaluation. This separation allows us to test whether knowledge learned from one set of EEG headsets and channel layouts transfers to unseen acquisition settings. Therefore, the target datasets are col- lected with hardware that is not used during foundation- model training. Since EEG authentication depends on sub- ject information that remains stable from enrollment to later verification, both groups should include multi-session recordings. At the same time, because large multi-session EEG datasets are predominantly collected with medical- or
+
+research-grade systems, we include a consumer-grade target dataset to assess the extent to which such transfer can benefit smaller wearable EEG headsets. Table 1 summarizes the datasets used in this work.
+
+For foundation-model training, we select large public EEG datasets with many subjects who have repeated multi- session recordings, since this is important for learning sub- ject representations that remain stable across sessions. The training split includes TUH-EEG \[35\], DVS-rsEEG \[36\], \[37\], and PREDICT \[38\]–\[40\]. Among these, TUH-EEG provides 14,987 subjects and 26,836 recordings, making it the largest public multi-session EEG corpus used in this study. DVS-rsEEG and PREDICT contribute additional multi-session data collected with different research-grade hardware. Across the three training datasets, NeuroShield is exposed to heterogeneous channel configurations, rang- ing from 17 to 64 channels per recording and covering 69 unique channels across seven distinct channel layouts. These datasets also span multiple acquisition systems, in- cluding Natus Medical Nicolet EEG systems 1, BrainVision BrainAmp DC, and Brain Products actiCHamp Plus.
+
+For downstream evaluation, we use PEERS \[41\], \[42\] and FRC-EEG \[43\]. PEERS provides 345 subjects, 6,007 sessions, and 89-channel recordings, and serves as the main multi-session evaluation target for comparison against re- cent EEG-authentication results \[3\]. FRC-EEG contains 30 subjects, 120 sessions, and 14 channels recorded with an Emotiv Epoc X headset, and is used to evaluate transfer to a smaller consumer-grade target setting. Since both evaluation datasets are collected with hardware that differs from the training datasets, they allow us to examine cross-device transferability.
+
+All datasets are partitioned by subject identity into train, validation, and held-out test splits to prevent sam- ples from the same subject appearing in multiple splits. For foundation-model training, the source datasets are used only through their training and validation subjects for Neu- roShield hyperparameter tuning and model training. Their held-out test subjects are reserved for final evaluation on the source-data distribution, which we refer to as FM Train-Test. The downstream target datasets, PEERS and FRC-EEG, are split independently from the source datasets and from each other. Their training and validation splits are used only when a downstream setting requires target-dataset adaptation or fine-tuning, whereas their held-out test splits are reserved for final transfer evaluation. This split design ensures that target-dataset test subjects remain unseen during foundation- model training, hyperparameter tuning, and downstream fine-tuning.
+
+5.2. Evaluation Metrics
+
+We use Equal Error Rate (EER) as the main summary metric in this work. EER is the operating point at which the False Acceptance Rate (FAR) and the False Rejection
+
+1\. Recordings were acquired using several generations of Natus Medical Incorporated’s Nicolet EEG recording technology.
+
+TABLE 1: Summary of the EEG datasets used in this work.
+
+Split Dataset \#Subjects \#Sessions \#Channels Hardware
+
+Train
+
+TUH-EEG \[35\] 14987 26836 17–22 Nicolet systems DVS-rsEEG \[36\], \[37\] 608 816 64 BrainVision BrainAmp DC PREDICT \[38\]–\[40\] 167 464 63 Brain Products actiCHamp Plus
+
+Evaluation PEERS FRC-EEG \[41\], \[43\] \[42\] 345 6007 30 120 89 EGI GSN / BioSemi ActiveTwo
+
+14 Emotiv Epoc X
+
+Rate (FRR) are equal. The FAR denotes the proportion of unauthorized attempts incorrectly accepted by the system, whereas the FRR denotes the proportion of legitimate at- tempts incorrectly rejected. While EER is a widely used summary metric that facilitates comparison across stud- ies, practical systems usually prefer very low FAR values to ensure stronger security, even at the cost of a higher FRR \[3\]. Therefore, besides EER, we also report the FRR at a FAR threshold of 1% for comparison with prior EEG- authentication studies \[7\], \[8\], \[11\], as well as at 0.1% and 0.01% to reflect standards-oriented biometric operating points \[21\].
+
+Authentication metrics are computed from verification scores obtained by comparing enrollment templates with verification samples. In representation-based systems such as NeuroShield, each score is the similarity between an enrollment representation and a verification representation in the learned embedding space. To reflect practical deploy- ment, enrollment should precede verification in time. We therefore use the first session of each subject to construct the enrollment template and use the remaining sessions for verification. By evaluating enrollment and verification sam- ples from different sessions, this protocol reduces the risk of overestimating performance due to short-term physiological states or session-specific artifacts rather than stable subject identity. Genuine trials compare a verification sample with the enrollment template of the same subject, whereas impos- tor trials compare it with enrollment templates from other subjects.
+
+5.3. Downstream Transfer Settings
+
+To test whether NeuroShield can serve as a reusable foundation model for EEG authentication, we evaluate downstream target datasets under settings that systemati- cally disentangle the effects of architecture, heterogeneous pretraining, and target-specific adaptation. This comparison is necessary because an improvement on a downstream dataset could result from the flexible architecture itself, from knowledge transferred through pretraining, or from fine- tuning on the target dataset.
+
+First, NS-Scratch trains the NeuroShield architecture from random initialization on the downstream target training split. This setting tests whether the architecture itself is competitive without transferred knowledge. Second, NS- ZeroShot applies the pretrained NeuroShield directly to the unseen target dataset without any parameter updates. This
+
+setting tests whether heterogeneous pretraining alone trans- fers identity-discriminative structure to a new authentication setting. Third, the fine-tuning variants adapt the pretrained model on the target training split, testing whether transferred knowledge can be converted into stronger downstream ver- ification performance.
+
+The fine-tuning variants differ in how much of the pretrained model is updated. NS-FullFT updates all model parameters and therefore represents the strongest form of downstream adaptation. NS-LastFT freezes most parameters and updates only the last two channel-transformer blocks, the last two temporal-transformer blocks, the learnable channel-position module, and the channel and temporal clas- sification tokens, yielding a partial adaptation setting. NS- PEFT freezes the transformer blocks and updates only the learnable channel-position module together with the channel and temporal classification tokens, yielding a lightweight adaptation setting.
+
+5.4. Benchmark Baseline
+
+For these comparisons, we use Fallahi et al. \[3\] as the primary baseline. Published in 2026, this work provides a recent and comprehensive large-scale evaluation of multi- session EEG authentication and achieves state-of-the-art per- formance compared with previously reported methods in this setting. It is therefore a strong representative of conventional fixed-input EEG authentication pipelines that achieve high performance in dataset-specific settings, but require training a new model for each target dataset or input configuration. The study also includes extensive hyperparameter tuning across deep-learning architectures and metric-learning ob- jectives, identifying a ResNet1D encoder trained with su- pervised contrastive loss (SupConLoss) \[33\] as the best- performing configuration. We therefore reproduce this con- figuration as our benchmark baseline. Following the original protocol, we train and evaluate the baseline on PEERS using same subject-level train/validation/test splits. Under this aligned setup, our reproduced baseline closely matches the reported PEERS all-data result (10.25% vs. 10.28% EER).
+
+6\. Results and Discussion
+
+NeuroShield is designed as a reusable foundation model for EEG authentication and is instantiated through a flexible- input architecture that supports variation in headset, channel
+
+TABLE 2: Heatmap view of the verification results on PEERS and FRC-EEG. Greener cells indicate lower EER within each dataset row and therefore better performance for that condition.
+
+Datasets Baseline NS-Scratch NS-ZeroShot NS-FullFT NS-LastFT NS-PEFT
+
+PEERS
+
+All data 10.25 ± 8.04 9.28 ± 6.41 16.79 ± 10.27 7.71 ± 5.81 8.23 ± 5.95 10.90 ± 7.12 Geodesic 9.18 ± 6.13 11.40 ± 5.70 13.50 ± 7.26 8.74 ± 6.20 9.04 ± 6.44 8.52 ± 5.63 HydroCel 9.88 ± 8.76 11.96 ± 8.08 15.71 ± 11.77 8.31 ± 7.22 9.48 ± 8.08 10.13 ± 9.22 BioSemi 19.56 ± 9.51 19.23 ± 7.51 17.14 ± 8.26 11.50 ± 5.80 11.51 ± 6.14 12.39 ± 5.96 FRC-EEG Emotiv Epoc X 18.18 ± 14.12 24.92 ± 6.52 21.05 ± 5.82 14.75 ± 4.83 14.93 ± 5.76 18.76 ± 5.41
+
+layout, and signal duration. We develop NeuroShield using the architecture described in Section 4 and the datasets and experiment protocols defined in Section 5, then evaluate how well the resulting model aligns with these design goals. Be- fore the main evaluation, we determine the final architecture and implementation configuration through hyperparameter tuning, summarized in Section 6.2.1; all subsequent exper- iments use this fixed best configuration. We then evaluate the effectiveness of NeuroShield by comparing downstream transfer against training from scratch and the reproduced state-of-the-art baseline, testing whether heterogeneous pre- training improves authentication in unseen settings. Next, we test input flexibility by varying signal duration, chan- nel layout, and available verification-time channels. Finally, we analyze channel-level spatial behavior and training-data composition to explain which model and data properties support reusable subject-discriminative representations.
+
+6.1. Transfer and Input Flexibility
+
+6.1.1. Transfer to Unseen Authentication Settings. We first test whether heterogeneous pretraining provides reusable identity information for downstream EEG au- thentication. If NeuroShield learns transferable subject- discriminative structure, NS-ZeroShot should yield EERs clearly below the chance-level reference on unseen datasets, while downstream fine-tuning should further improve per- formance over both training NeuroShield from scratch and the reproduced state-of-the-art baseline.
+
+The downstream-transfer results summarized in Table 2 show four main patterns. First, training the NeuroShield ar- chitecture from random initialization (NS-Scratch) indicates that the architecture is competitive with the reproduced base- line even without pretraining, but not consistently superior to it. It improves the PEERS all-data result from 10.25% to 9.28% EER and slightly improves the BioSemi split from 19.56% to 19.23% EER, but remains weaker than the baseline on Geodesic, HydroCel, and FRC-EEG. Second, directly applying the pretrained model without target-dataset updates (NS-ZeroShot) shows that heterogeneous pretrain- ing transfers identity-discriminative structure to unseen tar- get datasets. Across all evaluated settings, its EER remains clearly below the 50% chance-level reference, ranging from 13.50% to 21.05%. However, zero-shot performance is gen- erally weaker than the reproduced baseline and NS-Scratch. This indicates that heterogeneous pretraining transfers useful identity information to unseen datasets, but that target- specific adaptation is still needed for competitive down-
+
+stream performance. Third, among the fine-tuning strategies, full-model fine-tuning (NS-FullFT) generally performs best, while partial fine-tuning of the last transformer layers (NS- LastFT) remains close in several settings and parameter- efficient fine-tuning of only the lightweight adaptation mod- ules (NS-PEFT) is less consistent.
+
+This indicates that adapting the full pretrained rep- resentation is more effective than updating only a sub- set of parameters. Fourth, after downstream fine-tuning, NeuroShield consistently outperforms the reproduced state- of-the-art baseline, most notably NeuroShield reduces the PEERS all-data EER from 10.25% to 7.71%, corresponding to a 2.54 percentage-point gain over the state-of-the-art. The result is measured on the largest and most comprehensive multi-session EEG authentication dataset in the literature, with recordings collected over more than five years. Since NS-FullFT also improves over NS-Scratch, these results indicate that the strongest performance is not explained by the architecture alone, but by the combination of flexible architecture, heterogeneous pretraining, and target-specific fine-tuning.
+
+6.1.2. Temporal Flexibility Across Signal Durations. We next test the extent to which NeuroShield can benefit from longer EEG input segments, including durations longer than those observed during training. If the temporal-flexibility design is effective, increasing the test-time duration should reduce EER as more temporal evidence becomes available, and this improvement should continue beyond the 2.0- second training-time limit. Figure 3a summarizes EER from 0.5 to 4.0 seconds for NS-ZeroShot and NS-FullFT on PEERS and FRC-EEG, together with FM Train-Test on the foundation-model data split, while the bottom row reports EER reduction relative to the 0.5-second condition. During training, NeuroShield only saw samples up to 2.0 seconds, so the shaded region highlights evaluation beyond that limit, where we expect the temporal transformer to generalize to longer inputs via fixed ALiBi biases. Across all reported settings, EER decreases as more temporal context becomes available, and the gain continues beyond 2.0 seconds rather than saturating at the training-time limit. For example, under NS-FullFT, PEERS improves from 9.60% at 0.5 seconds to 5.47% at 4.0 seconds, FRC-EEG improves from 18.35% to 9.57%, and FM Train-Test improves from 12.09% to 7.98%. Taken together, these results support the claim that Neu- roShield remains effective across variable input durations and can generalize to longer temporal windows than those seen during training. The 5.47% EER is the lowest PEERS
+
+FM 10.02%
+
+Shared reorder
+
+Mismatch reorder
+
+Zero pos3d
+
+Even-pos zero
+
+\-0.00 +0.00 +0.00
+
+\+0.00 -0.01 +0.00
+
+\+13.03 +17.16 +12.28
+
+\+3.72 +5.93 +4.19
+
+(a) Temporal flexibility across input durations.
+
+(b) Channel-layout perturbations. Figure 3: Input-flexibility analysis. (a) Temporal flexibility across PEERS, FRC-EEG, and FM Train-Test. The top row reports absolute EER as a function of input duration, while the bottom row reports EER reduction relative to the 0.5- second condition. NS-ZeroShot and NS-FullFT are shown for the downstream datasets, and FM Train-Test summarizes the foundation-model data split. The shaded region marks test durations beyond the 2.0-second training-time limit. (b) Channel- layout perturbation results. Cells report EER change relative to the corresponding baseline. Shared reorder applies the same channel permutation to enrollment and verification, while mismatch reorder uses different permutations. Zero pos3d removes all 3D channel coordinates, and even-pos zero removes coordinates only for channels whose labels end in an even digit.
+
+result at 4 seconds, improving over the prior state-of-the-art result of 6.22% \[3\].
+
+6.1.3. Channel-Layout Flexibility and Position Encod- ing. The spatial flexibility claim is already supported partly by Table 2, where the NS-ZeroShot results show that the NeuroShield foundation model can still operate on unseen downstream datasets even when the input channel set differs from the source training data. However, that evidence alone does not show whether the model relies primarily on mean- ingful 3D channel geometry or simply on the order in which channels are presented, as is commonly used in other EEG authentication models. We therefore evaluate this distinction more directly in Figure 3b, which reports the change in EER relative to each dataset’s own baseline under four controlled perturbations. Here, channel permutation refers to reorder- ing the input channel-token sequence without changing the
+
+EEG signals or their associated channel coordinates. same global channel permutation is applied to both enrollment and verification, the effect on performance is negligible across all three datasets, and even using different permutations at enrollment and verification causes only minor degradation. This indicates that NeuroShield is not strongly tied to a canonical channel ordering. In contrast, removing spatial coordinates causes a large performance drop, while zeroing the coordinate information for only part of the montage produces a smaller but still consistent degradation. Taken together, these results show that NeuroShield achieves effec- tive spatial flexibility by using spatial channel information rather than fixed channel order, which helps it generalize across new datasets and recording hardware.
+
+6.1.4. Robustness to Missing Channels. A practical advan- tage of NeuroShield’s spatial flexibility is that verification
+
+PEERS
+
+FRC-EEG
+
+FM Train-Test Base 7.71%
+
+Base 14.75%
+
+1 ch
+
+Base 10.18%
+
+40
+
+306 ch
+
+2 ch
+
+9 ch
+
+10 ch
+
+2014 ch 1089 ch 62 ch 36 ch
+
+15 ch 8 ch 22 ch
+
+0 20 40 60 80 90
+
+0 20 40 60 80 90
+
+0 20 40 60 80 90 Removed at verification (%)
+
+Removed at verification (%)
+
+Removed at verification (%)
+
+Figure 4: Robustness to random missing verification channels across PEERS, FRC-EEG, and FM Train-Test. Enrollment uses all channels, while channels are randomly removed only from verification inputs.
+
+PEERS 7.71%
+
+FRC-EEG 14.75%
+
+3036 3432lower is better
+
+PEERS-only channels
+
+All other PEERS channels (n=21)
+
+(n=68)
+
+0.2
+
+higher = more dependence
+
+PEERS-only channels (n=21)
+
+(b) Seen and unseen PEERS channels. Figure 5: Training-data and channel-generalization analysis. (a) Effect of training-data composition as the number of selected training subjects increases. Green shows multi-session-only training, orange shows single-session-only training, and blue shows the extension in which all available multi-session subjects are first used and then additional single-session-only subjects are added. The top row reports final test EER and the bottom row reports the corresponding number of training segments. (b) Channel-level comparison between 21 PEERS-only channels, whose channel names were not present in the training datasets, and 68 PEERS channels whose names were present during training. The left panel reports single-channel- only EER, and the right panel reports leave-one-out delta EER versus the full baseline.
+
+does not require exactly the same complete channel set used during enrollment. This is important when some verification channels are unavailable because of sensor noise, poor con- tact, or hardware defects. To test this setting, we evaluate random channel removal at verification across PEERS, FRC- EEG, and FM Train-Test, while enrollment uses the full channel set. Figure 4 reports the resulting EER as the verification-time channel-removal rate increases. EER in- creases gradually as more verification channels are removed, and the degradation rate depends strongly on montage den- sity. Nevertheless, all three settings remain close to baseline up to about 10% missing channels. These results show that NeuroShield can tolerate a small number of noisy or missing channels without requiring the entire EEG segment to be discarded.
+
+6.1.5. Robustness to unseen channel through training. Channel flexibility is a central goal of NeuroShield. Al- though our cross-headset results show that the model can operate across different layouts, many electrodes are shared across headsets, so those experiments do not fully test generalization to entirely unseen channels. To isolate that question, we identified 21 PEERS channels that were absent from the foundation-model training datasets and compared them with the remaining 68 PEERS channels that were represented during pretraining. We expected the geometry- aware 3D positional encoder to generalize to these unseen electrodes, so the two groups should not differ substantially. We tested this using NeuroShield without fine-tuning. For each channel, we measured single-channel-only EER to capture standalone utility and leave-one-out delta EER to
+
+0.1
+
+0.0
+
+0.1
+
+0.2
+
+All other PEERS channels (n=68)
+
+(a) Effect of training-data composition.
+
+measure how much the full model depends on that channel, then compared the two channel groups using two-sided Monte Carlo permutation test \[44\]. The unseen PEERS-only channels showed slightly lower single-channel EER than the seen-channel group (33.01% vs 33.57%; p = 0.153) and slightly larger leave-one-out impact (0.052 vs 0.018 delta EER; p = 0.0965), but neither difference was statistically significant. Overall, these results suggest that NeuroShield is not limited to training-time channel identities and can extend its learned representation to previously unseen electrodes.
+
+6.2. Ablation and Design Analysis
+
+6.2.1. Architecture Selection and Hyperparameter Ef- fects. We next analyze the outcome of hyperparameter tuning to understand which design choices most consistently supported low validation EER in the final NeuroShield model, using the best-trial configuration, top-trial frequen- cies, and PED-ANOVA \[45\] importance analysis. Table 3 summarizes these outcomes over the completed Optuna study. The overrepresentation ratio and PED-ANOVA serve complementary purposes. The overrepresentation ratio com- pares how often the selected value appears in the top 100 trials relative to its frequency across all completed trials. PED-ANOVA also focuses on the top-performing trials, but instead of counting only how often the selected value appears, it compares the full hyperparameter distribution of that top subset against the completed study. Across 1000 completed trials, the best trial in the tuning study used an MLP-based patch embedder, explicit spa- tial coordinate scaling, no additional channel normalization,
+
+TABLE 3: Summary of hyperparameter tuning outcomes for the final NeuroShield model. For each component, we report the search values, the selected value, how often that selected value appears among the top 100 and top 1000 completed trials, its relative enrichment in the top 100 compared with the top 1000, and its PED-ANOVA importance.
+
+Component Search space Selected
+
+Sel.-value
+
+freq. Overrep.
+
+ratio PED Top 100 Top 1000 (%) Patch embedder linear / mlp patch / cnn simple /
+
+cnn multiscale
+
+mlp patch 34/100 247/1000 1.38× 1.67
+
+Spatial coordinate scale none / 100 100 93/100 502/1000 1.85× 30.98 Channel normalization none / zscore / rms none 100/100 353/1000 2.83× 37.23 Embedding dimension 64 / 128 128 60/100 466/1000 1.29× 1.68 Attention heads 4 / 8 8 55/100 475/1000 1.16× 0.42 Channel depth 2 / 4 / 6 6 38/100 317/1000 1.20× 2.65 Temporal depth 2 / 4 4 54/100 517/1000 1.04× 0.27 Embedding norm none / l2 l2 54/100 508/1000 1.06× 0.27 Patch length 50 / 100 50 48/100 465/1000 1.03× 0.07 Mask ratio 0 / 0.1 / 0.2 0.2 26/100 327/1000 0.80× 2.38 Learning rate 1e-5 / 1e-4 / 1e-3 1e-4 29/100 329/1000 0.88× 22.24 Weight decay 0 / 1e-5 1e-5 47/100 478/1000 0.98× 0.15
+
+128-dimensional embeddings, 8 attention heads, channel depth 6, temporal depth 4, L2 embedding normalization, patch length 50, mask ratio 0.2, learning rate 10−4, and weight decay 10−5. The search space was intentionally bounded by hardware feasibility, so that all sampled con- figurations remained trainable under the worst-case resource usage considered in the study. Several best-trial values are also clearly overrepresented among the strongest runs. In particular, no channel normalization appears in all top 100 trials, and explicit spatial coordinate scaling appears in 93 of the top 100 trials. The MLP-based patch embedder is likewise more common in the top 100 than across all trials, although its overrepresentation is more moderate than that of the normalization and coordinate-scaling choices. Under PED-ANOVA, the largest importance scores are assigned to channel normalization (37.23%), spatial coordinate scaling (30.98%), and learning rate (22.24%), while the remaining hyperparameters together account for the rest of the total importance.
+
+Taken together, these results suggest that the final Neu- roShield configuration was not the outcome of a single favorable trial, but emerged from consistent patterns across the tuning study. The strongest differences in validation EER were associated primarily with channel normalization, coordinate scaling, and learning rate, while the strongest configurations more often combined the MLP-based patch embedder with the selected higher-capacity architectural settings.
+
+6.2.2. Effect of Pretraining Data Composition. To under- stand what part of heterogeneous pretraining supports trans- fer, we separate the effect of dataset scale from the effect of session diversity. This matters because EEG authentication depends on identity features that persist from enrollment to later verification, not features specific to one recording session. We therefore expect multi-session training data to support stronger transfer than single-session data when the
+
+number of training subjects increases. Figure 5a shows that multi-session data is generally more effective than single-session data as the number of training subjects increases. This pattern is clearest on PEERS and FM Train-Test, where multi-session data con- sistently reaches lower EER across most of the range. FRC- EEG does not show the same consistency, which likely reflects both its smaller dataset size and the more limited temporal separation between enrollment and verification samples, since the dataset records the first two sessions on the same day with a 1–2 hour interval and the remaining sessions after 2–3 days. Importantly, once the full multi- session pool is used, adding single-session-only subjects substantially increases the amount of training data but does not reliably improve EER. This suggests that the benefit of additional training data depends strongly on session di- versity, and that repeated recordings per subject are more valuable than simply adding more single-session samples.
+
+6.2.3. Spatial Contribution of EEG Channels. EEG re- sponses can exhibit different spatial patterns across tasks and stimuli. In EEG authentication, this suggests that the channels contributing most to verification may also depend on the acquisition task. Identifying such task-dependent spa- tial contributions is relevant for deployment because it can inform both headset selection for a given authentication task and task selection for a given headset layout. NeuroShield enables this analysis because it can operate with different channel subsets at evaluation time, allowing us to remove or retain channels without retraining the network and mak- ing the resulting performance changes directly comparable across channels. Figure 6 suggests that channel-level authentication error is partly related to the task performed during EEG record- ing. In PEERS, where we use a word-memorization task, the dense montage makes each leave-one-channel-out effect small, but sensitivity appears mainly around frontal regions, with smaller left-temporal and parietal contributions. This
+
+3040 35Figure 6: Channel-level spatial analysis across PEERS and FRC-EEG. The top row shows leave-one-channel-out results, where one channel is removed at a time and the scalp color reports the resulting change in EER relative to the full-channel baseline. The bottom row shows single-channel-only results, where only one channel is retained and the scalp color reports the resulting EER for that channel alone. The FRC-EEG panels include both the mixed benchmark setting and task-specific views. Channel aliases that share the same scalp position are merged only for visualization.
+
+is compatible with verbal memory tasks, where successful memory encoding has been associated with frontal theta activity \[46\]. In FRC-EEG, the task-specific maps show a different pattern, with the most visible contribution appear- ing in posterior regions, especially during eyes-closed relax- ation, and smaller frontal contributions across the tasks. This is compatible with EEG literature showing that posterior alpha is prominent during resting tasks \[47\].
+
+Together, these results suggest that the regions contribut- ing to authentication error are not fixed across datasets, but are modulated by the cognitive or resting task used during acquisition. This also implies that task design and headset layout should be considered jointly, since a task may be more suitable for authentication when the available channels cover the regions where subject-discriminative information is expressed. At the same time, the single-channel-only maps show that no individual channel is sufficient for ro- bust authentication, indicating that NeuroShield relies on distributed, task-dependent spatial information.
+
+6.3. Comparison with Prior EEG Works
+
+To contextualize NeuroShield relative to prior EEG bio- metric systems, Table 4 compares it with recent studies. We organize the comparison around three relevant model- ing directions: CNN-based authenti

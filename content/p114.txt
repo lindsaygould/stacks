@@ -1,0 +1,799 @@
+EEGPT: Pretrained Transformer for Universal and Reliable Representation of EEG Signals 
+
+EEGPT: Pretrained Transformer for Universal and Reliable Representation of EEG Signals
+
+Guagnyu Wang Faculty of Computing Harbin Institute of Technology wangguangyu@stu.hit.edu.cn
+
+Wenchao Liu Faculty of Computing Harbin Institute of Technology 23b903096@stu.hit.edu.cn
+
+Yuhong He Faculty of Computing Harbin Institute of Technology 19S003002@stu.hit.edu.cn
+
+Cong Xu Faculty of Computing Harbin Institute of Technology congxu@hit.edu.cn
+
+Lin Ma Faculty of Computing Harbin Institute of Technology malin\_li@hit.edu.cn
+
+Haifeng Li∗ Faculty of Computing Harbin Institute of Technology lihaifeng@hit.edu.cn
+
+Abstract
+
+Electroencephalography (EEG) is crucial for recording brain activity, with applica- tions in medicine, neuroscience, and brain-computer interfaces (BCI). However, challenges such as low signal-to-noise ratio (SNR), high inter-subject variabil- ity, and channel mismatch complicate the extraction of robust, universal EEG representations. We propose EEGPT, a novel 10-million-parameter pretrained transformer model designed for universal EEG feature extraction. In EEGPT, a mask-based dual self-supervised learning method for efficient feature extraction is designed. Compared to other mask-based self-supervised learning methods, EEGPT introduces spatio-temporal representation alignment. This involves con- structing a self-supervised task based on EEG representations that possess high SNR and rich semantic information, rather than on raw signals. Consequently, this approach mitigates the issue of poor feature quality typically extracted from low SNR signals. Additionally, EEGPT’s hierarchical structure processes spatial and temporal information separately, reducing computational complexity while increasing flexibility and adaptability for BCI applications. By training on a large mixed multi-task EEG dataset, we fully exploit EEGPT’s capabilities. The experiment validates the efficacy and scalability of EEGPT, achieving state-of- the-art performance on a range of downstream tasks with linear-probing. Our research advances EEG representation learning, offering innovative solutions for bio-signal processing and AI applications. The code for this paper is available at: https://github.com/BINE022/EEGPT.
+
+1 Introduction
+
+Electroencephalography (EEG) dynamically reflects the brain’s functional state by recording electrical signals from the cerebral cortex \[1\]. EEG is essential for studying brain activity and is pivotal in
+
+\*Corresponding author
+
+38th Conference on Neural Information Processing Systems (NeurIPS 2024).
+
+39249 https://doi.org/10.52202/079017-1239
+
+brain-computer interface (BCI) applications due to its non-invasive and portable nature \[2\]. Despite its potential, EEG-based methods face practical challenges due to low signal-to-noise ratio (SNR) \[3\], high inter-subject variability, and significant task-dependent variations in EEG signals \[4\]. Self-supervised learning, as described by Yann LeCun in his AAAI 2020 keynote \[5\], has shown advantages in natural language processing (NLP) \[6\], computer vision (CV) \[7, 8\], and speech analysis \[9\]. More and more state-of-the-art (SOTA) models are pretrained by self-supervised learning on large datasets and fine-tuned for specific applications, effectively reducing the need for extensive labeled data. Masked autoencoders, a type of self-supervised learning method, have been successful in NLP \[6\] and CV \[8\] by recovering masked patches based on context. Recent advances in EEG analysis using self-supervised learning techniques have shown promising results. In Falck et al. \[10\], a framework for learning EEG representations through contrastive learning was proposed. This framework extends the SimCLR framework to time series data, training a channel feature extractor. The model achieved an accuracy of 85.12% on the Sleep-EDF dataset \[11\] but was only trained on EEG data collected during 20-second tasks, making it unsuitable for shorter tasks such as motor imagery. BENDR \[12\] applied self-supervised learning based on masked autoencoders and contrastive learning to EEG data. This approach addresses the challenges of multi-task and multi-paradigm EEG data characterization, enhancing the model’s universality. BENDR uses a convolutional encoder to extract features from local time windows, masks some features, and then a transformer decoder predicts the information in the masked parts. EEG2VEC \[13\] introduced a self-supervised model that learns EEG representations based on contrastive loss and reconstruction loss. The pretrained model is used as a feature extractor for downstream tasks. Both EEG2VEC and BENDR utilize convolutional neural network and transformer networks to learn local and global features. EEG2VEC was validated in EEG match-mismatch and EEG regression tasks of the auditory EEG challenge \[14\]. The Biosignal Transformer (BIOT) \[15\] model addresses the challenges of cross-data learning with mismatched channels, variable lengths, and missing values in biosignals such as EEG, ECG, and human activity sensory signals. BIOT tokenizes each channel separately into fixed-length segments containing local signal features and then re-arranges the segments to form a long "sentence". In the CHB-MIT seizure detection task \[16\], the pretrained BIOT models achieved a 4% improvement. The Large Brain Model (LaBraM) \[17\] addresses EEG-based deep learning model limitations by enabling cross-dataset learning. It segments EEG signals into channel patches and uses vector-quantized neural spectrum prediction for training a neural tokenizer. This tokenizer encodes raw EEG patches into neural codes, which pretrain transformers to predict the original neural codes for masked patches. LaBraM outperformed SOTA methods in abnormal detection, event type classification \[18\], emotion recognition \[19\], and gait prediction \[20\]. Universal models have clearly made progress in EEG data analysis. However, the extremely low SNR of EEG signals and the complexity of brain activities during tasks make it challenging to learn abstract features using masked autoencoders, which are commonly used in NLP and CV \[12\]. Additionally, the inconsistent sampling rates of different EEG acquisition devices and variations in electrode channel locations \[15\] hinder the convolutional encoder’s ability to decouple the correlation between electrode channels and EEG signals, resulting in robustness and scalability issues. To address these issues, we propose a dual self-supervised EEG universal representation method based on the spatio-temporal consistency of EEG signals \[21\], introducing the EEG Pretrained Trans- former (EEGPT) for efficient feature extraction. Our method includes spatio-temporal representation alignment and mask-based reconstruction, enhancing representation quality and model robustness. Our method adopts a BERT-style masked recovery task \[22\] (not autoregressive task) objectives for pretraining. Beyond the original waveform recovery, we align the predicted EEG signal features of the masked parts with full EEG signal features. Additionally, a local spatio-temporal embedding method improves compatibility across different EEG acquisition devices. EEGPT, with over 10 million parameters, is pretrained on a mixed multi-task EEG dataset, including data from PhysioMI \[23\], HGD \[24\], and M3CV \[25\]. This pretraining enables EEGPT to extract universal representations for various tasks. For downstream tasks, we employ a linear-probing method, which achieves SOTA performance while also reducing computational resource consumption and preventing overfitting. Our experiments demonstrate EEGPT’s superior performance in motor imagery classification \[26\], event-related potential (ERP) detection \[27\], and sleep stage detection \[28\], showcasing its capability to extract high-level abstract features across spatio-temporal dimensions.
+
+2
+
+39250 https://doi.org/10.52202/079017-1239
+
+Contributions of this paper:
+
+• Proposal of EEGPT, a 10-million-parameter model for EEG universal feature extraction, leveraging a mixed dataset to enhance performances across tasks and subjects.
+
+• Development of a dual self-supervised method for EEG signals, combining spatio-temporal representation alignment and mask-based reconstruction, improving feature quality and convergence.
+
+• Design of a hierarchical structure for decoupled processing of spatial and temporal in- formation, reducing computational complexity and enhancing model flexibility for BCI applications.
+
+• Implementation of a local spatio-temporal embedding method, increasing robustness and compatibility across different EEG acquisition devices.
+
+• Conduct of comprehensive experiments on downstream datasets, demonstrating EEGPT significantly outperforms existing models across multiple EEG tasks and that larger models exhibit improved performance.
+
+2 Method
+
+Background: According to Kong and Zhang \[29\], a masked autoencoder learns features through a form of denoising autoencoder: input signals occluded with random patch masks are fed into the encoder, and the decoder predicts the original embeddings of the masked patches:
+
+min θ,ϕ x∼DEH (dϕ(z),x ⊙ (1 − M)), z = fθ(x ⊙ M) (1) where and decoder, "⊙" denotes respectively; element-wise z is the learned product; representation; M is the patch and mask; H(·,·) fθ(·) is the and similarity dϕ(·) are measurement. the encoder By minimizing the loss function, the model learns the optimal representation z of the input signal. However, in practice, there is no explicit representation z (no split of encoder and decoder) in the BERT-style model \[22\], and the model must be fine-tuned to locate effective representations. In contrast, we add a spatio-temporal representation alignment branch to explicitly represent z, which changes Equation 1 to Equation 2 (dual self-supervised method):
+
+min θ,ϕ x∼DEH(dϕ(z),x ⊙ (1 − M)) + H(z,fθ(x)), z = fθ(x ⊙ M) (2)
+
+This method encourages the encoded representations to take on a larger extent of semantics, similar to the minimal sufficient representation in the Multi-View Entropy Bottleneck (MVEB) approach \[30\], thereby improving the encoding quality and generalization \[31\]. EEG Pretrained Transformer (EEGPT): The structure of the EEGPT model is shown in Figure 1, which includes operations such as patching, embedding, masking, encoder, predictor and reconstructor. First, the model chunks the input EEG signal x ∈ RM×T (M channels and T time points) into patches pi,j, and embeds each patch as a token tokeni,j by local spatio-temporal embedding (Section 2.3), followed by splitting into masked parts M and unmasked parts M, respectively. Then, we pretain the model using a dual self-supervised learning method, including spatio-temporal representation alignment (Section 2.1) and mask-based reconstruction (Section 2.2). Finally, the linear-probing method is used in downstream tasks (Section 2.4).
+
+2.1 Spatio-temporal Representation Alignment
+
+The spatio-temporal representation alignment method aligns the predicted features with the momen- tum encoder’s output, enhancing the encoder’s ability to extract robust features and ensuring that the encoder’s output contains high-quality global features. We employ the encoder and the predictor to decouple spatial and temporal features, significantly reducing computational complexity. Encoder: The encoder integrates spatial information from masked patches. Equation 3 describes how the output encoder feature (ENC) encj: processes all masked tokeni,j at time j as input and produces the corresponding
+
+encj = ENC({tokeni,j}
+
+(i,j)∈M
+
+\\
+
+(3)
+
+3
+
+39251 https://doi.org/10.52202/079017-1239
+
+ðððð,ð
+
+ððð1 + ððð 1
+
+Reconstruction Loss
+
+masked
+
+Transformer
+
+ððð1 + ððð 1
+
+Reconstructed EEGAlignment Loss
+
+ððð
+
+Reconstructor
+
+unmasked
+
+ððððððð+
+
+2 ððð+
+
+3 ððð+
+
+4 ðððð+
+
+5 + 6 ððð 2
+
+ððð 3
+
+ððð 4
+
+ððð 5
+
+ððð 6
+
+\+ ðððð1
+
+ðððð2ðððð3ðððð4 ðððð5 ðððð6
+
+Transformer
+
+ð ð
+
+ðð¢ððð¦ + ððð 2
+
+\=
+
+ð¡ððð
+
+ðℎððððð
+
+Figure 1: The EEGPT structure involves patching the input EEG signal as pi,j through masking (50% time and 80% channel patches), creating masked part M and unmasked part M and then embedding as tokeni,j by local spatio-temporal embedding. The encoder processes the masked part, extracting features (encj) consisting of {sEncoder i}Si=1. output The predictor predicts (mencj). Based {efeatures i}on Si=1 features for (predeach extracted j) time for all segment by time the in the M part with summary tokens segments, aligning with the Momentum predictor and encoder, the reconstructor generates reci,j to reconstruct the EEG signal of the M part.
+
+Predictor: the feature. encoder, Embedding As combined in Equation and with unembedding 4, temporal the predictor position \[32\] (PRED) are information performed utilizes posfeatures linearly j, to predict encon the j of the input the complete masked and output. part encoded from We adopt the rotary position embedding method \[33\] to generate posj, introducing relative positional and temporal information. To generate prediction features belonging to M, a learnable vector query is used as the query token. Through self-supervised training, the encoder is encouraged to extract more information about the correlation among tokens:
+
+{predt} t∈{1,2,...,N} = PREDSelect Prediction ððð3 ððð4 ðð¢ððð¦
+
+ððð6 Predictor +
+
+\+
+
+\+
+
+\+ ððð 3
+
+ððð 4
+
+ððð 5
+
+ððð 6
+
+Encoded Tokens ðððð
+
+Encoder
+
+Momentum Encoder ð1 ð2
+
+TransformerEmbedding Embedding
+
+ð 1 ð 2 ð¡ððððð,ð
+
+ðð¢ððððð¦ ∈ ððð ððð
+
+ðððððð 
+
+Patched EEG
+
+Patched EEG
+
+({encj + posj}
+
+∃i,(i,j)∈M
+
+\\
+
+(4)
+
+Momentum Encoder: The structure of the momentum encoder is identical to that of the encoder. Equation and encoder produces are 5 outlines accumulated the corresponding how the into momentum the output momentum mencencoder encoder j. After (MENC) with each a processes training factor of iteration, all τ = token0.01. the i,j parameters at time j as of input the
+
+mencj = MENC(\\
+
+{tokeni,j}
+
+(5) (i,j)∈M∪MWe employ an alignment loss based on Mean Square Error (MSE) \[34\] to achieve spatio-temporal representation alignment:
+
+LA = − N
+
+1∑j=1
+
+N||predj,LN(mencj)||22 (6)
+
+In Equation 6, LN denotes layer normalization \[35\], which helps to mitigate the effects of extreme values and covariate shift, allowing the model to focus on more important features.
+
+2.2 Mask-based Reconstruction
+
+The mask-based reconstruction method aligns the reconstructed patches generated by the reconstructor with the raw patches pi,j in the M part.
+
+4
+
+https://doi.org/10.52202/079017-1239
+
+39252
+
+Reconstructor: As shown in Equation 7, the reconstructor (REC) utilizes features encj from the M part temporal between encoded the position encoder by the posencoder and j, to the generate and reconstructor features the reconstructed predto help j of maintain the patch M part recthe predicted u,t. features We establish and by the accelerate predictor, a "skip convergence. connection" along with {recu,t} (u,t)∈M
+
+\= REC({encj + posj}
+
+∃i,(i,j)∈M ∪ {predj + posj}
+
+∀i,(i,j)∈M
+
+\\
+
+(7)
+
+Mask-based reconstruction is achieved using a reconstruction loss based on the Mean Square Error (MSE):
+
+LR = − |M|
+
+1
+
+∑ (i,j)∈M||reci,j,LN(pi,j)||22 (8)
+
+The complete pretraining loss L is constructed by summing both LA and LR:
+
+L = LA + LR (9)
+
+2.3 Local Spatio-Temporal Embedding
+
+ððℜ: ðð 1ð → ðð ð 1ðððððð
+
+Figure 2: Illustration of local spatio-temporal embedding. The EEG signal is divided into equally sized patches in the spatio-temporal dimensions. Each patch represents a time segment for a specific channel without overlap. The patches are linearly embedded and incorporated with channel embedding information to obtain a corresponding feature.
+
+The local spatio-temporal embedding method first patches and embeds the EEG signal in the spatio- temporal dimension before feeding it into the encoder, as shown in Figure 2. We denote the set of EEG signal into equally channels sized as patches {ci}Mi=1in , where the spatio-temporal ci {1,2, ..., N}:
+
+ððChannel ððEmbedding Patching
+
+ðð+
+
+ðð
+
+ð¸ðððð(ðð,ð)
+
+Tokens
+
+is the name of each channel. Firstly, the EEG signal is divided dimensions, denoted as pi,j,i ∈ {1,2, ..., M},j ∈ pi,j = xi,(j−1)d:jd (10)
+
+where d represents patch’s time length, and N = T/d is the number of time patches. Next, the patches are linearly embedded, combining the channel embedding information. We construct a Codex book \[36\] {ςi ∈ vectors and This mapping Rde}Mi=1 a mapping flexibly (de is the embedding dimension) containing all learnable channel embedding from channel names to channel embedding vectors ℜ corresponds the channels of the EEG data to the channels : {cof i}the Mi=1 model → {ςinputs, i}Mi=1. allowing the model to adapt to multiple datasets and improve channel adaptation. The patch’s content is linearly embedded as Embed(pi,j) = W p Tpi,j + bp, where Wp ∈ Rd×de and bp ∈ Rde are learnable parameters. Embedded token denotes as tokeni,j ∈ Rde:
+
+tokeni,j = Embed(pi,j) + ςi (11)
+
+Based on self-supervised learning task, the extracted features of patches are mutually predictable and can ignore noise signals at smaller scales. The method aims to extract macroscopic features that span larger scales, which are believed to be more easily recognizable and considered meaningful features.
+
+5
+
+39253 https://doi.org/10.52202/079017-1239
+
+EEG
+
+patch ðð,ð
+
+patch ðð,ð
+
+patch ðð,ð
+
+patch ðð,ð
+
+Channels
+
+Patch Embedding
+
+Logits
+
+Figure 3: Linear-probing method.
+
+FP2 FPz FP1
+
+AF4 AF3
+
+F7 F5 F3 F6 F1 Fz F2 F4 F8
+
+FT7 FC5 FC3 FC6 FC1 FCz FC2 FC4 FT8
+
+T7 C5 C3 C6 C1 Cz C2 C4 T8
+
+TP7 CP5 CP3 CP6 CP1 CPz CP2 CP4 TP8
+
+P7 P5 P3 P6 P1 Pz P2 P4 P8
+
+O1
+
+Linear
+
+Features
+
+Encoder (Frozen)
+
+Embed Tokens
+
+Adapt Spatial Filter
+
+PO4 POz PO8 Figure 4: Electrode locations.
+
+2.4 Linear-Probing Method
+
+In the downstream tasks, we apply the pretrained encoder and concatenate additional modules to solve classification tasks. As shown in Figure 3, we introduce the linear-probing method, which freezes the parameters in the pretrained model and only changes the parameters in the additional linear modules. These modules include adaptive spatial filters (1× 1 convolution) for aligning channels between EEG and the model, and a linear layer to map the features to logits. The encoder passes the output tokens corresponding to summary tokens to the linear classification head. This approach helps avoid the overfitting problem when a large parameter model is fine-tuned using a limited number of samples. Since the additional module is straightforward, the performance is solely determined by the encoder, allowing us to assess the model’s capability.
+
+3 Experiments
+
+3.1 Datasets and Data Processing
+
+Table 1: Datasets for pretraining and downstream tasks
+
+Datasets Paradigms Subjects Targets
+
+pretraining Datasets
+
+PO3 PO7 Channel
+
+Oz O2 EEG
+
+PhysioMI MI\&ME 109 5 HGD MI 14 4 TSU SSVEP 35 40 SEED EMO 15 3 M3CV MULTI 106 -
+
+Downstream Datasets
+
+BCIC-2A MI 10 4 BCIC-2B MI 10 2 Sleep-EDFx SLEEP 197 5 KaggleERN ERN 26 2 PhysioP300 P300 9 2 TUAB Abnormal 2383 2 TUEV Event 288 6
+
+We curated EEG public datasets of various paradigms for model pretraining as shown in Table 1. It contains motor imagery (MI) and execution (ME) datasets PhysioMI \[23\], HGD \[24\], steady-state visual evoked potential (SSVEP) dataset TSU \[37\], emotional classification dataset SEED \[38\] and multi-subject multi-session multi-paradigm dataset M3CV \[25\]. To assess the practical utility of the learned representations in downstream tasks, we curated a list of datasets as shown in Table 1. It contains MI datasets BCIC-2A \[39\], BCIC-2B \[40\], sleep stage detection dataset Sleep-EDFx \[11\] , error related negativity (ERN) dataset KaggleERN \[41\] and event-related potentials dataset PhysioP300 \[23\]. We also curated a dataset of abnormal EEG signals dataset TUAB and event type classification dataset TUEV from Temple University EEG Corpus \[18\]. These diverse datasets
+
+6
+
+https://doi.org/10.52202/079017-1239
+
+39254
+
+enable comprehensive evaluation of the proposed EEGPT model across various tasks. Each dataset underwent similar and distinct preprocessing steps, including cropping (4s), re-referencing (average), channels selecting, scaling (mV) and resampling (256Hz). There are 0-38Hz bandpass filtering in MI datasets for downstream tasks. More details refer to Appendix C.
+
+3.2 Implementation and Settings
+
+Model implementation. The implementation of encoder, predictor and reconstructor in EEGPT adopts the vision transformer (VIT) \[42\] and sets S learnable summary tokens (similar to \[CLS\] token) for summarizing information within the same time patches. We used 58 electrodes (M = 58), as shown in Figure 4. The input signal has a sampling rate of fs = 256 Hz, and the input signal time length is T = 1024. Each patch has a time length of d = 64, corresponding to a 250ms time window. The 50% time and 80% channel patches of the patches are masked during training. pretraining strategy. In pretraining, for each training dataset, we randomly sampled 10% of the samples as the validation set. As shown in Table 6, we trained 8 variants with different embedding dims, layers of transformer models (encoder, predictor, reconstructor) and summary tokens S. The AdamW optimizer was employed with the OneCycle learning rate strategy \[43\] (initial learning rate of 2.5e-4, maximum of 5e-4, minimum of 3.13e-5). The training was conducted for 200 epochs, with a batch size of 64 and 16-bit mixed precision training on 8 Nvidia 3090 GPUs. Evaluation strategy. For the data splitting of TUAB and TUEV, we strictly follow the same strategy as BIOT \[15\] to compare all methods fairly. In other downstream tasks, we use the same experimental configuration as BENDR \[12\], in which Leave-One-Subject-Out (LOSO) validation method are used. Specially, KaggleERN uses 4-fold cross-validation with 10 subjects for testing, Sleep-EDFx uses 10-fold cross-validation and ratio 6:2:2 in training, validation and test splitting. We use linear- probing method for downstream tasks. Particularly, in the sleep stage detection task, we use a 4-layer transformer encoder model as a classifier that integrates the output of our model for every 0.25s for the purpose of processing a long task of 30s. We used the optimal large model in Section 3.5 for testing on all downstream tasks. To ensure the reliability of the experiments, we repeated each experiment three times and calculated the standard deviation. Baselines & Metrics. For the TUAB and TUEV datasets, we use the same baselines from BIOT which are fully fine-tuned models. In other tasks, we use the pretrained BENDR \[12\], BIOT \[15\] and LaBraM \[17\] as the baselines. The following metrics are used for comparison: 1) Balanced Accuracy (BAC), 2) AUROC, 3) Weighted F1, 4) Cohen’s Kappa. We use AUROC only for binary classification tasks and Weighted F1 only for multi-class classification tasks. More details refer to Appendix D.
+
+3.3 Downstream Experiment Results
+
+Table 2: The results of different methods on TUAB. Methods Model Size Balanced Accuracy AUROC SPaRCNet \[44\] 0.79M 0.7896±0.0018 0.8676±0.0012 ContraWR \[45\] 1.6M 0.7746±0.0041 0.8456±0.0074 CNN-T \[46\] 3.2M 0.7777±0.0022 0.8461±0.0013 FFCL \[47\] 2.4M 0.7848±0.0038 0.8569±0.0051 ST-T \[48\] 3.5M 0.7966±0.0023 0.8707±0.0019 BIOT \[15\] 3.2M 0.7959±0.0057 0.8815±0.0043 Ours-Tiny 4.7M 0.7959±0.0021 0.8716±0.0041 Ours 25M 0.7983±0.0030 0.8718±0.0050
+
+We conducted a comparative analysis with other large models on the Temple University datasets, using the same configuration as BIOT \[15\] for experiments on the TUAB and TUEV datasets. The results are presented in Tables 2 and 3. In the TUAB dataset, the performance of EEGPT is comparable to that of the BIOT model. In the TUEV dataset, EEGPT improves the balanced accuracy by 9.5%, and the weighted F1 score by 6.9% compared to BIOT. To further validate the effectiveness of our model, we conducted comparative experiments with BENDR, BIOT, and LaBraM. The results are shown in Table 4. On the BCIC-2A and BCIC- 2B datasets for motor imagery tasks and the Sleep-EDFx dataset for sleep stage detection, our
+
+7
+
+39255 https://doi.org/10.52202/079017-1239
+
+Table 3: The results of different methods on TUEV. Methods Model Size Balanced Accuracy Weighted F1 Cohen’s Kappa SPaRCNet \[44\] 0.79M 0.4161±0.0262 0.7024±0.0104 0.4233±0.0181 ContraWR \[45\] 1.6M 0.4384±0.0349 0.6893±0.0136 0.3912±0.0237 CNN-T \[46\] 3.2M 0.4087±0.0161 0.6854±0.0293 0.3815±0.0134 FFCL \[47\] 2.4M 0.3979±0.0104 0.6783±0.0120 0.3732±0.0188 ST-T \[48\] 3.5M 0.3984±0.0228 0.6823±0.0190 0.3765±0.0306 BIOT \[15\] 3.2M 0.5281±0.0225 0.7492±0.0082 0.5273±0.0249 Ours-Tiny 4.7M 0.5670±0.0066 0.7535±0.0097 0.5085±0.0173 Ours 25M 0.6232±0.0114 0.8187±0.0063 0.6351±0.0134
+
+Table 4: The results of universal EEG models on various datasets. Datasets Methods Balanced Accuracy Cohen’s Kappa Weighted F1 / AUROC
+
+BCIC-2A
+
+BENDR 0.4899±0.0070 0.3199±0.0094 0.4836±0.0076 BIOT 0.4590±0.0196 0.2787±0.0261 0.4282±0.0289 LaBraM 0.5613±0.0052 0.4151±0.0069 0.5520±0.0052 Ours 0.5846±0.0070 0.4462±0.0094 0.5715±0.0051
+
+BCIC-2B
+
+BENDR 0.7067±0.0011 0.4131±0.0022 0.7854±0.0029 BIOT 0.6409±0.0118 0.2817±0.0236 0.7095±0.0141 LaBraM 0.6851±0.0063 0.3703±0.0125 0.7576±0.0067 Ours 0.7212±0.0019 0.4426±0.0037 0.8059±0.0032
+
+Sleep-EDFx
+
+BENDR 0.6655±0.0043 0.6659±0.0043 0.7507±0.0029 BIOT 0.6622±0.0013 0.6461±0.0017 0.7415±0.0010 LaBraM 0.6771±0.0022 0.6710±0.0006 0.7592±0.0005 Ours 0.6917±0.0069 0.6857±0.0019 0.7654±0.0023
+
+KaggleERN
+
+BENDR 0.5672±0.0020 0.1461±0.0037 0.6030±0.0044 BIOT 0.5118±0.0089 0.0297±0.0224 0.5495±0.0167 LaBraM 0.5439±0.0029 0.0944±0.0066 0.5693±0.0052 Ours 0.5837±0.0064 0.1882±0.0110 0.6621±0.0096
+
+PhysioP300
+
+BENDR 0.6114±0.0118 0.2227±0.0237 0.6588±0.0163 BIOT 0.5485±0.0325 0.0968±0.0647 0.5308±0.0333 LaBraM 0.6477±0.0110 0.2935±0.0227 0.7068±0.0134 Ours 0.6502±0.0063 0.2999±0.0139 0.7168±0.0051
+
+model exhibited accuracy improvements of 9.4%, 1.5%, 2.6%, respectively, compared to BENDR. Considering that BENDR used full model fine-tuning while our model only fine-tuned an additional linear layer, this suggests that our model extracts richer and more universal features. We used the linear-probing method for BIOT and LaBraM. EEGPT improved by 2.3%, 3.6%, and 1.4%, respectively, compared to LaBraM, and by 12.5%, and 8.1%, and 2.9%, respectively, compared to BIOT. For the ERP-type task datasets, our model outperforms BENDR by 2.6% and 3.9% on the KaggleERN and PhysioP300 datasets, respectively. The performance of our model on the PhysioP300 dataset is comparable to that of LaBraM, but higher by 3.0% on KaggleERN. Our model also outperforms BIOT on the KaggleERN and PhysioP300 by 7.2% and 10.2%, respectively. On all tasks, our model EEGPT achieves competitive results compared to BENDR, BIOT, and LaBraM. This demonstrates that EEGPT learns consistent representational features over the temporal-spatial dimensions, enabling the model to be more widely applied to multiple paradigm tasks and to achieve better classification performance. Combining the above experimental results, we demonstrate that the method proposed in this paper addresses the issues of poor EEG channel adaptability, poor quality of EEG representations extracted by existing self-supervised learning methods, and the lack of universality of representations across multiple paradigms. Our method effectively extracts high-quality universal EEG representations.
+
+3.4 Ablation Experiment Results
+
+We conducted ablation experiments using the large model with four different configurations, and the results are presented in Table 5. In the absence of alignment loss (LA), the reconstruction loss
+
+8
+
+https://doi.org/10.52202/079017-1239
+
+39256
+
+Table 5: The results of the ablation study.
+
+Variants A: B: w/o w/o LN LA 37.13 LA 0.15 0.57 LR BCIC-2A-BAC BCIC-2B-AUROC 0.5287±0.0086 0.7264±0.0381 0.002 0.5567±0.0088 0.7920±0.0012 KaggleERN-AUROC
+
+0.5752±0.0164 0.5891±0.0227 C: w/o skip 0.12 0.56 0.5796±0.0011 0.7702±0.0122 0.6356±0.0296 D: with all 0.24 0.56 0.5846±0.0070 0.8059±0.0032 0.6621±0.0096
+
+Table 6: The results of pretrained models.
+
+variants tiny1 64 de layers S params 2/2/4 1 0.4M 0.32 LA 0.60 LR BCIC-2A-BAC (%)
+
+49.19 tiny2 64 2/2/4 4 0.5M 0.36 0.60 50.03 tiny3 64 8/8/8 4 1.6M 0.17 0.59 51.58 little 128 8/8/8 4 6.4M 0.18 0.57 54.18 base1 256 6/6/6 1 19M 0.24 0.56 54.53 base2 256 8/8/8 4 25M 0.33 0.56 56.48 base3 512 6/6/6 1 76M 0.14 0.58 54.47 large 512 8/8/8 4 101M 0.24 0.56 58.46
+
+is comparable to that of the version D model, but there is a significant performance degradation of 6%∼9% in the downstream task. Without layer normalization on the targets of reconstruction loss, the version B model demonstrated a lower pretrain loss L, but it was affected by extreme values and covariate shift \[35\], resulting in a 3%,1% and 7% reduction in downstream tasks performance. The version as inputs C to model, the reconstructor, which removes exhibited the skip lower connection alignment and loss uses and all comparable {predt}Nt=1 reconstruction from the predictor loss compared to the version D model, but showed a 1%∼3% lower performance in the downstream task. These results suggest that the dual self-supervised method proposed in this paper is effective, as the spatio-temporal alignment improves the quality of the EEG representations extracted by the model.
+
+3.5 Pretrain Experiment Results
+
+0.525
+
+0.50
+
+0.550
+
+106 107 108
+
+106 107 108 Params
+
+Params
+
+Figure 5: Scaling laws with EEGPT parameter size N. Axes are all on a logarithmic scale.
+
+We designed 8 variants to investigate summary token (S) on pretraining loss the and effects of model downstream task size accuracy. (embedding To evaluate size the de / layers) and performance of the pretrained models, we used the linear-probing method to test cross-subject classification tasks on the BCIC-2A dataset. The experimental results are presented in Table 6. As the model size (embedding decreased, and size the de / performance layers) and summary on the downstream tokens (S) increased, task improved. the reconstruction For models loss with (LR) the gradually same S, larger trends models in accuracy exhibited and reconstruction lower alignment loss loss as the LA model and higher size increased, performance. as shown We also in Figure investigated 5. These the trends can where N be summarized by the scaling is the parameter count of 0.52
+
+0.575
+
+0.600
+
+0.54
+
+0.625
+
+0.650
+
+0.56
+
+0.675
+
+0.58 0.700
+
+0.725
+
+laws: ACC = (33.6 ∗N)the model. The results of the 0.029 downstream and LR = (0.72∗ N)−0.014, task experiments indicate that larger models generally achieve higher accuracy, with the large model, featuring an 8-layer, 512-embedding dimension, and 4 summary tokens, exhibiting the highest accuracy. For simplicity, we used the optimal large model for testing on all downstream tasks.
+
+9
+
+39257 https://doi.org/10.52202/079017-1239
+
+4 Conclusion
+
+In this paper, we propose a self-supervised EEG Pretrained Transformer (EEGPT) model with over 10 million parameters for universal EEG representation learning. We employ a dual self- supervised approach for pretraining, involving spatio-temporal representation alignment and mask- based reconstruction. The spatio-temporal representation alignment aligns masked patches’ features with full patches’ features, enhancing the quality of EEG representations and concentrating key information in the encoder output. The mask-based reconstruction leverages the spatial and temporal consistency exhibited by EEG signals to extract complementary features in both dimensions. We design a hierarchical structure for EEGPT, which first extracts stable spatial representations from short-term EEG signals, then captures the temporal correlations among long-term EEG signals. This structure not only reduces computational complexity but also enhances the flexibility and adaptability of EEGPT in BCI applications. Experiments demonstrate that our dual self-supervised pretrain model significantly outperforms the popular universal feature extraction models BENDR, BIOT, and LaBraM on tasks such as motor imagery, sleep stage detection and ERP-type classification. Compared with BIOT on the TUEV dataset, we achieved a 9.5% performance improvement. These tasks, which have different channel configurations and sampling rates, suggest that EEGPT is scalable. In the future, we plan to further enrich the pretraining EEG dataset and expand the model size and applicability.
+
+References
+
+\[1\] Gernot R Müller-Putz. Electroencephalography. Handbook of clinical neurology, 168:249–262,
+
+2020\.
+
+\[2\] Sharlene N Flesher, John E Downey, Jeffrey M Weiss, Christopher L Hughes, Angelica J Herrera, Elizabeth C Tyler-Kabara, Michael L Boninger, Jennifer L Collinger, and Robert A Gaunt. A brain-computer interface that evokes tactile sensations improves robotic arm control. Science, 372(6544):831–836, 2021.
+
+\[3\] Eunjin Jeon, Wonjun Ko, Jee Seok Yoon, and Heung-Il Suk. Mutual information-driven subject- invariant and class-relevant deep representation learning in bci. IEEE Transactions on Neural
+
+Networks and Learning Systems, 34(2):739–749, 2023. doi: 10.1109/TNNLS.2021.3100583.
+
+\[4\] Christian O’Reilly, Nadia Gosselin, Julie Carrier, and Tore Nielsen. Montreal archive of sleep studies: an open-access resource for instrument benchmarking and exploratory research. Journal of Sleep Research, 23(6):628–635, 2014. doi: https://doi.org/10.1111/jsr.12169. URL https://onlinelibrary.wiley.com/doi/abs/10.1111/jsr.12169.
+
+\[5\] Timothy Hospedales, Antreas Antoniou, Paul Micaelli, and Amos Storkey. Meta-learning in neural networks: A survey. IEEE Transactions on Pattern Analysis and Machine Intelligence, 44(9):5149–5169, 2022. doi: 10.1109/TPAMI.2021.3079209.
+
+\[6\] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. Bert: Pre-training of
+
+deep bidirectional transformers for language understanding, 2019.
+
+\[7\] Xinlei Chen, Saining Xie, and Kaiming He. An empirical study of training self-supervised vision transformers, 2021.
+
+\[8\] Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollár, and Ross Girshick. Masked Autoencoders Are Scalable Vision Learners, December 2021. URL http://arxiv.org/abs/ 2111.06377. arXiv:2111.06377 \[cs\].
+
+\[9\] Alexei Baevski, Henry Zhou, Abdelrahman Mohamed, and Michael Auli. wav2vec 2.0: A
+
+framework for self-supervised learning of speech representations, 2020.
+
+\[10\] Fabian Falck, Suproteem K. Sarkar, Subhrajit Roy, and Stephanie L. Hyland. Contrastive representation learning for electroencephalogram classification. In ML4H@NeurIPS, 2020.
+
+URL https://api.semanticscholar.org/CorpusID:229781944.
+
+\[11\] B. Kemp, A.H. Zwinderman, B. Tuk, H.A.C. Kamphuisen, and J.J.L. Oberye. Analysis of a sleep-dependent neuronal feedback loop: the slow-wave microcontinuity of the eeg. IEEE Transactions on Biomedical Engineering, 47(9):1185–1194, 2000. doi: 10.1109/10.867928.
+
+10
+
+39258 https://doi.org/10.52202/079017-1239
+
+\[12\] Demetres Kostas, Stéphane Aroca-Ouellette, and Frank Rudzicz. BENDR: Using Transformers and a Contrastive Self-Supervised Learning Task to Learn From Massive Amounts of EEG Data. Frontiers in Human Neuroscience, 15, 2021. ISSN 1662-5161. doi: 10.3389/fnhum. 2021.653659. URL https://www.frontiersin.org/articles/10.3389/fnhum.2021. 653659.
+
+\[13\] Qiushi Zhu, Xiaoying Zhao, Jie Zhang, Yu Gu, Chao Weng, and Yuchen Hu. Eeg2vec: Self-Supervised Electroencephalographic Representation Learning, May 2023. URL http: //arxiv.org/abs/2305.13957. arXiv:2305.13957 \[eess\].
+
+\[14\] Simon Geirnaert, Tom Francart, and Alexander Bertrand. Time-adaptive unsupervised auditory attention decoding using eeg-based stimulus reconstruction. IEEE Journal of Biomedical and
+
+Health Informatics, 26(8):3767–3778, 2022.
+
+\[15\] Chaoqi Yang, M. Brandon Westover, and Jimeng Sun. BIOT: Cross-data Biosignal Learning in the Wild, May 2023. URL http://arxiv.org/abs/2305.10351. arXiv:2305.10351 \[cs, eess\].
+
+\[16\] Ali Hossam Shoeb. Application of machine learning to epileptic seizure onset detection and treatment. PhD thesis, Massachusetts Institute of Technology, 2009.
+
+\[17\] Wei-Bang Jiang, Li-Ming Zhao, and Bao-Liang Lu12. Large brain model for learning generic
+
+rep-resentations with tremendous eeg data in bci.
+
+\[18\] Iyad Obeid and Joseph Picone. The temple university hospital eeg data corpus. Frontiers in
+
+Neuroscience, 10, 2016. ISSN 1662-453X. doi: 10.3389/fnins.2016.00196. URL https://www. frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2016.00196.
+
+\[19\] Wei Liu, Jie-Lin Qiu, Wei-Long Zheng, and Bao-Liang Lu. Comparing recognition performance and robustness of multimodal deep learning models for multimodal emotion recognition. IEEE
+
+Transactions on Cognitive and Developmental Systems, 14(2):715–729, 2021.
+
+\[20\] Yongtian He, Trieu Phat Luu, Kevin Nathan, Sho Nakagome, and Jose L Contreras-Vidal. A mobile brain-body imaging dataset recorded during treadmill walking with a brain-computer interface. Scientific data, 5(1):1–10, 2018.
+
+\[21\] Alexander A Fingelkurts, Andrew A Fingelkurts, Victor A Ermolaev, and Alexander Ya Kaplan. Stability, reliability and consistency of the compositions of brain oscillations. International
+
+Journal of Psychophysiology, 59(2):116–126, 2006.
+
+\[22\] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. Bert: Pre-training of deep bidirectional transformers for language understanding. In Proceedings of the 2019 Conference of the North, Jan 2019. doi: 10.18653/v1/n19-1423. URL http://dx.doi.org/10.18653/ v1/n19-1423.
+
+\[23\] Ary L. Goldberger, Luis A. N. Amaral, Leon Glass, Jeffrey M. Hausdorff, Plamen Ch. Ivanov, Roger G. Mark, Joseph E. Mietus, George B. Moody, Chung-Kang Peng, and H. Eugene Stanley. Physiobank, physiotoolkit, and physionet. Circulation, 101(23):e215–e220, 2000. doi: 10.1161/01.CIR.101.23.e215. URL https://www.ahajournals.org/doi/abs/10.1161/ 01.CIR.101.23.e215.
+
+\[24\] Robin Tibor Schirrmeister, Jost Tobias Springenberg, Lukas Dominique Josef Fiederer, Martin Glasstetter, Katharina Eggensperger, Michael Tangermann, Frank Hutter, Wolfram Burgard, and Tonio Ball. Deep learning with convolutional neural networks for eeg decoding and visualization. Human Brain Mapping, aug 2017. ISSN 1097-0193. doi: 10.1002/hbm.23730. URL http://dx.doi.org/10.1002/hbm.23730.
+
+\[25\] Gan Huang, Zhenxing Hu, Weize Chen, Zhen Liang, Linling Li, Li Zhang, and Zhiguo Zhang. M3CV:A Multi-subject, Multi-session, and Multi-task database for EEG-based Biometrics Challenge. bioRxiv, 2022. doi: 10.1101/2022.06.28.497624. URL https://www.biorxiv. org/content/early/2022/07/03/2022.06.28.497624.
+
+11
+
+39259 https://doi.org/10.52202/079017-1239
+
+\[26\] Ali Al-Saegh, Shefa A Dawwd, and Jassim M Abdul-Jabbar. Deep learning for motor imagery eeg-based classification: A review. Biomedical Signal Processing and Control, 63:102172,
+
+2021\.
+
+\[27\] Fotis P. Kalaganis, Elisavet Chatzilari, Spiros Nikolopoulos, Ioannis Kompatsiaris, and Nikos A. Laskaris. An error-aware gaze-based keyboard by means of a hybrid bci system. Scientific Reports, Aug 2018. doi: 10.1038/s41598-018-31425-2. URL http://dx.doi.org/10. 1038/s41598-018-31425-2.
+
+\[28\] Khald Ali I Aboalayon, Miad Faezipour, Wafaa S Almuhammadi, and Saeid Moslehpour. Sleep stage classification using eeg signal analysis: a comprehensive survey and new investigation.
+
+Entropy, 18(9):272, 2016.
+
+\[29\] Xiangwen Kong and Xiangyu Zhang. Understanding masked image modeling via learning
+
+occlusion invariant feature, 2022.
+
+\[30\] Liangjian Wen, Xiasi Wang, Jianzhuang Liu, and Zenglin Xu. Mveb: Self-supervised learning with multi-view entropy bottleneck. IEEE Transactions on Pattern Analysis and Machine
+
+Intelligence, 2024.
+
+\[31\] Xiaokang Chen, Mingyu Ding, Xiaodi Wang, Ying Xin, Shentong Mo, Yunhao Wang, Shumin Han, Ping Luo, Gang Zeng, and Jingdong Wang. Context autoencoder for self-supervised representation learning. International Journal of Computer Vision, 132(1):208–223, 2024.
+
+\[32\] Mary Phuong and Marcus Hutter. Formal Algorithms for Transformers, July 2022. URL http://arxiv.org/abs/2207.09238. Number: arXiv:2207.09238 arXiv:2207.09238 \[cs\].
+
+\[33\] Jianlin Su, Yu Lu, Shengfeng Pan, Bo Wen, and Yunfeng Liu. Roformer: Enhanced transformer
+
+with rotary position embedding, 2021.
+
+\[34\] Jiawei Ren, Mingyuan Zhang, Cunjun Yu, and Ziwei Liu. Balanced mse for imbalanced visual regression, 2022.
+
+\[35\] Jimmy Lei Ba, Jamie Ryan Kiros, and Geoffrey E. Hinton. Layer normalization, 2016.
+
+\[36\] Yiqun Duan, Jinzhao Zhou, Zhen Wang, Yu-Kai Wang, and Chin-Teng Lin. DeWave: Discrete EEG Waves Encoding for Brain Dynamics to Text Translation, October 2023. URL http: //arxiv.org/abs/2309.14030. arXiv:2309.14030 \[cs\].
+
+\[37\] Yijun Wang, Xiaogang Chen, Xiaorong Gao, and Shangkai Gao. A benchmark dataset for ssvep- based brain–computer interfaces. IEEE Transactions on Neural Systems and Rehabilitation Engineering, 25(10):1746–1752, 2017. doi: 10.1109/TNSRE.2016.2627556.
+
+\[38\] Wei-Long Zheng and Bao-Liang Lu. Investigating critical frequency bands and channels for eeg-based emotion recognition with deep neural networks. IEEE Transactions on Autonomous Mental Development, 7(3):162–175, 2015. doi: 10.1109/TAMD.2015.2431497.
+
+\[39\] Michael Tangermann, Klaus-Robert Müller, Ad Aertsen, Niels Birbaumer, Christoph Braun, Clemens Brunner, Robert Leeb, Carsten Mehring, Kai J. Miller, Gernot R. Müller-Putz, Guido Nolte, Gert Pfurtscheller, Hubert Preissl, Gerwin Schalk, Alois Schlögl, Carmen Vidaurre, Stephan Waldert, and Benjamin Blankertz. Review of the bci competition iv. Frontiers in Neuroscience, 6, 2012. URL https://api.semanticscholar.org/CorpusID:790253.
+
+\[40\] David Steyrl, Reinhold Scherer, Josef Faller, and Gernot R. Müller-Putz. Random forests in non-invasive sensorimotor rhythm brain-computer interfaces: a practical and convenient non-linear classifier. Biomedical Engineering / Biomedizinische Technik, 61:77 – 86, 2016. URL https://api.semanticscholar.org/CorpusID:7782626.
+
+\[41\] Perrin Margaux, Emmanuel Maby, Sébastien Daligault, Olivier Bertrand, and Jérémie Mattout. Objective and subjective evaluation of online error correction during p300-based spelling. Advances in Human-Computer Interaction, 2012, 01 2012. doi: 10.1155/2012/578295.
+
+12
+
+39260 https://doi.org/10.52202/079017-1239
+
+\[42\] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, Jakob Uszkoreit, and Neil Houlsby. An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale, June 2021. URL http://arxiv.org/abs/2010.11929. arXiv:2010.11929 \[cs\].
+
+\[43\] Leslie N. Smith and Nicholay Topin. Super-convergence: Very fast training of neural networks
+
+using large learning rates, 2018. URL https://arxiv.org/abs/1708.07120.
+
+\[44\] Jin Jing, Wendong Ge, Shenda Hong, Marta Bento Fernandes, Zhen Lin, Chaoqi Yang, Sungtae An, Aaron F Struck, Aline Herlopian, Ioannis Karakis, et al. Development of expert-level classification of seizures and rhythmic and periodic patterns during eeg interpretation. Neurology, 100(17):e1750–e1762, 2023.
+
+\[45\] Chaoqi Yang, Cao Xiao, M Brandon Westover, Jimeng Sun, et al. Self-supervised electroen- cephalogram representation learning for automatic sleep staging: model development and
+
+evaluation study. JMIR AI, 2(1):e46769, 2023.
+
+\[46\] Wei Yan Peh, Yuanyuan Yao, and Justin Dauwels. Transformer convolutional neural networks for automated artifact detection in scalp eeg. In 2022 44th Annual International Conference of the IEEE Engineering in Medicine & Biology Society (EMBC), pages 3599–3602. IEEE, 2022.
+
+\[47\] Hongli Li, Man Ding, Ronghua Zhang, and Chunbo Xiu. Motor imagery eeg classification algorithm based on cnn-lstm feature fusion network. Biomedical signal processing and control,
+
+72:103342, 2022.
+
+\[48\] Yonghao Song, Xueyu Jia, Lie Yang, and Longhan Xie. Transformer-based spatial-temporal
+
+feature learning for eeg decoding. arXiv preprint arXiv:2106.11170, 2021.
+
+\[49\] He He and Dongrui Wu. Transfer learning for brain–computer interfaces: A euclidean space data alignment approach. IEEE Transactions on Biomedical Engineering, 67(2):399–410, 2019.
+
+\[50\] Jianlin Su, Yu Lu, Shengfeng Pan, Ahmed Murtadha, Bo Wen, and Yunfeng Liu. RoFormer: Enhanced Transformer with Rotary Position Embedding, August 2022. URL http://arxiv. org/abs/2104.09864. arXiv:2104.09864 \[cs\].
+
+13
+
+39261 https://doi.org/10.52202/079017-1239
+
+A Additional results
+
+This section provides additional experimental results to support the claims in the main paper.
+
+A.1 Ablation study for the predictor
+
+0.68
+
+s sold ilavbaseline
+
+no\_predictor
+
+0 5000 10000 15000 20000 25000 30000 35000 40000
+
+step
+
+Figure 6: Validation loss curves during pretraining, where ’baseline’ is the standard EEGPT model and ’no\_predictor’ is the model without the predictor.
+
+We conducted the number of a iteration pretraining steps experiment during training after removing is shown in the Figure predictor, 6. In the this variation figure, ’baseline’ of LR loss is with the standard EEGPT model and ’no\_predictor’ is the model without the predictor. We can see that the which reconstruction indicates loss that Ldirectly R of the aligning ’no\_predictor’ the outputs model of after the encoder removing and the the predictor momentum does encoder not decrease, does lead to the problem of representation collapse, resulting in the reconstruction task not being able to learn meaningful representation.
+
+A.2 Ablation study for pretraining methods
+
+Table 7: The results of the ablation study for pretraining methods. Variants A: B: w/o w/o LN LA 37.13 LA 0.15 0.66 0.64
+
+0.62
+
+0.60
+
+0.57 LR BCIC-2A-BAC BCIC-2B-AUROC 0.5287±0.0086 0.7264±0.0381 0.58 0.56
+
+KaggleERN-AUROC 0.5752±0.0164 0.002 0.5567±0.0088 0.7920±0.0012 0.5891±0.0227 C: w/o skip 0.12 0.56 0.5796±0.0011 0.7702±0.0122 0.6356±0.0296 D: with all 0.24 0.56 0.5846±0.0070 0.8059±0.0032 0.6621±0.0096
+
+In the ablation experiments, we used the BCIC-2A, BCIC-2B and KaggleERN datasets to test the model with the linear probing method, the results are shown in Table 7. We can conclude that (1) the model layer normalisation performance on degradation the reconstruction on all datasets target, without the performance LA loss is of significant the version (6% B to model 9%); degraded (2) without by 3%, 1%, and 7% on BCIC-2A, BCIC-2B, and KaggleERN, respectively; and (3) the performance of version C model (removed the skip connection) is reduced by 1%, 3% and 3% on these datasets, respectively.
+
+A.3 Ablation study for fine-tuning methods
+
+We have added experiments comparing linear probing method and full fine-tuning method, as well as experiments comparing with and without adaptive spatial filter. The experimental results are displayed in Table 8. In Table 8, ’ASF’ stands for with an adaptive spatial filter, in contrast to feeding the signal directly into the model; ’L-P’ stands for using linear probing, in contrast to using full fine-tuning of the model. Model variants A and C are the models with full fine-tuning and linear probing after excluding the adaptive spatial filter, respectively. Model variants B and D are models
+
+14
+
+https://doi.org/10.52202/079017-1239
+
+39262
+
+Table 8: The results of the ablation study for fine-tuning methods.
+
+Variants ASF L-P BCIC-2A-BAC BCIC-2B-AUROC KaggleERN-AUROC A 0.5774±0.0072 0.7871±0.0054 0.6078±0.0101 B ✓ 0.5183±0.0155 0.7541±0.0083 0.6110±0.0019 C ✓ 0.5586±0.0089 0.7974±0.0030 0.6463±0.0081 D ✓ ✓ 0.5846±0.0070 0.8059±0.0032 0.6621±0.0096
+
+with full fine-tuning and linear probing after using adaptive spatial filter, respectively. The results show that on the BCIC-2B and KaggleERN datasets, variants C and D tested with linear probing achieved better results than variants A and B using full fine-tuning; on the BCIC-2A dataset, variant A with full fine-tuning and no adaptive spatial filter is close to variant D with linear probing and an adaptive spatial filter, but overall the linear probing used by models C and D outperform A and B. The results show that variants B and D using adaptive spatial filter achieve better results compared to variants A and C without adaptive spatial filter.
+
+A.4 Scaling laws experiments
+
+0.235
+
+0.240
+
+r uccAt seT0.245
+
+0.250
+
+0.255
+
+105 106 107
+
+Params
+
+Figure 7: Results on TUAB dataset. Scaling laws with EEGPT parameter size N. Axes are all on a logarithmic scale.
+
+0.22
+
+0.24
+
+0.26
+
+A t seT0.28
+
+0.30
+
+0.32
+
+105 106 107
+
+Params
+
+Figure 8: Results on BCIC-2B dataset. Scaling laws with EEGPT parameter size N. Axes are all on a logarithmic scale.
+
+We added the results of the scale law experiments on the TUAB dataset and the BCIC-2B dataset, as shown in Figure 7 and 8. The results on the TUAB dataset show that the scaling law of the test balanced accuracy metric with model size (N) for TUAB is: BAC = (0.74 ∗ N)0.0034; the results
+
+15
+
+39263 https://doi.org/10.52202/079017-1239
+
+on the BCIC-2B dataset show that the scaling law of the AUROC metric with model size (N) for BCIC-2B is: AUROC = (0.61 ∗ N)0.0157.
+
+A.5 Effect of pretrain data size
+
+0.54
+
+0.56
+
+y caruccAt seT0.58 0.60
+
+0.62
+
+0.64
+
+2 × 10 1 3 × 10 1 4 × 10 1 6 × 10 1
+
+100 Data Size
+
+Figure 9: Results on BCIC-2A dataset. Scaling laws with pretrain data size D. Axes are all on a logarithmic scale.
+
+0.22
+
+C ORUAt seT2 × 10 1 3 × 10 1 4 × 10 1 6 × 10 1
+
+100 Data Size 0.24
+
+0.26
+
+0.28
+
+0.30
+
+Figure 10: Results on BCIC-2B dataset. Scaling laws with pretrain data size D. Axes are all on a logarithmic scale.
+
+We added pretraining experiments using 100%, 50%, 25%, and 12.5% of the training data and tested them on the downstream tasks of BCIC-2A and BCIC-2B. The results are presented in Figure 9 and 10. The results show that the scaling law of the balanced accuracy metric with the total amount of data D (the percentage of the training data used) for BCIC-2A is: ACC = (0.58 ∗ D)0.0461; and the scaling law of the AUROC metric with the total amount of data D for BCIC-2B is:AUROC = (0.79 ∗ D)0.0325.
+
+A.6 Results of LaBraM on TUAB and TUEV
+
+Table 9: The results of different methods on TUAB. Methods Model Size Balanced Accuracy AUROC BIOT \[15\] 3.2M 0.7959±0.0057 0.8815±0.0043 LaBraM \[17\] 5.8M 0.8140±0.0019 0.9022±0.0009 Ours-Tiny 4.7M 0.7959±0.0021 0.8716±0.0041 Ours 25M 0.7983±0.0030 0.8718±0.0050
+
+16
+
+https://doi.org/10.52202/079017-1239
+
+39264
+
+Table 10: The results of different methods on TUEV. Methods Model Size Balanced Accuracy Weighted F1 Cohen’s Kappa BIOT \[15\] 3.2M 0.5281±0.0225 0.7492±0.0082 0.5273±0.0249 LaBraM \[17\] 5.8M 0.6409±0.0065 0.8312±0.0052 0.6637±0.0093 Ours-Tiny 4.7M 0.5670±0.0066 0.7535±0.0097 0.5085±0.0173 Ours 25M 0.6232±0.0114 0.8187±0.0063 0.6351±0.0134
+
+LaBraM employs a larger pretraining dataset than ours, which also contains the TUEG dataset that is similar to the TUAB and TUEV distributions, and whose paper illustrates the scale effect of the amount of pretraining data, which may have facilitated the learning of a richer and more downstream task-adaptable representation for LaBraM.
+
+A.7 Ablation study of self-supervised learning on TUAB
+
+Table 11: The results of different methods on TUAB. Methods Model Size Balanced Accuracy AUROC BIOT \[15\] 3.2M 0.7959±0.0057 0.8815±0.0043 Ours (no pretrained) 25M 0.7553±0.0014 0.8260±0.0018 Ours 25M 0.7983±0.0030 0.8718±0.0050
+
+We tested the model with randomly initialized parameters (no pretrained model) on the TUAB dataset and the test results are shown in Table 11. In Table 11, ’Ours (no pretrained)’ represents the model that is not loaded with pretrained parameters. By comparison, we see that the model without using self-supervised pretraining has the worst performance on TUAB, with a 4% reduction in balance accuracy and a 5% reduction in AUROC compared to the model loaded with pretraining parameters.
+
+B CODE ACCESS
+
+The code for this paper is available at: https://github.com/BINE022/EEGPT.
+
+C DATASET DESCRIPTION
+
+C.1 PRETRAINING DATASET DESCRIPTION
+
+C.1.1 Motor Imagery and Motor Execution tasks: PhysioNetMI \[23\]
+
+The PhysioNetMI dataset2 consists of over 1500 one-minute and two-minute EEG recordings obtained from 109 volunteers. Subjects performed different motor execution/imagery tasks while recording 64-channel EEG using the BCI2000 system. Preprocessing: All eight tasks were used during the pretraining of this paper, using a global average reference, intercepting data from 0 to 6s after the start of each trial, and randomly intercepting data from a 4s time window of these during pretraining.
+
+C.1.2 Motor Imagery task: HGD \[24\]
+
+The HGD dataset, a 128-electrode dataset, was taken from 14 healthy subjects with approximately 1,000 trials each. The four-second executive movement trials were divided into 13 runs. The four types of movements were left-handed movements, right-handed movements, bipedal movements, and rest. The training set consisted of approximately 880 trials for all but the last two runs, and the test set consisted of approximately 160 trials for the last two runs. We access this dataset by MOABB3. Preprocessing: All four tasks were used in the pretraining process of this paper, first downsampled to 256 Hz and then standardized to mV, using a global average reference to intercept the data from 0
+
+2https://physionet.org/content/eegmmidb/1.0.0/ 3https://neurotechx.github.io/moabb/dataset\_summary.html
+
+17
+
+39265 https://doi.org/10.52202/079017-1239
+
+to 10s after the start of each trial, and randomly intercepting the data from a 4-s time window of these during pretraining.
+
+C.1.3 SSVEP task: TSU \[37\]
+
+The TSU dataset4 is a benchmark dataset for brain-computer interfaces based on steady-state visual evoked potentials (TSUBenckmark). This dataset collects SSVEP-BCI recordings from 35 healthy subjects using a brain-computer interface (BCI) speller with 40 characters for experimental data acquisition. SSVEP-BCI recordings were made for 40 characters that flashed at different frequencies (8-15.8 Hz with 0.2 Hz intervals). Stimuli: Each trial began with a visual cue (red square) indicating the target stimulus. The cue appeared on the screen for 0.5 seconds. Subjects were asked to shift their eyes to the target as soon as possible within the cue duration. After the cue was offset, all stimuli began flashing on the screen simultaneously for 5 seconds. After the stimulus offset, the screen was blanked for 0.5 seconds, and then the next trial began, which allowed subjects to have a short rest period between successive trials. Signal: EEG of 35 subjects (64 channels, 250 Hz). Each subject’s experiment consisted of 6 blocks. Each block contained 40 trials corresponding to all 40 characters displayed in randomized order. Total: 35 persons x 6 blocks x 40 trials. Preprocessing: All 40 tasks were used in the pretraining process of this paper, first downsampled to 256 Hz, and then standardized to mV, using a globally averaged reference to intercept the data from 0 to 4s after the start of each trial for pretraining.
+
+C.1.4 Emotion Recognition task: SEED \[38\]
+
+The SEED dataset, Shanghai Jiao Tong University Emotion EEG dataset (SEED)5, is an EEG dataset provided by the BCMI lab led by Prof. Baoliang Lu. Stimuli: 15 four-minute long movie clips from six Chinese movies. Signal: EEG (62 channels, 200 Hz) from 15 subjects and eye movement data from 12 subjects. Three experiments were conducted per subject, each approximately one week apart, for a total of 15 subjects x 3 sessions = 45 subjects. Scores: Positive (1), negative (-1), and neutral (0). Preprocessing: All three tasks were used in the pretraining process of this paper, first downsampled to 256 Hz and then standardized to mV, using a global average reference to intercept the data from 0 to 10s after the start of each trial for pretraining.
+
+C.1.5 Identification task: M3CV \[25\]
+
+The M3CV dataset6 is a reliable brainprint identification system designed to withstand changes in the mental state of the subjects (cross-paradigm test) and successfully identify individuals even after several days (cross-session test). The Multi-Session Multi-Paradigm EEG database (Multi-Subject Multi-Session Multi-Paradigm Commonality and Variability (M3CV)) contains 106 healthy subjects, two sessions, and six types of EEG paradigms. Experimental paradigms: Resting state, event-related potentials, evoked stimuli, P300, motor execution, and SSVEP. Preprocessing: The full task-state data were used in the pretraining process of this paper, first upsampled to 256 Hz, and then standardized to mV, using a globally averaged reference, intercepting data from 0 to 4s after the start of each trial for pretraining.
+
+4http://bci.med.tsinghua.edu.cn/download.html 5https://bcmi.sjtu.edu.cn/home/seed/ 6https://aistudio.baidu.com/competition/detail/315/0/related-material
+
+18
+
+39266 https://doi.org/10.52202/079017-1239
+
+C.2 DOWNSTREAM DATASET DESCRIPTION
+
+C.2.1 Motor Imagery Task: BCIC-2A \[39\]
+
+This dataset7 consists of EEG data from 10 subjects and includes four different motor imagery tasks: motor imagery of the left hand (Class 1), right hand (Class 2), feet (Class 3), and tongue (Class 4). Each subject performed two sessions on different days, with a total of 288 trials per session. Preprocessing: Uniform units; 0 to 38 Hz filtering was used; resampling to 256 Hz; EA normalization \[49\] was used for each session. EA normalization is a common normalization method applied to data from motion imagery tasks such as BCIC2A. Experimental Configuration: Experiments using the LOSO method. In the BCIC2A dataset 4- category cross-subject experiment, the accuracy of the model in this paper is lower than that of the task-specific SOTA model. This may be related to the high individual variability of the BCIC2A data. The fine-tuning method of combining the task-specific model with the model in this paper was used for testing. The MSConvNet model, which has a multi-scale convolutional EEGNet-like structure, was used as the motor imagery task-specific model. The model branch first maps the input 22-channel EEG signal into 10-20 system standard channel data using an adaptive spatial filter (convolution); then a pretrained encoder is used to extract the generic representations; and after collocating the generic representations and the in-domain representations of Wenchao’s model branch, they are mapped into category logits using a linear layer. Training is performed using the AdamW optimizer, OneCycle learning rate strategy \[43\] (starting learning rate 5e-4, maximum 1e-3, minimum 4.22e-7), 100 rounds of training, and batch size of 72.
+
+C.2.2 Motor Imagery Task: BCIC-2B \[40\]
+
+This dataset8 consists of EEG data from 10 subjects. Each subject was given five training opportunities, the first two of which were training data without feedback (screening) and the last three with feedback. The three bipolar recordings (C3, Cz, and C4) were sampled at a frequency of 250 Hz. The dataset consisted of motor imagery (MI) for two categories: left-handed (category 1) and right-handed (category 2). Each subject participated in two sessions without feedba

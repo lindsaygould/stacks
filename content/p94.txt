@@ -1,0 +1,365 @@
+TorchEEGEMO: A deep learning toolbox towards EEG-based emotion recognition 
+
+Available online 11 March 2024 0957-4174/© 2024 Elsevier Ltd. All rights reserved.
+
+TorchEEGEMO: A deep learning toolbox towards EEG-based emotion recognition Zhi Zhang a,b, Sheng-hua Zhong a,∗, Yan Liu b,∗
+
+a Shenzhen University, The College of Computer Science and Software Engineering, Shenzhen, 518052, Guangdong, China b The Hong Kong Polytechnic University, The Department of Computing, 999077, Hong Kong, China
+
+ARTICLE INFO
+
+Keywords: Electroencephalography (EEG) Emotion recognition Deep learning toolbox
+
+ABSTRACT
+
+With deep learning (DL) development, EEG-based emotion recognition has attracted increasing attention. Diverse DL algorithms emerge and intelligently decode human emotion from EEG signals. However, the lack of a toolbox encapsulating these techniques hampers further the design, development, testing, implementation, and management of intelligent systems. To tackle this bottleneck, we propose a Python toolbox, TorchEEGEMO, which divides the workflow into five modules: datasets, transforms, model\_selection, models, and trainers. Each module includes plug-and-play functions to construct and manage a stage in the workflow. Recognizing the frequent access to time windows of interest, we introduce a window-centric parallel input/output system, bolstering the efficiency of DL systems. We finally conduct extensive experiments to provide the benchmark results of supported modules. Our extensive experimental results demonstrate the versatility and applicability of TorchEEGEMO across various scenarios.
+
+1\. Introduction
+
+Emotions, as a mirror reflecting individuals’ perceptions and cog- nitions of various stimuli, play an essential role in our daily lives (Schirrmeister et al., 2017). Extensive research has been exploring how to enable machines to understand and decipher these complex emotional states, with implications across multiple domains, includ- ing multimedia content recommendation (Ayata, Yaslan, & Kamasak, 2018; Sawata, Ogawa, & Haseyama, 2021) and human–computer in- teraction (Mohammed & Hassan, 2020; Nayak, Nagesh, Routray, & Sarma, 2021). Among various techniques for emotion recognition, electroencephalography (EEG) has emerged as a powerful tool that measures oscillations in the brain, thus reflecting the synchronized activity of neurons and providing valuable insights into human emo- tional states (Daimi & Saha, 2014; Ghosh, Bandyopadhyay, & Mitra, 2021; Nakisa, Rastgoo, Tjondronegoro, & Chandran, 2018; Rahman, Sarkar, Hossain, & Moni, 2022; Sakalle, Tomar, Bhardwaj, Acharya, & Bhardwaj, 2021; Subasi, 2007; Wang, Liu, Ruan, Wang, & Wang, 2021; Yin, Liu, Chen, Zhao, & Wang, 2020). Compared to other modalities, EEG signals stand out due to their excellent time resolution, comparable to the rapid and subtle changes of emotional states, making them ideal for real-time emotion recognition (Zhang, Zhong, & Liu, 2022).
+
+However, it is not easy to obtain useful information from EEG signals just by observing them (Subha, Joseph, Acharya U, Lim, et al.,
+
+∗ Corresponding authors.
+
+E-mail addresses: zhangzhi2018@email.szu.edu.cn, zhi271.zhang@connect.polyu.hk (Z. Zhang), csshzhong@szu.edu.cn (S.-h. Zhong), yan.liu@polyu.edu.hk (Y. Liu).
+
+2010). The EEG signals have a low signal-to-noise ratio (SNR); thus, they might be easily disturbed by noise. Thus, preprocessing and fea- ture extraction play an important role in EEG learning. Long-existing studies develop preprocessing algorithms to remove unwanted signal noise and artifacts from the raw EEG signals (Kumawat & Jain, 2021). Then, feature extraction algorithms are used to compute the reliable feature conforming to the emotions of interest (Dadebayev, Goh, & Tan, 2022). Given that the brain follows completely nonlinear and non- stationary behavior, relevant works applied nonlinear methods in EEG signal analysis for emotion recognition (García-Martínez, Martinez- Rodrigo, Alcaraz, & Fernández-Caballero, 2019). Boosted by the success of neural networks, deep learning methods have shown significant ad- vancements in recent decades. Various deep learning architectures have been proposed, including convolutional neural networks (Li, Zhang, & He, 2018; Yang, Wu, Fu, & Chen, 2018), graph convolutional net- works (Feng, Cheng, Zhao, Deng, & Zhang, 2022; Zhong, Wang, & Miao, 2020), and transformers (Liu, Zhou, & Zhang, 2022; Wang, Wang, Hu, Yin, & Song, 2022). Researchers also observe that EEG signals from different subjects under the same emotional state may be quite disparate due to the distinction between individual physiology and psychology (Li et al., 2021). This observation has led to the incorpo- ration of transfer learning, particularly domain adaptation algorithms, bridging the gap between subject-dependent and subject-independent
+
+https://doi.org/10.1016/j.eswa.2024.123550 Received 4 September 2023; Received in revised form 3 January 2024; Accepted 19 February 2024
+
+Contents lists available at ScienceDirect
+
+Expert Systems With Applications
+
+journal homepage: www.elsevier.com/locate/eswa
+
+Expert Systems With Applications 249 (2024) 123550
+
+Z. Zhang et al.
+
+Fig. 1. The overall framework of TorchEEGEMO for EEG-based emotion recognition.
+
+performance. The data scarcity problem is another important problem in EEG-based emotion recognition. With the rapid development of deep generative models, recent studies have explored the use of these models for EEG data augmentation (He, Liu, Zhu, & Du, 2021), which has garnered considerable attention.
+
+Despite remarkable progress in EEG-based emotion recognition, to our knowledge, no unified toolbox is designed towards deep learn- ing techniques for EEG-based emotion recognition. This gap not only hinders the efforts of professional researchers in advancing EEG-based emotion recognition systems but also prevents laypeople from partic- ipating in these intelligent systems in their daily lives. To bridge the gap, we propose TorchEEGEMO. The main contributions of this paper include:
+
+1\. We are the first to propose a deep learning toolbox for EEG-based
+
+emotion recognition. 2. We break down the deep learning workflow into five distinct modules and provide plug-and-play functionalities for EEG- based emotion recognition, including datasets, transforms, model\_selection, models, and trainers. Not only do these modules incorporate state-of-the-art algorithms, but they also further provide out-of-box adaptation of popular deep learning models, such as transformers and diffusion models. 3. Recognizing the frequent need to access the window of EEG signals, we introduce a new way to organize time windows of EEG data, a window-centric input/output system. This design allows for efficient indexing to windows of interest with cached preprocessing results, tackling the bottleneck of efficiency of the deep learning system. 4. We conduct extensive experiments to demonstrate the bench- mark results of supported functionalities, providing a solid start- ing point for research and serving as a benchmark for compara- tive analysis.
+
+The project’s source code for the toolkit is available at https:// github.com/torcheeg/torcheeg. The documentation homepage for the toolkit is located at https://torcheeg.readthedocs.io/.
+
+2\. Related work
+
+In this section, we review the existing EEG analysis toolboxes and deep learning toolboxes separately, due to the absence of a deep learning toolbox available for EEG-based emotion recognition.
+
+2.1. EEG analysis toolboxes
+
+Despite lacking toolboxes for emotion recognition and deep learn- ing, EEG-related toolboxes have made great processes in EEG loading, preprocessing, and traditional machine learning methods. In the early stages, MATLAB toolboxes, e.g., Brainstorm (Tadel, Baillet, Mosher, Pantazis, & Leahy, 2011), EEGLAB (Delorme & Makeig, 2004; Delorme et al., 2011), FieldTrip (Oostenveld, Fries, Maris, & Schoffelen, 2011), NutMeg (Dalal et al., 2011), and SPM (Litvak et al., 2011), predomi- nated the EEG analysis community due to the ease of vector operations and scientific computation methods.
+
+Python has become one of the most popular programming lan- guages. Because of the simplicity, readability and expansibility of Python language, there are more and more research institutes using Python to do scientific computing abroad (Shen & Liu, 2020). Py- EEG (Bao, Liu, & Zhang, 2011), launched in 2011, was a Python module that concentrated on extracting features from EEG/MEG segments. For EEG analysis, users had to utilize EEG/MEG importers (e.g., EEGLab) to import EEG signals and then apply PyEEG for feature engineering. Subsequently, in 2013, Gramfort et al. proposed MNE-Python (Gramfort et al., 2013). It offered a wide range of functionalities, including data importing, time–frequency analysis, nonparametric statistics, connec- tivity estimation, independent component analysis, etc., and quickly accumulated a significant user base. In 2017, Schirrmeister et al. (2017) initiated a project to demonstrate deep convolutional networks to decode motor imagery from raw EEG, which eventually evolved into an open-source Python toolbox, Braindecode. It included dataset fetchers, data preprocessing, visualization tools, multiple deep learning architectures, etc. However, the deep learning models it provided mainly focused on convolutional neural networks and motor imagery. In 2018, Jayaram et al. proposed MOABB (Jayaram & Barachant, 2018), incorporating a wide range of public EEG datasets and aiming to establish a comprehensive benchmark. The benchmark datasets in- cluded motor imagery, ERP, and SSVEP datasets. Despite the extensive dataset implementation, the benchmark did not cover the emotion recognition datasets, and the built-in deep learning algorithms provided by MOABB were limited.
+
+2.2. Deep learning toolboxes
+
+With regard to toolboxes related to deep learning, there was a surge due to increased interest in deep learning, including the emer- gence of Caffe (Jia et al., 2014), CNTK (Seide & Agarwal, 2016), TensorFlow (Abadi et al., 2016), and Theano (Team et al., 2016). Py- Torch (Paszke et al., 2019), with its imperative and Pythonic program- ming style, supported code as a model and facilitated easy debugging
+
+Expert Systems With Applications 249 (2024) 123550
+
+2
+
+Z. Zhang et al.
+
+while remaining efficient, which gained considerable popularity in the research community. It also supported hardware accelerators, making it an appealing choice for researchers.
+
+With the development of PyTorch, a rich ecosystem was constructed with external libraries in various research fields. For instance, TorchVi- sion (Marcel & Rodriguez, 2010) was a well-known PyTorch-related library in the field of computer vision, which provided benchmark datasets, widely compared neural networks, and practical image trans- formations. However, the PyTorch ecosystem still lacked a counterpart in the task of EEG-based emotion analysis.
+
+3\. The overall framework of ðð¨ð«ðð¡ðððððð
+
+In this section, we introduce how we abstract the workflow for EEG-based emotion recognition to meet varying research objectives. As shown in Fig. 1, TorchEEGEMO breaks down the EEG-based emotion recognition workflow into five distinct modules, including datasets, transforms, modelselection, models, and trainers.
+
+The overall mechanism is illustrated in Fig. 2. Given raw EEG signals, the datasets module is first applied to chunk the raw EEG signals into time windows. These windows undergo data preprocessing and feature extraction using transformers in the transforms module. The results are cached in window-centric EEG I/O. Then, the model\_selection module is used to divide the windows into training, validation, and test sets, based on the meta-information of windows, e.g., trial indices, session indices, or subject indices. The models module provides various deep learning models, e.g., convolutional neural networks, graph neural networks, etc. These models and datasets can be fed into the trainers to optimize the models. The training step includes built-in methods for loss function computation and optimization algorithms to implement different training strategies, e.g., domain adaptation. By invoking the fit function, the model is optimized. The trained model can then be used to make predictions on test samples and EEG signal samples in application scenarios through the predict function.
+
+In the following subsections, we will introduce the five modules in detail.
+
+3.1. The datasets module
+
+The datasets module supports various benchmark datasets for EEG- based emotion recognition, including the DEAP dataset (Koelstra et al., 2011), DREAMER dataset (Katsigiannis & Ramzan, 2017), SEED dataset (Zheng & Lu, 2015), MAHNOB dataset (Soleymani, Lichtenauer, Pun, & Pantic, 2011), AMIGOS dataset (Miranda-Correa, Abadi, Sebe, & Patras, 2018), and MPED dataset (Song et al., 2019).
+
+These benchmark datasets employ various stimuli, such as music and video, to evoke emotional responses in subjects. Under stimu- lation, the EEG signals of subjects are recorded, and they are sub- sequently asked to label their emotional experience using methods like the valence-arousal dimension or discrete emotion categories. The datasets module aids in analyzing the file structure of these datasets, loading the recorded EEG signals, and matching them with the descrip- tive information for easy indexing.
+
+To improve the recognition efficiency and identify new emotions earlier, the existing method separates the EEG signals into multiple windows (Li et al., 2022; Ouyang, Yuan, Li, & Guo, 2022; Yu, Li, Zang, & Liu, 2023). With different requirements, the lengths of the time windows of interest may vary. In the datasets module, we pro- pose to segment the trial EEG signals into specified lengths based on configurations, which includes settings for window length and overlap of adjacent windows. We then align the descriptive information with the time windows, offering stimulus emotions, trial information, session details, subject descriptions, and stimulus multimedia. Here, recent studies find the optimal window length for emotion recognition is 1– 2 s (Ouyang et al., 2022). We recommend following these studies and using 1–2 second-long windows without overlap.
+
+Expert Systems With Applications 249 (2024) 123550
+
+3
+
+3.2. The transforms module
+
+The transforms module provides various transformations suitable for EEG signals, utilizing techniques from the time domain, frequency domain, or both. These transformations can be categorized into four types according to their roles: preprocessing, feature extraction, data conversion, and data augmentation. Here, preprocessing transforms em- ploy signal processing techniques to improve the signal-to-noise ratio of EEG data. Feature extraction transforms follow related work to extract low dimensional but discriminative features from raw signals. Data conversion transforms covert EEG signal into representations adaptive for deep learning models, e.g., tensor format or graph format. Finally, data augmentation transforms aim to increase the diversity of the data, using techniques like geometric transformation, etc.
+
+We find that in the training stage, deep learning models are usually optimized for multiple epochs. Each EEG signal sample is utilized in an epoch, thus being utilized multiple times in the overall training stage. Each time an EEG signal sample is utilized, transforms are performed. The transforms are repetitively performed across epochs, leading to unnecessary time calculations.
+
+Thus, we propose offline transforms. These offline transforms yield consistent results in each epoch, e.g., data preprocessing (down- sampling, etc.) and feature selection (differential entropy, power spec- tral density, etc.). We perform them before the training stage, and the results are cached in the proposed time window-centric EEG in- put/output. In each epoch, when a sample is utilized, the cached results can be accessed, avoiding re-execution of transforms. By segre- gating offline and online transforms, and caching the results of offline transforms, we can skip repetitive computations in favor of cache hits, thus resolving the issue of repetitive calculations and enhancing system efficiency.
+
+3.3. The model\_selection module
+
+The model\_selection module provides various methods to split the dataset into training, validation, and test sets. The most straightforward approach is k-fold cross-validation, where the dataset is randomly split into ð subsets. Each subset serves as the test set in one of the ð experi- ments, while the remaining subsets form the training set. The model’s performance is reported as the average result over the ð test sets. We provide KFold to implement this approach, and KFoldPerSubject for research evaluating model performance for individual subjects.
+
+However, with the development of related research, some studies argue that because emotion is one of the continuous cognitive pro- cesses in the brain, the data segments within a single trial are highly correlated. Randomly shuffling the segments among trials before the training–testing split of the data could make the adjacent segments be in training and testing data, which will give high classification results. The accuracy will drop when the highly correlated segments are never seen by the model in the real-world situation (Ding, Robinson, Zhang, Zeng, & Guan, 2022). TorchEEGEMO provides KFoldGroupbyTrial and KFoldCrossTrial. The former divides each trial into ð periods; each period serves as the test set in one of the ð experiments, while the remaining subsets form the training set. The latter considers inter-trial differences and splits each subject’s trials into ð folds, including only specific trials’ EEG samples in the training set.
+
+Other studies argue that emotion recognition models typically show high accuracy in user-dependent models (Jin & Kim, 2020). How- ever, such a user-dependent model lacks generalization, and a tun- ing process is necessary for each new subject, which requires train- ing data from each subject (Jin & Kim, 2020). TorchEEGEMO further provides LeaveOneSubjectOut and KFoldCrossSubject. KFoldCrossSubject splits subjects into ð folds, with the test set comprising one fold of subjects’ EEG samples and the raining set comprising only ð − 1 folds. LeaveOneSubjectOut is a special case where ð equals the total number of subjects.
+
+Expert Z. Zhang et al.
+
+Systems With Applications 249 (2024) 123550
+
+Fig. 2. The mechanism of TorchEEGEMO for EEG-based emotion recognition.
+
+3.4. The models module
+
+The models module provides various deep learning algorithms de- signed for EEG-based emotion recognition. These include Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and Graph Neural Networks (GNNs). It further adapts the state-of-the-art deep learning models from natural language processing and computer vision, e.g., Transformers and Generative Models, to establish a strong baseline.
+
+In the area of CNNs, popular models like EEGNet (Lawhern et al., 2018) and TSception (Ding et al., 2022) are included. These models formulate diverse spatial, temporal, or spectral tensor representations of EEG signals and perform local pattern analysis via convolution. The Recurrent Neural Networks (RNNs) involve GRU and LSTM (Zhang & Yao, 2021). These models treat EEG signals as multivariate time series data and design recurrent modules for emotion decoding. In the realm of Graph Neural Networks (GNNs), the models module integrates prominent networks such as DGCNN (Song, Zheng, Song, & Cui, 2018), RGNN (Zhong et al., 2020), and LGGNet (Ding, Robinson, Zeng & Guan, 2021). These models focus on analyzing functional connections between electrodes by representing them as a graph network and by designing graph convolution kernels.
+
+The implemented Transformer-based models include the Trans- former (Vaswani et al., 2017), ViT (Dosovitskiy et al., 2020), Simple- Vit (Beyer, Zhai, & Kolesnikov, 2022), and ArjunViT (Arjun, Rajpoot, & Panicker, 2021). The Transformer model (Vaswani et al., 2017) leverages a multi-head self-attention mechanism. The key idea behind the mechanism is for each element in the sequence to learn to gather from other tokens in the sequence (Tay, Dehghani, Bahri, & Metzler, 2022). We adapt the Transformer to EEG signals, treating the EEG signal as a sequence of signal segments from different electrodes and utilizing the multi-head self-attention mechanism to analyze these signal segment tokens. Vision Transformer-based models, such as ViT and SimpleVit, divide an input image into several patches that serve as the basic input elements of the Transformer, which potentially loses intrinsic pixel-level information within patches. In adapting these Vi- sion Transformer-based models to EEG signals, we map the EEG signal onto a 2-D grid based on electrode positions, subsequently dividing this grid into patches. These patches, representing different brain regions, are then processed by the Transformer model for emotion recognition. The implemented generative models include Generative Adversarial Network (GAN) (Goodfellow et al., 2020), Variational Auto-Encoder
+
+4
+
+(VAE) (Kingma & Welling, 2013), Normalizing Flow (Papamakarios, Nalisnick, Rezende, Mohamed, & Lakshminarayanan, 2021), and Diffu- sion Model (Ho, Jain, & Abbeel, 2020). The GAN, e.g., WGAN-GP (Gul- rajani, Ahmed, Arjovsky, Dumoulin, & Courville, 2017), contains a generator and discriminator. The discriminator learns to distinguish the real and generated signals, and the generator is trained to approximate accurate signals through adversarial training against the discriminator. The VAE, e.g., Beta VAE (Higgins et al., 2017), built with an encoder and decoder, maps observed EEG signals into a latent space via the encoder and then utilizes the decoder to recreate EEG signals. Normal- izing Flow, e.g., Glow (Kingma & Dhariwal, 2018), provides a set of invertible transformations. It learns the sequence of reversible transfor- mations to transform EEG signals into latent variables and utilizes the inverse of the flow function returning to samples for a generation. The Diffusion Model, e.g., DDPM (Ho et al., 2020), introduces a sequential corruption of observed data with increasing noise and learns to reverse this process (Cao et al., 2022). The generation process inverts this diffusion process, beginning with white noise and gradually denoising it into corresponding observed EEG signals.
+
+3.5. The trainers module
+
+The trainers module provides a multitude of training algorithms to optimize the learnable parameters of the models. The simplest yet highly effective method for discriminative models involves utilizing a classification loss function, such as cross-entropy for EEG signal recognition training, encapsulated in the ClassifierTrainer algorithm.
+
+However, the cross-subject problem poses a challenge in EEG-based emotion recognition. Despite being evoked by the same stimulus, the distribution of EEG signal patterns among different subjects often un- dergoes distributional shifts, adversely impacting the performance of the trained models when tested on unknown subjects. The trainers module addresses this issue by providing numerous domain adapta- tion algorithms. These algorithms leverage EEG samples from known subjects as the source domain and samples from unknown subjects for testing as the target domain. With the design of specific loss func- tions and training strategies, they optimize models to extract domain- invariant features or transfer knowledge from the source domain to target domains. In this context, we adapt general cross-domain trainers for EEG-based emotion recognition systems. Notable examples include CORALTrainer (Sun & Saenko, 2016), ADATrainer (Haeusser, Frerix, Mordvintsev, & Cremers, 2017), DANNTrainer (Ganin et al., 2016),
+
+Expert Z. Zhang et al.
+
+Systems With Applications 249 (2024) 123550
+
+Fig. 3. A time window-centric EEG I/O leverages CSV and LMDB-based cache to sidestep memory-consuming trial signal reads and repeated transformations, thus enabling efficient parallel on large-scale datasets.
+
+DDCTrainer (Tzeng, Hoffman, Zhang, Saenko, & Darrell, 2014) and DANTrainer (Long, Cao, Wang, & Jordan, 2015). These algorithms demonstrate robust performance across varying levels of distributional shifts among subjects.
+
+4\. Time window-centric EEG input/output techniques
+
+In this section, we introduce an advanced technique, the time window-centric EEG input/output, to unveil the secrets behind the efficient operation of the TorchEEGEMO in supporting deep learning systems.
+
+To improve the recognition efficiency and identify new emotions earlier, the existing method separates the EEG signals into multiple windows (Li et al., 2022; Ouyang et al., 2022; Yu et al., 2023). Dur- ing the sampling of training samples, EEG records containing the corresponding segment are first loaded into memory, followed by seg- mentation into windows and then indexing the window of interest. EEG records outside the window of interest contribute to additional compu- tational costs and memory usage, which can impede the performance of efficient deep learning systems, particularly those on a large scale.
+
+Thus, we introduce a unified input and output (IO) module that employs CSV files and an efficient Lightning Memory-Mapped Database (LMDB) to store EEG time windows. Specifically, the IO module seg- ments raw EEG recordings in datasets according to user configuration and stores these EEG time windows in LMDB. The database index and associated metadata (e.g., subject index and trial index) for each EEG time window are organized and stored in CSV files.
+
+Then, during the dataset initialization phase, as shown in Fig. 3, we create multiple EEG IO. Each process is assigned to execute offline transforms and subsequently write the intermediate results for the responsible EEG IO, storing metadata in the relevant CSV file and saving EEG signals into the LMDB. Then, the paths for these EEG IOs are registered to the IO Router. After the initialization of the dataset, the IO Router takes charge of managing all the CSVs of the EEG IOs. In this way, the multiple EEG IOs become transparent to the user, allowing them to view these as a singular, cohesive dataset. When accessing EEG time windows, the IO Router identifies the appropriate path from among multiple EEG IOs and then retrieves the metadata from the CSV and extracts the processed EEG signals from the LMDB. Then, the indexing and online transforms of different EEG time windows are executed in parallel.
+
+These techniques allow for the indexing of EEG time windows of interest, while EEG records outside the window of interest are not loaded into memory, thus diminishing memory usage. The multi- process transforms further reduce the time required for writing and reading in the I/O system, further improving the efficiency of the system.
+
+5
+
+5\. Benchmark results
+
+In this section, we will introduce the benchmarking experiments to provide a solid starting point for research and serve as a benchmark for comparative analysis.
+
+5.1. Benchmark results on the datasets module
+
+We first validate EEG-based emotion recognition datasets using well-known convolutional neural networks to demonstrate the baseline analysis performance on different datasets.
+
+In detail, for each dataset, we divide the EEG signals in each trial into segments of EEG samples using non-overlapping sliding windows, applying a time window of one second and a time window of two sec- onds, respectively. Next, we label the samples into high/low categories using valence score annotations in the dataset. In particular, the SEED dataset provides positive, neutral, and negative three-category labels, and we formulate a three-class classification. The SEED-IV dataset provides neutral, sad, fearful, and happy emotions, and we formulate a four-class classification. Finally, we use KFoldGroupbyTrial for 5-fold cross-validation on EEG samples, and we report the average accuracies of the model and standard deviation on the test datasets.
+
+As shown in Table 1, the datasets rank in order of accuracy from high to low as follows: MAHNOB, AMIGOS, DEAP, SEED, DREAMER, and SEED-IV. Specifically, on the MAHNOB dataset, the average accu- racy surpasses the others and achieves an average accuracy of more than 85%. The average accuracy on the SEED-IV dataset is the lowest, reaching an accuracy of less than 60%. This demonstrates that the SEED-IV dataset presents a challenge for emotion recognition because SEED-IV is a four-category classification task.
+
+We can also observe there is no universal window length suitable for all cases; the optimal window length varies with the datasets and utilized model. Based on the average performance, two-second- long windows perform well in the AMIGOS, DEAP, DREAMER, and SEED-IV datasets. In contrast, for the MAHNOB and SEED datasets, one- second-long windows are more effective. However, we do not observe a performance gap over 7%, indicating that window length is not the primary factor of performance. Thus, we suggest starting with one- second-long windows for real-time applications and experimenting to find the optimal window length.
+
+Some related works have also discussed the class imbalance problem on EEG-based emotion recognition datasets. Therefore, we calculate the chance level accuracy of the datasets with different window length settings to illustrate the imbalance of the datasets by guessing the first category regardless of EEG signals. Here, the SEED dataset presents a three-class classification problem, and the chance level accuracy of a balanced dataset is nearly 33.33%. The SEED-IV dataset is a four-class classification problem, and the chance level accuracy of a balanced dataset is near 25.00%, while the other datasets present two-class
+
+Expert Z. Zhang et al.
+
+Systems With Applications 249 (2024) 123550
+
+Table 1 The emotion recognition accuracies of different models at the valence dimension on the benchmark datasets, including MAHNOB, AMIGOS, DEAP, SEED, DREAMER, and SEED-IV datasets, when EEG signals are segmented with one-second-long and two-second-long time windows and datasets are split using KFoldGroupbyTrial.
+
+Model MAHNOB AMIGOS DEAP SEED DREAMER SEED-IV
+
+1s 2s 1s 2s 1s 2s 1s 2s 1s 2s 1s 2s
+
+EEGNet 68.26 67.66 69.5 71.95 68.57 71.96 63.49 62.84 66.56 67.74 44.64 44.72 FBCNet 87.82 87.16 74.91 78.58 71.83 75.85 74.28 72.69 70.39 71.24 53.30 51.21 TSCeption 94.65 94.28 82.92 87.9 80.15 86.67 75.95 75.51 76.64 77.35 57.97 57.98 CCNN 94.65 93.34 93.17 90.24 92.23 88.94 83 83.79 63.78 63.31 63.56 65.92 Average 86.35 85.61 80.13 82.17 78.20 80.86 74.18 73.71 69.34 69.91 54.87 54.96 Standard deviation 12.48 12.38 10.30 8.47 10.55 8.23 8.07 8.64 5.57 5.93 8.01 9.10 Chance level 51.78 54.15 54.1 54.19 56.56 56.56 32.6 32.51 60.89 60.88 27.20 27.20
+
+Table 2 The impact of different feature engineering methods on the accuracies of CCNN in emotion recognition at valence and arousal dimensions. Here, the EEG signal is divided into one-second-length time windows, and the dataset-splitting method is KFoldGroupbyTrial.
+
+Feature DEAP DREAMER
+
+Valence Arousal Valence Arousal
+
+Mean Absolute Deviation 86.95 87.61 80.07 86.17 Hjorth Mobility 85.43 68.82 60.89 77.89 Kurtosis 94.11 73.76 64.59 79.39 Skewness 92.22 91.76 62.04 78.94 Detrended Fluctuation Analysis 87.24 87.16 81.50 88.81 Power Spectral Density 76.83 78.06 84.96 88.76 Approximate Entropy 96.91 96.75 39.11 23.25 Differential Entropy 92.01 92.76 64.10 79.10
+
+classification problems; thus, the chance level accuracy of a balanced dataset is 50%. From Table 1, we find that the chance level performance of the benchmark datasets differs from their corresponding chance level in the balanced case. This shows that a data imbalance problem does exist, and we observe that this phenomenon is more severe in DREAMER (10% over 50%) and DEAP (6% over 50%).
+
+5.2. Benchmark results on the transforms module
+
+In this subsection, we discuss the impact of different data prepro- cessing on model performance. Here, we select the feature-based model, CCNN, to evaluate the impact of feature engineering techniques on model performance. In detail, keeping the other setting consistent as the above-mentioned experiments, we use Mean Absolute Deviation (MAD), Hjorth Mobility (HM), Kurtosis, Skewness, Detrended Fluc- tuation Analysis (DFA), Power Spectral Density (PSD), Approximate Entropy (AE), and Differential Entropy (DE) to extract features from the EEG sample segments, respectively, and remove the components of the baseline signals. Except for MAD and DE, we use maximum- minimum normalization after feature extraction to keep parameters from reaching extreme values.
+
+As shown in Table 2, PSD performs best on the DREAMER dataset. This may be due to the lower signal-to-noise ratio in the EEG sig- nals of the DREAMER dataset, where most feature extraction methods show low average performance. Frequency-domain methods measure the frequency of components of interest and omit the influence of emotion-irrelevant bands (Wang & Wang, 2021), improving the low signal-to-noise ratio and achieving better performance. EEG signals in the DEAP dataset exhibit highly nonlinear and non-stationary behavior. In this dataset, AE and DE demonstrate better performance than the frequency domain feature, indicating entropy-based features with ad- vancements in nonlinear dynamics (Yu & Wang, 2022). Experimental results also show DFA performs well on the low signal-to-noise ratio DREAMER dataset, which shows promising results in removing artifacts from EEG data (Yu & Wang, 2022).
+
+6
+
+5.3. Benchmark results on the model\_selection module
+
+In this subsection, we further evaluate the effect of dataset-splitting strategies on emotion recognition performance. In detail, we evalu- ate the performance of the CCNN model on the benchmark datasets, including DEAP, DREAMER, SEED, AMIGOS, MAHNOB, and MPED. We divide the EEG signals in each experiment into segments of EEG samples using non-overlapping sliding windows of one-second length. Then, we extract DE features from the EEG sample segments and re- move the components of the baseline signals. Finally, we apply different cross-validation strategies, and the average accuracy of the model on the test set is reported. For KFold, KFoldGroupbyTrial, KFoldCrossTrial, we used 5-fold cross-validation. And for KFold, we randomly shuffle the EEG samples, and for KFoldGroupbyTrial and KFoldCrossTrial, we did not randomly shuffle the samples, which means that consecutive sequences of EEG samples are used as train/test datasets, respectively. It is worth noting that parts of related works report the perfor- mance of the model on the last training epoch; others report the performance of the model with the optimal parameters on the test dataset. Hereinafter, we referred to these strategies as the last and best epoch strategies, respectively. In this paper, we experimented with both strategies. As shown in Table 3, the model performs better on KFold (random). It is because KFold (random) randomly samples EEG signals on the data set as training samples. Thus, the training samples are evenly distributed among subjects, experiments, and time periods. In this way, the domain shift between the training dataset and the test dataset is small, leading to relatively easy emotion recognition. On the contract, KFoldGroupbyTrial strategy only covers parts of time periods in the training samples, simulating emotion recognition when part of time periods is unknown. Therefore, there is a domain gap between the test dataset and the training dataset, which increases the classification difficulty. Similarly, the settings of KFoldCrossTrial and LeaveOneSubjectOut further simulate the situation that parts of trials/subjects are unknown in the training set, which further increases the challenge of accurate classification. Meanwhile, we can also find that the model performance (last epoch strategy) under KFoldCrossTrial setting is higher than that of LeaveOneSubjectOut on DREAMER, SEED, MAHNOB, and MPED datasets, while the opposite is true on DEAP and AMIGOS datasets. It demonstrates that on DREAMER, SEED, and MAH- NOB datasets, the distribution difference between trials is larger than between subjects, while the opposite is true on DEAP and AMIGOS.
+
+Finally, we observe the difference between the performance of the last and best epoch strategies on the test datasets. It can be found that the performance difference between the two strategies does not exceed 1% regardless of the dataset and dataset partitioning settings. Especially in parts of extreme cases, we find that affected by random initialization, the last epoch strategy may exceed the best epoch strat- egy in some datasets and data splitting strategies. This phenomenon may indicate that the model can stably converge near the theoretical upper bound after multiple training rounds, indicating the stability of model design and training.
+
+Expert Z. Zhang et al.
+
+Systems With Applications 249 (2024) 123550
+
+Table 3 The emotion recognition accuracies of CCNN at the valence dimension on the benchmark datasets, including DEAP, DREAMER, SEED, AMIGOS, MAHNOB, and MPED datasets, when EEG signals are segmented with one-second-long time windows and datasets are split using KFold, KFoldGroupbyTrial, KFoldCrossTrial, and LeaveOneSubjectOut.
+
+Dataset splitting Strategy DEAP DREAMER SEED AMIGOS MAHNOB MPED
+
+KFold (random) Last epoch 92.57 63.98 93.18 93.50 96.70 73.02 Best epoch 93.20 64.48 93.39 94.54 97.32 73.16
+
+KFoldGroupbyTrial Last epoch 92.04 63.45 Best epoch 92.24 63.90 7
+
+82.81 92.57 94.76 63.70 83.43 93.15 95.45 63.81
+
+KFoldCrossTrial Last epoch 49.05 57.55 57.18 46.87 44.36 20.66 Best epoch 53.66 61.69 63.29 55.23 50.00 25.66
+
+LeaveOneSubjectOut Last epoch 52.37 Best epoch 57.27 56.31 62.43 48.36 51.66 42.36 12.69 56.23 59.96 79.21 18.32
+
+Table 4 The impact of hidden dimension of graph convolutional networks and transformers on the accuracies in emotion recognition at the valence dimensions. Here, the EEG signal is divided into 1s time windows, and the dataset splitting method is KFoldGroupbyTrial. The evaluated hidden dimensions include 16, 32, and 64.
+
+Model DEAP AMIGOS SEED
+
+16 32 64 16 32 64 16 32 64
+
+DGCNN 83.69 86.34 89.04 86.57 88.70 90.27 77.35 78.26 78.83 LGGNet 85.49 86.67 87.65 88.04 88.87 89.88 74.69 74.44 75.23 Transformer 68.23 74.63 79.91 74.76 80.01 85.24 54.81 56.26 57.86 ViT 80.46 85.44 87.99 81.92 87.06 89.40 56.82 57.39 57.38 SimpleViT 77.46 82.03 84.14 80.10 84.48 86.08 57.32 58.16 58.69 ArjunViT 86.83 89.02 90.57 86.20 89.00 90.18 53.80 53.51 53.53 SST-EmotionNet 84.50 84.07 83.47 86.25 86.12 85.49 73.93 73.75 73.83
+
+5.4. Benchmark results on the models module
+
+In this subsection, we conduct further experiments with recent models. For discriminative models, we validate the performance of graph convolution-based models (DGCNN, RGNN, and LGGNet) and Transformer-based models (Transformer, ViT, SimpleVit, and Arjun- ViT). To demonstrate the effect of hyperparameters in the model, we experiment with different hidden layer sizes in the model architec- tures by configuring varying hidden layer sizes and recording model performance under 5-fold KFoldGroupbyTrial cross-validation.
+
+As shown in Table 4, graph convolutional networks achieve the best performance on the DEAP, AMIGOS, and SEED datasets. This might be because graph convolutional networks model the underlying structural patterns between electrodes and brain regions of EEG signals better than transformers, providing effective inductive biases to classify emo- tional states. Meanwhile, some transformer-based methods show good performance on the DEAP and AMIGOS datasets; however, they cannot outperform GNN-based methods on the SEED dataset. This might be due to the overfitting problem that transformers encounter on the SEED dataset. Furthermore, we find that for most datasets and models, as the hidden layer size increases from 16 to 64, the performance of the model gradually improves according to Table 4. This phenomenon may demonstrate that extensive free parameters are beneficial for the model to fit the complex EEG signal distribution.
+
+We then conduct experiments on generative models. Here, we divide the EEG signals in each trial into segments of EEG samples using non- overlapping sliding windows of one-second length. Then, we extract DE features from the EEG samples and remove the components of the base- line signals. Next, we train generative models to generate DE features of the EEG signals from different electrodes that are close to real EEG sample distributions. After training the generative models, to measure the performance of the generative model, we use Kernel Maximum Mean Discrepancy (MMD) (Gretton, Borgwardt, Rasch, Schölkopf, & Smola, 2006), Inception Score (IS) (Salimans et al., 2016), and FID (Fréchet Inception Distance) (Heusel, Ramsauer, Unterthiner, Nessler, & Hochreiter, 2017) to measure the difference between the distribution of generated EEG signals and real EEG signals, as well as the diversity of generated EEG signals. Here, we use 5-fold KFoldGroupbyTrial cross- validation on EEG datasets, and we report the average Kernel MMD, IS, and FID of different generative models.
+
+As shown in Table 5, Glow outperforms other generative models with the lowest Kernel MMD and FID on the DEAP and AMIGOS datasets. The lower FID indicates that the distribution of the samples generated by Glow is consistent with the distribution of the real sam- ples. DDPM achieves the highest IS, demonstrating that DDPM can generate numerous different distinct EEG signals, while its performance on Kernel MMD and FID is relatively poor. We believe this is due to the low number of electrodes and low spatial resolution of the EEG signal. As we know, the UNet architecture in DDPM is designed for image generation with high spatial resolution and may not be suitable for EEG signals with low spatial resolution.
+
+5.5. Benchmark results on the trainers module
+
+In this subsection, we first conduct sensitivity experiments to ex- plore the influence of hyperparameters while training deep learning models. Experiments are conducted on the DEAP dataset to evaluate the performance of the trained CCNN in predicting emotional valence and arousal under different hyperparameter combinations. In the exper- iment, the EEG signal is divided into one-second-long time windows, and the dataset is partitioned using KFoldGroupbyTrial. We employ Approximate Entropy as the input feature. We report classification accuracy under learning rates of \[0.001, 0.0001, 0.00001\], weight decay of \[0.001, 0.0001, 0.00001\], and dropout rates of \[0.3, 0.4, 0.5\].
+
+As shown in Table 6, we use bold to indicate the best performance and underline to denote the performance under the default setting. We find that the best performance for classifying valence and arousal corresponds to different hyperparameters, indicating that there is no one-size-fits-all hyperparameter combination. We also observe the per- formance margin between the best and default hyperparameters is about 0.1%, suggesting that the default value is a reasonable starting point. Hyperparameters that are too large or too small can lead to a performance drop of over 10%, highlighting the significant impact of hyperparameters on performance.
+
+Then, we conduct experiments on benchmark datasets DEAP and SEED to evaluate the cross-domain trainer in the cross-subject emotion recognition setting. We divide the EEG signal in each experiment into EEG sample segments using non-overlapping sliding windows of one- second length and then apply the LeaveOneSubjectOut cross-validation strategy to report the final performance.
+
+Expert Z. Zhang et al.
+
+Systems With Applications 249 (2024) 123550
+
+Table 5 The evaluation of different models on the quality of generated samples. The generative models include a variational autoencoder (Beta VAE), a generative adversarial network (WGAN-GP), a normalizing flow (Glow), and a diffusion model (DDPM). The evaluation indicators include Kernel Maximum Mean Discrepancy (Kernel MMD), Inception score (IS), and Fréchet Inception Distance (FID) for EEG signals perceptron. The ↑ indicates that the higher the score, the better the performance, and the ↓ is vice versa.
+
+Model DEAP AMIGOS
+
+Kernel MMD ↓ IS ↑ FID ↓ Kernel MMD ↓ IS ↑ FID ↓
+
+Beta VAE 0.1233 1.3871 0.1537 2.4595 1.4827 0.3860 WGAN-GP 0.0857 1.5352 0.1443 2.6846 1.6262 0.5942 Glow 0.0675 1.5266 0.0513 1.9033 1.5524 0.2828 DDPM 2.1537 1.5528 0.4704 293.1586 1.7403 2.4186
+
+Table 6 The classification accuracy of CCNN under different hyperparameters on the DEAP dataset. Considered hyperparameters include learning rate, weight decay, and dropout rate.
+
+Valence Acc. (%) Learning Rate Arousal Acc. (%) Learning Rate
+
+Dropout Weight decay 0.001 0.0001 0.00001 Dropout Weight decay 0.001 0.0001 0.00001 Rate Rate
+
+0.3 0.001 93.68 96.72 95.08 0.3 0.001 93.9 96.86 95.5 0.3 0.0001 93.31 96.51 87.01 0.3 0.0001 93.89 96.68 94.68 0.3 0.00001 91.92 95.97 76.65 0.3 0.00001 92.93 96.32 85.83 0.4 0.001 93.66 97.03 95.34 0.4 0.001 94.05 96.8 95.4 0.4 0.0001 93.33 96.17 94.45 0.4 0.0001 93.62 96.83 94.82 0.4 0.00001 91.81 96.01 77.43 0.4 0.00001 93.22 95.63 79.16 0.5 0.001 93.6 96.6 95.38 0.5 0.001 93.76 96.64 94.9 0.5 0.0001 93.16 96.91 86.25 0.5 0.0001 93.66 96.75 94.78 0.5 0.00001 91.81 95.75 83.72 0.5 0.00001 92.75 96.3 85.03
+
+Table 7 Emotion recognition accuracies of different graph-based and transformer-based state-of- the-art models in subject-independent settings. Four different trainers are considered, including the cross-subject trainer based on the cross-domain algorithms (CORAL, ADA, DANN, DDC, and DAN). To determine the model used at test time, the last epoch strategy and the best epoch strategy are used.
+
+Domain adaptation SEED SEED-IV
+
+CCNN DGCNN ViT CCNN DGCNN ViT
+
+CORAL Last Best 8 epoch epoch 49.43 57.5 63.05 66.91 52.19 33.15 47.68 36.99 66.46 47.51 54.49 52.25
+
+ADA Last epoch 71.12 68.18 63.22 42.91 44.24 41.16 Best epoch 73.35 72.87 73.49 55.32 52.93 52.67
+
+DANN Last epoch Best epoch 35.14 43.27 35.28 55.81 41.85 30.24 30.6 33.95 65.95 30.25 44.88 51.20
+
+DDC Last epoch 54.96 58.24 53.73 47.78 41.65 42.04 Best epoch 70.00 68.22 70.73 58.24 54.89 57.82
+
+DAN Last epoch 34.47 64.75 34.22 30.02 49.24 30.22 Best epoch 35.66 70.16 35.60 32.54 54.42 30.98
+
+As shown in Table 7, we find that ADATrainer achieves better performance on the SEED dataset. This is because ADATrainer imple- ments a conditional distribution adaptation algorithm. This kind of algorithm aim to minimize the distance between conditional distribu- tions, ð(ðð,ðð) and ð(ðð ,ðð), where ð denotes EEG signals and ð denotes labels. It can align EEG signals conditioned by labels, thus better distinguishing different categories in the target domain. On the SEED-IV dataset, there are more emotional categories. The classifi- cation accuracy in the source domain does not exceed 70%. In this scenario, the classification loss and conditional distribution adaptation loss compete with each other, leading to poor optimization of the classification loss. A simple domain adaptation trainer, DDCTrainer, brings the best performance.
+
+We further conduct visualization experiments to gain insights into the decision-making basis of the CCNN optimized by the cross-domain algorithm. In the SEED dataset, each subject participated in trials across three sessions on different days. For each session, we sampled three subjects as the test set and the remaining subjects as the training set, using ADATrainer to train the CCNN. Subsequently, we visualize the features of the last convolutional layer output of the optimized CCNN on the 3 test subjects, reduced to a 2-dimensional plane.
+
+As shown in Fig. 4, the color of the scatter points represents the emotional category, and different shapes denote different subjects. We observe that points of the same color cluster together, while those of different colors are distant from each other. It indicates that the optimized CCNN can extract distinct emotional features for classifi- cation, where features of the same emotional category are similar, and those of different categories are distinct. We can also find points of the same color but different shapes cluster together, such as the blue points on the left and the red points on the right in Fig. 4(b). It means the common features of the same emotional category across different subjects are captured, enabling correct emotion classification in cross-subject scenarios.
+
+5.6. Benchmark results on the ððððℎð¸ð¸ðºð¸ðð I/O
+
+In this section, we conduct experiments to highlight the effec- tiveness of the proposed window-centric input/output techniques. We first demonstrate the time costs reduced by the window-centric EEG I/O system. In the experiments, we used BandDifferentialEntropy and ToGrid as transforms, i.e., given an EEG signal sample, we compute the differential entropy of the four subbands and then map the entropy of each electrode to the grid. We record time costs on benchmark datasets, DEAP and SEED, using 96 logical core servers with 2, 4, 8, 16, 32, and 64 CPU workers. As shown in Fig. 5(a), the SEED dataset takes longer time than the DEAP dataset due to its larger EEG sample size. For SEED and DEAP, the processing time decreases exponentially as the number of CPU workers increases exponentially. This phenomenon shows the effectiveness of time window-centric EEG I/O with minimal overhead. We then show the memory reduction brought by the window- centric EEG I/O. We iterate over various benchmark datasets both with and without our proposed window-centric IO and use ‘mprof’ to track peak memory usage during program execution. As illustrated in Fig. 5(b), across all datasets, employing the proposed window- centric input/output system results in lower memory consumption. This efficiency stems from the fact that without our system, EEG signals are organized by recordings of trials. To create training samples, EEG records are loaded into memory to segment windows of EEG signals, for example, one-second-long windows. With our window-centric IO, EEG records are organized in windows in LMDB, and only index windows of interest are read. Notably, on benchmark datasets with a substantial amount of long recordings, such as SEED and SEED-IV, the memory savings are more pronounced.
+
+Z. Zhang et al.
+
+Fig. 4. Visualization results show features of EEG signals in three sessions of trials on the SEED dataset. Features are extracted by the CCNN model trained with ADATrainer. EEG signals stimulated by negative, natural, and positive emotions are colored in blue, green, and red, respectively. Signals from the first, second, and third subjects are marked with triangles, hollow circles, and solid circles.
+
+Fig. 5. Experiments on time costs and peak random-access memory (RAM) usage of the window-centric EEG I/O module.
+
+Table 8 Comparison of features supported by existing EEG signal analysis toolboxes and the proposed TorchEEGEMO.
+
+Toolbox Focus Supported features
+
+Benchmark Feature Data Deep discriminative models Deep generative Training
+
+dataset extraction splitting CNN RNN/GNN/Transformer models algorithms
+
+MOABB Dataset ✓ × × × × × × PyEEG Feature extraction × ✓ × × × × × Gumpy Feature extraction ✓ ✓ × × × × × Braindecode Deep learning ✓ ✓ × ✓ × × × MNE Feature extraction × ✓ × × × × × EEGlib Feature extraction × ✓ × × × × × TorchEEG Deep learning ✓ ✓ ✓ ✓ ✓ ✓ ✓
+
+6\. Key features and relationship with existing toolboxes
+
+In this section, we summarize the key features supported by TorchEEGEMO and existing toolboxes to highlight the advantages and limitations of TorchEEGEMO.
+
+As illustrated in Table 8, most existing toolboxes focus on providing signal processing and extracting discriminative features, such as MNE, EEGlib, PyEEG, and Gumpy. These functionalities aid in preliminary EEG analysis with neuroscience insights. However, they lack support for deep learning algorithms, which represent the current state-of-the- art. Integrated with TorchEEGEMO, researchers can further benefit from the recent advancements in deep learning algorithms.
+
+MOABB and Braindecode offer extensive benchmark datasets, which are widely used to conduct experiments on motor imagery, sleep stage detection, etc. To our knowledge, no toolbox currently provides
+
+built-in benchmark datasets for EEG-based emotion recognition, and TorchEEGEMO can act as a strong complement, also offering interfaces for users to utilize datasets supported by MOABB and Braindecode.
+
+The toolbox most similar to TorchEEGEMO is Braindecode, which implements convolutional neural networks for motor imagery and sleep stage detection, gaining widespread attention in the community. How- ever, the models supported are not tailored for EEG-based emotion recognition, and cutting-edge developments such as RNN, GNN, and Transformer, along with generative models proven effective, have not yet been included. TorchEEGEMO fills this gap.
+
+Unlike other toolboxes, TorchEEGEMO also offers standard dataset splitting programs to divide training samples for training deep learning models with various objectives. To our best knowledge, TorchEEGEMO is also the only toolbox providing training strategies, e.g., domain adap- tation, to optimize deep learning models with advanced algorithms.
+
+Expert Systems With Applications 249 (2024) 123550
+
+9
+
+Z. Zhang et al.
+
+7\. Conclusion and future work
+
+In summary, TorchEEGEMO emerges as a comprehensive and effi- cient EEG-based emotion recognition toolbox. It breaks down the EEG- based emotion recognition workflow into five distinct modules and pro- vides plug-and-play functions for benchmark datasets (the datasets mod- ule), transformation tools (the transforms module), data splitting strate- gies (the model\_selection module), deep learning models (the models module), and training algorithms (the trainers module). By integrating time window-centric EEG input/output, TorchEEGEMO enhances the efficiency of deep learning systems for EEG-based emotion recognition. Experiments on datasets demonstrate performance varies on differ- ent datasets. We find no single model dominates all dataset, indicating the importance of selecting a suitable model. An optimal window length can lead further to performance improvement. Experiments on the transforms module reveal the impact of feature extractions on emo- tion recognition performance. Both time-domain and frequency-domain features have their specific application scenarios. Experiments on the model\_selection highlight the challenges posed by unseen trails and sub- jects. The models modules are widely studied across experiments, which show the state-of-the-art methods can achieve further improvement with optimal pipeline, e.g., feature engineering. The simple yet efficient CCNN is still a strong benchmark. The adapted transformer-based mod- els show promising performance over GNNs. The introduced generative models show great potential in data augmentations. Experiments on trainers highlight the effectiveness of various domain adaptation algo- rithms. Conditional domain adaptation appears promising for future research, but simple yet efficient traditional methods still hold value in practical applications.
+
+For future work, we believe there is no one-size-fits-all solution; dif- ferent research outputs have their own benefits and suitable use cases. Thus, we aim to continuously integrate various state-of-the-art algo- rithms and provide a hub of pre-trained foundational models as starting points for diverse research objectives and real-world applications.
+
+CRediT authorship contribution statement
+
+Zhi Zhang: Conceptualization, Methodology, Software, Writing – original draft. Sheng-hua Zhong: Conceptualization, Resources, Writ- ing – review & editing. Yan Liu: Conceptualization, Supervision, Project administration.
+
+Declaration of competing interest
+
+The authors declare the following financial interests/personal rela- tionships which may be considered as potential competing interests: Zhi Zhang reports financial support was provided by The Hong Kong Polytechnic University. Shenghua Zhong reports financial support was provided by Shenzhen University. Yan Liu reports financial support was provided by The Hong Kong Polytechnic University.
+
+Acknowledgments
+
+This research was funded by the Natural Science Foundation of Guangdong Province (2023A1515012685, 2023A1515011296), Open Research Fund from Guangdong Laboratory of Artificial Intelligence and Digital Economy (SZ) under Grant No. GML-KF-22-28, Innovation and Technology Fund from the Innovation and Technology Commis- sion of Hong Kong (ITS/110/19) and the Hong Kong Research Grants Council Collaborative Research Fund (C7069-19G).
+
+Expert Systems With Applications 249 (2024) 123550
+
+10
+
+References
+
+Abadi, M., Barham, P., Chen, J., Chen, Z., Davis, A., Dean, J., et al. (2016). TensorFlow: A system for large-scale machine learning. In USENIX symposium on operating systems design and implementation (pp. 265–283). Arjun, A., Rajpoot, A. S., & Panicker, M. R. (2021). Introducing attention mechanism for EEG signals: Emotion recognition with vision transformers. In International conference of the IEEE engineering in medicine & biology society (pp. 5723–5726). Ayata, D., Yaslan, Y., & Kamasak, M. E. (2018). Emotion based music recommendation system using wearable physiological sensors. Transactions on Consumer Electronics, 64(2), 196–203. Bao, F. S., Liu, X., & Zhang, C. (2011). PyEEG: an open source python module for EEG/MEG feature extraction. Computational Intelligence and Neuroscience, 2011. Beyer, L., Zhai, X., & Kolesnikov, A. (2022). Better plain ViT baselines for ImageNet-1k.
+
+arXiv preprint arXiv:2205.01580. Cao, H., Tan, C., Gao, Z., Chen, G., Heng, P.-A., & Li, S. Z. (2022). A survey on
+
+generative diffusion model. arXiv preprint arXiv:2209.02646. Dadebayev, D., Goh, W. W., & Tan, E. X. (2022). EEG-based emotion recognition: Review of commercial EEG devices and machine learning techniques. Journal of King Saud University-Computer and Information Sciences, 34(7), 4385–4401. Daimi, S. N., & Saha, G. (2014). Classification of emotions induced by music videos and correlation with participants’ rating. Expert Systems with Applications, 41(13), 6057–6065. Dalal, S. S., Zumer, J. M., Guggisberg, A. G., Trumpis, M., Wong, D. D., Sekihara, K., et al. (2011). MEG/EEG source reconstruction, statistical evaluation, and visualization with NUTMEG. Computational Intelligence and Neuroscience, 2011. Delorme, A., & Makeig, S. (2004). EEGLAB: an open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. Journal of Neuroscience, 134, 9–21. Delorme, A., Mullen, T., Kothe, C., Akalin Acar, Z., Bigdely-Shamlo, N., Vankov, A., et al. (2011). EEGLAB, SIFT, NFT, BCILAB, and ERICA: New tools for advanced EEG processing. Computational Intelligence and Neuroscience, 2011, Article 130714. Ding, Y., Robinson, N., Zeng, Q., & Guan, C. (2021). LGGNet: learning from Local- global-graph representations for brain-computer interface. arXiv preprint arXiv: 2105.02786. Ding, Y., Robinson, N., Zhang, S., Zeng, Q., & Guan, C. (2022). TSception: Capturing temporal dynamics and spatial asymmetry from EEG for emotion recognition. Transactions on Affective Computing. Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., Unterthiner, T., et al. (2020). An image is worth 16x16 words: Transformers for image recognition at scale. arXiv preprint arXiv:2010

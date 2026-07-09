@@ -1,0 +1,1243 @@
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Title Page
+Characterising and Minimising Step and Filtering Artifacts in TMS-EEG Recordings
+Marissa M. Holden1,2, Mitchell R. Goldsworthy1,2,3, Wei-Yeh Liao1, Scott R. Clark4, Christopher C.
+Cline
+
+,
+
+, Corey J. Keller
+
+,
+
+,7
+
+, Julio C. Hernandez-Pavon8, Nigel C. Rogasch1,2,9
+
+1. School of Pharmacy and Biomedical Sciences, College of Health, Adelaide University
+2. Hopwood Centre for Neurobiology, Lifelong Health Theme, South Australian Health and
+Medical Research Institute
+3. School of Psychology, College of Education, Behavioural and Social Sciences, Adelaide
+University
+4. School of Medicine, College of Health, Adelaide University
+5. Department of Psychiatry and Behavioral Sciences, Stanford University, Stanford, CA, USA
+6. Wu Tsai Neurosciences Institute, Stanford University, Stanford, CA, USA
+7. Veterans Affairs Palo Alto Health Care System, Palo Alto, CA, USA
+8. Department of Psychological Sciences, Kansas State University, Manhattan, KS, USA
+9. School of Psychological Sciences and Turner Institute for Brain and Mental Health, Monash
+University, Australia.
+
+Correspondence
+Nigel C. Rogasch
+Email: Nigel.rogasch@adelaide.edu.au
+
+1
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Abstract
+Transcranial magnetic stimulation combined with electroencephalography (TMS-EEG)
+enables direct measurement of cortical reactivity via TMS-evoked potentials (TEPs).
+Interpretation of early TEP components however, is highly sensitive to stimulation and
+hardware-related artifacts. We identified and characterised a persistent, non-neural ‘stepdrift’ artifact unexpectedly present in recent TMS-EEG recordings from our group. We show
+that the artifact is distinct from previously described TMS pulse and discharge/decay artifacts
+and likely reflects a hardware interaction phenomenon. We demonstrated that amplifier
+settings, but not TMS pulse shape, substantially influenced artifact expression, with DCcoupled recordings with no online high-pass filter reducing step amplitude compared with
+AC-coupled recordings with a high-pass filter. Simulations additionally revealed that filtering
+over the step-drift artifact introduced pronounced ringing and edge artifacts, highlighting the
+need to address this artifact prior to data processing. We propose a processing pipeline
+incorporating robust polynomial detrending and a modified Butterworth filter with
+autoregressive extrapolation that minimised TEP distortion in both simulated and real data
+containing the step-drift artifact. Together, these findings provide practical recommendations
+for both preventing and correcting step-drift artifacts and underscore the need for formal
+definition and routine recognition of this artifact to improve reproducibility and data quality
+in TMS-EEG research.
+Keywords
+Transcranial magnetic stimulation (TMS), Electroencephalography (EEG), TMS-evoked potentials
+(TEPs), Artifacts, Filtering
+
+2
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Introduction
+Transcranial magnetic stimulation (TMS) is a non-invasive brain stimulation method which delivers a
+brief magnetic pulse over the scalp, resulting in an electric field in the underlying cortex via
+electromagnetic induction (Barker et al., 1985). At sufficient intensities, TMS causes depolarisation of
+cortical neurons underneath the stimulating coil (Rothwell et al., 1991) and electroencephalography
+(EEG) can capture the resulting cascade of neural activity which is measured as a series of TMSevoked potentials (TEPs) (Ilmoniemi et al., 1997). TEPs consist of positive and negative deflections at
+distinct latencies and polarities, with the amplitude and latency of each peak thought to reflect
+underlying neurophysiological processes both in the stimulated region and in broader neural networks
+via transsynaptic neurotransmission (Bergmann et al., 2016; Farzan et al., 2016; Rogasch and
+Fitzgerald, 2013; Siebner et al., 2009). In addition, TEPs also include sensory event-related potentials
+(ERPs) caused by the clicking noise and sensation accompanying a TMS pulse (Biabani et al., 2024,
+2019; Conde et al., 2019; Gordon et al., 2021; Nikouline et al., 1999; Rocchi et al., 2021). TEPs have
+shown enormous potential both as a research tool to investigate healthy brain function and as a
+clinically relevant biomarker for diagnosing brain disorders, assessing pharmacological effects on the
+brain, and monitoring treatment responses (Tremblay et al., 2019; Ziemann et al., 2026).
+Despite the growing interest in TEPs, TMS-EEG research is hampered by the presence of numerous
+different artifacts which obscure the neural signal of interest (Hernandez-Pavon et al., 2022). Several
+sources of artifact arise from interactions between the TMS pulse and the EEG recording system
+during data acquisition, including: 1) a TMS pulse artifact caused by the electric current passing
+through the TMS coil (Veniero et al., 2009); 2) a discharge/decay artifact caused by the dissipation of
+capacitances stored at the gel-skin-electrode interface (Freche et al., 2018; Julkunen et al., 2008); and
+3) a recharge artifact caused when the TMS capacitors recharge between pulses (Rogasch et al., 2013;
+Veniero et al., 2009). Furthermore, additional artifacts arise following interaction between the TMS
+pulse and off-target biological systems including: 1) TMS-evoked muscle artifacts resulting from
+direct or indirect stimulation of craniofacial muscles by the TMS pulse (Hernandez-Pavon et al.,
+2012; Mutanen et al., 2013; Rogasch et al., 2013); 2) blinks and eye-movements time-locked to the
+TMS pulse (Bruckmann et al., 2012; Rogasch et al., 2014); and 3) neural activity in sensory and
+salience networks caused by auditory and somatosensory input accompanying the TMS pulse
+(Biabani et al., 2024, 2019; Conde et al., 2019; Gordon et al., 2021; Nikouline et al., 1999; Rocchi et
+al., 2021). Together, these artifacts are well recognised within the TMS-EEG literature and have
+guided the development of targeted online (i.e., during data acquisition) and offline (i.e., during data
+processing) suppression methods such as dedicated acquisition methods and cleaning pipelines for
+TMS-EEG data (Cline et al., 2021; Hernandez-Pavon et al., 2023, 2022; Ilmoniemi et al., 2015;
+Rogasch et al., 2017). However, continued refinement of artifact characterisation and suppression
+remain a central methodological priority to further improve TMS-EEG data quality.
+One source of TMS-EEG artifact which has received relatively less interest is persistent offsets and
+drifts in EEG voltage which can follow the TMS pulse. This ‘step-drift’ artifact presents as an offset
+of up to 10 µV in amplitude following the TMS pulse which can last several seconds before slowly
+drifting towards pre-stimulus amplitude levels and appears separate from discharge artifacts (Rogasch
+et al., 2013). Throughout the manuscript, we refer to this artifact interchangeably as either the step or
+step-drift artifact. The source of the step-drift artifact remains unclear. One possibility is that the
+artifact may represent an interaction with online filters. Most TMS-compatible EEG systems operate
+with either AC- or DC-coupled inputs prior to digitisation. AC coupling typically applies a high-pass
+filter in the range of ~0.016–0.1 Hz to suppress slow drifts and maintain the signal within the optimal
+dynamic range of the amplifier, but this comes with the risk of introducing additional spurious
+trends/drifts in the signal. By comparison, DC coupling does not require a high-pass filter which
+preserves slow signal components but carries an increased risk of baseline drift and amplifier clipping
+(Hernandez-Pavon et al., 2023). Recording using DC-coupling without high-pass filtering is typically
+
+3
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+recommended for TMS-EEG data collection (Hernandez-Pavon et al., 2023), however some studies
+use a very low high-pass filter (e.g., 0.016 Hz) with AC-coupling (Bonato et al., 2006; Veniero et al.,
+2009). Alternatively, the TMS pulse shape may also contribute. In DC-coupled EEG recordings made
+from a melon to isolate non-biological artifacts, Rogasch and colleagues reported anecdotal evidence
+that monophasic pulses from several different Magstim and MagVenture devices resulted in a
+persistent offset which was less evident when using biphasic pulses (Rogasch et al., 2013). However,
+systematic studies comparing the effect of different amplifier settings and pulse shapes on step
+artifacts in humans have not been reported.
+The presence of step-drift artifacts in TMS-EEG signals introduces additional artifacts during data
+processing. For example, distinct electrical shapes within the EEG signal can yield characteristic
+artifacts when processed through common filters. Sharp, step-like deflections and slow drift
+components contain broad spectral content, meaning that when they pass through band-pass filters
+they generate predictable distortions such as ringing, edge effects, and spurious oscillatory activity
+(De Cheveigné and Nelken, 2019; Widmann et al., 2015). These distortions arise not from neural
+activity but from the interaction between the non-sinusoidal shape of the artifact and the filter’s
+impulse response (Tanner et al., 2016, 2015), highlighting the importance of understanding artifact
+morphology when interpreting filtered TMS-EEG data. Importantly, processing pipelines with
+specific steps which differ from standard TMS-EEG pipelines may be required to prevent additional
+filter-related artifacts if step-drift artifacts are present in TMS-EEG data (de Cheveigné and
+Arzounian, 2018).
+In this study, we report data collected by our group in which step-drift artifacts were unexpectedly
+identified, from which three primary aims were derived. First, we describe the presence of step-drift
+artifacts in TMS-EEG recordings and use simulated data to characterise additional filtering artifacts
+introduced by steps-drifts in TMS-EEG signals. Second, we investigate the impact of different
+methodological choices during data collection on the size of step-drift artifacts, including different
+pulse shapes (monophasic vs. biphasic) and online high-pass filter settings (AC-coupled vs. DCcoupled). Third, we assess different combinations of data processing methods to determine the
+optimal steps for mitigating filtering artifacts when TMS-EEG data contain step artifacts. In the first
+stage of this analysis, we use simulated data with a known ground truth to evaluate the efficacy of
+different temporal filter and detrending combinations on minimising filtering artifacts. We then
+compare the optimal processing pipeline we identified to another common pipeline using real TMSEEG data with step artifacts to assess the impact of pipeline choice on TEPs.
+
+4
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Methods
+Participants
+Sixteen healthy adults were recruited via university email lists and flyers to participate in an unrelated
+study investigating the effect of coil positioning and auditory masking methods on TEPs (experiment
+1). One participant withdrew due to discomfort associated with auditory masking, yielding a final
+sample of fifteen participants (11 females; mean age = 30.3 ± 7.6 years, range = 23-47 years). After
+noticing the step artifact in the data set and determining an incorrect amplifier configuration was used
+for data collection (see experiment 1 details), four participants returned to participate in an additional
+experiment to assess the impact of amplifier settings and pulse shape on step artifacts (experiment 2),
+and two participants completed another experiment assessing the impact of amplifier range settings on
+clipping artifacts (experiment 3). All participants provided written informed consent to procedures
+approved by The University of Adelaide Human Research Ethics Committee (H-2019-220) and
+experiments were performed in accordance with the National Statement on Ethical Conduct in Human
+Research from the National Health and Medical Research Council (2018). Inclusion criteria required
+no history of neurological or psychiatric disorders and no current psychiatric medications. Standard
+safety screening was conducted to exclude any contraindications to MRI or TMS (e.g., metal
+implants, history of seizures).
+Experimental procedures
+MRI: All participants underwent a T1-weighted MRI scan prior to TMS-EEG sessions for use in
+neuronavigation of the TMS coil (3T Siemens Magnetom Cima.X; MPRAGE, TA: 5.12 min, TR:
+2300 ms, TE: 2.9 ms, TI: 900 ms, voxel size: 1 mm3, flip angle: 8, slices: 192). T1-weighted images
+underwent cortical surface reconstruction using FreeSurfer's recon-all pipeline (Fischl, 2012).
+Brodmann area 8 was identified on each participant's cortical surface by mapping the Brodmann atlas
+(Pijnenburg et al., 2021) to individual anatomy using FreeSurfer's mris_ca_label function. The
+resulting annotations were converted to individual labels for each hemisphere and subsequently
+transformed into a volume in native space using mri_label2vol for display in the neuronavigation
+software.
+Experiment 1 - Prefrontal TMS-EEG with Optimised Coil Positioning and Auditory Masking:
+Participants completed 6 different conditions designed to assess variations in coil positioning and
+auditory masking methods on TEPs following stimulation of prefrontal cortex, the details and results
+of which will be reported elsewhere. For the current study, data from 1 of these conditions were
+analysed. Transcranial magnetic stimulation was delivered using a figure-of-eight coil connected to a
+Magstim200 stimulator. Resting motor threshold (RMT) was determined individually for each
+participant by stimulating the left primary motor cortex and identifying the minimum intensity that
+elicited motor-evoked potentials (MEPs) greater than 0.05 mV in the right first dorsal interosseous
+(FDI) muscle recorded via surface electromyography, in at least 5 out of 10 consecutive trials (Rossini
+et al., 1994). Coil orientation during motor hotspotting was maintained at approximately 45° relative
+to the mid-sagittal plane. Pulses were monophasic with current direction running posterior-anterior
+(PA) in the underlying cortex. For TMS-EEG data collection, the TMS coil position was set to target
+Brodmann Area 8 in the left hemisphere corresponding to superior frontal gyrus. Neuronavigation
+was used to track coil position in relation to the underlying cortex (BrainSightTM, Rogue Resolutions).
+Coil position and angle were further optimised to maximise the amplitude of the P20/N40 TEP and
+minimise TMS-evoked muscle artifact using a customised optimisation process which included online
+feedback collected with the rt-TEP toolbox (Casarotto et al., 2022) and custom MATLAB scripts. A
+grid of four stimulation sites separated by ~10 mm was placed within BA8 and 15 pulses was
+collected at different coil angles (60˚, 90˚, 120˚ to the midline) from each site. TMS intensity was set
+to 120% of each participant’s RMT adjusted for coil-to-cortex distance at each individual site (Stokes
+
+5
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+et al., 2005). The site/angle with no/ minimal muscle artifact and the largest peak-to-peak P20/N40
+TEP amplitude was selected as the site for stimulation.
+EEG was recorded using a 64-channel cap (multitrode electrode for TMS, EasyCap GmbH) connected
+to a TMS-compatible amplifier (BrainAmp MR Plus, Brain Products GmbH). Electrodes were
+positioned according to the international 10–20 system. A ground electrode was placed on the
+forehead, with a reference electrode positioned adjacent to it. Impedances for all electrodes were kept
+below 10 kΩ prior to recording and stimulation. EEG data were sampled at 5,000 Hz. Although our
+group typically use DC-coupling for TMS-EEG experiments (Biabani et al., 2024, 2019), we
+mistakenly used a configuration file with default amplifier settings including AC-coupling (online
+filters = 0.016-1000 Hz; range = ± 3.28 mV). 120 TMS pulses were delivered (ISI = 5 s; 4-6 s jitter)
+with participants sitting at rest with eyes open during data collection.
+During recording, masking noise was continuously played to participants using in-ear earphones
+covered by ear defenders to minimise perception of the TMS click sound. A customised auditory
+masking sound was generated for each participant using the TAAC toolbox prior to data collection
+(Russo et al., 2022). The relevant contribution of white noise and click-based noise was varied until
+the optimal combination to minimise click perception was identified for each participant and used
+throughout data collection.
+Experiment 2- Effects of Pulse Waveform and Amplifier Coupling on TMS-EEG Artifacts: The
+experimental arrangement was identical to experiment 1. Participants completed 4 conditions to test
+the impact of pulse type (monophasic vs biphasic) and amplifier settings (AC-coupling with high-pass
+filter [0.016-1000 Hz] vs DC-coupling with no high-pass filter [DC-1000 Hz]) on the presence of step
+artifacts. Combinations included: 1) monophasic pulses + AC-coupling; monophasic pulses + DCcoupling; biphasic pulses + AC-coupling; biphasic pulses + DC-coupling. For the biphasic condition,
+the TMS coil was connected to a Magstim Rapid2 using a connector. Current direction was PA-AP in
+the underlying cortex.
+Experiment 3 - Impact of Amplifier Dynamic Range on Clipping in DC-Coupled TMS-EEG: The
+experimental arrangement was again identical to experiment 1, except DC-coupling with no high-pass
+filter was used for the amplifier setting. Participants completed 2 conditions to test the impact of
+amplifier range settings on clipping artifacts when using DC-coupling. One condition used the
+standard amplifier range (± 3.28 mV) while a second condition used an extended range (± 16.38 mV),
+acknowledging the trade-off that increasing the dynamic range reduces the effective digitization
+resolution and therefore may diminish signal fidelity for low-amplitude fluctuations.
+Artifact examples
+First, we provided an example of step, drift and filtering (i.e., ringing) artifacts observed in an
+individual participant from experiment 1. Data were analysed using EEGLAB (Delorme and Makeig,
+2004) and TESA (v1.1.1) (Rogasch et al., 2017) in MATLAB (MathWorks Inc.) using a minimal
+processing pipeline (supplementary methods pipeline 1). Both the global mean field amplitude
+(GMFA; the standard deviation of EEG amplitude across channels at each timepoint) and a butterfly
+plot showing all channels were plotted. To help demonstrate the temporal and spatial characteristics of
+the step-drift artifact, FastICA (Hyvärinen and Oja, 2000) was run on the data and the independent
+component representing the step-drift artifact (IC1) was selected and plotted. We then applied a bandpass Butterworth filter (1-80 Hz, second order) to the data to demonstrate additional ringing and edge
+artifacts introduced by filtering over the step and drift artifacts.
+To further demonstrate the interaction between the different sources of artifact and offline filters, we
+simulated a step artifact by generating a flat line (amplitude = 0 µV) equivalent in length to our EEG
+epochs (-1000 to 1000 ms) and then added a constant value (amplitude = 5 µV) to the post-stimulus
+window (0 to 1000 ms). We then separately applied a high-pass (1 Hz, second order) and low-pass (80
+
+6
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Hz, second order) Butterworth filter to the simulated data and plotted the outcomes. We repeated the
+analysis on data with a simulated drift artifact to compare outcomes (linear drift rate = -5 µV/s;
+starting amplitude = 5 µV).
+
+Testing experimental arrangements to minimise step artifacts (online)
+To assess the impact of online methods (AC- vs. DC-coupling; monophasic vs. biphasic pulse shapes)
+on artifacts in data from experiment 2, we used a minimal data cleaning pipeline implemented with
+EEGLAB and TESA (supplementary methods pipeline 2). Step artifact amplitudes were quantified by
+measuring the mean of the GMFA between 50 to 500 ms (starting value chosen to avoid any large
+transients in the data following the TMS pulse). To assess the impact of offline filtering on the data,
+we also applied a second-order Butterworth band-pass filter (1-80 Hz) using the pop_tesa_filtbutter.m
+function. Ringing artifacts were quantified by measuring the mean GMFA between -100 to -2 ms
+(e.g., before the TMS pulse as ringing artifacts are introduced before and after step artifacts due to
+zero-phase filter). Due to the low sample size (n=4), the dependent variables were grouped into either
+AC-coupling and DC-coupling conditions, or monophasic and biphasic conditions and compared
+using a two-sided Wilcoxon rank sum test (α = 0.05) with two contrasts: AC- vs. DC-coupling; and
+mono- vs. biphasic pulse shape.
+
+Developing and testing cleaning pipelines to minimise filtering artifacts (offline)
+Function development: To assess whether we could minimise filtering artifacts resulting from step
+artifacts during offline data cleaning we developed four new functions for the TESA toolbox: 1)
+pop_tesa_robustdemean.m which calculates the robust mean (i.e., excluding values outside a defined
+SD range) within a given data range and then subtracts this value from all data points within the range
+(e.g., fits and removes an offset from the signal). 2) pop_tesa_robustdetrend.m which calculates a
+robust best fitting polynomial of degree n within a given data range and then subtracts this polynomial
+from data points within the range (e.g., fits and removes drifts in the signal). 3)
+pop_tesa_modifiedbandpassfilter.m which was based on methods developed in the AARATEP
+toolbox to avoid ringing artifacts caused by high-pass filtering over large steps in the data (Cline et
+al., 2021). This function uses autoregressive extrapolation to artificially extend the time series forward
+from the start of the TMS-pulse removal window and backwards from the end of the window (e.g., by
+500 ms), thereby extending and smoothing the ‘edge’ of the data. Butterworth filters are then applied
+separately to the extended pre- and post-data periods and the filtered data is blended back together
+using sigmoidal weightings over the removal window. 4) pop_tesa_interactivechanreject.m which
+generates an interactive figure for manually checking bad channels by visualising a TEP butterfly
+plot. Individual channels can be manually selected and removed.
+Simulated data tests: To compare the efficacy of different combinations of detrending and filtering for
+removing the step artifact and preventing filtering artifacts, we generated simulated TMS-EEG data.
+First, we generated an ‘absolute ground truth’ TEP by adding together two damped oscillations: a beta
+oscillation (frequency = 25 Hz; decay constant = 0.1 s; no. cycles = 1.5; starting phase = 270 degrees;
+amplitude = 5 µV; onset = 10 ms) and a theta oscillation (frequency = 5 Hz; decay constant = 0.1 s;
+no. cycles = 1.5; starting phase = 90 degrees; amplitude = 3 µV; onset = 60 ms). The time series was
+then smoothed using a low-pass Butterworth filter (40 Hz, second order). The simulated TEP showed
+characteristics of prefrontal TEPs including peaks at P20, N45, P65, N120 and P200. We then
+extracted baseline data (i.e., before the TMS pulse) from the F1 channel of real TMS-EEG data
+collected in our experiments (n=15; -3500 ms to -500 ms; 120 trials), inserted artificial TMS triggers
+at the mid-point of the extracted period, epoched around the artificial triggers (-1500 to 1500 ms) and
+baseline corrected the data (-500 to -10 ms). Next, we added our ‘absolute ground truth’ TEP to each
+
+7
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+trial so the onset coincided with timepoint 0 (i.e., the centre of the epoch), and then removed and
+interpolated data around the artificial TMS trigger (-2 to 10 ms; cubic interpolation). Finally, we
+created five conditions with artificial step artifacts between 2 and 10 µV in amplitude (2 µV
+increments) by adding constant values to the post TMS data points.
+We then assessed how different combinations of cleaning methods impacted our simulated TEPs with
+different step artifact amplitudes. Robust demeaning and detrending (polynomial order = 1) were
+applied separately on the pre (-1500 to -2 ms) and post (10 to 1499 ms) TMS periods. A standard
+high-pass Butterworth filter (1 Hz, second order), and a modified high-pass Butterworth filter (1 Hz,
+fourth order, autoregressive extension = 900 ms) were also used. In total, 8 combinations of methods
+were tested including:
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+
+robust demean;
+robust detrend;
+standard Butterworth filter;
+modified Butterworth filter with autoregressive extrapolation;
+robust demean + Butterworth filter;
+robust detrend + Butterworth filter;
+robust demean + modified Butterworth filter;
+robust detrend + modified Butterworth filter.
+
+We first quantified the impact of increasing step artifact amplitude on TEP distortion by calculating
+the root mean square error (RMSE; from 10 to 300 ms) between simulated TEPs with no step artifact
+following cleaning compared to those with increasing step amplitudes. Next, we compared how well
+each method retrieved the ‘absolute ground truth’ TEP by calculating the RMSE between each
+cleaning combination and the ground truth (between 10 to 50 ms). Cleaning combinations were then
+ranked from highest to lowest RMSE. The approach was repeated for the 0 and 10 µV step artifact
+conditions and the cleaning combination with the lowest RMSE in the 10 µV step artifact condition
+chosen as the optimal pipeline. To assess how these cleaning approaches performed in the presence of
+other non-linear artifacts common in TMS-EEG data, we repeated the above analyses introducing a
+decay/discharge artifact at timepoint 0 for the 0 and 10 µV step artifact conditions. Decay/discharge
+artifacts were simulated as decay following a second-order power law (duration = 500 ms; scaling
+coefficient = 0.005 µV.s2; exponent = 2).
+Real data tests: Having established the optimal cleaning pipeline for minimising step and ringing
+artifacts in simulated data, we then compared this modified pipeline to a standard cleaning pipeline in
+real data from experiments 1 and 2. The standard and modified pipelines are summarised in table 1.
+The standard pipeline consisted of the following. First, we removed and interpolated data around the
+TMS pulse in the continuous recordings (-2 to 10 ms; cubic interpolation) and resampled the data
+(1000 Hz). Channels showing flat lines longer than 4 s were removed, data were epoched around the
+TMS pulse (-1000 to 1000 ms) and baseline corrected (-500 to -10 ms), and epochs with values >3 SD
+either across a single channel or across all channels were removed. Any missing channels were then
+replaced using spherical interpolation and the data were referenced to the average of all channels.
+Butterfly plots of TEPs were manually checked at this point and bad channels were identified and
+removed using pop_tesa_interactivechanreject.m. Next, interpolated data and channels were removed
+prior to FastICA and independent components representing TMS-evoked muscle activity were
+automatically detected and removed using the default values of the pop_tesa_compselect.m function.
+Removed data and channels were interpolated and Butterworth band-pass (1-80 Hz, second order) and
+band-stop (48-52 Hz, second order) filters were applied. Interpolated data and channels were again
+removed prior to a second round of FastICA and independent components representing residual TMSevoked muscle activity, blinks, eye movement and ongoing muscle activity were automatically
+detected and removed using the default values of the pop_tesa_compselect.m function. Finally,
+
+8
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+removed data were interpolated and the data were again referenced to the average of all channels. The
+modified pipeline was identical to the standard pipeline except the band-pass and notch filtering steps
+were replaced by: 1) a robust detrend (degree = 1; equivalent to a linear detrend) performed
+separately on the pre (-1000 to -2 ms) and post (10 to 999 ms) time windows; 2) cubic interpolation of
+the TMS-pulse removal window; 3) a modified high-pass Butterworth filter with autoregressive
+extrapolation (1 Hz, fourth order, extension = 900 ms); 4) a standard low-pass filter (80 Hz, second
+order); and 5) a modified notch filter (48-52 Hz, fourth order, extension = 900 ms). We chose a
+modified notch filter as we observed additional ringing artifacts associated with the standard
+Butterworth filter in testing (supplementary figure S1).
+Table 1: summary of the standard and modified processing pipelines. The modified pipeline was
+identical to the standard pipeline except at steps 15a-e.
+Step
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15a
+15b
+
+Standard pipeline
+Remove TMS pulse (-2 to 10 ms).
+Interpolate missing data (cubic).
+Downsample (1,000 Hz).
+Remove channels with flat lines.
+Epoch (-1000 to 1000 ms).
+Baseline correct (-500 to -10 ms).
+Remove epochs >3 SD in amplitude
+Replace missing channels (spherical
+interpoloation).
+Re-reference to average of all channels.
+Manually check removed channels.
+Remove interpolated data.
+FastICA.
+Automatically remove components
+representing TMS-evoked muscle activity.
+Interpolate missing data.
+Butterworth band-pass filter (1-80 Hz,
+second order)
+Butterworth band-stop filter (48-52 Hz,
+second order).
+
+15c
+
+15e
+
+19
+20
+
+Robust detrend (degree = 1) on pre and
+post TMS periods separately.
+Interpolate missing data (cubic).
+Modified high-pass Butterworth filter with
+autoregressive extrapolation (1 Hz, fourth
+order, extension = 900 ms).
+Standard low-pass filter (80 Hz, second
+order)
+Modified Butterworth band-stop filter (4852 Hz, fourth order, extension = 900 ms).
+
+15d
+
+16
+17
+18
+
+Modified pipeline
+
+Remove interpolated data.
+FastICA.
+Automatically remove components
+representing TMS-evoked muscle, eye
+blinks, eye movement, ongoing muscle
+activity.
+Interpolate missing data
+Re-reference to average.
+
+To assess the impact of cleaning pipelines on ringing artifacts in data with and without step artifacts
+(experiment 2), we calculated the GMFA in the baseline period before the TMS pulse (-100 to -2 ms)
+to quantify the ringing artifact in the AC- (step present) vs DC-coupling (step absent) dataset (n=4).
+
+9
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+We then grouped and compared ringing artifact amplitudes across four separate contrasts using twosided Wilcoxon rank sum tests (α = 0.05): data with step vs. no-step using the standard pipeline; data
+with step vs. no-step using the modified pipeline; standard vs. modified pipeline in data with step
+artifacts; and standard vs. modified pipeline in data without step artifacts. To assess the impact of step
+artifacts and cleaning pipelines on TEP spatiotemporal characteristics, we compared TEP amplitudes
+in the original dataset (n=15; AC-coupling with step artifacts; experiment 1) cleaned with the standard
+vs. modified pipeline using cluster-based permutation statistics in FieldTrip (Oostenveld et al., 2011).
+Six separate time windows were assessed covering canonical TEP peaks and EEG amplitudes were
+average across time within each window: baseline (-110 to -90 ms); P20 (36 to 55 ms); N45 (56 to 75
+ms); N120 (110 to 130 ms); and P220 (210 to 230 ms). Clusters were defined as two or more
+neighbouring electrodes in which the t-statistic exceeded a threshold of p < 0.05 (two-sided dependent
+t-test). The test statistics were calculated as the maximum of the cluster-level statistics (i.e.,
+“maxsum”). Monte Carlo p-values were calculated on 5000 random permutations and a value of p <
+0.05 (2-tailed) was used as a cluster significance threshold.
+
+10
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Results
+Step, drift, and filtering artifacts
+Figure 1A shows an example of step-drift artifacts in TMS-EEG data for an individual participant
+from experiment 1 (online settings: sampling rate = 5 kHz, AC-coupled filters, 0.016-1000 Hz). EEG
+amplitudes are offset immediately following the TMS pulse and do not return to baseline (average of
+120 trials, epoched and baseline corrected with the pulse artifact between -2 to 10 ms removed, then
+re-referenced to average. F1 channel is highlighted). The step artifact offset is clearly visible in the
+GMFA (figure 1B). The step artifact is captured by the first independent component (figure 1C),
+which shows the step in the data after the pulse followed by a slow drift. The offset is largest in
+channels near the stimulation site (left frontal channels near F1) and can change polarity across
+different scalp locations. Figures 1D-E shows the TEP and GMFA following band-pass filtering
+(second order Butterworth filter; 1-80 Hz). Although the offset of the step artifact is mostly removed,
+distortions are still present immediately before and after TMS pulse (known as ‘ringing’ artifacts) and
+at the start and end of the epoch (known as ‘edge’ artifacts). Note that ringing artifacts occur both
+before and after the pulse artifact due to the zero-phase design of acausal filters which run both
+forwards and backwards through the data to prevent phase offsets. Edge artifacts occur due to steps in
+the data introduced by zero-padding at the epoch boundaries. The ringing and edge artifacts following
+filtering of the step-drift artifact are clearly represented in the first IC (figure 1F).
+
+Figure 1: Step, drift, and filtering artifacts in TMS-EEG data. A) Butterfly plot of minimallyprocessed EEG data (epoched, baseline corrected, and average referenced) following a TMS pulse
+with a step artifact. A channel near the stimulation site (F1) is highlighted in red. Timing of the TMS
+pulse is indicated by grey dashed line. B) Global mean field amplitude (GMFA) of minimallyprocessed TEPs with a step artifact. C) Temporal (line plot) and spatial (inset topoplot) weightings of
+the first independent component (IC) representing the step and drift artifact. D) Same data as in A
+following 1-80 Hz band-pass filtering (second order Butterworth filter). E) Same data as in B
+following 1-80 Hz band-pass filtering (second order Butterworth filter). F) Same IC as in C following
+1-80 Hz band-pass filtering.
+To demonstrate the interaction between artifacts and temporal filters, we simulated a constant signal
+(amplitude = 0 µV) with either a step (amplitude = 5 µV; 0-1000 ms), or a drift (linear drift rate = -5
+µV/s; starting amplitude = 5 µV), and then applied high- and low-pass Butterworth filters (second
+
+11
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+order) separately to the simulated data (figure 2). These analyses show that high-pass filters result in
+the positive/negative ringing artifacts before/after the step in the data, whereas the edge artifacts are
+introduced following high-pass filtering over drifts in the data. In contrast, low-pass filters have
+minimal impact on the data in the presence of either step or drift artifacts. Together, these analyses
+show that the presence of a step-drift artifact in TMS-EEG data can lead to additional filtering-related
+artifacts following high-pass and, by extension, band-pass filtering.
+
+Figure 2: The effect of filtering over simulated steps and drifts. The impact of second order
+Butterworth filters on constant data with a step artifact (A, 1 Hz high-pass; B, 80 Hz low-pass) and a
+drift artifact (C, 1 Hz high-pass; D, 80 Hz low-pass).
+
+Online methods for minimising step artifacts
+Pulse shape and online filters: Having established that the presence of step-drift artifacts can lead to
+additional artifacts following common filtering steps, we next assessed the impact of different online
+methodological choices on the amplitude of step-drift artifacts in TMS-EEG data. To assess whether
+the choice of online high-pass filter setting (AC-coupling with 0.016 Hz high-pass filter vs. DCcoupling with no high-pass filter) or the type of pulse shape (monophasic vs. biphasic) altered stepamplitude artifact, we compared minimally processed data from 4 participants across 4 conditions.
+When comparing GMFA between conditions, the post-TMS offset was larger when using AC- vs.
+DC-coupling (p < 0.001), but did not differ between monophasic and biphasic pulse shapes (p =
+0.574; figure 3A-C). In addition, after applying a band-pass filter (1-80 Hz, Butterworth, order = 2),
+ringing artifacts were evident before the TMS pulse (introduced by zero-phase filter; see figure 2) and
+were larger with AC-coupling vs DC-coupling (p = 0.007), but did not differ between monophasic and
+biphasic pulses (p = 0.574; figure D-F). Together, these findings suggest that using DC-coupling with
+no online high-pass filters can minimise both the step artifact and subsequent ringing artifacts
+introduced by offline high-pass filters compared to AC-coupling with online high-pass filtering.
+
+12
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Figure 3: The effect of amplifier settings and TMS pulse shape on step and ringing artifacts. A)
+TMS-evoked potentials (TEPs) from the F3 channel averaged across participants for each condition
+before filtering. B) Global mean field amplitude (GMFA) averaged across participants for each
+condition before filtering. The grey bar represents the analysis period for quantifying the step artifact
+(50 to 500 ms). C) Step artifacts across different experimental arrangements. Lines represent values
+from individual participants, bars represent the group mean. D) TEPs averaged across participants for
+each condition after band-pass Butterworth filtering (1-80 Hz, second order). E) GMFA averaged
+across participants for each condition after band-pass Butterworth filtering (1-80 Hz, second order).
+The grey bar represents the analysis period for quantifying the filtering artifact (-100 to -2 ms). F)
+Ringing artifacts across different experimental conditions. Mono = monophasic TMS pulses; bi =
+biphasic TMS pulses; AC = alternating current-coupled amplifier (high-pass filter = 0.016 Hz); DC =
+direct current-coupled amplifier (no high-pass filter).
+
+Clipping: During experiment 2, we noticed a number of channels ‘clipped’ (e.g., moved outside of the
+operating range) (figure 4A). Instances of clipping were considerably higher in conditions using DCcoupling, particularly with monophasic pulses (figure 4B), and instances tended to increase over the
+duration of the recording condition (supplementary figure S2). Increasing the amplifier range from ±
+3.28 mV to ± 16.38 mV reduced the instances of clipping during DC-coupled recordings for both
+monophasic and biphasic pulses (figure 4C), with only one channel exceeding the amplifier range
+across the two participants and four conditions tested (supplementary figure S3). In summary, these
+findings suggest caution is required using DC-coupling due to the increased risk of channels drifting
+outside of the amplifier recording range. However, using a larger amplifier range when collecting
+TMS-EEG data with DC-coupling can mitigate data lost to clipping.
+
+13
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Figure 4: ‘Clipping’ artifacts in TMS-EEG recordings. A) An example of an EEG channel that
+drifts outside of the amplifier recording range indicated by red dashed lines (i.e. ‘clips). The recording
+was made using DC-coupling (i.e., no online high-pass filter). Note that TMS pulses were removed
+and interpolated for visualisation. B) Percentage of samples outside of the amplifier recording range
+across all channels for each condition. Lines represent values from individual participants, bars
+represent the group mean. Mono = monophasic TMS pulses; bi = biphasic TMS pulses; AC =
+alternating current-coupled amplifier (high-pass filter = 0.016 Hz); DC = direct current-coupled
+amplifier (no high-pass filter). C) Percentage of samples outside the recording range. Lines represent
+values from individual participants (high = ± 16.38 mV low = ± 3.28 mV).
+
+Offline methods for minimising filtering artifacts
+Simulations: To assess the impact of high-pass filtering on TEPs with step artifacts, we applied a 1 Hz
+high-pass filter (second order Butterworth) to a simulated TEP mixed with real EEG data (n=15) and
+introduced simulated step artifacts of varying amplitude (figure 5A-B). Compared to no step artifact,
+increasing step amplitude resulted in increasing ringing artifact distortions in both the pre-stimulus
+and post-stimulus windows following a standard Butterworth filter (figure 5B-C). We then assessed
+whether using either robust demeaning or robust detrending to the pre and post TMS time window
+separately prior to filtering improved filter outcome. Using either method removed the distortion with
+increasing step amplitude (figure 5C-D). We also assessed whether using a modified Butterworth
+filter which uses autoregression to artificially extend the pre and post TMS windows prior to filtering
+improved filter outcomes. The distortion with increasing step amplitude was reduced using the
+modified Butterworth filter relative to a standard Butterworth filter, but was optimal when either
+robust demeaning or detrending were applied as well (figure 5E-F).
+
+14
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Figure 5. The impact of different pre-processing methods on ringing artifacts with increasing
+step artifact amplitude. A) Simulated TEPs embedded in real EEG data with differing simulated step
+artifact amplitudes. Solid line indicates group mean and shaded lines indicate standard error (n=15).
+B) Simulated TEPs following high-pass Butterworth filter (1 Hz, second order). Ringing artifacts are
+evident before and after the simulated TMS pulse and increase with increasing step artifact amplitude.
+The grey bar represents the time period used to compare root mean square error between conditions.
+C) The impact of including either robust demeaning or robust detrending prior to Butterworth filter on
+ringing artifacts with increasing step artifact amplitude. TEP distortion is quantified by calculating the
+root-mean square error with the filtered TEP with no step artifact. Note that Demean + Butter and
+Detrend + Butter are overlapping. D) Simulated TEPs following robust detrending and a high-pass
+Butterworth filter. Ringing artifacts are no longer evident with increasing step artifact amplitude. E)
+The impact of using a modified Butterworth filter with autoregressive extrapolation on ringing
+
+15
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+artifacts with increasing step artifact amplitude. Note that Demean + Butter and Detrend + Butter are
+overlapping. F) Simulated TEPs following robust detrending and a modified high-pass Butterworth
+filter.
+
+To determine which combination of pre-processing methods best recovered the simulated TEP, we
+calculated RMSE relative to the absolute ground truth TEP (10 to 50 ms) following 8 different
+combinations of filters and detrending methods for both no step artifact and a 10 µV step artifact. We
+then sorted methods based on largest to smallest RMSE. For both cases, pre-processing generally
+reduced RMSE relative to raw data. However, the combination of robust demeaning/detrending and
+the modified Butterworth filter resulted in the smallest RMSE both with and without a step artifact
+(figure 6), indicating this combination is optimal for reducing drifts in the signal regardless of the
+presence of steps.
+
+Figure 6: The impact of different cleaning combinations on recovering the ground truth TEP.
+A) Root mean square error (RMSE) between the ground truth TEP and cleaned simulated TEPs
+embedded in real EEG data with no step artifact for 8 different combinations of detrending and
+filtering. Bars represent the group mean and error bars the standard error of the mean (n=15).
+Cleaning combinations are ranked from highest to lowest RMSE. B) RMSE between the ground truth
+TEP and cleaned simulated TEPs embedded in real EEG data with 10 µV step artifact for 8 different
+combinations of detrending and filtering. C) Comparison of simulated TEPs embedded in real EEG
+data with no step artifact including raw data, data following Butterworth filtering, and the optimal
+cleaning combination (detrend + modified filter) vs. ground truth TEP. Solid lines represent group
+
+16
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+mean and shaded bars represent standard error. The grey bar indicates the time period in which RMSE
+was calculated. D) Comparison of simulated TEPs embedded in real EEG data with 10 µV step
+artifact including raw data, data following Butterworth filtering, and the optimal cleaning combination
+(detrend + modified filter) vs. ground truth TEP.
+
+To assess how robust detrending and the modified filter performed in the presence of non-linear
+artifacts common in TMS-EEG recordings, we repeated the above analysis on simulated data
+including a discharge/decay artifact introduced at timepoint 0. The differences in RMSE between
+standard Butterworth filters and the optimal cleaning combination (detrend + modified filter) were
+similar with a discharge/decay artifact to without (supplementary figure S4), suggesting this approach
+is unaffected by non-linear artifacts. In summary, the combination of robust detrending and a
+modified band-pass filter with autoregressive interpolation appears optimal for reducing filtering
+artifacts in TMS-EEG data containing step artifacts regardless of the presence of other artifacts.
+
+Comparison of cleaning pipelines: The results of the simulation analysis suggested that a combination
+of robust detrending and a modified Butterworth filter were optimal to minimise offline filtering
+artifacts if step artifacts were present in TMS-EEG data. To test this, we assessed whether a cleaning
+pipeline using the modified detrend/filtering approach was able to minimise artifacts compared with a
+standard cleaning pipeline in real TMS-EEG data (AC/DC-coupling data; experiment 2). As in the
+earlier analysis, ringing artifacts were larger in data collected with AC-coupling (i.e., with a step
+artifact) vs. DC-coupling (i.e., without a step artifact) using the standard pipeline (p = 0.003), but did
+not differ between conditions when using the modified pipeline (p = 0.645; figure 7). When directly
+comparing the pipelines in the data collected with AC-coupling, the modified pipeline reduced the
+amplitude of the ringing artifact compared with the standard pipeline (p = 0.005). In contrast, there
+was no difference when comparing pipelines in data collected with DC-coupling (p = 0.505). In
+summary, these analyses suggest that the modified cleaning pipeline is able to both suppress the step
+artifact and reduce subsequent ringing artifacts caused by offline filtering, resulting in TEPs that are
+similar to those collected without a step artifact.
+
+Figure 7: Comparison of a standard and modified cleaning pipeline for minimising ringing
+artifacts in data with and without step artifacts. A-D) TMS-evoked potential (TEP) amplitude
+from data following standard and modified cleaning pipelines across different experimental settings.
+Solid lines represent group means (n=4). E-H) Global mean field amplitude (GMFA) from data
+following standard and modified cleaning pipelines across different experimental settings. The grey
+
+17
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+bar represents the analysis period for quantifying the filtering artifact (-100 to -2 ms). I) Ringing
+artifact amplitude from GMFA data following standard and modified cleaning pipelines across
+different experimental settings. Bars represent group means and lines represent values from individual
+participants.
+
+Finally, we assessed the generalisability of this approach by comparing the standard vs. modified
+cleaning pipeline in a larger group of participants using a sub-optimal recording arrangement resulting
+in step artifacts (n=15; experiment 1). The modified cleaning pipeline resulted in substantial
+differences in the amplitude and spatial distribution of canonical prefrontal TEPs compared to the
+standard pipeline, including the P20 (p < 0.001), N45 (p < 0.001), P65 (p < 0.001), N120 (p < 0.001)
+and P220 (p = 0.004), as well as during baseline (p < 0.001) (figure 8). These findings demonstrate
+that standard Butterworth filters can introduce ringing artifacts that substantially alter the
+spatiotemporal properties of TEPs, especially in data with steps or offsets. Importantly, these artifacts
+can be minimised by using pipelines which separately detrend the pre and post data prior to filtering,
+and that use modified filters which take into account edges resulting from removal of the TMS pulse
+artifact.
+
+Figure 8: Comparison of TEPs following a standard and modified cleaning pipeline in data with
+a step artifact. A) TMS-evoked potential (TEP) data from a single channel near the site of
+stimulation (F1) following a standard and modified cleaning pipeline in data with a step artifact. Solid
+lines represent group mean (n = 15) and shaded bars represent standard error of the mean. B) Global
+mean field amplitude (GMFA) of TMS-EEG data with a step artifact following a standard and
+modified cleaning pipeline. C) Topoplots showing statistical maps comparing TEPs following
+standard vs. modified cleaning pipelines. Colours represent t-values and asterisks channels
+contributing to significant clusters following cluster-based permutation tests (p<0.05).
+
+18
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Discussion
+Artifacts are an enduring problem in TMS-EEG recordings. In the current study, we show
+that TMS-evoked activity can be distorted by a persistent non-neural artifact, appearing as a
+sudden post-TMS voltage step followed by a slow drift in EEG amplitude. Using offline
+filters on data containing the ‘step’ and ‘drift’ components introduce additional ringing and
+edge artifacts respectively, further distorting TEPs. The step-drift artifact was present
+exclusively under AC-coupled amplification with an online high-pass filter and absent during
+unfiltered DC-coupled recording, supporting a hardware–recording interaction rather than a
+neural origin. Such effects are therefore amenable to isolation and control under appropriate
+acquisition conditions. Furthermore, we identified a combination of detrending and modified
+filters which minimised TEP distortion in both simulated and real data containing step-drift
+artifacts. Collectively, these findings motivate clear recommendations for optimising online
+acquisition settings to mitigate the artifact and to address secondary filter-induced distortions
+when contamination occurs.
+Previous work has characterised several artifacts directly induced by the TMS pulse in EEG
+recordings. Artifacts include the TMS-pulse artifact (Veniero et al., 2009; Virtanen et al.,
+1999), a discharge/decay artifact associated with charges stored at the electrode-gel-skin
+interface (Freche et al., 2018; Rogasch et al., 2013; Sekiguchi et al., 2011; Virtanen et al.,
+1999), and a recharge artifact associated with recharging of TMS capacitors (Rogasch et al.,
+2013; Veniero et al., 2009). In contrast, the present study addresses a distinct, longer lasting
+step-drift artifact that emerges post pulse and reflects persistent distortions in EEG voltage.
+Unlike discharge artifacts, which decay following a second order power law (Freche et al.,
+2018), recovery from the step-drift artifact is slow and non-exponential and appears as a
+separate component following ICA, suggesting a distinct mechanism. As step artifact
+amplitudes were significantly larger under AC-coupling with an online high-pass filter
+compared with DC- coupling with no filter (figure 3), we suggest a hardware-related origin
+rather than a classical discharge process, possibly reflecting an interaction between the TMS
+pulse and high-pass filter. Prior recommendations suggest DC-coupled systems over ACcoupled systems for TMS-EEG recordings (Hernandez-Pavon et al., 2023). Our findings
+provide direct evidence supporting this recommendation, suggesting that AC-coupling can
+induce additional TMS-related artifacts not present when using DC-coupling with no online
+high-pass filters.
+Notably, data collected with DC coupling using the standard amplifier range (±3.28 mV)
+resulted in an increased number of channels where signal drifted beyond the amplifier’s
+dynamic range (i.e., clipped). Increasing the range from ±3.28 mV to ±16.38 mV
+significantly reduced channel clipping, supporting this as a more appropriate configuration.
+However, this improvement comes at the cost of reduced effective digitization resolution,
+which may attenuate the fidelity of lower-amplitude signal fluctuations. An alternative
+approach is to frequently reset the DC offset of the amplifier, which can be automated for
+certain EEG amplifiers (e.g., through the BrainVision Recorder’s COM interface). Therefore,
+while DC-coupling minimises step-drift artifacts, care must be taken to ensure appropriate
+amplification settings to avoid data lost to clipping.
+
+19
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Another important consideration is how TMS hardware settings such as pulse waveform
+shape interact with the EEG recording system to produce transient distortions. For example,
+one study anecdotally reported larger-amplitude step artifacts with distinct morphologies for
+monophasic compared to biphasic pulses (Rogasch 2013). In contrast, we observed no pulse
+waveform-dependent differences when amplifier settings were matched in the current study.
+The reasons for this discrepancy are unclear but may reflect differences in amplifier models
+used across studies (e.g., BrainAmp vs Compumedics). Future work directly comparing
+different hardware combinations are required to more formally test the generalisability of
+these findings.
+In addition to hardware settings during data collection, digital signal processing methods
+applied during data cleaning can also distort the brain signal of interest. For example, it is
+well known that temporal filtering applied to characteristic artifact waveforms can introduce
+secondary, non-neural distortions, with sharp transients known to generate an artifactual
+oscillatory response (“ringing”) following high-pass filtering (De Cheveigné and Nelken,
+2019). Depending on the characteristics of the artifact, ringing artifacts can resemble the time
+course of event-related potentials like TEPs (Tanner et al., 2015). Extending this principle,
+the step-drift morphology constitutes an additional filter-sensitive feature, whereby filtering
+across sustained offsets and gradual drifts yields predictable ringing and edge artifacts. This
+distortion differs from previously described TMS-EEG artifacts and no consensus method
+currently exists for its systematic removal or control.
+To our knowledge, this study represents the first formal characterisation of a step-drift artifact
+in TMS-EEG, despite features consistent with its morphology being visible in previously
+published works (Rogasch et al., 2017, 2013) (TESA toolbox manual). Given its prevalence
+and impact, we provide practical recommendations to reduce the artifact at acquisition,
+alongside a targeted post processing removal strategy for cases in which it persists or
+inappropriate amplifier settings are used. Importantly, we validated our processing approach
+in both simulated and real data, in line with recent recommendations (Hernandez-Pavon et al.,
+2023; Rogasch et al., 2022). Ringing and edge artifacts indicate that the step component must
+be removed prior to filtering. Indeed, estimating and subtracting the step magnitude using a
+robust detrending approach, with a first-order polynomial fit applied separately to pre- and
+post-TMS signals, significantly reduced error relative to the ground truth in simulated data,
+and produced more physiologically plausible waveform shapes in real data. Error reductions
+scaled linearly across increasing step amplitudes, indicating consistent and proportional
+artifact removal. In addition to step removal, we tested a modified Butterworth filter designed
+to minimise ringing and edge artifacts arising from the interaction between residual offsets
+and temporal filtering by artificially extending the pre- and post-TMS signal using
+autoregressive extrapolation (Cline et al., 2021). Although improvements from the modified
+filter alone were modest, its inclusion further reduced filtering-related distortions when
+combined with robust detrending. Importantly, this optimised combination of methods was
+robust to other non-linear artifacts often present in TMS-EEG data, including decay/discharge
+artifacts. Figure 8 further demonstrates clear improvements in TEP quality when using these
+recommended methods on a larger data set, including reduced baseline distortions and more
+physiologically plausible TEP profiles compared with the standard pipeline. We also
+introduce an interactive channel selection tool to facilitate identification and removal of
+channels disproportionately affected by step-related artifacts, which we expect will yield
+20
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+additional improvements in data quality when applied judiciously. All methods are included
+in the TESA toolbox for use and additional testing by the TMS-EEG community (Mutanen et
+al., 2020; Rogasch et al., 2017).
+A limitation of the present study is that the findings are derived from a specific set of
+hardware and amplifier configurations available within our laboratory. While the step-drift
+artifact was highly stereotyped across participants in our dataset, further validation is needed
+to assess its prevalence and morphology across other amplifier models. Replication across
+platforms will be essential to determine the generalisability of our observations and the
+robustness of the proposed mitigation strategies. Future work should also evaluate whether
+the integration of the offline correction methods proposed in our study are effective in
+independent data sets collected by different research groups. Incorporating our functions into
+the TESA toolbox provides widespread access to these methods, thereby facilitating
+comparisons by other groups.
+Together, these findings support two overarching recommendations that prioritise prevention
+of step-drift distortions through optimal amplifier settings. First, record TMS-EEG data using
+DC-coupled amplification without high-pass filtering, and second, ensure the amplification
+range is sufficient to prevent clipping. We also propose a modified offline pipeline that
+enables targeted recovery of affected neural signals when prevention is not possible. These
+results underscore the importance of explicitly identifying and controlling for artifacts within
+TMS-EEG acquisition and processing pipelines. Accordingly, formal definition and routine
+recognition of step-drift artifacts are essential to improve data interpretation, reproducibility,
+and methodological consistency across the field. Finally, these findings highlight the need for
+automated detection and removal approaches to further enhance data quality.
+
+21
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Data and code availability
+Data used for the statistical analyses and to generate figures are available from:
+https://doi.org/10.25909/32260149
+Code used for analyses is available from:
+https://github.com/nigelrogasch/tms-eeg-step-filtering-artifacts
+
+Author contributions
+Marissa M. Holden: Conceptualisation, Software, Formal analysis, Investigation, Data Curation,
+Writing – Original Draft, Visualisation. Mitchell R. Goldsworthy: Conceptualisation, Methodology,
+Writing - Review & Editing, Supervision. Wei-Yeh Liao: Investigation, Data Curation, Writing Review & Editing. Scott R. Clark: Writing - Review & Editing, Supervision. Christopher C. Cline:
+Software, Writing - Review & Editing. Corey J. Keller: Writing - Review & Editing. Julio C.
+Hernandez-Pavon: Writing - Review & Editing. Nigel C. Rogasch: Conceptualisation,
+Methodology, Software, Validation, Formal analysis, Investigation, Data Curation, Writing – Original
+Draft, Visualisation, Supervision, Project Administration, Funding Acquisition.
+
+Funding
+This research work was supported by the Australian Research Council, Australia [FT210100694;
+FT230100658].
+
+Declaration and competing interests
+In the past 5 years, NCR has received: grant research funding from the Australian Research Council
+(ARC), and the Medical Research Future Fund (MRFF); contract research funding from the
+Commonwealth Scientific and Industrial Research Organisation (CSIRO), and CMAX Clinical
+Research PTY LTD; and consultancy fees from OVID Therapeutics Inc. SRC has received grant
+research funding from the Australian National Health and Medical Research Council (NHMRC),
+MRFF, Wellcome and the National Institute of Mental Health (NIMH), participated in advisory and
+educational boards and received speaker's fees from Janssen Cliag, Lund-beck, Otsuka, and Servier;
+research funding Janssen Cilag, Lundbeck,Otsuka, and Gilead; data sharing from Viatris Australia;
+and consultancy fees from Insight Timer. CJK holds equity in Alto Neuroscience, Inc., Flow
+Neuroscience, Inc., Constellation Systems, Inc., Kyron Medical, Orchard Neuro, and Noe Neuro.
+
+22
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+References:
+Barker, A.T., Jalinous, R., Freeston, I.L., 1985. NON-INVASIVE MAGNETIC STIMULATION OF
+HUMAN MOTOR CORTEX. The Lancet 325, 1106–1107. https://doi.org/10.1016/S01406736(85)92413-4
+Bergmann, T.O., Karabanov, A., Hartwigsen, G., Thielscher, A., Siebner, H.R., 2016. Combining
+non-invasive transcranial brain stimulation with neuroimaging and electrophysiology: Current
+approaches and future perspectives. NeuroImage, Transcranial electric stimulation (tES) and
+Neuroimaging 140, 4–19. https://doi.org/10.1016/j.neuroimage.2016.02.012
+Biabani, M., Fornito, A., Goldsworthy, M., Thompson, S., Graetz, L., Semmler, J.G., Opie, G.M.,
+Bellgrove, M.A., Rogasch, N.C., 2024. Characterising the contribution of auditory and
+somatosensory inputs to TMS-evoked potentials following stimulation of prefrontal,
+premotor, and parietal cortex. Imaging Neuroscience 2, 1–23.
+https://doi.org/10.1162/imag_a_00349
+Biabani, M., Fornito, A., Mutanen, T.P., Morrow, J., Rogasch, N.C., 2019. Characterizing and
+minimizing the contribution of sensory inputs to TMS-evoked potentials. Brain Stimulation:
+Basic, Translational, and Clinical Research in Neuromodulation 12, 1537–1552.
+https://doi.org/10.1016/j.brs.2019.07.009
+Bonato, C., Miniussi, C., Rossini, P.M., 2006. Transcranial magnetic stimulation and cortical evoked
+potentials: a TMS/EEG co-registration study. Clin Neurophysiol 117, 1699–1707.
+https://doi.org/10.1016/j.clinph.2006.05.006
+Bruckmann, S., Hauk, D., Roessner, V., Resch, F., Freitag, C.M., Kammer, T., Ziemann, U.,
+Rothenberger, A., Weisbrod, M., Bender, S., 2012. Cortical inhibition in attention deficit
+hyperactivity disorder: new insights from the electroencephalographic response to transcranial
+magnetic stimulation. Brain 135, 2215–2230. https://doi.org/10.1093/brain/aws071
+Casarotto, S., Fecchio, M., Rosanova, M., Varone, G., D’Ambrosio, S., Sarasso, S., Pigorini, A.,
+Russo, S., Comanducci, A., Ilmoniemi, R.J., Massimini, M., 2022. The rt-TEP tool: real-time
+visualization of TMS-Evoked Potentials to maximize cortical activation and minimize
+artifacts. Journal of Neuroscience Methods 370, 109486.
+https://doi.org/10.1016/j.jneumeth.2022.109486
+Cline, C.C., Lucas, M.V., Sun, Y., Menezes, M., Etkin, A., 2021. Advanced Artifact Removal for
+Automated TMS-EEG Data Processing, in: 2021 10th International IEEE/EMBS Conference
+on Neural Engineering (NER). Presented at the 2021 10th International IEEE/EMBS
+Conference on Neural Engineering (NER), pp. 1039–1042.
+https://doi.org/10.1109/NER49283.2021.9441147
+Conde, V., Tomasevic, L., Akopian, I., Stanek, K., Saturnino, G.B., Thielscher, A., Bergmann, T.O.,
+Siebner, H.R., 2019. The non-transcranial TMS-evoked potential is an inherent source of
+ambiguity in TMS-EEG studies. Neuroimage 185, 300–312.
+https://doi.org/10.1016/j.neuroimage.2018.10.052
+de Cheveigné, A., Arzounian, D., 2018. Robust detrending, rereferencing, outlier detection, and
+inpainting for multichannel data. Neuroimage 172, 903–912.
+https://doi.org/10.1016/j.neuroimage.2018.01.035
+De Cheveigné, A., Nelken, I., 2019. Filters: When, Why, and How (Not) to Use Them. Neuron 102,
+280–293. https://doi.org/10.1016/j.neuron.2019.02.039
+Delorme, A., Makeig, S., 2004. EEGLAB: an open source toolbox for analysis of single-trial EEG
+dynamics including independent component analysis. J Neurosci Methods 134, 9–21.
+https://doi.org/10.1016/j.jneumeth.2003.10.009
+Farzan, F., Vernet, M., Shafi, M.M.D., Rotenberg, A., Daskalakis, Z.J., Pascual-Leone, A., 2016.
+Characterizing and Modulating Brain Circuitry through Transcranial Magnetic Stimulation
+Combined with Electroencephalography. Front Neural Circuits 10, 73.
+https://doi.org/10.3389/fncir.2016.00073
+Fischl, B., 2012. FreeSurfer. NeuroImage, 20 YEARS OF fMRI 62, 774–781.
+https://doi.org/10.1016/j.neuroimage.2012.01.021
+
+23
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Freche, D., Naim-Feil, J., Peled, A., Levit-Binnun, N., Moses, E., 2018. A quantitative physical model
+of the TMS-induced discharge artifacts in EEG. PLoS Comput Biol 14, e1006177.
+https://doi.org/10.1371/journal.pcbi.1006177
+Gordon, P.C., Jovellar, D.B., Song, Y., Zrenner, C., Belardinelli, P., Siebner, H.R., Ziemann, U.,
+2021. Recording brain responses to TMS of primary motor cortex by EEG - utility of an
+optimized sham procedure. Neuroimage 245, 118708.
+https://doi.org/10.1016/j.neuroimage.2021.118708
+Hernandez-Pavon, J.C., Kugiumtzis, D., Zrenner, C., Kimiskidis, V.K., Metsomaa, J., 2022.
+Removing artifacts from TMS-evoked EEG: A methods review and a unifying theoretical
+framework. Journal of Neuroscience Methods 376, 109591.
+https://doi.org/10.1016/j.jneumeth.2022.109591
+Hernandez-Pavon, J.C., Metsomaa, J., Mutanen, T., Stenroos, M., Mäki, H., Ilmoniemi, R.J., Sarvas,
+J., 2012. Uncovering neural independent components from highly artifactual TMS-evoked
+EEG data. J Neurosci Methods 209, 144–157. https://doi.org/10.1016/j.jneumeth.2012.05.029
+Hernandez-Pavon, J.C., Veniero, D., Bergmann, T.O., Belardinelli, P., Bortoletto, M., Casarotto, S.,
+Casula, E.P., Farzan, F., Fecchio, M., Julkunen, P., Kallioniemi, E., Lioumis, P., Metsomaa,
+J., Miniussi, C., Mutanen, T.P., Rocchi, L., Rogasch, N.C., Shafi, M.M., Siebner, H.R., Thut,
+G., Zrenner, C., Ziemann, U., Ilmoniemi, R.J., 2023. TMS combined with EEG:
+Recommendations and open issues for data collection and analysis. Brain Stimulation 16,
+567–593. https://doi.org/10.1016/j.brs.2023.02.009
+Hyvärinen, A., Oja, E., 2000. Independent component analysis: algorithms and applications. Neural
+Networks 13, 411–430. https://doi.org/10.1016/S0893-6080(00)00026-5
+Ilmoniemi, R.J., Hernandez-Pavon, J.C., Makela, N.N., Metsomaa, J., Mutanen, T.P., Stenroos, M.,
+Sarvas, J., 2015. Dealing with artifacts in TMS-evoked EEG, in: 2015 37th Annual
+International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC).
+Presented at the 2015 37th Annual International Conference of the IEEE Engineering in
+Medicine and Biology Society (EMBC), IEEE, Milan, pp. 230–233.
+https://doi.org/10.1109/EMBC.2015.7318342
+Ilmoniemi, R.J., Virtanen, J., Ruohonen, J., Karhu, J., Aronen, H.J., Näätänen, R., Katila, T., 1997.
+Neuronal responses to magnetic stimulation reveal cortical reactivity and connectivity.
+Neuroreport 8, 3537–3540. https://doi.org/10.1097/00001756-199711100-00024
+Julkunen, P., Pääkkönen, A., Hukkanen, T., Könönen, M., Tiihonen, P., Vanhatalo, S., Karhu, J.,
+2008. Efficient reduction of stimulus artefact in TMS-EEG by epithelial short-circuiting by
+mini-punctures. Clin Neurophysiol 119, 475–481.
+https://doi.org/10.1016/j.clinph.2007.09.139
+Mutanen, T., Mäki, H., Ilmoniemi, R.J., 2013. The effect of stimulus parameters on TMS-EEG
+muscle artifacts. Brain Stimul 6, 371–376. https://doi.org/10.1016/j.brs.2012.07.005
+Mutanen, T.P., Biabani, M., Sarvas, J., Ilmoniemi, R.J., Rogasch, N.C., 2020. Source-based artifactrejection techniques available in TESA, an open-source TMS-EEG toolbox. Brain Stimul 13,
+1349–1351. https://doi.org/10.1016/j.brs.2020.06.079
+Nikouline, V., Ruohonen, J., Ilmoniemi, R.J., 1999. The role of the coil click in TMS assessed with
+simultaneous EEG. Clin Neurophysiol 110, 1325–1328. https://doi.org/10.1016/s13882457(99)00070-x
+Oostenveld, R., Fries, P., Maris, E., Schoffelen, J.-M., 2011. FieldTrip: Open source software for
+advanced analysis of MEG, EEG, and invasive electrophysiological data. Comput Intell
+Neurosci 2011, 156869. https://doi.org/10.1155/2011/156869
+Pijnenburg, R., Scholtens, L.H., Ardesch, D.J., de Lange, S.C., Wei, Y., van den Heuvel, M.P., 2021.
+Myelo- and cytoarchitectonic microstructural and functional human cortical atlases
+reconstructed in common MRI space. NeuroImage 239, 118274.
+https://doi.org/10.1016/j.neuroimage.2021.118274
+Rocchi, L., Di Santo, A., Brown, K., Ibáñez, J., Casula, E., Rawji, V., Di Lazzaro, V., Koch, G.,
+Rothwell, J., 2021. Disentangling EEG responses to TMS due to cortical and peripheral
+activations. Brain Stimul 14, 4–18. https://doi.org/10.1016/j.brs.2020.10.011
+
+24
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Rogasch, N.C., Biabani, M., Mutanen, T.P., 2022. Designing and comparing cleaning pipelines for
+TMS-EEG data: A theoretical overview and practical example. J Neurosci Methods 371,
+109494. https://doi.org/10.1016/j.jneumeth.2022.109494
+Rogasch, N.C., Fitzgerald, P.B., 2013. Assessing cortical network properties using TMS-EEG. Hum
+Brain Mapp 34, 1652–1669. https://doi.org/10.1002/hbm.22016
+Rogasch, N.C., Sullivan, C., Thomson, R.H., Rose, N.S., Bailey, N.W., Fitzgerald, P.B., Farzan, F.,
+Hernandez-Pavon, J.C., 2017. Analysing concurrent transcranial magnetic stimulation and
+electroencephalographic data: A review and introduction to the open-source TESA software.
+Neuroimage 147, 934–951. https://doi.org/10.1016/j.neuroimage.2016.10.031
+Rogasch, N.C., Thomson, R.H., Daskalakis, Z.J., Fitzgerald, P.B., 2013. Short-latency artifacts
+associated with concurrent TMS-EEG. Brain Stimul 6, 868–876.
+https://doi.org/10.1016/j.brs.2013.04.004
+Rogasch, N.C., Thomson, R.H., Farzan, F., Fitzgibbon, B.M., Bailey, N.W., Hernandez-Pavon, J.C.,
+Daskalakis, Z.J., Fitzgerald, P.B., 2014. Removing artefacts from TMS-EEG recordings using
+independent component analysis: importance for assessing prefrontal and motor cortex
+network properties. Neuroimage 101, 425–439.
+https://doi.org/10.1016/j.neuroimage.2014.07.037
+Rossini, P.M., Barker, A.T., Berardelli, A., Caramia, M.D., Caruso, G., Cracco, R.Q., Dimitrijević,
+M.R., Hallett, M., Katayama, Y., Lücking, C.H., Maertens de Noordhout, A.L., Marsden,
+C.D., Murray, N.M.F., Rothwell, J.C., Swash, M., Tomberg, C., 1994. Non-invasive electrical
+and magnetic stimulation of the brain, spinal cord and roots: basic principles and procedures
+for routine clinical application. Report of an IFCN committee. Electroencephalography and
+Clinical Neurophysiology 91, 79–92. https://doi.org/10.1016/0013-4694(94)90029-9
+Rothwell, J.C., Thompson, P.D., Day, B.L., Boyd, S., Marsden, C.D., 1991. Stimulation of the human
+motor cortex through the scalp. Exp Physiol 76, 159–200.
+https://doi.org/10.1113/expphysiol.1991.sp003485
+Russo, S., Sarasso, S., Puglisi, G.E., Dal Palù, D., Pigorini, A., Casarotto, S., D’Ambrosio, S., Astolfi,
+A., Massimini, M., Rosanova, M., Fecchio, M., 2022. TAAC - TMS Adaptable Auditory
+Control: A universal tool to mask TMS clicks. Journal of Neuroscience Methods 370,
+109491. https://doi.org/10.1016/j.jneumeth.2022.109491
+Sekiguchi, H., Takeuchi, S., Kadota, H., Kohno, Y., Nakajima, Y., 2011. TMS-induced artifacts on
+EEG can be reduced by rearrangement of the electrode’s lead wire before recording. Clin
+Neurophysiol 122, 984–990. https://doi.org/10.1016/j.clinph.2010.09.004
+Siebner, H.R., Bergmann, T.O., Bestmann, S., Massimini, M., Johansen-Berg, H., Mochizuki, H.,
+Bohning, D.E., Boorman, E.D., Groppa, S., Miniussi, C., Pascual-Leone, A., Huber, R.,
+Taylor, P.C.J., Ilmoniemi, R.J., De Gennaro, L., Strafella, A.P., Kähkönen, S., Klöppel, S.,
+Frisoni, G.B., George, M.S., Hallett, M., Brandt, S.A., Rushworth, M.F., Ziemann, U.,
+Rothwell, J.C., Ward, N., Cohen, L.G., Baudewig, J., Paus, T., Ugawa, Y., Rossini, P.M.,
+2009. Consensus paper: Combining transcranial stimulation with neuroimaging. Brain
+Stimulation 2, 58–80. https://doi.org/10.1016/j.brs.2008.11.002
+Stokes, M.G., Chambers, C.D., Gould, I.C., Henderson, T.R., Janko, N.E., Allen, N.B., Mattingley,
+J.B., 2005. Simple metric for scaling motor threshold based on scalp-cortex distance:
+application to studies using transcranial magnetic stimulation. J Neurophysiol 94, 4520–4527.
+https://doi.org/10.1152/jn.00067.2005
+Tanner, D., Morgan-Short, K., Luck, S.J., 2015. How inappropriate high-pass filters can produce
+artifactual effects and incorrect conclusions in ERP studies of language and cognition.
+Psychophysiology 52, 997–1009. https://doi.org/10.1111/psyp.12437
+Tanner, D., Norton, J.J.S., Morgan-Short, K., Luck, S.J., 2016. On high-pass filter artifacts (they’re
+real) and baseline correction (it’s a good idea) in ERP/ERMF analysis. J Neurosci Methods
+266, 166–170. https://doi.org/10.1016/j.jneumeth.2016.01.002
+Tremblay, S., Rogasch, N.C., Premoli, I., Blumberger, D.M., Casarotto, S., Chen, R., Di Lazzaro, V.,
+Farzan, F., Ferrarelli, F., Fitzgerald, P.B., Hui, J., Ilmoniemi, R.J., Kimiskidis, V.K.,
+Kugiumtzis, D., Lioumis, P., Pascual-Leone, A., Pellicciari, M.C., Rajji, T., Thut, G.,
+Zomorrodi, R., Ziemann, U., Daskalakis, Z.J., 2019. Clinical utility and prospective of TMSEEG. Clin Neurophysiol 130, 802–844. https://doi.org/10.1016/j.clinph.2019.01.001
+
+25
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Veniero, D., Bortoletto, M., Miniussi, C., 2009. TMS-EEG co-registration: on TMS-induced artifact.
+Clin Neurophysiol 120, 1392–1399. https://doi.org/10.1016/j.clinph.2009.04.023
+Virtanen, J., Ruohonen, J., Näätänen, R., Ilmoniemi, R.J., 1999. Instrumentation for the measurement
+of electric brain responses to transcranial magnetic stimulation. Med Biol Eng Comput 37,
+322–326. https://doi.org/10.1007/BF02513307
+Widmann, A., Schröger, E., Maess, B., 2015. Digital filter design for electrophysiological data – a
+practical approach. Journal of Neuroscience Methods 250, 34–46.
+https://doi.org/10.1016/j.jneumeth.2014.08.002
+Ziemann, U., Bai, Y., Baumer, F.M., Beck, M.M., Belardinelli, P., Belvisi, D., Bender, S., Bergmann,
+T.O., Bortoletto, M., Casarotto, S., Casula, E., Chaves, A.R., de Andrade, D.C., Conte, A.,
+Daskalakis, Z.J., Farzan, F., Ferrarelli, F., Fitzgerald, P.B., Gordon, P.C., Grefkes, C.,
+Harquel, S., Hernandez-Pavon, J.C., Hill, A.T., Hoy, K.E., Hummel, F.C., Julkunen, P.,
+Kallioniemi, E., Keller, C.J., Kimiskidis, V.K., Kirkovski, M., Koch, G., Leodori, G.,
+Lioumis, P., Määttä, S., Maidan, I., Massimini, M., Mengel, A., Metsomaa, J., Miniussi, C.,
+Mutanen, T.P., Noda, Y., Ozdemir, R.A., Raffin, E., Rocchi, L., Rogasch, N.C., Rosanova,
+M., Santarnecchi, E., Sarasso, S., Schabrun, S.M., Shafi, M.M., Siebner, H.R., Tolner, E.A.,
+Tomasevic, L., Tremblay, S., Tscherpel, C., Veniero, D., Versace, V., Voineskos, D., Vucic,
+S., Zangen, A., Zrenner, C., Ilmoniemi, R.J., 2026. Clinical utility and prospective of TMS–
+EEG: Updated review from an international expert group. Clinical Neurophysiology 2111487.
+https://doi.org/10.1016/j.clinph.2025.2111487
+
+26
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Supplementary materials
+Characterising and Minimising Step and Filtering Artifacts in TMS-EEG Recordings
+Marissa M. Holden1,2, Mitchell R. Goldsworthy1,2,3, Wei-Yeh Liao1, Scott R. Clark4, Christopher C.
+Cline
+
+,
+
+, Corey J. Keller
+
+,
+
+,7
+
+, Julio C. Hernandez-Pavon8, Nigel C. Rogasch1,2,9
+
+1. School of Pharmacy and Biomedical Sciences, College of Health, Adelaide University
+2. Hopwood Centre for Neurobiology, Lifelong Health Theme, South Australian Health and
+Medical Research Institute
+3. School of Psychology, College of Education, Behavioural and Social Sciences, Adelaide
+University
+4. School of Medicine, College of Health, Adelaide University
+5. Department of Psychiatry and Behavioural Sciences, Stanford University, Stanford, CA, USA
+6. Wu Tsai Neurosciences Institute, Stanford University, Stanford, CA, USA
+7. Veterans Affairs Palo Alto Health Care System, Palo Alto, CA, USA
+8. Department of Psychological Sciences, Kansas State University, Manhattan, KS, USA
+9. School of Psychological Sciences and Turner Institute for Brain and Mental Health, Monash
+University, Australia.
+
+Correspondence
+Nigel C. Rogasch
+Email: Nigel.rogasch@adelaide.edu.au
+
+27
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Supplementary methods
+
+Minimal processing pipeline 1 (for figure 1): Data were epoched around the TMS pulse (-1000 to
+1000 ms), and baseline corrected (-500 to -10 ms). The TMS pulse artifact was removed and
+interpolated (-2 to 10 ms; cubic interpolation), bad channels and trials were manually identified and
+removed, and the data were referenced to the average of all channels.
+
+Minimal processing pipeline 2 (for figure 3): First, we quantified the percentage of data points that
+had ‘clipped’ (i.e., moved outside the amplifier range) by counting the number of samples > |3.276|
+mV (i.e., the input range of the amplifier) and dividing by the total number of samples across
+channels. Next, we removed all the data beyond the first 30 pulses to minimise channels impacted by
+clipping, which increased across the duration of the recording in the DC-coupling condition
+(supplementary figure S1). We then removed and interpolated data around the TMS pulse in the
+continuous recordings (-2 to 10 ms; cubic interpolation) and resampled the data (1000 Hz). Channels
+showing flat lines longer than 4 s were removed, data were epoched around the TMS pulse (-1000 to
+1000 ms), baseline corrected (-500 to -10 ms), and epochs with values >3 SD either across a single
+channel or across all channels were removed. Any missing channels were then replaced using
+spherical interpolation and the data were referenced to the average of all channels. Next, interpolated
+data and channels were removed prior to FastICA and independent components representing TMSevoked muscle activity, blinks or eye-movement were automatically detected and removed using the
+default values of the pop_tesa_compselect.m function. Finally, removed data and channels were
+interpolated.
+
+28
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Supplementary figure S1: Impact of different notch filters on TEPs. Both TEPs used robust
+detrending and a modified high-pass Butterworth filter (1 Hz, fourth order) with autoregressive
+extrapolation. The blue line shows data following a standard band-stop (i.e., notch) Butterworth filter
+(48-52 Hz, second order). A clear ringing artifact is evident before the pulse when filtering at a
+frequency of ~50 Hz. The red line show data following a modified band-stop Butterworth filter using
+autoregressive extrapolation (48-52 Hz, fourth order). The ringing artifact was prevented using the
+modified filter.
+
+29
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Supplementary figure S2: Time course of channels clipping across experimental sessions. Each
+panel shows a channel-by-time plot with white indicating the channel was in range, whereas red
+indicates the channel was clipping (e.g., >|3.676| mV). Individual participants are shown across rows
+whereas different conditions are shown down columns. Clipping is evident in conditions using DCcoupled amplifier settings and generally increases across the duration of the experiment. The
+percentage of samples lost to clipping tended to be larger following monophasic pulse shapes
+compared to biphasic pulses.
+
+30
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Supplementary figure S3: Time course of channels clipping across experimental sessions using
+different amplifier ranges. Each panel shows a channel-by-time plot with white indicating the
+channel was in range, whereas red indicates the channel was clipping (e.g., >|3.676| mV for low
+range; >|16.38| mV for high range). Individual participants are shown across rows whereas different
+conditions are shown down columns. Clipping is evident in conditions using DC-coupled amplifier
+settings with low amplifier range settings and generally increases across the duration of the
+experiment, but is decreased with high amplifier range settings.
+
+31
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.05.13.725016; this version posted May 18, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made
+available under a CC-BY 4.0 International license.
+
+Supplementary figure S4: The impact of different cleaning combinations on recovering the
+ground truth TEP in the presence of decay/discharge artifacts. A) Root mean square error
+(RMSE) between the ground truth TEP and cleaned simulated TEPs embedded in real EEG data with
+no step artifact and a decay/discharge artifact for 2 different combinations of detrending and filtering.
+Bars represent the group mean and error bars the standard error of the mean (n=15). Cleaning
+combinations are ranked from highest to lowest RMSE. B) RMSE between the ground truth TEP and
+cleaned simulated TEPs embedded in real EEG data with 10 µV step artifact and decay/discharge
+artiact for 2 different combinations of detrending and filtering. C) Comparison of simulated TEPs
+embedded in real EEG data with no step artifact and decay/discharge artifact including raw data, data
+following Butterworth filtering, and the optimal cleaning combination (detrend + modified filter) vs.
+ground truth TEP. Solid lines represent group mean and shaded bars represent standard error. The
+grey bar indicates the time period in which RMSE was calculated. D) Comparison of simulated TEPs
+embedded in real EEG data with 10 µV step artifact and decay/discharge artifact including raw data,
+data following Butterworth filtering, and the optimal cleaning combination (detrend + modified filter)
+vs. ground truth TEP.
+
+32
+
+

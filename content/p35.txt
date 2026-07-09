@@ -1,0 +1,3396 @@
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+1
+
+Theta gates and routes information in the frontal cortex
+
+2
+3
+
+Matthew B. Broschard1, Scott L. Brincat1, Roman F. Loonis1,2, & Earl K. Miller1
+
+4
+5
+
+Author Affiliations:
+
+6
+
+1
+
+7
+
+Cambridge, MA, USA, 02139
+
+8
+
+2
+
+The Picower Institute for Learning and Memory, Massachusetts Institute of Technology,
+
+Takeda Pharmaceuticals America, Cambridge, MA 02142, USA
+
+9
+10
+
+Correspondence to: Earl K. Miller. Email: ekmiller@mit.edu
+
+11
+
+Conflict of interest: The authors declare no competing financial interests.
+
+12
+
+Acknowledgements: Army Research Office W911NF2410228; Freedom Together Foundation;
+
+13
+
+The Picower Institute for Learning and Memory; Office of Naval Research MURI N00014-23-1-
+
+14
+
+2768
+
+15
+
+Author Contributions: Conceptualization: MBB, SLB, RFL, EKM. Methodology: MBB, SLB,
+
+16
+
+RFL, EKM. Formal analysis: MBB. Investigation: RFL. Data Curation: RFL, SLB. Writing-
+
+17
+
+Original Draft: MBB, SLB, EKM. Writing- Review & Editing: MBB, RFL, SLB, EKM. Visualization:
+
+18
+
+MBB. Supervision: EKM. Project administration: EKM, MBB. Funding acquisition: EKM
+
+19
+20
+
+Keywords: prefrontal cortex; frontal eye fields; theta oscillations; decision-making; feedback
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+21
+
+ABSTRACT
+
+22
+
+Theta (4–10 Hz) oscillations seem well-suited for coordinating neural activity. Many studies
+
+23
+
+have focused on theta’s role in long-range coordination across brain regions (e.g., connectivity
+
+24
+
+between the prefrontal cortex and the hippocampus). It remains unclear how theta coordinates
+
+25
+
+neural activity more locally within prefrontal subareas. We examined neural activity in three
+
+26
+
+frontal areas (i.e., dorsolateral prefrontal cortex (dlPFC), ventrolateral prefrontal cortex (vlPFC),
+
+27
+
+and frontal eye fields (FEF)) as non-human primates categorized dot patterns. We found that
+
+28
+
+theta flexibly coordinated spiking activity and higher-frequency oscillations within and between
+
+29
+
+frontal areas. First, theta phase in all areas was coupled to spiking information in the FEF and
+
+30
+
+seemed to gate information that was behaviorally relevant. Second, theta influences were
+
+31
+
+routed in opposite directions depending on feedback. Theta flowed in a posterior direction to the
+
+32
+
+FEF during choices and after correct outcomes. Theta influences reversed directionality and
+
+33
+
+flowed in an anterior direction after incorrect outcomes. Third, theta organized nested cross-
+
+34
+
+frequency, phase-amplitude interactions. Theta was coupled to beta (15-30Hz) oscillations, both
+
+35
+
+within and between areas. Beta, in turn, was coupled to gamma (40-90Hz) oscillations, but
+
+36
+
+mainly locally. Together, our results position theta as a critical mechanism that flexibly and
+
+37
+
+dynamically coordinates neural activity within and across the frontal cortex.
+
+38
+39
+
+HIGHLIGHTS
+
+40
+
+-Neural activity was recorded in three frontal areas as non-human primates categorized dot
+
+41
+
+patterns.
+
+42
+
+-Theta (4-10Hz) oscillations gated relevant information in spiking.
+
+43
+
+-Theta influences were routed in opposite directions depending on feedback.
+
+44
+
+-Theta organized nested cross-frequency interactions with beta (15-30Hz) and gamma (40-
+
+45
+
+90Hz) oscillations.
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+46
+
+47
+
+Graphical Abstract
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+48
+
+INTRODUCTION
+
+49
+
+Cognition is not static. The brain must dynamically shift how information is coordinated and
+
+50
+
+updated within and between regions. This flexibility seems to be achieved, in part, by neural
+
+51
+
+oscillations (Buzsáki & Draguhn, 2004; Engel, Fries, & Singer, 2001; Fries, 2015). Oscillations
+
+52
+
+organize neural activity within local circuits (Lei et al., 2026; Cardin et al., 2009; Lundqvist et al.,
+
+53
+
+2016) and across larger distances (Gregoriou, Gotts, Zhou, & Desimone, 2009; Buschman &
+
+54
+
+Miller, 2007; von Stein & Sarnthein, 2000).
+
+55
+56
+
+Theta (4–10 Hz) oscillations, in particular, seem to be well suited for coordinating neural activity.
+
+57
+
+Theta oscillations synchronize regions across long-range distances (Siapas et al., 2005; Jones
+
+58
+
+& Wilson, 2005; Fujisawa & Buzsáki 2011; Liebe et al., 2012). Theta organizes into large-scale
+
+59
+
+traveling waves across the cortex (Zhang, Watrous, Patel, & Jacobs, 2018; Patel et al., 2012).
+
+60
+
+And theta routes information selectively through distinct pathways (Colgin et al., 2009; Colgin,
+
+61
+
+2013; Hasselmo et al., 2002; Helfrich et al., 2018; Fiebelkorn & Kastner, 2019). Within the
+
+62
+
+prefrontal cortex, theta oscillations tend to increase when cognitive control is needed
+
+63
+
+(Womelsdorf, Vinck, Leung, & Everling, 2010; Han et al., 2026). Theta is observed during
+
+64
+
+surprising events, such as negative feedback (Cavanagh, Frank, Klein, & Allen, 2010; Trujillo &
+
+65
+
+Allen, 2007; van de Vijver et al., 2011; Andreou et al., 2017; Brincat & Miller, 2015; Loonis et al.,
+
+66
+
+2017) and stimulus conflict (Muralidharan et al., 2023; Choi et al., 2024). Furthermore, theta
+
+67
+
+synchrony peaks around “decision-points” (Cavanagh & Frank, 2014) to integrate information
+
+68
+
+from multiple sources (e.g., task rules, stimulus-reward associations, and reward expectations;
+
+69
+
+Womelsdorf, Johnston, Vinck, & Everling, 2010; Benchenane et al., 2010; van Wingerden et al.,
+
+70
+
+2010).
+
+71
+72
+
+The majority of these studies have focused on a single role for theta in isolation. Here, we
+
+73
+
+address whether theta can dynamically shift its role according to changing task demands, thus
+
+74
+
+supporting the flexibility associated with cognitive function. Additionally, the coordinating role of
+
+75
+
+theta in the prefrontal cortex has largely focused on long-range connectivity (e.g., with
+
+76
+
+hippocampus or visual cortex). It is generally underexplored how theta coordinates processing
+
+77
+
+within the frontal cortex. Thus, we examined neural activity from multiple frontal areas,
+
+78
+
+simultaneously.
+
+79
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+80
+
+We examined the neural dynamics as non-human primates (NHPs) categorized dot patterns.
+
+81
+
+Neural activity was recorded in three frontal areas: the dorsolateral prefrontal cortex (dlPFC),
+
+82
+
+the ventrolateral prefrontal cortex (vlPFC), and the frontal eye fields (FEF). We found that the
+
+83
+
+FEF emerged as a critical hub during decision-making and feedback processing. Theta phase,
+
+84
+
+in all areas, was selectively coupled to FEF spiking information. The type of information coupled
+
+85
+
+to theta shifted across the trial and depended on what was immediately relevant. This was
+
+86
+
+accompanied with a change in the directionality of theta causality. Theta influences flowed in the
+
+87
+
+posterior direction toward the FEF during choices and after correct outcomes. By contrast, theta
+
+88
+
+influences flowed in the anterior direction away from the FEF after incorrect outcomes. Phase-
+
+89
+
+amplitude coupling revealed that theta phase organized higher-frequency oscillations. Theta
+
+90
+
+was coupled to beta oscillations, within and across areas. Beta, in turn, was coupled to gamma
+
+91
+
+oscillation, more locally.
+
+92
+93
+
+RESULTS
+
+94
+
+Non-human primates (NHPs) learned to categorize dot patterns (Fig. 1A; Loonis et al., 2017;
+
+95
+
+Posner & Keele, 1968). Two new dot patterns were generated before each session and
+
+96
+
+functioned as the category prototypes (see Methods). The NHPs never saw these prototypes.
+
+97
+
+Instead, they were shown category exemplars generated by randomly distorting the dot
+
+98
+
+positions of the prototypes. During each trial, a category exemplar appeared at the center of the
+
+99
+
+screen (Fig. 1B; sample epoch). After a memory delay (delay epoch), two new exemplars were
+
+100
+
+shown on the left and right sides of the screen (choice epoch). One of the choice exemplars
+
+101
+
+came from the same category as the sample exemplar presented earlier (i.e., its category
+
+102
+
+“match”). The other exemplar came from the other category (category “non-match”). The NHPs
+
+103
+
+were trained to fixate on the “match” exemplar to receive a reward (correct choice). Visual
+
+104
+
+feedback was given simultaneously with the reward (outcome). After correct choices, the color
+
+105
+
+of the chosen exemplar turned from white to green. After incorrect choices, the color of the
+
+106
+
+chosen exemplar turned red, and a “timeout” was given before the start of the next trial.
+
+107
+108
+
+Local field potentials (LFPs) and spiking activity were recorded from three electrode arrays
+
+109
+
+positioned in the frontal cortex (Fig 1C). Two arrays were centered in more anterior locations in
+
+110
+
+the dorsolateral prefrontal cortex (dlPFC) and the ventrolateral prefrontal cortex (vlPFC). The
+
+111
+
+third array was centered in a more posterior location in the frontal eye fields (FEF). The current
+
+112
+
+analysis only included sessions in which the NHPs successfully learned the categories (see
+
+113
+
+Methods; 66 out of 76 total sessions; average number of trials: 777.48 ± 219.21 SD; average
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+114
+
+accuracy: 78.10% ± 5.73 SD). For this analysis, we examined trials after the categories were
+
+115
+
+learned (see Methods) and focused on neural activity during the choice and outcome trial
+
+116
+
+epochs.
+
+117
+118
+
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+
+Figure 1. NHPs learned to categorize dot patterns. A, Two “prototype” dot patterns were
+generated before each session. Category exemplars were generated by distorting the dot
+positions of these prototypes. B, Trial procedure. After fixation, a category exemplar was
+presented at the center of the screen (sample). After a memory delay (delay), two new
+exemplars appeared on the left and right sides of the screen (choice). The NHPs were trained to
+fixate on the exemplar that came from the same category as the sample (i.e., category “match”).
+After correct choices, the chosen exemplar turned from white to green, and a juice reward was
+delivered (correct outcome). After incorrect choices (i.e., the NHPs fixated on the other,
+category “non-match”), the chosen exemplar turned red, and a timeout was given without juice
+(i.e., incorrect outcome). C, The approximate location of the electrode arrays centered in the
+dorsolateral prefrontal cortex (dlPFC), ventrolateral prefrontal cortex (vlPFC), and the frontal eye
+fields (FEF).
+
+133
+134
+
+Spiking information and LFP power reflected choices and outcomes
+
+135
+
+Spiking activity in all areas carried information about task variables. We trained Support Vector
+
+136
+
+Machine (SVM) classifiers to decode information about three task variables: the sample’s
+
+137
+
+category membership (category information; category ‘A’ vs. category ‘B’), the direction of the
+
+138
+
+correct choice exemplar (choice information; left vs. right), and the valence of the outcome
+
+139
+
+(outcome information; correct vs. incorrect). For each variable, classifier accuracy increased
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+140
+
+above chance level (50%) after information about that variable became available within the trial
+
+141
+
+(Fig. 2A & Supplemental Fig. 1). Category information increased after the sample exemplar was
+
+142
+
+shown (Supplemental Fig. 1), choice information increased after the choice exemplars were
+
+143
+
+shown (Fig. 2A), and outcome information increased after feedback was given (Fig. 2A).
+
+144
+
+Information about each variable remained above chance throughout the remainder of the trial.
+
+145
+
+Thus, spiking activity carried information about multiple task variables simultaneously during the
+
+146
+
+choice and outcome epochs. These patterns were observed in all three areas and were
+
+147
+
+consistent for each NHP subject (Supplemental Fig. 1). However, spiking information tended to
+
+148
+
+be stronger in the vlPFC and the FEF than the dlPFC, for all variables (Fig. 2A).
+
+149
+150
+
+LFP power also reflected choices and outcomes. We examined LFP power, averaged in the
+
+151
+
+theta (4–10 Hz), beta (15–30 Hz), and gamma (40–90 Hz) frequency bands (Figs. 2B&C &
+
+152
+
+Supplemental Fig. 2). During the sample and delay epochs, LFP power showed relatively
+
+153
+
+modest changes and did not differ between correct and incorrect trials (Supplemental Fig. 2). By
+
+154
+
+contrast, LFP power was more strongly modulated during the choice and outcome epochs, and
+
+155
+
+power differed between correct and incorrect trials. During choices, theta and gamma power
+
+156
+
+increased, and beta power decreased, in all areas (Fig. 2B, left). Theta power was stronger
+
+157
+
+during correct trials than incorrect trials in the vlPFC and the FEF (Fig. 2C & Supplemental Fig.
+
+158
+
+2A; vlPFC: Cohen’s d = 0.53; FEF: d = 0.50) but not the dlPFC (Fig. 2C & Supplemental Fig.
+
+159
+
+2A; Cohen’s d = 0.01), suggesting that theta power in the vlPFC/FEF was important for
+
+160
+
+successful behavior. During the outcome epoch, theta and beta power increased, and gamma
+
+161
+
+power decreased (Fig. 2B, right). For all areas, theta and gamma power were stronger after
+
+162
+
+incorrect outcomes than correct outcomes (Fig. 2C & Supplemental Fig. 2; Theta. dlPFC:
+
+163
+
+Cohen’s d = -0.27; vlPFC: d = -0.26; FEF: d = -0.45. Gamma: dlPFC: d = -2.61; vlPFC: d = -
+
+164
+
+0.56; FEF: d = -1.54). By contrast, beta power was stronger after correct outcomes than
+
+165
+
+incorrect outcomes (Fig. 2C & Supplemental Fig. 2; dlPFC: d = 1.62; vlPFC: d = 0.48; FEF: d =
+
+166
+
+0.74).
+
+167
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+
+Figure 2. Spiking information and LFP power reflected choices and outcomes. A, Support
+Vector Machine (SVM) classifiers were trained with spiking activity from each area to decode
+the following task information: category (category ‘A’ vs. category ‘B’; red), choice (‘left’ vs.
+‘right’ behavioral response; green), and trial outcome (‘correct’ vs. ‘incorrect’; blue). Colored
+bars above each plot indicate timepoints in which classifier accuracy was significantly above
+chance level (50%; permutation test, p < .05). All error bars indicate S.E.M. B, Heatmaps of
+average LFP power around choices (left) and outcomes (right) during correct trials. Horizontal
+lines indicate the theta, beta, and gamma frequency bands. C, Heatmaps of difference in
+average LFP power (correct trials – incorrect trials) around choices (left) and outcomes (right).
+The color indicates whether power was stronger during correct trials (green) or incorrect trials
+(red). All error bars indicate S.E.M.
+
+183
+
+Above, we found that spiking activity and LFP power reflected choices and their outcomes.
+
+184
+
+Next, we tested whether information carried by spiking varied with the phase of the ongoing
+
+185
+
+LFP. For each LFP frequency, we divided LFP phase (averaged across all electrodes in an
+
+Spiking information varied with theta phase
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+186
+
+array) into 45-degree bins. Then, SVM classifiers were trained with spiking activity from each
+
+187
+
+phase bin, and phase-locking values quantified whether classifier accuracies varied across
+
+188
+
+phase bins. We examined within-area comparisons, where the spiking activity and the LFP
+
+189
+
+phase were computed from the same array. We also examined between-area comparisons,
+
+190
+
+where spiking activity and LFP phase were computed from different arrays.
+
+191
+
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+
+Figure 3. FEF spiking information was coupled to theta phase during choices and outcomes AB, LFP phase was divided into bins, and SVM classifiers were trained to decode task
+information using spiking activity from each phase bin. Phase-locking values quantified whether
+spiking information varied with LFP phase. Colored bars above each plot indicate LFP
+frequencies that were significantly coupled to spiking information (permutation test p < .05).
+Supplemental Fig. 3A-C shows the results during the sample and delay epochs, as well as for
+all within-area and between-area comparisons. A, Coupling between spiking information and
+LFP phase for all within-area comparisons, where spiking activity and LFP phase were
+computed from the same array. B, Coupling between FEF spiking activity and distant LFP
+phase in the dlPFC and the vlPFC. C-D, Spiking information plotted across theta phase bins for
+the results in (A-B). * in the top left quadrant of each plot (and its color) indicates the type of
+information that was significantly coupled to theta phase during that trial epoch. C, Within-area
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+205
+206
+207
+208
+209
+210
+
+spiking information across theta phase bins (same comparisons as panel A). D, Between-area
+FEF spiking information across theta phase bins (same comparisons as panel B). E-F, Overall
+spike rates, (rather than spiking information), across theta phase bins. E, Within-area spike
+rates across theta phase bins (same comparisons as panels A and C). F, Between-area FEF
+spike rates across theta phase bins (same comparisons as panels B and D). All error bars
+indicate S.E.M. θ, β, γ refer to theta, beta, and gamma frequency bands, respectively.
+
+211
+212
+
+Category, choice, and outcome information in spiking were coupled to LFP theta phase, but at
+
+213
+
+different times during the trial. To preview the results, these effects only occurred with FEF
+
+214
+
+spiking activity during the choice and outcome epochs, but with both local (within-area) and
+
+215
+
+distant (between-area) LFP theta phase. During the choice epoch, choice information in FEF
+
+216
+
+spiking was coupled to local FEF theta phase (Fig. 3A, left; Cohen’s d = 0.98) and distant theta
+
+217
+
+phase in the dlPFC and vlPFC (Fig. 3B, left; dlPFC theta: d = 0.87; vlPFC theta: d = 0.90). FEF
+
+218
+
+choice information was strongest at the falling phases of theta and weakest at the rising phases
+
+219
+
+of theta, both for local FEF theta phase (Fig. 3C, left; preferred phase = 80.67 degrees ± 9.5
+
+220
+
+SEM) and distant dlPFC/vlPFC theta phase (Fig. 3D, left; preferred dlPFC phase = 104.40
+
+221
+
+degrees ± 10.3 SEM; preferred vlPFC phase = 78.59 degrees ± 11.4 SEM). These patterns
+
+222
+
+were consistent for both NHPs (Supplemental Figs. 3D&E). Also during the choice epoch,
+
+223
+
+category information in FEF spiking was coupled to local FEF theta phase (Fig. 3A, left; Cohen’s
+
+224
+
+d = 0.33). However, this was only observed for one of the NHPs (Supplemental Fig. 3D). During
+
+225
+
+the outcome epoch, FEF choice information and category information were no longer coupled to
+
+226
+
+theta phase (FEF choice information: Cohen’s d = 0.07; FEF category information: d = -0.02),
+
+227
+
+even though average spiking activity still carried information about them (Fig. 2A). Instead,
+
+228
+
+outcome information in FEF spiking was coupled to FEF theta phase (Fig. 3A, right; Cohen’s d =
+
+229
+
+0.59) and distant dlPFC/vlPFC theta phase (Fig. 3B, right; dlPFC theta: d = 0.72; vlPFC theta: d
+
+230
+
+= 0.58). Like during the choice epoch, FEF outcome information was strongest during the falling
+
+231
+
+phases of theta and weakest during the rising phases of theta, for local FEF theta phase (Fig.
+
+232
+
+3C, right; preferred phase = 99.58 degrees ± 10.7 SEM) and distant dlPFC/vlPFC theta phase
+
+233
+
+(Fig. 3D, right; preferred dlPFC phase = 103.80 degrees ± 11.2 SEM; preferred vlPFC theta
+
+234
+
+phase = 130.52 degrees ± 10.9 SEM). These patterns were consistent for both NHPs
+
+235
+
+(Supplemental Figs. 3D&E). All other comparisons were not significant (Supplemental Figs. 3A-
+
+236
+
+C).
+
+237
+238
+
+The optimal phase of decoding spiking information was offset from the preferred phase of
+
+239
+
+overall spike-field coupling. Above, we found that FEF spiking information was strongest during
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+240
+
+the falling phases of theta. We examined whether this was also true for overall spikes rates by
+
+241
+
+binning spiking activity across theta phases. We found that spike rates were highest during the
+
+242
+
+peak phases of theta. This was consistent for within-area comparisons (Fig. 3E; mean preferred
+
+243
+
+phase = 5.1 degrees ± 13.1 SEM), between-area comparisons (Fig. 3F; Supplemental Fig. 4;
+
+244
+
+mean preferred phase = 2.5 degrees ± 9.2 SEM), and across all trial epochs (Supplemental Fig.
+
+245
+
+4). Thus, overall spike rates tended to peak earlier in phase than spiking information.
+
+246
+247
+
+Theta influences flowed in opposite directions during choices and outcomes
+
+248
+
+The results above indicate that theta phase, in all areas, was coupled to FEF spiking
+
+249
+
+information. The finding that theta coupled specifically to FEF spiking motivated us to look at
+
+250
+
+how theta flowed across the subareas. Thus, we computed Granger causality to examine the
+
+251
+
+directionality of theta influences. For this analysis, and all following analyses, we focused on the
+
+252
+
+choice and outcome epochs, when spiking information was coupled to theta phase (see above).
+
+253
+254
+
+Theta influences flowed in opposite directions during choices and outcomes. During the choice
+
+255
+
+epoch, theta influences flowed in the posterior direction from the dlPFC and the vlPFC to the
+
+256
+
+FEF (Fig. 4A; dlPFC
+
+257
+
+0.41). This was consistent for both NHPs (Supplemental Fig. 5A). Beta and gamma causality
+
+258
+
+did not show directionality at this time (Supplemental Figs. 5B&C). During the outcome epoch,
+
+259
+
+the directionality of theta causality depended on whether the choice was correct or incorrect.
+
+260
+
+After correct choices, theta influences continued to flow posteriorly from the dlPFC and the
+
+261
+
+vlPFC to the FEF (Fig. 4B; dlPFC
+
+262
+
+directionality: d = 0.32). However, after incorrect choices, theta directionality reversed and was
+
+263
+
+stronger from the FEF to the dlPFC and the vlPFC (Fig. 4B; FEF
+
+264
+
+0.56; FEF
+
+265
+
+consistent for both NHPs (Supplemental Fig. 5A). Similar patterns were seen in beta causality:
+
+266
+
+beta influences flowed to the FEF after correct outcomes and away from the FEF after incorrect
+
+267
+
+outcomes (Supplemental Fig. 5B). Influences between the dlPFC and the vlPFC tended to flow
+
+268
+
+from the vlPFC to the dlPFC. This directionality was consistent for all frequency bands and did
+
+269
+
+not change across trial epochs (Supplemental Fig. 5). Finally, to ensure the directionality effects
+
+270
+
+were not influenced by differences in signal-to-noise ratios, we recomputed Granger causality
+
+271
+
+after reversing the time-series (Bastos & Schoffelen, 2016). As expected, the theta effects
+
+272
+
+reversed directionality after reversing the time-series, consistent with true directionality effects
+
+273
+
+(Supplemental Fig. 6).
+
+→ FEF directionality: Cohen’s d = 0.94; vlPFC → FEF directionality: d =
+
+→ FEF directionality: Cohen’s d = 0.49; vlPFC → FEF
+→ dlPFC directionality: d = -
+
+→ vlPFC directionality: d = -0.67; Fig. 4C summarizes these effects). This was
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+274
+
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+
+Figure 4. Theta Granger causality reversed directionality during the choice and outcome
+epochs. A, Average theta Granger causality between the FEF and the dlPFC/vlPFC, plotted
+separately by posterior-direction causality (FEF incoming; dark blue) and anterior-direction
+causality (FEF outgoing; light blue). * indicates timepoints in which causality was significantly
+different between directions (permutation test p < .05). B, Average theta Granger causality for
+the comparisons in A, separated by correct (green) and incorrect (red) trials. * indicates
+timepoints in which correct and incorrect causality was significantly different. C, Top: a summary
+diagram showing the effects in A during the choice epoch. Bottom: a summary diagram showing
+the effects in B during the outcome epoch. The color of the arrow indicates whether Granger
+causality was stronger after correct choices (green) or incorrect choices (red). All error bars
+indicate S.E.M. Supplemental Figure 5 shows the remaining comparisons, as well as average
+Granger causality in the beta and gamma frequency bands.
+
+288
+289
+290
+
+Theta organized nested cross-frequency interactions
+
+291
+
+The results above indicated that theta influences were routed dynamically across the frontal
+
+292
+
+areas. In the final section, we examined phase-amplitude coupling (PAC) to assess whether
+
+293
+
+these theta influences affected higher-frequency oscillatory activity. For each phase-amplitude
+
+294
+
+frequency pair, we computed the Modulation Index (MI), which quantifies the strength of
+
+295
+
+coupling between the phase of the lower frequency and the amplitude of the higher frequency
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+296
+
+(Fig. 5A; Supplemental Fig. 7A). We examined within-area comparisons, where the same area
+
+297
+
+contributed both the phase and amplitude signals. We also examined between-area
+
+298
+
+comparisons, where the phase and amplitude signals were contributed by different arrays.
+
+299
+300
+
+Theta phase was coupled to beta amplitude (theta-beta PAC), and beta phase was coupled to
+
+301
+
+gamma amplitude (beta-gamma PAC). These were the only phase-amplitude frequency bands
+
+302
+
+that reliably changed across trial epochs (Supplemental Fig. 7A). During the choice epoch, the
+
+303
+
+strength of theta-beta PAC increased (Fig. 5B), and the strength of beta-gamma PAC
+
+304
+
+decreased (Fig. 5C). This was consistent for within-area comparisons (Theta-beta PAC. dlPFC:
+
+305
+
+Cohen’s d = 1.35; vlPFC: d = 1.24; FEF: d = 1.93. Beta-gamma PAC. dlPFC: d = 1.92; vlPFC: d
+
+306
+
+= 1.62; FEF: d = 1.91), between-area comparisons (Figs. 5B&C; Theta-beta PAC: mean d =
+
+307
+
+1.54. Beta-gamma PAC: mean d = 2.02), and across NHPs (Supplemental Figs. 7B&C). During
+
+308
+
+the outcome epoch, the strength of theta-beta PAC and beta-gamma PAC depended on
+
+309
+
+whether the choice was correct or incorrect. Theta-beta PAC remained elevated after incorrect
+
+310
+
+choices and decreased after correct choices (Fig. 5B). The difference in theta-beta PAC
+
+311
+
+between correct and incorrect trials was stronger for FEF theta phase - dlPFC/vlPFC beta
+
+312
+
+amplitude PAC than than opposite direction (i.e., dlPFC/vlPFC theta phase - FEF beta
+
+313
+
+amplitude PAC; see Fig. 5D for Cohen’s d effect size). This is suggestive of an anterior
+
+314
+
+directionality of theta phase during incorrect outcomes, similar to the Granger results (Fig. 4B).
+
+315
+
+By contrast, beta-gamma PAC remained low after incorrect choices but increased after correct
+
+316
+
+choices (Fig. 5C). This was consistent for all within-area comparisons and between-area
+
+317
+
+comparisons, with the exception being vlPFC within-area PAC (see Fig. 5D for Cohen’s d effect
+
+318
+
+size). These patterns were consistent across NHPs (Supplemental Figs. 7B&C). In sum, theta-
+
+319
+
+beta PAC was stronger during choices and after incorrect outcomes, whereas beta-gamma PAC
+
+320
+
+was stronger after correct outcomes.
+
+321
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+
+Figure 5. Theta-beta phase-amplitude coupling was anticorrelated with beta-gamma phaseamplitude coupling. A, Example “comodulogram” showing the modulation index (MI; strength of
+phase-amplitude coupling) for each phase-amplitude frequency pair, normalized to the Delay
+epoch. θ, β, γ refer to theta, beta, and gamma frequency bands, respectively. Supplemental Fig.
+7A shows comodulograms for all within-area and between-area comparisons. B-C, Average MI
+for all area-area comparisons, separated by correct and incorrect trials and averaged across
+theta-beta frequency pairs (B) and beta-gamma frequency pairs (C). Area-area comparisons
+were organized according to the area that contributed the phase signal (columns) and the area
+that contributed the amplitude signal (rows). Within-area comparisons were on the diagonal and
+were outlined in gray. * indicate trials epochs in which MI was significantly different for correct
+and incorrect trials (permutation test p < .05). D, Summary of the results in B-C, during the
+outcome epoch. The color of each index indicates the difference in MI after correct and incorrect
+choices. Bolded squares indicate significant differences. The value in each square indicates
+Cohen's d effect size. E, Partial correlations between single-trial theta-beta MI and beta-gamma
+MI. All correlations controlled for theta, beta, and gamma amplitude. * indicates significant
+correlation coefficients (permutation test p < .05). All error bars indicate S.E.M.
+
+339
+340
+341
+
+Theta-beta PAC and beta-gamma PAC were anticorrelated on single trials. We computed partial
+
+342
+
+correlations between theta-beta PAC strength and beta-gamma PAC strength during individual
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+343
+
+trials. We used partial correlations, rather than standard Pearson’s correlations, in order to
+
+344
+
+control for amplitude in the theta, beta, and gamma frequency bands. For all areas, trial epochs,
+
+345
+
+and NHPs, theta-beta PAC was negatively correlated with beta-gamma PAC (Fig. 5E;
+
+346
+
+Supplemental Fig. 7D; mean ρ = -0.23 ± 0.004 SEM). This suggests that theta-beta PAC and
+
+347
+
+beta-gamma PAC reflect opposing phase-amplitude configurations.
+
+348
+349
+
+Finally, we compared the phase-amplitude relationships for theta-beta PAC (Fig. 6A) and beta-
+
+350
+
+gamma PAC (Fig. 6B). For theta-beta PAC, beta amplitude tended to be highest at the falling
+
+351
+
+phases of theta and lowest at the rising phases of theta (Figs. 6A&C). This phase-amplitude
+
+352
+
+relationship was consistent for both within-area comparisons and between-area comparisons.
+
+353
+
+By contrast, for beta-gamma PAC, gamma amplitude tended to be highest at the trough phases
+
+354
+
+of beta and lowest at the peak phases of beta (Figs. 6B&D). This phase-amplitude relationship
+
+355
+
+was only consistent for within-area comparisons, and not between-area comparisons. We
+
+356
+
+quantified the consistency of the phase-amplitude relationship for within-area comparisons and
+
+357
+
+between-area comparisons by calculating the range in amplitude across phase bins (amplitude
+
+358
+
+depth; maximum minus minimum amplitude across phase bins). Figure 6E shows amplitude
+
+359
+
+depth as a ratio between between-area comparisons and within-area comparisons. For all
+
+360
+
+areas, this ratio was smaller for beta-gamma PAC than theta-beta PAC (Fig. 6E), suggesting
+
+361
+
+that beta-gamma PAC was more local than theta-beta PAC. These patterns were consistent
+
+362
+
+across trial epochs and between NHPs (Supplemental Fig. 8).
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+
+Figure 6. Theta-beta and beta-gamma phase-amplitude coupling peaked at different phases. A
+& B, Heatmaps of the relative amplitude averaged across theta phase bins (A) and beta phase
+bins (B). θ, β, γ refer to theta, beta, and gamma frequency bands, respectively. Area-area
+comparisons were organized according to the area that contributed the phase signal (columns)
+and the area that contributed the amplitude signal (rows). C & D Relative amplitudes averaged
+across phase bins for theta-beta PAC (C) and beta-gamma PAC (D). Comparisons had the
+same organization as (A & B). Within-area comparisons were outlined in gray. * in the left
+quadrant of each plot indicates that amplitude varied significantly across phase bins. See
+Supplemental Fig. 7 for the results in C & D, but separated by trial epoch. E, The range in
+amplitude across phase bins (“amplitude depth”), calculated as a ratio between between-area
+comparisons and within-area comparisons). * indicates statistical significance (permutation test
+p < .05). All error bars indicate S.E.M.
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+376
+
+DISCUSSION
+
+377
+
+Our results characterized how theta coordinated neural activity within and across frontal areas
+
+378
+
+as NHPs made choices and received feedback. First, theta phase was selectively coupled to
+
+379
+
+spiking information in the FEF. When the NHPs made behavioral responses, choice information
+
+380
+
+in FEF spiking was coupled to LFP theta phase, in all areas. Then after receiving feedback,
+
+381
+
+outcome information (and not choice information) became coupled to theta phase, in all areas.
+
+382
+
+Second, theta influences were routed in opposite directions depending on feedback. During
+
+383
+
+behavioral choices and following correct outcomes, theta influences flowed in the posterior
+
+384
+
+direction from the dlPFC/vlPFC to the FEF. Following incorrect outcomes, theta influences
+
+385
+
+reversed and flowed in the anterior direction from the FEF to the dlPFC/vlPFC. Third, theta
+
+386
+
+organized nested cross-frequency, phase-amplitude interactions. Theta phase was coupled to
+
+387
+
+beta amplitude (theta-beta PAC), and beta phase was coupled to gamma amplitude (beta-
+
+388
+
+gamma PAC). Theta-beta PAC was strong during choices and after incorrect outcomes, and
+
+389
+
+beta-gamma PAC was strong after correct outcomes. Together, our results provide a multi-level
+
+390
+
+account of how theta dynamically coordinates activity in the frontal cortex.
+
+391
+392
+
+Theta seemed to function as a gating mechanism to select relevant spiking information. Many
+
+393
+
+reports have shown that theta phase couples to spiking activity (O’Keefe & Recce, 1993;
+
+394
+
+Rutishauser et al., 2010; Reddy et al., 2021; Benchenane et al., 2010; Han et al., 2026). Fewer
+
+395
+
+studies have shown that spiking information, as opposed to spike rates, also couples to LFP
+
+396
+
+phase (Voloh et al., 2020; Kayser et al., 2009). Our results extend this literature by showing that
+
+397
+
+the type of information coupled to theta phase depended on what was immediately relevant.
+
+398
+
+During the choice and outcome epochs, spiking activity carried information about multiple task
+
+399
+
+variables simultaneously, as they often do (Rigotti et al., 2013; Mante et al., 2013; Cromer et al.,
+
+400
+
+2010). However, only currently relevant information was coupled to theta phase: choice
+
+401
+
+information during choices, and outcome information following feedback. Theta phase thus
+
+402
+
+seemed to organize which information was available. This provides a mechanism by which
+
+403
+
+information can be dynamically reconfigured during changing task demands.
+
+404
+405
+
+This gating mechanism may depend on an interaction of excitation and inhibition. The optimal
+
+406
+
+phase of decoding spiking information was offset from the peak phase of spike-field coupling.
+
+407
+
+This offset is consistent with previous reports (Kayser et al., 2009; Voloh et al., 2020; Schaefer
+
+408
+
+et al., 2006) and helps rule out the possibility that information decoding was higher simply
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+409
+
+because spiking activity was high. Furthermore, the timing hints at a more complex interaction
+
+410
+
+between excitation and inhibition. At the peak of theta, overall spike rates increased. Then
+
+411
+
+during the falling phases of theta, activity waned, but information increased. This is suggestive
+
+412
+
+of inhibitory mechanisms (e.g., interneurons; Rao et al., 2000; Lewis et al., 2012) that “shape”
+
+413
+
+information from overall activation. Indeed, beta amplitude, which has been implicated in
+
+414
+
+inhibitory control (Lundqvist et al., 2023; Chen et al., 2026), also peaked during the falling
+
+415
+
+phases of theta.
+
+416
+417
+
+The FEF emerged as a dynamic hub. During behavioral choices, theta influences flowed into
+
+418
+
+the FEF from the dlPFC and the vlPFC. This replicates previous studies (Babapoor-Farrokhran
+
+419
+
+et al., 2017) and is consistent with a role of the FEF in relaying top-down information from the
+
+420
+
+prefrontal cortex to the visual cortex in order to direct spatial attention (Moore & Armstrong,
+
+421
+
+2003; Moore & Fallah, 2001; Schafer & Moore, 2007). These results are also consistent with a
+
+422
+
+more recent study showing that FEF theta is critical for the readout of working memory content
+
+423
+
+(Han et al., 2026). However, after incorrect choices, theta influences reversed directionality and
+
+424
+
+flowed anteriorly back to the dlPFC/vlPFC. This reversal suggests that the FEF functioned as a
+
+425
+
+critical node in the evaluation of choices and outcomes (Teichert, Yu, & Ferrera, 2014; Shteyn &
+
+426
+
+Olson, 2024; Ding & Hikosaka, 2006) and was not a simple relay of top-down information.
+
+427
+
+Furthermore, only FEF spiking information was coupled to theta phase. Spiking activity in the
+
+428
+
+dlPFC/vlPFC carried choice and outcome information, but these were not coupled to LFP
+
+429
+
+phase. Together, these results suggest that the FEF played a privileged role in selecting and
+
+430
+
+broadcasting choices and errors.
+
+431
+432
+
+Our observations of theta-beta PAC and beta-gamma PAC were unexpected, as many studies
+
+433
+
+have focused only on coupling between theta phase and gamma amplitude (Tort et al., 2010;
+
+434
+
+Lisman & Jensen, 2013; Belluscio et al., 2012; Saint Amour di Chanaz et al., 2023; Canolty et
+
+435
+
+al., 2006; Tamura et al., 2017; Spyropoulos, Bosman, & Fries, 2018; Bonnefond, Kastner, &
+
+436
+
+Jensen, 2017; Voloh et al., 2015; Lisman & Idiart, 1995). In our study, theta-gamma PAC was
+
+437
+
+present, but did not reliably change across trial epochs or by trial outcome. This suggests that
+
+438
+
+theta had a more indirect influence on gamma, via beta (Bastos et al., 2015; Lundqvist et al.,
+
+439
+
+2016; Lundqvist et al., 2018). In fact, theta-beta and beta-gamma PAC were anticorrelated and
+
+440
+
+seemed to reflect opposing network configurations. For theta-beta PAC, the phase-amplitude
+
+441
+
+relationship was consistent for within-area and between-area comparisons, suggesting that
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+442
+
+theta-beta PAC may be more important for more long-distance routing. By contrast, for beta-
+
+443
+
+gamma PAC, the phase-amplitude relationship was only consistent for within-area comparisons,
+
+444
+
+suggesting that beta-gamma PAC may be more important for local coupling. Beta, as the
+
+445
+
+intermediate frequency, may mediate between the long-distance routing of theta-beta PAC and
+
+446
+
+the local maintenance of beta-gamma PAC. This would be consistent with beta’s role in top-
+
+447
+
+down control (Buschman & Miller, 2007; Bastos et al., 2015; Lundqvist et al., 2024; Spitzer &
+
+448
+
+Haegens, 2017).
+
+449
+450
+
+Taken together, our results suggest that theta functions as a “master clock” that coordinates
+
+451
+
+network dynamics in the frontal cortex. This coordination occurred at multiple levels. Theta
+
+452
+
+gated spiking information, routed influences between subareas, and organized higher-frequency
+
+453
+
+oscillations. For each of these mechanisms, theta’s role was not static across the trial, but
+
+454
+
+shifted dramatically from choices to outcomes. Together, these findings emphasize theta’s role
+
+455
+
+in governing flexible cognition.
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+456
+
+MATERIAL & METHODS
+
+457
+
+Task procedures
+
+458
+
+All task procedures have been previously described (Loonis et al., 2017). Briefly, non-human
+
+459
+
+primates (NHPs; two adult rhesus macaques; NHP 1: female, 6 years, 6.5 kg; NHP 2: male, 9
+
+460
+
+years, 13 kg) learned to categorize dot patterns. Novel category prototypes were generated
+
+461
+
+before each session. These prototypes were designed such that task difficulty was roughly
+
+462
+
+equivalent across sessions (see Loonis et al., 2017 for details). Category exemplars were
+
+463
+
+created by distorting the dot positions of the prototype (Posner & Keele, 1968; Distortion level
+
+464
+
+1). The number of category exemplars increased progressively as the NHPs learned the
+
+465
+
+categories. All procedures followed the guidelines according to the Massachusetts Institute of
+
+466
+
+Technology Committee on Animal Care and the National Institutes of Health.
+
+467
+468
+
+The NHPs started each trial by fixating on a central fixation point (2.5 visual degrees) for 0.5
+
+469
+
+seconds (Fig. 1B; fixation epoch). Then, a category exemplar (7 visual degrees x 7 visual
+
+470
+
+degrees) was presented at the center of the screen for 1.0 second (sample epoch). After a
+
+471
+
+variable working memory delay (delay epoch; 0.85 seconds to 1.25 seconds), two new
+
+472
+
+exemplars were presented on the left and right sides of the screen (choice; 9 visual degrees
+
+473
+
+from the center). One choice exemplar came from the same category as the sample exemplar
+
+474
+
+(i.e., its “match” category). The other exemplar came from the other, “non-match” category. The
+
+475
+
+NHPs were trained to fixate on the match exemplar for at least 0.7 seconds. Visual feedback
+
+476
+
+was given after each choice. After correct choices, the chosen exemplar turned from white to
+
+477
+
+green, and the NHPs received a juice reward (simultaneously). After incorrect choices, the
+
+478
+
+chosen exemplar turned red, juice was withheld, and the NHPs were given a “timeout” (5–16
+
+479
+
+seconds) before the start of the next trial.
+
+480
+481
+
+The NHPs completed multiple blocks of trials during each session. The number of unique
+
+482
+
+category exemplars increased exponentially across blocks (i.e., 2block number of exemplars).
+
+483
+
+The NHPs progressed to the next block after reaching a learning criterion (i.e., >80% accuracy
+
+484
+
+on the previous twenty trials and >70% accuracy on the previous ten trials for each of the four
+
+485
+
+main conditions: Category ‘A’ on the left, Category ‘A’ on the right, Category ‘B’ on the left,
+
+486
+
+Category ‘B’ on the right). For the current analysis, we excluded sessions in which the NHPs did
+
+487
+
+not reach at least training block six (i.e., 10 sessions were excluded out of 76 total sessions).
+
+488
+
+We only analyzed trials during and after training block three, to focus on post-learning neural
+
+489
+
+coding.
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+490
+491
+
+Electrophysiological Recordings
+
+492
+
+All experimental sessions were controlled by custom MATLAB software using PsychToolbox.
+
+493
+
+Stimuli were presented on a LCD screen (ViewSonic VG2401mh 24 Gaming Monitor). Eye
+
+494
+
+movements and pupil size were monitored using EyeLink II sampled at 1000 Hz. Electrode
+
+495
+
+arrays (Blackrock Cereport; 8 x 8 grid with 400 µm spacing; 1 mm length) were implanted into
+
+496
+
+the dorsolateral prefrontal cortex (dlPFC), ventrolateral prefrontal cortex (vlPFC), and the frontal
+
+497
+
+eye fields (FEF). Figure 1C shows the approximate position of each array in respect to the
+
+498
+
+principal and arcuate sulci.
+
+′
+
+499
+500
+
+Signals were sampled at 30 kHz, band-passed between 0.3 Hz and 7.5 kHz using a Butterworth
+
+501
+
+filter, and digitized at a resolution of 16 bits, 250 nV/bit. LFPs were recorded with a low-pass
+
+502
+
+250 Hz Butterworth filter, sampled at 1 kHz, referenced to ground, and AC-coupled. Evoked
+
+503
+
+potentials averaged from correct and incorrect trials were subtracted from each individual
+
+504
+
+electrode. Multiunit activity was recorded for each channel. Channels with a grand average firing
+
+505
+
+rate less than 0.5 Hz were excluded from all analyses.
+
+506
+507
+
+Time-resolved phase and amplitude information were calculated for thirty frequencies, ranging
+
+508
+
+from 4 Hz to 90 Hz along a log scale. For each frequency, the raw LFP time series was
+
+509
+
+bandpass filtered (Butterworth filter, 4th order; filter centered on that frequency). Then, the
+
+510
+
+Hilbert transform was computed on the bandpass-filtered data. Phase and amplitude were
+
+511
+
+determined as the arctan and absolute value of the complex signal, respectively. Frequency
+
+512
+
+bands were defined using these frequency ranges: theta (4–10 Hz), beta (15–30 Hz) and
+
+513
+
+gamma (40–90 Hz).
+
+514
+515
+
+Phase-Amplitude Coupling
+
+516
+
+Phase-amplitude coupling (PAC) was computed to examine cross-frequency interactions.
+
+517
+
+Coupling was computed between phase-amplitude frequency pairs in which the “amplitude”
+
+518
+
+frequency was higher than the “phase” frequency (i.e., the upper triangle in the full phase-
+
+519
+
+amplitude matrix; see Fig. 5A for an example). Trials were divided into 500 ms non-overlapping
+
+520
+
+windows. This window size was selected to ensure all phase-amplitude frequency pairs included
+
+521
+
+data from at least two complete phase cycles. For each window, the phase of the lower
+
+522
+
+frequency was binned into eighteen equal-sized bins (i.e., twenty degrees per bin). The
+
+523
+
+amplitude of the higher frequency was averaged for each phase bin, separately. The binned
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+524
+
+amplitudes were normalized by dividing each amplitude by their sum across phase bins. This
+
+525
+
+resulted in a set of normalized amplitudes for each trial, trial window, and phase-amplitude
+
+526
+
+frequency pair.
+
+527
+528
+
+The strength of phase-amplitude coupling was determined by calculating the Modulation Index
+
+529
+
+(MI; Tort et al., 2009). Intuitively, MI quantifies the extent to which amplitude is non-uniformly
+
+530
+
+distributed across phase bins. A larger MI value would indicate that the amplitude in the higher
+
+531
+
+frequency varied according to the phase of the lower frequency. MI was computed as follows:
+
+532
+
+
+
+533
+
+was the Kullback-Leibler (KL) divergence between vectors P and U, where P contained the
+
+534
+
+observed normalized amplitudes across the N phase bins, and U contained the theoretical
+
+535
+
+amplitudes when assuming a uniform distribution (i.e., 1/N). Specifically,
+
+536
+537
+538
+
+, 
+
+
+ , 
+
+.
+
+was calculated as:
+
+    ,
+
+where H was the Shannon entropy across phase bins, defined as:
+
+ 
+
+∑
+
+1  
+
+
+
+ .
+
+539
+
+MI values range from 0 to 1, where 0 would indicate that the amplitudes were perfectly uniform
+
+540
+
+across phase bins, and 1 would indicate that the amplitudes were perfectly clustered at a single
+
+541
+
+phase bin. MI values were computed for each trial, trial window, and phase-amplitude frequency
+
+542
+
+pair separately and then averaged across trials.
+
+543
+544
+
+To ensure the MI estimates were not influenced by spurious correlations between the phase
+
+545
+
+and amplitude signals, we computed a null distribution of shuffled MI values. Specifically, we
+
+546
+
+added a circular shift (with a random offset) to the LFP phase signal before binning the
+
+547
+
+amplitudes and calculating MI. This was repeated one hundred times. We subtracted off the
+
+548
+
+average value of these shuffled iterations from the observed MI value.
+
+549
+550
+
+We examined both within-area comparisons, where the phase signal and amplitude signals
+
+551
+
+were computed from the same array, and between-area comparisons, where the phase and
+
+552
+
+amplitude signals were computed from separate arrays. The phase signal was determined by
+
+553
+
+computing the circular mean of phases across all electrodes within that array. The PAC results
+
+554
+
+were qualitatively similar when, instead of averaging phase across electrodes, phase was
+
+555
+
+determined by a "representative" electrode (i.e., the center-most electrode in the array).
+
+556
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+557
+
+Granger Causality
+
+558
+
+Directional influences between LFPs across areas were measured using spectral Granger
+
+559
+
+causality (sGC; Geweke, 1982). Like traditional Granger causality, sGC quantifies how variance
+
+560
+
+in one time-series can be explained by the past values of another time-series, beyond the
+
+561
+
+variance that can be explained using that time-series’s own past values. Unlike traditional
+
+562
+
+Granger causality, sGC expresses these influences in the spectral (frequency) domain and does
+
+563
+
+not rely on fitting a specific autoregressive model. We computed sGC between each pair of
+
+564
+
+between-area electrodes in 500 ms non-overlapping time windows. Directionality was assessed
+
+565
+
+by comparing sGC in each direction (i.e., forward-direction vs. backward-direction). To directly
+
+566
+
+compare sGC between conditions with unequal numbers of trials (i.e., correct vs. incorrect), we
+
+567
+
+subsampled trials according to the condition with a lower trial count. To ensure that results
+
+568
+
+reflected true directional effects, rather than between-area differences in signal-to-noise ratio,
+
+569
+
+we confirmed that estimated directionalities reversed when signals were time-reversed
+
+570
+
+(Supplementary Fig. 6). All analyses were conducted using the FieldTrip toolbox in MATLAB.
+
+571
+572
+
+Partial Correlations
+
+573
+
+Partial correlations were computed to examine whether the strength of phase-amplitude
+
+574
+
+coupling was correlated during single trials. We used partial correlations, rather than standard
+
+575
+
+Pearson’s correlations, to control for potential sources of shared variance between variables
+
+576
+
+(i.e., theta, beta, and gamma amplitude). For each trial epoch and area, we computed single-
+
+577
+
+trial estimates for theta-beta MI, beta-gamma MI, theta amplitude, beta amplitude, and gamma
+
+578
+
+amplitude. Each variable was normalized by computing z-scores across all trials. Partial
+
+579
+
+correlations were computed between theta-beta MI and beta-gamma MI, after controlling for
+
+580
+
+theta, beta, and gamma amplitude. Correlation coefficients were averaged across sessions
+
+581
+
+using Fisher's z-transformation. All correlations were computed using the partialcorr function in
+
+582
+
+MATLAB.
+
+583
+584
+
+Spike Decoding
+
+585
+
+Support Vector Machine (SVM) classifiers (Cortes & Vapnik, 1995) were trained with spiking
+
+586
+
+activity from each area to decode three task variables: 1) the category membership of the
+
+587
+
+sample exemplar (category information; category ‘A’ or category ‘B’), 2) the location of the
+
+588
+
+category “match” exemplar during the choice epoch (i.e., choice information; left or right), and 3)
+
+589
+
+the feedback given to the NHPs (outcome information; correct or incorrect). Spiking activity was
+
+590
+
+binned into 50 ms non-overlapping windows across the trial epochs. Spiking activity in each
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+591
+
+electrode was normalized by computing z-scores across all trials and timepoints. Each classifier
+
+592
+
+was trained using 80% of trials, and then cross-validated on the held-out 20% of trials. We
+
+593
+
+ensured the training set had an equal number of trials in each condition (e.g., correct vs.
+
+594
+
+incorrect). Classifier accuracies for the held-out trials were averaged across one hundred
+
+595
+
+iterations, where the trials used in the training set were randomized during each iteration. All
+
+596
+
+model fits were computed using the fitcsvm function in MATLAB.
+
+597
+598
+
+We also tested whether spiking information varied across LFP phases. We divided each trial
+
+599
+
+into 500 ms non-overlapping windows. Within each time window, we divided the LFP phase into
+
+600
+
+45-degree bins (i.e., eight total bins). We summed (and normalized) spiking activity using
+
+601
+
+timepoints from each phase bin, separately. We trained SVM classifiers to decode task
+
+602
+
+variables using the procedures described above. This resulted in a curve of classifier accuracies
+
+603
+
+across phase bins for each LFP frequency. The classifier accuracies were normalized by
+
+604
+
+dividing by their sum across phase bins. Phase-locking values (PLVs) were computed to
+
+605
+
+quantify the extent to which classifier accuracies changed across phase bins. Specifically, PLVs
+
+606
+
+were defined as:
+
+1
+
+ ೙
+
+
+1
+
+
+
+607
+
+where N is the number of phase bins, and
+
+608
+
+PLVs were compared against a null distribution of PLVs, in which the classifier accuracies were
+
+609
+
+shuffled across phase bins before computing PLV. This was repeated 1,000 times, and the
+
+610
+
+average PLV from these shuffled iterations was subtracted off from the observed PLV.
+
+is the classifier accuracy for phase bin n. These
+
+611
+612
+
+We examined both within-area comparisons, where spiking activity and LFP phases were
+
+613
+
+computed from the same array, and between-area comparisons, where spiking activity and LFP
+
+614
+
+phase were computed from separate arrays. LFP phase was computed according to the circular
+
+615
+
+mean of phases from all electrodes in the array. Results were qualitatively similar if, instead of
+
+616
+
+averaging across electrodes, phase was determined from a “representative” electrode (i.e., the
+
+617
+
+center-most electrode in the array).
+
+618
+619
+
+Spike-Field Coupling
+
+620
+
+We also examined coupling between spike rates and LFP phase. We divided trials into 500 ms
+
+621
+
+non-overlapping windows. For each trial, LFP phase was divided into 18 bins (20 degrees per
+
+622
+
+phase bin). Then for each neuron, we computed the number of spikes that fell within each
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+623
+
+phase bin. We examined within-area comparisons, where the spiking activity and LFP phase
+
+624
+
+were computed from the same array. We also examined between-area comparisons, where the
+
+625
+
+spiking activity and LFP phase were computed from different arrays. LFP phase was computed
+
+626
+
+as the circular mean from all electrodes in that array. Results were similar if, rather than
+
+627
+
+averaging across electrodes, LFP phase was determined from a “representative” electrode (i.e.,
+
+628
+
+the center-most electrode).
+
+629
+630
+
+Statistical Analysis
+
+631
+
+For continuous neural measures that we could not assume were normally distributed, we used
+
+632
+
+nonparametric statistics. All measures were averaged across electrodes within a given array,
+
+633
+
+and one estimate was used per session (i.e., n = 66 total sessions). Randomizations were
+
+634
+
+performed across all samples and were resampled 10,000 times to obtain a p value. Cohen’s d
+
+635
+
+was computed to quantify the effect size of the main effects. Measures were averaged across
+
+636
+
+timepoints pertaining to each trial epoch (e.g., theta power during the choice epoch for correct
+
+637
+
+and incorrect trials). The effect size of this difference (e.g., correct – incorrect) was calculated as
+
+638
+
+the mean difference across sessions, divided by the standard deviation across sessions.
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+639
+
+REFERENCES
+
+640
+
+Andreou, C., Frielinghaus, H., Rauh, J., Mußmann, M., Vauth, S., Braun, P., Leicht, G., &
+
+641
+
+Mulert, C. (2017). Theta and high-beta networks for feedback processing: A
+
+642
+
+simultaneous EEG–fmri study in healthy male subjects. Translational Psychiatry, 7,
+
+643
+
+e981. https://doi.org/10.1038/tp.2016.287
+
+644
+
+Babapoor-Farrokhran, S., Vinck, M., Womelsdorf, T., & Everling, S. (2017). Theta and beta
+
+645
+
+synchrony coordinate frontal eye fields and anterior cingulate cortex during sensorimotor
+
+646
+
+mapping. Nature Communications, 8, 13967. https://doi.org/10.1038/ncomms13967
+
+647
+
+Bastos, A. M., & Schoffelen, J. M. (2016). A tutorial review of Functional Connectivity Analysis
+
+648
+
+Methods and their interpretational pitfalls. Frontiers in Systems Neuroscience, 9.
+
+649
+
+https://doi.org/10.3389/fnsys.2015.00175
+
+650
+
+Bastos, A. M., Vezoli, J., Bosman, C. A., Schoffelen, J.-M., Oostenveld, R., Dowdall, J. R., De
+
+651
+
+Weerd, P., Kennedy, H., & Fries, P. (2015). Visual areas exert feedforward and
+
+652
+
+feedback influences through distinct frequency channels. Neuron, 85(2), 390–401.
+
+653
+
+https://doi.org/10.1016/j.neuron.2014.12.018
+
+654
+
+Belluscio, M. A., Mizuseki, K., Schmidt, R., Kempter, R., & Buzsáki, G. (2012). Cross-frequency
+
+655
+
+phase–phase coupling between theta and gamma oscillations in the hippocampus. The
+
+656
+
+Journal of Neuroscience, 32(2), 423–435. https://doi.org/10.1523/jneurosci.4122-
+
+657
+
+11.2012
+
+658
+
+Benchenane, K., Peyrache, A., Khamassi, M., Tierney, P. L., Gioanni, Y., Battaglia, F. P., &
+
+659
+
+Wiener, S. I. (2010). Coherent Theta oscillations and reorganization of Spike timing in
+
+660
+
+the hippocampal- prefrontal network upon learning. Neuron, 66(6), 921–936.
+
+661
+
+https://doi.org/10.1016/j.neuron.2010.05.013
+
+662
+
+Bonnefond, M., Kastner, S., & Jensen, O. (2017). Communication between brain areas based
+
+663
+
+on nested oscillations. Eneuro, 4(2). ENEURO.0153-16.2017
+
+664
+
+https://doi.org/10.1523/eneuro.0153-16.2017
+
+665
+
+Brincat, S. L., & Miller, E. K. (2015). Frequency-specific hippocampal-prefrontal interactions
+
+666
+
+during associative learning. Nature Neuroscience, 18(4), 576–581.
+
+667
+
+https://doi.org/10.1038/nn.3954
+
+668
+
+Buschman, T. J., & Miller, E. K. (2007). Top-down versus bottom-up control of attention in the
+
+669
+
+prefrontal and posterior parietal cortices. Science, 315(5820), 1860–1862.
+
+670
+
+https://doi.org/10.1126/science.1138071
+
+671
+672
+
+Buzsáki, G., & Draguhn, A. (2004). Neuronal oscillations in cortical networks. Science,
+304(5679), 1926–1929. https://doi.org/10.1126/science.1099745
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+673
+
+Canolty, R. T., Edwards, E., Dalal, S. S., Soltani, M., Nagarajan, S. S., Kirsch, H. E., Berger, M.
+
+674
+
+S., Barbaro, N. M., & Knight, R. T. (2006). High gamma power is phase-locked to theta
+
+675
+
+oscillations in human neocortex. Science, 313(5793), 1626–1628.
+
+676
+
+https://doi.org/10.1126/science.1128115
+
+677
+
+Cardin, J. A., Carlén, M., Meletis, K., Knoblich, U., Zhang, F., Deisseroth, K., Tsai, L.-H., &
+
+678
+
+Moore, C. I. (2009). Driving fast-spiking cells induces gamma rhythm and controls
+
+679
+
+sensory responses. Nature, 459(7247), 663–667. https://doi.org/10.1038/nature08002
+
+680
+
+Cavanagh, J. F., & Frank, M. J. (2014). Frontal Theta as a mechanism for Cognitive Control.
+
+681
+
+Trends in Cognitive Sciences, 18(8), 414–421. https://doi.org/10.1016/j.tics.2014.04.012
+
+682
+
+Cavanagh, J. F., Frank, M. J., Klein, T. J., & Allen, J. J. B. (2010). Frontal theta links prediction
+
+683
+
+errors to behavioral adaptation in reinforcement learning. NeuroImage, 49(4), 3198–
+
+684
+
+3209. https://doi.org/10.1016/j.neuroimage.2009.11.080
+
+685
+
+Chen, Z., Brincat, S. L., Lundqvist, M., Loonis, R. F., Warden, M. R., & Miller, E. K. (2026).
+
+686
+
+Oscillatory control of cortical space as a computational dimension. Current Biology,
+
+687
+
+36(2). https://doi.org/10.1016/j.cub.2025.11.072
+
+688
+
+Choi, J. W., Malekmohammadi, M., Niketeghad, S., Cross, K. A., Ebadi, H.,
+
+689
+
+Alijanpourotaghsara, A., Aron, A., Rutishauser, U., & Pouratian, N. (2024). Prefrontal-
+
+690
+
+subthalamic theta signaling mediates delayed responses during conflict processing.
+
+691
+
+Progress in Neurobiology, 236, 102613. https://doi.org/10.1016/j.pneurobio.2024.102613
+
+692
+693
+
+Colgin, L. L. (2013). Mechanisms and functions of Theta rhythms. Annual Review of
+Neuroscience, 36(1), 295–312. https://doi.org/10.1146/annurev-neuro-062012-170330
+
+694
+
+Colgin, L. L., Denninger, T., Fyhn, M., Hafting, T., Bonnevie, T., Jensen, O., Moser, M.-B., &
+
+695
+
+Moser, E. I. (2009). Frequency of gamma oscillations routes flow of information in the
+
+696
+
+hippocampus. Nature, 462(7271), 353–357. https://doi.org/10.1038/nature08573
+
+697
+
+Cortes, C., & Vapnik, V. (1995). Support-Vector Networks. Machine Learning, 20(3), 273–297.
+
+698
+699
+
+https://doi.org/10.1007/bf00994018
+Cromer, J. A., Roy, J. E., & Miller, E. K. (2010). Representation of multiple, independent
+
+700
+
+categories in the primate prefrontal cortex. Neuron, 66(5), 796–807.
+
+701
+
+https://doi.org/10.1016/j.neuron.2010.05.005
+
+702
+
+Ding, L., & Hikosaka, O. (2006). Comparison of reward modulation in the frontal eye field and
+
+703
+
+caudate of the Macaque. Journal of Neuroscience, 26(25), 6695–6703.
+
+704
+
+https://doi.org/10.1523/jneurosci.0836-06.2006
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+705
+
+Engel, A. K., Fries, P., & Singer, W. (2001). Dynamic predictions: Oscillations and synchrony in
+
+706
+
+top–down processing. Nature Reviews Neuroscience, 2(10), 704–716.
+
+707
+
+https://doi.org/10.1038/35094565
+
+708
+709
+710
+711
+712
+
+Fiebelkorn, I. C., & Kastner, S. (2019). A rhythmic theory of attention. Trends in Cognitive
+Sciences, 23(2), 87–101. https://doi.org/10.1016/j.tics.2018.11.009
+Fries, P. (2015). Rhythms for cognition: Communication through coherence. Neuron, 88(1),
+220–235. https://doi.org/10.1016/j.neuron.2015.09.034
+Fujisawa, S., & Buzsáki, G. (2011). A 4 hz oscillation adaptively synchronizes prefrontal, VTA,
+
+713
+
+and hippocampal activities. Neuron, 72(1), 153–165.
+
+714
+
+https://doi.org/10.1016/j.neuron.2011.08.018
+
+715
+
+Geweke, J. (1982). Measurement of linear dependence and feedback between multiple time
+
+716
+
+series: Rejoinder. Journal of the American Statistical Association, 77(378), 323.
+
+717
+
+https://doi.org/10.2307/2287243
+
+718
+
+Gregoriou, G. G., Gotts, S. J., Zhou, H., & Desimone, R. (2009). High-frequency, long-range
+
+719
+
+coupling between prefrontal and visual cortex during attention. Science, 324(5931),
+
+720
+
+1207–1210. https://doi.org/10.1126/science.1171402
+
+721
+
+Han, H.-B., Brincat, S. L., Buschman, T. J., & Miller, E. K. (2026). Working memory readout
+
+722
+
+varies with frontal theta rhythms. Neuron, 114(1), 159–166.e2.
+
+723
+
+https://doi.org/10.1016/j.neuron.2025.09.031
+
+724
+
+Hasselmo, M. E., Bodelón, C., & Wyble, B. P. (2002). A proposed function for hippocampal
+
+725
+
+theta rhythm: Separate phases of encoding and retrieval enhance reversal of prior
+
+726
+
+learning. Neural Computation, 14(4), 793–817.
+
+727
+
+https://doi.org/10.1162/089976602317318965
+
+728
+
+Helfrich, R. F., Fiebelkorn, I. C., Szczepanski, S. M., Lin, J. J., Parvizi, J., Knight, R. T.,
+
+729
+
+& Kastner, S. (2018). Neural mechanisms of sustained attention are rhythmic. Neuron,
+
+730
+
+99(4), 854–865.e5. https://doi.org/10.1016/j.neuron.2018.07.032
+
+731
+
+Jones, M. W., & Wilson, M. A. (2005). Theta rhythms coordinate hippocampal–prefrontal
+
+732
+
+interactions in a spatial memory task. PLoS Biology, 3(12), e402.
+
+733
+
+https://doi.org/10.1371/journal.pbio.0030402
+
+734
+
+Kayser, C., Montemurro, M. A., Logothetis, N. K., & Panzeri, S. (2009). Spike-phase coding
+
+735
+
+boosts and stabilizes information carried by spatial and temporal spike patterns. Neuron,
+
+736
+
+61(4), 597–608. https://doi.org/10.1016/j.neuron.2009.01.008
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+737
+
+Lei, T., Scheid, M. R., Flint, R. D., Glaser, J. I., & Slutzky, M. W. (2026). Active dissociation of
+
+738
+
+intracortical spiking and high gamma activity. Nature. https://doi.org/10.1038/s41586-
+
+739
+
+026-10331-y
+
+740
+
+Lewis, D. A., Curley, A. A., Glausier, J. R., & Volk, D. W. (2012). Cortical parvalbumin
+
+741
+
+interneurons and cognitive dysfunction in schizophrenia. Trends in Neurosciences,
+
+742
+
+35(1), 57–67. https://doi.org/10.1016/j.tins.2011.10.004
+
+743
+
+Liebe, S., Hoerzer, G. M., Logothetis, N. K., & Rainer, G. (2012). Theta coupling between V4
+
+744
+
+and prefrontal cortex predicts visual short-term memory performance. Nature
+
+745
+
+Neuroscience, 15(3), 456–462. https://doi.org/10.1038/nn.3038
+
+746
+
+Lisman, J. E., & Idiart, M. A. (1995). Storage of 7 ± 2 short-term memories in oscillatory
+
+747
+
+subcycles. Science, 267(5203), 1512–1515. https://doi.org/10.1126/science.7878473
+
+748
+749
+
+Lisman, J. E., & Jensen, O. (2013). The theta-gamma neural code. Neuron, 77(6), 1002–1016.
+https://doi.org/10.1016/j.neuron.2013.03.007
+
+750
+
+Loonis, R. F., Brincat, S. L., Antzoulatos, E. G., & Miller, E. K. (2017). A meta-analysis suggests
+
+751
+
+different neural correlates for implicit and explicit learning. Neuron, 96(2), 521–534.
+
+752
+
+https://doi.org/10.1016/j.neuron.2017.09.032
+
+753
+
+Lundqvist, M., Brincat, S. L., Rose, J., Warden, M. R., Buschman, T. J., Miller, E. K., & Herman,
+
+754
+
+P. (2023). Working Memory Control Dynamics Follow principles of spatial computing.
+
+755
+
+Nature Communications, 14, 1234. https://doi.org/10.1038/s41467-023-36555-4
+
+756
+
+Lundqvist, M., Herman, P., Warden, M. R., Brincat, S. L., & Miller, E. K. (2018). Gamma and
+
+757
+
+beta bursts during working memory readout suggest roles in its volitional control. Nature
+
+758
+
+Communications, 9, 394. https://doi.org/10.1038/s41467-017-02791-8
+
+759
+
+Lundqvist, M., Miller, E. K., Nordmark, J., Liljefors, J., & Herman, P. (2024). Beta: Bursts of
+
+760
+
+cognition. Trends in Cognitive Sciences, 28(7), 662–676.
+
+761
+
+https://doi.org/10.1016/j.tics.2024.03.010
+
+762
+
+Lundqvist, M., Rose, J., Herman, P., Brincat, S. L., Buschman, T. J., & Miller, E. K. (2016).
+
+763
+
+Gamma and beta bursts underlie working memory. Neuron, 90(1), 152–164.
+
+764
+
+https://doi.org/10.1016/j.neuron.2016.02.028
+
+765
+
+Mante, V., Sussillo, D., Shenoy, K. V., & Newsome, W. T. (2013). Context-dependent
+
+766
+
+computation by recurrent dynamics in prefrontal cortex. Nature, 503(7474), 78–84.
+
+767
+
+https://doi.org/10.1038/nature12742
+
+768
+
+Moore, T., & Armstrong, K. M. (2003). Selective gating of visual signals by microstimulation of
+
+769
+
+frontal cortex. Nature, 421(6921), 370–373. https://doi.org/10.1038/nature01341
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+770
+
+Moore, T., & Fallah, M. (2001). Control of eye movements and spatial attention. Proceedings of
+
+771
+
+the National Academy of Sciences, 98(3), 1273–1276.
+
+772
+
+https://doi.org/10.1073/pnas.98.3.1273
+
+773
+
+Muralidharan, V., Aron, A. R., Cohen, M. X., & Schmidt, R. (2023). Two modes of midfrontal
+
+774
+
+theta suggest a role in conflict and error processing. NeuroImage, 273, 120107.
+
+775
+
+https://doi.org/10.1016/j.neuroimage.2023.120107
+
+776
+
+O’Keefe, J., & Recce, M. L. (1993). Phase relationship between hippocampal place units and
+
+777
+
+the EEG Theta rhythm. Hippocampus, 3(3), 317–330.
+
+778
+
+https://doi.org/10.1002/hipo.450030307
+
+779
+
+Patel, J., Fujisawa, S., Berényi, A., Royer, S., & Buzsáki, G. (2012). Traveling theta waves
+
+780
+
+along the entire septotemporal axis of the hippocampus. Neuron, 75(3), 410–417.
+
+781
+
+https://doi.org/10.1016/j.neuron.2012.07.015
+
+782
+
+Posner, M. I., & Keele, S. W. (1968). On the genesis of abstract ideas. Journal of experimental
+
+783
+
+psychology, 77(3), 353–363. https://doi.org/10.1037/h0025953
+
+784
+
+Rao, S. G., Williams, G. V., & Goldman-Rakic, P. S. (2000). Destruction and creation of
+
+785
+
+spatial tuning by disinhibition: GABAablockade of prefrontal cortical neurons engaged by
+
+786
+
+working memory. The Journal of Neuroscience, 20(1), 485–494.
+
+787
+
+https://doi.org/10.1523/jneurosci.20-01-00485.2000
+
+788
+
+Reddy, L., Self, M. W., Zoefel, B., Poncet, M., Possel, J. K., Peters, J. C., Baayen, J. C., Idema,
+
+789
+
+S., VanRullen, R., & Roelfsema, P. R. (2021). Theta-phase dependent neuronal coding
+
+790
+
+during sequence learning in human single neurons. Nature Communications, 12, 4839.
+
+791
+
+https://doi.org/10.1038/s41467-021-25150-0
+
+792
+
+Rigotti, M., Barak, O., Warden, M. R., Wang, X.-J., Daw, N. D., Miller, E. K., & Fusi, S. (2013).
+
+793
+
+The importance of mixed selectivity in complex cognitive tasks. Nature, 497(7451), 585–
+
+794
+
+590. https://doi.org/10.1038/nature12160
+
+795
+
+Rutishauser, U., Ross, I. B., Mamelak, A. N., & Schuman, E. M. (2010). Human memory
+
+796
+
+strength is predicted by theta-frequency phase-locking of single neurons. Nature,
+
+797
+
+464(7290), 903–907. https://doi.org/10.1038/nature08860
+
+798
+
+Saint Amour di Chanaz, L., Pérez-Bellido, A., Wu, X., Lozano-Soldevilla, D., Pacheco-Estefan,
+
+799
+
+D., Lehongre, K., Conde-Blanco, E., Roldan, P., Adam, C., Lambrecq, V., Frazzini, V.,
+
+800
+
+Donaire, A., Carreño, M., Navarro, V., Valero-Cabré, A., & Fuentemilla, L. (2023).
+
+801
+
+Gamma amplitude is coupled to opposed hippocampal theta-phase states during the
+
+802
+
+encoding and retrieval of episodic memories in humans. Current Biology, 33(9).
+
+803
+
+https://doi.org/10.1016/j.cub.2023.03.073
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+804
+
+Schaefer, A. T., Angelo, K., Spors, H., & Margrie, T. W. (2006). Neuronal oscillations enhance
+
+805
+
+stimulus discrimination by ensuring action potential precision. PLoS Biology, 4(6), e163.
+
+806
+
+https://doi.org/10.1371/journal.pbio.0040163
+
+807
+808
+809
+
+Schafer, R. J., & Moore, T. (2007). Attention governs action in the primate frontal eye field.
+Neuron, 56(3), 541–551. https://doi.org/10.1016/j.neuron.2007.09.029
+Shteyn, M. R., & Olson, C. R. (2024). Neurons of macaque frontal eye field signal reward-
+
+810
+
+related surprise. The Journal of Neuroscience, 44(38), e0441242024.
+
+811
+
+https://doi.org/10.1523/jneurosci.0441-24.2024
+
+812
+
+Siapas, A. G., Lubenov, E. V., & Wilson, M. A. (2005). Prefrontal phase locking to hippocampal
+
+813
+
+theta oscillations. Neuron, 46(1), 141–151. https://doi.org/10.1016/j.neuron.2005.02.028
+
+814
+
+Spitzer, B., & Haegens, S. (2017). Beyond the status quo: A role for beta oscillations in
+
+815
+
+endogenous content (re)activation. Eneuro, 4(4). https://doi.org/10.1523/eneuro.0170-
+
+816
+
+17.2017
+
+817
+
+Spyropoulos, G., Bosman, C. A., & Fries, P. (2018). A theta rhythm in macaque visual cortex
+
+818
+
+and its attentional modulation. Proceedings of the National Academy of Sciences,
+
+819
+
+115(24), E5556–E5565. https://doi.org/10.1073/pnas.1719433115
+
+820
+
+Tamura, M., Spellman, T. J., Rosen, A. M., Gogos, J. A., & Gordon, J. A. (2017). Hippocampal-
+
+821
+
+prefrontal theta-gamma coupling during performance of a spatial working memory task.
+
+822
+
+Nature Communications, 8, 2108. https://doi.org/10.1038/s41467-017-02108-9
+
+823
+
+Teichert, T., Yu, D., & Ferrera, V. P. (2014). Performance monitoring in Monkey Frontal Eye
+
+824
+
+Field. The Journal of Neuroscience, 34(5), 1657–1671.
+
+825
+
+https://doi.org/10.1523/jneurosci.3694-13.2014
+
+826
+
+Tort, A. B., Komorowski, R. W., Manns, J. R., Kopell, N. J., & Eichenbaum, H. (2009). Theta–
+
+827
+
+gamma coupling increases during the learning of item–Context Associations.
+
+828
+
+Proceedings of the National Academy of Sciences, 106(49), 20942–20947.
+
+829
+
+https://doi.org/10.1073/pnas.0911331106
+
+830
+
+Tort, A. B., Komorowski, R., Eichenbaum, H., & Kopell, N. (2010). Measuring phase-amplitude
+
+831
+
+coupling between neuronal oscillations of different frequencies. Journal of
+
+832
+
+Neurophysiology, 104(2), 1195–1210. https://doi.org/10.1152/jn.00106.2010
+
+833
+
+Trujillo, L. T., & Allen, J. J. B. (2007). Theta Eeg Dynamics of the error-related negativity.
+
+834
+
+Clinical Neurophysiology, 118(3), 645–668. https://doi.org/10.1016/j.clinph.2006.11.009
+
+835
+
+van de Vijver, I., Ridderinkhof, K. R., & Cohen, M. X. (2011). Frontal oscillatory dynamics predict
+
+836
+
+feedback learning and action adjustment. Journal of Cognitive Neuroscience, 23(12),
+
+837
+
+4106–4121. https://doi.org/10.1162/jocn_a_00110
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+838
+
+van Wingerden, M., Vinck, M., Lankelma, J., & Pennartz, C. M. (2010). Theta-band phase
+
+839
+
+locking of orbitofrontal neurons during reward expectancy. The Journal of Neuroscience,
+
+840
+
+30(20), 7078–7087. https://doi.org/10.1523/jneurosci.3860-09.2010
+
+841
+
+Voloh, B., Oemisch, M., & Womelsdorf, T. (2020). Phase of firing coding of learning variables
+
+842
+
+across the fronto-striatal network during feature-based learning. Nature
+
+843
+
+Communications, 11(1). https://doi.org/10.1038/s41467-020-18435-3
+
+844
+
+Voloh, B., Valiante, T. A., Everling, S., & Womelsdorf, T. (2015). Theta–gamma coordination
+
+845
+
+between anterior cingulate and prefrontal cortex indexes correct attention shifts.
+
+846
+
+Proceedings of the National Academy of Sciences, 112(27), 8457–8462.
+
+847
+
+https://doi.org/10.1073/pnas.1500438112
+
+848
+
+von Stein, A., & Sarnthein, J. (2000). Different frequencies for different scales of cortical
+
+849
+
+integration: From local gamma to long range alpha/theta synchronization. International
+
+850
+
+Journal of Psychophysiology, 38(3), 301–313. https://doi.org/10.1016/s0167-
+
+851
+
+8760(00)00172-0
+
+852
+
+Womelsdorf, T., Johnston, K., Vinck, M., & Everling, S. (2010). Theta-activity in anterior
+
+853
+
+cingulate cortex predicts task rules and their adjustments following errors. Proceedings
+
+854
+
+of the National Academy of Sciences, 107(11), 5248–5253.
+
+855
+
+https://doi.org/10.1073/pnas.0906194107
+
+856
+
+Womelsdorf, T., Vinck, M., Leung, L. S., & Everling, S. (2010). Selective theta-synchronization
+
+857
+
+of choice-relevant information subserves goal-directed behavior. Frontiers in Human
+
+858
+
+Neuroscience, 4. https://doi.org/10.3389/fnhum.2010.00210
+
+859
+
+Zhang, H., Watrous, A. J., Patel, A., & Jacobs, J. (2018). Theta and alpha oscillations are
+
+860
+
+traveling waves in the human neocortex. Neuron, 98(6), 1269–1281.e4.
+
+861
+
+https://doi.org/10.1016/j.neuron.2018.05.019
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+862
+
+SUPPLEMENTAL FIGURES
+
+863
+864
+865
+866
+867
+868
+
+Supplemental Figure 1. Spiking activity carried information about task variables (results related
+to Fig. 2A). Average SVM classifier accuracies in each area and task variable, separated for
+NHP 1 (left) and NHP 2 (right). The color of each plot indicates the type of information being
+decoded. All error bars indicate S.E.M. Choice and outcome epoch results are replotted from
+Fig. 2A; this figure additionally plots information during the sample and delay epochs.
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+869
+870
+871
+872
+873
+874
+
+Supplemental Figure 2. Average power reflected choices and outcomes (results related to
+Figs. 2B&C). Power in the dlPFC (A), vlPFC (B), and FEF (C), averaged in gamma (top), beta
+(middle), and theta (bottom) frequency bands, and separated by correct (green) and incorrect
+(red) trials. Bars above each plot indicate timepoints in which power was significantly different
+between correct and incorrect trials. All error bars indicate S.E.M.
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+875
+876
+877
+878
+879
+880
+881
+882
+883
+
+Supplemental Figure 3. Coupling between binned LFP phase and spiking information in each
+area (related to Figs. 3A-D). A-C, Phase-locking values quantified whether classifier accuracies
+varied with LFP phase. All within-area and between-area comparisons for dlPFC spiking (A),
+vlPFC spiking (B), and FEF spiking (C). Colored bars above each plot indicate frequencies in
+which spiking information was significantly coupled to LFP phase. D, Within-area FEF results
+(bottom row of C), separated by NHP 1 (top) and NHP 2 (bottom). E, Average classifier
+accuracies across theta phase bins, separated by NHP 1 (left) and NHP 2 (right). All error bars
+indicate S.E.M. θ, β, γ refers to theta, beta, and gamma frequency bands, respectively.
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+884
+885
+886
+887
+888
+
+Supplemental Figure 4. Spike-field coupling (results related to Figs. 3E&F). Relative spike
+rates were averaged across theta phase bins. All within-area comparisons and between-area
+comparisons for dlPFC spiking (A), vlPFC spiking (B), and FEF spiking (C). Results were
+separated by trial epoch. All error bars indicate S.E.M.
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+889
+890
+891
+892
+893
+
+Supplemental Figure 5. Average Granger causality for each frequency band and NHP (related
+to Fig. 4). A, Average theta causality for NHP 1 (left) and NHP 2 (right). B-C, Average Granger
+causality in the beta (B) and gamma (C) frequency bands. * indicates timepoints in which
+causality was significantly different between comparisons. All error bars indicate S.E.M.
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+894
+895
+896
+897
+898
+899
+900
+901
+902
+
+Supplemental Figure 6. Time-reversed theta Granger causality (results related to Fig. 4). We
+recomputed Granger causality after reversing the time-series as a control analysis to test
+whether the directionality effects were influenced by possible differences in the signal-to-noise
+ratio across arrays. Left: the observed theta Granger causality, separated by correct and
+incorrect trials. Right: time-reversed theta Granger causality, separated by correct and incorrect
+trials. Importantly, the directionality of effects reversed when the time-series were reversed. This
+is consistent with “true” directionality effects. * indicates statistical significance (permutation test
+p < .05). All error bars indicate S.E.M.
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+903
+904
+905
+906
+907
+908
+909
+910
+911
+912
+913
+914
+
+Supplemental Figure 7. Phase-amplitude coupling (PAC; related to Figure 5). A,
+“Comodulograms” showing the Modulation Index (MI) between each phase-amplitude
+frequency pair, normalized to the delay epoch. Area-area comparisons were organized
+according to the area that contributed the phase signal (columns) and the area that contributed
+the amplitude signal (rows). θ, β, γ refers to theta, beta, and gamma frequency bands,
+respectively. B-C, Average MI for theta-beta PAC (B) and beta-gamma PAC (C), separated for
+NHP 1 (left) and NHP 2 (right). Area-area comparisons were organized in the same way as A,
+with within-area comparisons outlined in gray. * indicates timepoints in which MI was
+significantly different between correct and incorrect trials. D, Partial correlations between single
+trial theta-beta MI and beta-gamma MI, separated for NHP1 (left) and NHP 2 (right). * indicates
+correlation coefficients that were significantly different from 0. All error bars indicate S.E.M.
+
+bioRxiv preprint doi: https://doi.org/10.64898/2026.06.03.729810; this version posted June 4, 2026. The copyright holder for this preprint
+(which was not certified by peer review) is the author/funder. All rights reserved. No reuse allowed without permission.
+
+915
+
+916
+917
+918
+919
+920
+921
+922
+
+Supplemental Figure 8. Average phase-amplitude relationships (PAC; related to Figure 6).
+Area-area comparisons were organized by the area that contributed the phase signal (columns)
+and the area that contributed the amplitude signal (rows), with within-area comparisons outlined
+in gray. A, Average theta-beta PAC for each trial epoch. B, Average theta-beta PAC, separated
+by NHP. C, Average beta-gamma PAC for each trial epoch. D, Average beta-gamma PAC,
+separated by NHP. All error bars indicate S.E.M.
+
+

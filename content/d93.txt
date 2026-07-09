@@ -1,0 +1,2081 @@
+The Identity Trap in EEG Foundation Models: A Diagnostic Audit 
+
+|  |
+| :-: |
+| [**Page 1**]() |
+
+The Identity Trap in EEG Foundation Models: A Diagnostic Audit
+
+Jun-You Lin∗
+
+School of Medicine, National Yang Ming Chiao Tung University, Taipei, Taiwan
+
+Ying Choon Wu
+
+Swartz Center for Computational Neuroscience,
+
+University of California, San Diego, La Jolla, CA 92037, USA
+
+Tzyy-Ping Jung†
+
+Swartz Center for Computational Neuroscience,
+
+University of California, San Diego, La Jolla, CA 92037, USA
+
+June 8, 2026
+
+**Abstract**
+
+***Objective.** EEG foundation models (FMs) report strong headline accuracy on clinical resting-state*
+
+*EEG. However, high accuracy under subject-disjoint cross-validation remains ambiguous: it can*
+
+*reflect a genuine clinical biomarker, or subject-identity features that correlate with the label in*
+
+*this cohort. We name this ambiguity the* Identity Trap *and ask whether it can be diagnosed at the*
+
+*representation level before fine-tuning.*
+
+***Approach.** We propose FMScope, a frozen-representation pre-flight protocol packaging five*
+
+*diagnostics: variance decomposition, subject-axis erasure, aperiodic* 1*/f ablation, layer-wise label*
+
+*probing, and within-subject direction consistency. We apply it to three pretrained transformer FMs*
+
+*(LaBraM, CBraMod, REVE) across four public resting-state datasets (mental arithmetic, sleep*
+
+*deprivation, Alzheimer’s and frontotemporal dementia, trait stress) in an* a priori 2×2 *layout:*
+
+*subject relation of label* × *presence of a consensus cross-subject EEG marker.*
+
+***Main results.** (i) The Identity Trap is universal across all three FMs: the frozen subject-variance*
+
+*fraction is 13–89*× *a random-Gaussian null in 12 of 12 pairs, rising in all 12 under fine-tuning*
+
+*(*+10 *to* +63 *pp). This dominance lies on a removable linear axis: erasing it significantly improves*
+
+*label decoding where the label varies within subject (*+6 *to* +12 *pp in primary cells;* +4 *to* +27 *pp*
+
+*across four external consensus-marker cohorts; one-sided sign test p \<* 10−3*). (ii) Aperiodic* 1*/f*
+
+*is one identifiable subject carrier: removing it drops the subject probe by* 9*–*19 *pp uniformly on*
+
+*LaBraM and CBraMod. REVE saturates subject identity with no measurable aperiodic dependence*
+
+*and a nonlinearly-decodable residual after linear erasure: the Identity Trap is universal, but its*
+
+*carrier and linear removability are model-specific. (iii) Fine-tuning amplifies label-variance only*
+
+*in cells with a literature-established cross-subject EEG marker (*+0*.*6 *to* +8*.*4 *pp). No-consensus*
+
+*cells span zero, indicating no label signal for fine-tuning to amplify.*
+
+***Significance.** The Identity Trap is a physically-grounded instance of shortcut learning: the*
+
+*preferred cue has a measurable physiological component of the input, not a pure statistical artifact,*
+
+∗Corresponding author. linjimmy1003.md10@nycu.edu.tw. ORCID: 0009-0006-3951-3614.
+
+†ORCID: 0000-0002-8377-2166.
+
+1
+
+arXiv:2606.06647v1 \[cs.LG\] 4 Jun 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 2**]() |
+
+Preprint
+
+2
+
+*and subject-disjoint splitting alone cannot rule it out. FMScope thus separates gains that reflect*
+
+*a biological marker from those that reflect subject identity.*
+
+***Keywords:** EEG foundation models; subject-identity confounding; shortcut learning; representa-*
+
+*tion analysis; clinical biomarkers; resting-state EEG.*
+
+**1 Introduction**
+
+EEG foundation models (FMs) are pretrained on large unlabeled EEG corpora with self-supervised masked-
+
+modeling objectives, and have been proposed as a general substrate for clinical electroencephalography ([Jiang](#26)
+
+[et al.](#26)[,](#26) [2024](#26)[;](#26) [Wang et al.](#28)[,](#28) [2025a](#28)[;](#28) [El Ouahidi et al.](#26)[,](#26) [2025](#26)). On downstream tasks with established within-subject
+
+neural contrasts (motor imagery, event-related potentials, sleep staging), reported performance is strong
+
+([Xiong et al.](#28)[,](#28) [2025](#28)[;](#28) [Wu et al.](#28)[,](#28) [2025](#28)[;](#28) [Kastrati et al.](#26)[,](#26) [2025](#26)), building on a decade of cross-subject classification
+
+protocols ([Lotte et al.](#27), [2018](#27)). The picture fragments on small-*N* resting-state EEG (rsEEG), the setting
+
+that matters most for psychiatric and neurodegenerative biomarkers. On cohorts of comparable size and
+
+recording quality, FM performance varies widely across clinical labels ([Shen et al.](#28)[,](#28) [2026](#28)); what controls
+
+this variation has not been addressed at the representation level. Consider the self-reported chronic-stress
+
+dataset of [Komarov et al. ](#26)([2020](#26)). A prior FM evaluation on this dataset reports a peak balanced accuracy of
+
+0*.*9047, using a fixed 80/10/10 train/val/test split in which the same subjects appear in different folds (best
+
+of four data-splitting seeds; the worst seed reaches 0*.*67) ([Wang et al.](#28)[,](#28) [2025b](#28)). On the same dataset, under
+
+subject-disjoint cross-validation, we observe 0*.*43–0*.*50 across three FMs and five classical baselines (Sec. [4.1](#12)).
+
+Both numbers can be correct under their own protocols. Neither tells us what the FM has actually learned
+
+about the label.
+
+A single accuracy number cannot resolve this ambiguity. High balanced accuracy under subject-disjoint
+
+cross-validation is consistent with at least three readings: (i) the FM has captured a genuine cross-subject
+
+EEG marker of the clinical label; (ii) the FM has captured stable physiological subject traits that happen
+
+to co-vary with the label in this cohort; or (iii) the FM has captured an entanglement of the two that does
+
+not separate at the read-out. Existing benchmarks enumerate scores ([Shen et al.](#28)[,](#28) [2026](#28)[;](#28) [Xiong et al.](#28)[,](#28) [2025](#28);
+
+[Wu et al.](#28)[,](#28) [2025](#28)[;](#28) [Kastrati et al.](#26)[,](#26) [2025](#26)); protocol critiques identify subject-identity leakage under trial-level
+
+cross-validation as one inflation source ([Brookshire et al.](#25)[,](#25) [2024](#25)). The underlying tension is not EEG-specific.
+
+Resting-state fMRI fingerprinting shows that stable between-individual differences in brain activity are
+
+sufficient to identify subjects ([Finn et al.](#26)[,](#26) [2015](#26)), and that the connections that identify a subject and the
+
+connections that predict behavior occupy different functional systems of the connectome ([Mantwill et al.](#27),
+
+[2022](#27)). Together, these results suggest a recurring competition, across brain-imaging modalities, between
+
+stable subject-identifying structure and the task-related signal that biomarkers depend on. Both lines of
+
+work establish that the problem exists. Neither tells us, for a specific cohort × FM pair, which of the three
+
+readings is operative at the representation level.
+
+We approach this question through one well-characterized physiological component of the EEG spectrum:
+
+the aperiodic 1*/f* background. The standard FOOOF decomposition separates the EEG power spectrum
+
+into two parts: a broadband 1*/fχ* component (the aperiodic background itself) and narrow periodic peaks at
+
+canonical bands such as theta and alpha ([Donoghue et al.](#25)[,](#25) [2020](#25)). Periodic peaks carry transient, task-related
+
+state information of the kind clinical biomarkers typically index. The aperiodic background reflects more
+
+stable properties of the recording: cortical excitation–inhibition balance and vigilance state ([Gao et al.](#26)[,](#26) [2017](#26)),
+
+and electrode-level features that vary between individuals and persist across sessions ([Kopčanová et al.](#26)[,](#26) [2024](#26)).
+
+In ordinary EEG analysis, researchers treat the aperiodic background as a per-subject nuisance and remove
+
+it by fitting a parametric model before they analyze the periodic peaks. FMs are pretrained without any
+
+subject-aware objective, so it is unclear whether their representations remove the aperiodic component in the
+
+same way, or instead keep it as an axis that encodes subject identity. This raises a specific, correlational
+
+question: do EEG FM representations on small-*N* rsEEG *co-encode* the aperiodic 1*/f* background with
+
+subject identity along the same representational directions? We can test it on LaBraM and CBraMod; on
+
+REVE the test is inconclusive, because REVE differs from the other two FMs along five design axes at once
+
+-----
+
+|  |
+| :-: |
+| [**Page 3**]() |
+
+Preprint
+
+3
+
+(Sec. [5.5](#20)). Independently of this carrier question, fine-tuning shows a cell-conditional pattern: it amplifies
+
+subject-related variance in every cell, but amplifies label-related variance only in cells where the literature
+
+has already established a cross-subject neural marker.
+
+We test this hypothesis on four public small-*N* clinical rsEEG datasets chosen *a priori* to populate a 2×2
+
+sampling layout (subject relation of the label × presence of a consensus cross-subject EEG marker) across
+
+three pretrained transformer FMs (LaBraM, CBraMod, REVE). We package the diagnostics required for the
+
+test as FMScope (Fig. [1](#4)), a frozen-representation framework with explicit scope conditions per tool. We
+
+make four contributions.
+
+**First**, an empirical finding we term the *Identity Trap*: across 12 (cell × FM) frozen pairs the subject-
+
+variance fraction is 13–89× a matched random-Gaussian null; under fine-tuning, subject-variance fraction
+
+rises in all 12 pairs by +10 to +63 percentage points (pp). This dominance is confined to a removable linear
+
+axis: closed-form subject-axis erasure drives a linear subject probe to chance in all 12 pairs, and where the
+
+label varies within subject, erasing identity significantly improves label decoding (+6 to +12 pp in the primary
+
+cells; +4 to +27 pp across four external consensus-marker cohorts; one-sided sign test *p \<* 10−3).
+
+**Second**, a representational correlate of the 1*/f*–subject co-encoding hypothesis: removing the aperiodic
+
+1*/f* component drops a linear subject probe by 9 to 19 pp uniformly across all four cells on LaBraM and
+
+CBraMod. REVE shows no measurable aperiodic dependence; the LaBraM-and-CBraMod group differs from
+
+REVE along five concurrent design axes (Sec. [5.5](#20)), so we report this two-versus-one pattern descriptively
+
+rather than as a mechanism claim.
+
+**Third**, a cell-conditional outcome map: fine-tuning amplifies label-variance only in cells with a consensus
+
+cross-subject EEG marker (Mann–Whitney *U*, one-sided *p* = 0*.*0022, *n* = 12), and the layer-wise label probe
+
+descends monotonically toward chance in the no-consensus trait cell on all three FMs.
+
+**Fourth**, the FMScope diagnostic framework itself, including its per-tool scope conditions, plus the
+
+clinical/protocol guidelines that follow from the three findings above: recording trait-cell labels as within-
+
+subject contrasts where the state allows, and seeking external physiological validation where it does not;
+
+verifying that within-subject classifier directions agree across subjects before any BCI calibration claim; and
+
+a frozen-feature pre-flight that returns a per-cell verdict (Tab. [4](#18)) before any fine-tuning compute is spent.
+
+-----
+
+|  |
+| :-: |
+| [**Page 4**]() |
+
+Preprint
+
+4
+
+Patch embedding
+
+Position encoding
+
+Attention blocks
+
+Pooling
+
+**Foundation Models**
+
+**EEG inputs**
+
+**FMScope**
+
+**Subject dominant representation**
+
+Subject 0
+
+Subject 1
+
+Subject 2
+
+Subject 3
+
+label A
+
+label B
+
+Subject ID
+
+(strong axis)
+
+Clinical label
+
+(weak axis)
+
+*Frozen representation space*
+
+Before (dominated)
+
+After (removed)
+
+Remove linear
+
+subject components
+
+**Variance**
+
+**Decomposition**
+
+**Subject label Residual**
+
+**Subject-axis erasure**
+
+**(LEACE)**
+
+**FOOOF Ablation**
+
+**(Aperiodic removal)**
+
+**Within-subject**
+
+**Direction Consistency**
+
+layer depth
+
+Su
+
+bje
+
+ct A
+
+cc
+
+ura
+
+cy
+
+**Layer-wise**
+
+**Subject/label probe**
+
+Figure 1: **FMScope overview.** Five frozen-representation diagnostics applied to embeddings from a
+
+pretrained transformer EEG-FM. Two of the five establish the Identity Trap: variance decomposition and
+
+subject-axis erasure (LEACE). The other three characterize its origin and structure: aperiodic input ablation,
+
+layer-wise subject/label probe, and within-subject direction consistency. Center: subject identity forms the
+
+dominant axis of the frozen representation and the clinical label a weaker one; the inset shows closed-form
+
+removal of the linear subject components (LEACE). Colors and shapes in the embedding feature space
+
+schematically represent variations contributed by cognitive labels and individual subjects, respectively. Per-
+
+tool scope conditions and details in Sec. [3](#6); results in Sec. [4](#12).
+
+**2 Related Work**
+
+**EEG foundation models.** We anchor on three open-weight backbones. **LaBraM** ([Jiang et al.](#26)[,](#26) [2024](#26))
+
+feeds raw EEG patches through a temporal CNN into a transformer encoder. The pretraining target is
+
+a discrete vector-quantized code for each patch; a separate decoder maps each code back to the patch’s
+
+Fourier amplitude and phase, so the encoder must learn features that support Fourier reconstruction. It is
+
+pretrained on ∼2*,*500 hours of mixed EEG. **CBraMod** ([Wang et al.](#28)[,](#28) [2025a](#28)) uses a criss-cross transformer
+
+that factorizes spatial and temporal attention into two parallel mechanisms. Its patch embedding adds two
+
+branches: a temporal CNN and an FFT-derived energy vector. Pretraining reconstructs raw EEG patches
+
+under an MSE loss. It is pretrained on a cleaned ∼9*,*000-hour subset of the Temple University EEG Corpus
+
+(TUEG total: ∼ 15*,*000 subjects, ∼ 27*,*000 hours). **REVE** ([El Ouahidi et al.](#26)[,](#26) [2025](#26)) is a spatio-temporal
+
+transformer that uses 4D Fourier sinusoidal positional encoding and a linear patch embedding on the raw
+
+signal. Pretraining reconstructs the raw EEG under an L1 loss, with an additional attention-pooling secondary
+
+task. It is pretrained on ∼60*,*000 hours of EEG from 92 datasets covering 25*,*000 subjects. All three use
+
+masked-modeling self-supervision but differ along at least five design axes (target representation, patch
+
+embedding, reconstruction loss, positional encoding, pretraining corpus diversity), and we therefore report
+
+cross-FM contrasts descriptively rather than as mechanism claims. All three report strong downstream
+
+performance on event-related EEG benchmarks ([Xiong et al.](#28)[,](#28) [2025](#28)[;](#28) [Wu et al.](#28)[,](#28) [2025](#28)), but none has been
+
+characterized at the representation level on small-*N* clinical resting-state cohorts.
+
+**Subject leakage and evaluation protocols.** Prior critiques have established that trial-level cross-
+
+validation in clinical EEG inflates accuracy through subject leakage at the train–test boundary ([Brookshire](#25)
+
+-----
+
+|  |
+| :-: |
+| [**Page 5**]() |
+
+[Preprint](#25)
+
+[5](#25)
+
+[et al.](#25)[,](#25) [2024](#25)), and recent benchmarks ([Xiong et al.](#28)[,](#28) [2025](#28)[;](#28) [Wu et al.](#28)[,](#28) [2025](#28)[;](#28) [Kastrati et al.](#26)[,](#26) [2025](#26)[;](#26) [Shen et al.](#28),
+
+[2026](#28)) broadly adopt subject-disjoint splitting (with task-specific exceptions, e.g. subject-dependent splits
+
+retained for emotion recognition in EEG-FM-Bench). These works document the inflation; they do not
+
+characterize what the FM has learned in place of the leaked subject signal once subject-disjoint splitting is
+
+enforced. Our starting point is the ambiguity that remains even after subject-disjoint splitting: accuracy
+
+could still reflect subject-correlated features that happen to co-vary with the clinical label in a particular
+
+cohort. We ask, at the representation level, what those features actually are. A concurrent study ([Tang et al.](#28),
+
+[2026](#28)) asks the same of EEG-FMs and also uses LEACE-style erasure as a diagnostic, but applied to a lexicon
+
+of hand-crafted neuro-features (band power, connectivity, entropy). It reports that removing those features
+
+degrades decoding and does not examine the subject-identity axis. We erase the subject axis instead and find
+
+that its removal can improve consensus-marker decoding, the complementary direction.
+
+**Prior cross-subject EEG markers for clinical labels.** Prior research documents resting-state or
+
+task-related EEG features that have been used as cross-subject biomarkers. For mental arithmetic, a
+
+substantial corpus links frontal-midline theta and parieto-occipital alpha modulation to cognitive task load
+
+(including mental arithmetic) ([Klimesch](#26)[,](#26) [1999](#26)[;](#26) [Gevins et al.](#26)[,](#26) [1997](#26)[;](#26) [Klimesch](#26)[,](#26) [2012](#26)). For Alzheimer’s and
+
+frontotemporal dementia, an expert-panel consensus ([Babiloni et al.](#25)[,](#25) [2021](#25)) cites posterior alpha peak-frequency
+
+and power reduction as a candidate clinical biomarker; a recent two-cohort replication ([Kopčanová et al.](#26),
+
+[2024](#26)) reports that the AD-versus-HC spectral signature is “purely oscillatory” and that aperiodic features do
+
+not differ between groups. The aperiodic 1*/f* slope therefore remains a contested sub-component for AD.
+
+Comparable expert-consensus markers do not exist for our other two labels: frontal alpha asymmetry as
+
+a stress or depression marker remains contested ([Reznik and Allen](#27)[,](#27) [2018](#27)[;](#27) [van der Vinne et al.](#28)[,](#28) [2017](#28)), and
+
+the sleep-deprivation dataset paper ([Xiang et al.](#28)[,](#28) [2024](#28)) tabulates individual differences in sleep quality and
+
+traits alongside the rested-versus-deprived recordings without identifying a cross-subject EEG marker. This
+
+asymmetry across the four labels is what motivates our *a priori* sampling layout (Sec. [3.1](#6)). None of these
+
+works ask whether a pretrained FM’s representation has actually learned the marker; that is the question we
+
+take up in Sec. [4.3 ](#14)via aperiodic ablation of the input.
+
+**Aperiodic** 1*/f* **background as a subject feature in EEG.** The aperiodic 1*/f* slope and offset are
+
+parametrized by FOOOF ([Donoghue et al.](#25)[,](#25) [2020](#25)). [Demuru and Fraschini ](#25)([2020](#25)) demonstrate that these
+
+aperiodic features are stable within an individual across sessions and distinguish subjects independently
+
+of task-evoked oscillations, in parallel to functional-connectivity fingerprinting on fMRI ([Finn et al.](#26)[,](#26) [2015](#26))
+
+and earlier EEG biometric work ([Campisi and La Rocca](#25), [2014](#25)[;](#25) [Marcel and Millán](#27), [2007](#27)). [Demuru and](#25)
+
+[Fraschini ](#25)([2020](#25)) specifically report that handcrafted aperiodic features identify subjects with higher accuracy
+
+than canonical band-power features, and remain consistent across eyes-open and eyes-closed conditions.
+
+This makes the aperiodic 1*/f* one identifiable subject-specific carrier in classical EEG features. The fMRI
+
+fingerprinting work cited above documents the same between-subject stability for that modality, without
+
+specifying which spectral component carries it. A follow-on connectome analysis further reports that the edges
+
+discriminating individuals show no single-edge overlap with the edges predicting behavior across cognitive,
+
+language, and motor variables, indicating that subject-identifying and label-relevant signals can dissociate at
+
+the network-feature level ([Mantwill et al.](#27)[,](#27) [2022](#27)). To our knowledge, no prior work has asked which spectral
+
+component carries that subject identity inside a pretrained EEG-FM, nor whether it survives self-supervised
+
+pretraining on cross-subject corpora. Sec. [4.3 ](#14)addresses this question via FOOOF-aperiodic input ablation as
+
+a correlational intervention on the frozen representation.
+
+**Mechanism hypotheses for FM representation bias.** Three lines of prior ML work motivate, but do
+
+not establish, the mechanisms by which a self-supervised FM might preferentially encode stable physiological
+
+subject features over transient task-related features. [Geirhos et al. ](#26)([2020](#26)) document that neural networks
+
+tend to exploit dataset-stable cues that correlate with labels (*shortcut features*) over invariant discriminative
+
+cues. Under an MSE (squared-error) reconstruction loss, masked-modeling objectives put most of their loss
+
+on the high-variance components of the input, and the model is widely conjectured to spend proportionally
+
+-----
+
+|  |
+| :-: |
+| [**Page 6**]() |
+
+Preprint
+
+6
+
+more capacity on those same components. In EEG, the broadband aperiodic 1*/f* baseline carries most of the
+
+low-frequency spectral variance by construction. [El Ouahidi et al. ](#26)([2025](#26)) explicitly motivate their L1 (rather
+
+than MSE) reconstruction loss as a counter to the L2 sensitivity to noise and outliers in EEG. This is one
+
+concrete design choice on which our three FMs differ. Linear-network analyses ([Saxe et al.](#27)[,](#27) [2019](#27)) additionally
+
+show that gradient descent on a linear network preferentially learns the largest-singular-value directions of
+
+the input–output correlation first, and we conjecture that an analogous direction-ordering operates under
+
+small-*N* supervised fine-tuning of the FM head. Each of these is a candidate contributing factor for our
+
+findings; we do not isolate any of them experimentally.
+
+**Multi-axis taxonomies in EEG-FM benchmarking.** Existing aggregate benchmarks organize EEG-FM
+
+evaluation either as a single-dataset case study or as a leaderboard that aggregates across many tasks and
+
+datasets. EEG-FM-Bench ([Xiong et al.](#28)[,](#28) [2025](#28)), AdaBrain-Bench ([Wu et al.](#28)[,](#28) [2025](#28)), EEG-Bench ([Kastrati](#26)
+
+[et al.](#26)[,](#26) [2025](#26)), and Brain4FMs ([Shen et al.](#28)[,](#28) [2026](#28)) report dozens of task–dataset cells and broadly converge on
+
+the observation that FMs are not uniformly superior across clinical cross-subject tasks ([Aristimunha et al.](#25),
+
+[2025](#25)): AdaBrain-Bench reports that on clinical monitoring tasks “foundation models perform comparable
+
+or even worse than traditional models” ([Wu et al.](#28)[,](#28) [2025](#28)). An independent review of ten early EEG-FMs
+
+reaches a parallel conclusion at the methodology level: that evaluation strategies across the field remain
+
+heterogeneous and limited, and that standardized, scaled evaluations are a prerequisite for assessing practical
+
+off-the-shelf utility ([Kuruppu et al.](#27)[,](#27) [2025](#27)). Their taxonomies are organized along axes orthogonal to ours
+
+(task category, pretraining objective, or fine-tuning strategy), and none ask which physiological component of
+
+the EEG spectrum the learned representation aligns with. Three FMs and four datasets, selected *a priori* to
+
+span complementary labeling outcomes, support representation-level diagnostics that read each pair against
+
+the literature-fixed properties the cell carries.
+
+**3 Methods**
+
+This section covers the sampling layout, feature extraction and evaluation protocol, the fine-tuning recipe,
+
+and the five FMScope diagnostics.
+
+**3.1 The** 2 × 2 **sampling layout**
+
+We assign the four datasets a priori to a 2 × 2 layout cross-classifying (a) subject relation of the label and
+
+(b) consensus cross-subject marker. *Axis A* is read from dataset structure: **within-subject paired** when
+
+each subject contributes recordings under both classes (EEGMAT, SleepDep) versus **subject-label trait**
+
+when the label is fixed per subject (ADFTD; Stress under per-recording DASS-21 binarization ([Lovibond](#27)
+
+[and Lovibond](#27)[,](#27) [1995](#27))). For Stress, 14 of 17 subjects carry a single label across all their recordings; the 3
+
+mixed-cutoff subjects are kept for the headline benchmark and dropped from any mechanistic diagnostic
+
+that requires a subject-level label. *Axis B* is a literature-anchored a priori expectation. The **consensus**
+
+column comprises labels for which prior peer-reviewed EEG work has established a replicable cross-subject
+
+signature: frontal-midline *θ* and parieto-occipital *α* modulation for mental arithmetic (EEGMAT; ([Klimesch](#26),
+
+[1999](#26)[;](#26) [Gevins et al.](#26)[,](#26) [1997](#26)[;](#26) [Klimesch](#26)[,](#26) [2012](#26))), and posterior *α* peak-frequency reduction for AD/FTD (ADFTD;
+
+([Babiloni et al.](#25)[,](#25) [2021](#25)) expert-panel consensus). The **no-consensus** column comprises labels for which no
+
+such signature has been replicated: chronic stress (Stress; frontal alpha asymmetry contested, ([Reznik and](#27)
+
+[Allen](#27)[,](#27) [2018](#27)[;](#27) [van der Vinne et al.](#28)[,](#28) [2017](#28))) and sleep deprivation (SleepDep; the dataset paper reports no
+
+candidate cross-subject EEG marker, ([Xiang et al.](#28)[,](#28) [2024](#28))). The 2×2 layout is fixed before any FM is trained,
+
+and we state its falsifiable consequence in advance: fine-tuning should amplify label-variance preferentially in
+
+consensus cells (tested in Sec. [4.4](#14)). Tab. [1 ](#7)summarizes the assignment.
+
+**3.2 Per-dataset specifications**
+
+All four datasets are small-*N* (*N* ≤ 65) resting-state (or rest-plus-task) EEG at 19–30 channels, 200 Hz after
+
+per-dataset resampling. We standardize preprocessing across cells: per-channel mean subtraction, 1–45 Hz
+
+-----
+
+|  |
+| :-: |
+| [**Page 7**]() |
+
+Preprint
+
+7
+
+Table 1: **Dataset assignment to the** 2 × 2 **sampling layout.** Rows: subject relation of the label (Axis
+
+A, read from dataset structure). Columns: consensus cross-subject marker (Axis B, fixed a priori from
+
+peer-reviewed EEG literature under the criterion in Sec. [3.1](#6)). Each cell gives the dataset, its literature anchor,
+
+and recordings / subjects.
+
+**Consensus marker**
+
+**No-consensus marker**
+
+**Within-subject**
+
+**EEGMAT**
+
+**SleepDep**
+
+**paired**
+
+FMT *θ* + occipital *α*
+
+no replicated marker
+
+([Klimesch](#26)[,](#26) [1999](#26)[;](#26) [Gevins et al.](#26)[,](#26) [1997](#26))
+
+([Xiang et al.](#28)[,](#28) [2024](#28))
+
+72 rec / 36 subj
+
+72 / 36
+
+**Subject-label**
+
+**ADFTD**
+
+**Stress (DASS)**
+
+**trait**
+
+posterior *α* peak / power
+
+FAA contested
+
+([Babiloni et al.](#25)[,](#25) [2021](#25))
+
+([Reznik and Allen](#27)[,](#27) [2018](#27)[;](#27) [van der Vinne et al.](#28)[,](#28) [2017](#28))
+
+65 / 65
+
+70 / 17
+
+zero-phase Butterworth band-pass, 5 s non-overlapping epochs.
+
+**EEGMAT**: 36 subjects × 72 recordings (3-min eyes-closed rest vs. 1-min serial-subtraction arithmetic);
+
+19-channel 10–20 montage ([Zyma et al.](#28)[,](#28) [2019](#28)); within-subject paired, consensus marker. **ADFTD**: 65
+
+subjects (AD = 36, HC = 29), one recording per subject ([Miltiadous et al.](#27)[,](#27) [2023](#27)); restricted to AD vs. HC for
+
+Axis B alignment with the AD-specific prior ([Babiloni et al.](#25)[,](#25) [2021](#25)); 19-channel 10–20 montage; subject-label
+
+trait, consensus marker. **SleepDep**: the dataset of [Xiang et al. ](#28)([2024](#28)) has 71 participants; 38 of them
+
+contributed an eyes-closed recording. We use that eyes-closed subset and exclude 2 subjects whose session
+
+files are corrupted, leaving 36 subjects × 72 recordings (baseline vs. 24 h sleep deprivation); 19-channel;
+
+within-subject paired, no-consensus marker. **Stress-DASS**: 17 subjects × 70 recordings with per-recording
+
+DASS-21 self-report ([Komarov et al.](#26)[,](#26) [2020](#26)); 30-channel; subject-label trait, no-consensus marker.
+
+**3.3 Foundation model feature extraction and per-FM input normalization**
+
+We evaluate three open-weight EEG foundation models spanning complementary pretraining objectives and
+
+tokenization strategies: LaBraM ([Jiang et al.](#26)[,](#26) [2024](#26)), CBraMod ([Wang et al.](#28)[,](#28) [2025a](#28)), and REVE ([El Ouahidi](#26)
+
+[et al.](#26)[,](#26) [2025](#26)). Each backbone receives a 5 s by *C*-channel input at 200Hz and emits a pooled embedding: a
+
+single fixed-length vector summarizing that 5 s window, of dimension *d* ∈ {200*,* 200*,* 512} depending on the
+
+backbone. The backbone determines the pooling rule, and we do not re-pool the data. LaBraM and CBraMod
+
+both produce their embedding by mean pooling over encoder output tokens: LaBraM averages patch tokens
+
+after stripping a prepended classification (CLS) token (matching the release-default head described in [Jiang](#26)
+
+[et al.](#26)[,](#26) [2024 ](#26)§2.1), and CBraMod applies 2D adaptive average pooling over the (channel, patch) grid (one of
+
+the head variants provided in the CBraMod release). REVE returns the attention-pooling secondary-task
+
+token (a learnable query that attends over all channel–patch tokens, per [El Ouahidi et al.](#26)[,](#26) [2025 ](#26)§2.4).
+
+**Input normalization.** All three backbones receive raw microvolt-scale input and each applies its release-
+
+default internal rescaling before its patch embedding. We hold the input contract fixed across cells and do
+
+not sweep it.
+
+**Feature extraction modes.** Frozen linear probe (LP) freezes the backbone (no gradient) and passes the
+
+pooled embedding through a percentile-based clip (fit per dimension on each fold’s training data), a standard
+
+scaler, and an *L*2-penalized logistic regression with balanced class weights, all held at fixed canonical values.
+
+Per-window posterior probabilities are mean-pooled within a recording and thresholded at 0*.*5 to produce the
+
+recording-level decision; the threshold is fixed by design and not tuned. Full fine-tuning (FT) unfreezes the
+
+backbone and adds a single linear classification head trained end-to-end under the recipe in Sec. [3.5](#8). All
+
+three backbones expose the same interface. They take a multi-channel EEG epoch as input and return a
+
+pooled embedding, so the training loop is backbone-agnostic.
+
+-----
+
+|  |
+| :-: |
+| [**Page 8**]() |
+
+Preprint
+
+8
+
+**3.4 Evaluation protocol**
+
+**Primary protocol: subject-disjoint 5-fold CV.** All cells report balanced accuracy (BA), defined as the
+
+unweighted mean of per-class recall, which we use because the cells are class-imbalanced. Cross-validation is
+
+subject-stratified group *K*-fold with *K* = 5, grouped by subject so that no subject contributes recordings to
+
+both the train and test folds of a given split ([Brookshire et al.](#25)[,](#25) [2024](#25)). We aggregate at the recording level by
+
+averaging per-window posteriors within a recording, thresholding at 0*.*5, and comparing to the recording
+
+label. This is the single evaluation rule used for the sampling layout axis B classification and the baseline
+
+performance table (Tab. [2](#12)).
+
+**Multi-seed requirement.** Small-*N* cells exhibit non-trivial seed-to-seed FT variability under deterministic
+
+cuDNN. We average every balanced accuracy claim over three FT training seeds (seeds {42*,* 123*,* 2024}) and
+
+report it as mean ± sample standard deviation; LP additionally averages over a fixed eight-seed set. Wide
+
+confidence intervals reflect the inherent instability of fine-tuning on small-*N* cohorts; the relative performance
+
+gaps between tiers remain consistent across seeds.
+
+**3.5 Fine-tuning configuration**
+
+Each foundation model is fine-tuned under the configuration published in its original repository, applied
+
+uniformly across the four cells; we do not run a per-dataset hyperparameter sweep. All three FMs share
+
+the AdamW optimizer, the cross-entropy loss with label smoothing, early stopping on a moving-average of
+
+held-out balanced accuracy, and a single linear classification head with two output units. LaBraM additionally
+
+uses the small-scale head initialization prescribed in its release ([Jiang et al.](#26)[,](#26) [2024](#26)).
+
+**3.6 Reference baselines (classical and non-FM-deep)**
+
+Two reference baselines situate the FM tier in Tab. [2](#12).
+
+**Classical handcrafted-feature baseline.** A per-recording feature vector is built from the time-averaged
+
+power spectrum (Welch, *n*perseg = min(256*,T*)): for each channel, mean band-power in *θ* (4–8 Hz), *α* (8–13 Hz)
+
+and *β* (13–30 Hz); per-channel *θ/α* and *θ/β* ratios; and frontal/parietal alpha-asymmetry log *P*right
+
+*α*
+
+− log *P*left
+
+*α*
+
+over six electrode pairs (Fp1/Fp2, F3/F4, F7/F8, C3/C4, P3/P4, O1/O2). At 19 channels this yields
+
+5 × 19 + 6 = 101 features. We fit *L*2-regularized logistic regression with feature standardization, inverse
+
+regularization strength *C* = 1, and balanced class weights, under the same subject-disjoint 5-fold CV, three
+
+seeds.
+
+**Non-FM-deep baselines.** Four convolutional / hybrid architectures trained from scratch on raw EEG:
+
+EEGNet ([Lawhern et al.](#27)[,](#27) [2018](#27)), ShallowConvNet and DeepConvNet ([Schirrmeister et al.](#27)[,](#27) [2017](#27)), and EEG-
+
+Conformer ([Song et al.](#28)[,](#28) [2023](#28)). Each is trained per dataset under the same CV splits and seeds, with *z*-score
+
+input normalization (matching the early-BatchNorm convention used in standard implementations of these
+
+architectures). No foundation-model pretrained weights are used.
+
+**3.7 Diagnostic method specifications**
+
+FMScope comprises five frozen-representation diagnostics, organized by the question each answers. Two
+
+of these establish the Identity Trap itself: whether subject identity dominates the representation (variance
+
+decomposition, Sec. [3.7.1](#8)) and whether that dominance is confined to a linearly removable axis (subject-axis
+
+erasure, Sec. [3.7.2](#10)). The other three characterize its origin and structure: its spectral carrier (aperiodic
+
+ablation, Sec. [3.7.3](#10)), the depth at which it becomes linearly separable (layer-wise probe, Sec. [3.7.4](#11)), and
+
+whether subjects encode the task contrast along a shared direction (direction consistency, Sec. [3.7.5](#11)). Each
+
+diagnostic carries a scope condition stating the cells in which it returns a defined answer and is read only
+
+where that scope is met, so a cohort need not exercise all five.
+
+-----
+
+|  |
+| :-: |
+| [**Page 9**]() |
+
+Preprint
+
+9
+
+**Frozen**
+
+**embeddings**
+
+**Variance Decomposition**
+
+**Subject-axis erasure**
+
+**(LEACE)**
+
+**Quantify dominance**
+
+**of subject-specific**
+
+**variance in**
+
+**embedding space.**
+
+**Check if subjects share**
+
+**a common contrast axis**
+
+**Phase I**
+
+**Characterize subject-driven variance**
+
+**Phase II**
+
+**Detailed Mechanism Diagnostic**
+
+**FOOOF Ablation**
+
+**Layer-wise probing**
+
+**Direction consistency**
+
+**Localize the depth at**
+
+**which identity emerges**
+
+**Pinpoint spectral carrier**
+
+**that contains identity.**
+
+**Phase III**
+
+**Integrated report**
+
+**Integrated report**
+
+**Converge diagnostics**
+
+**into per-cell assignment**
+
+**Test if identity is**
+
+**confined to a**
+
+**removable linear**
+
+**space**
+
+Figure 2: **FMScope diagnostic pipeline.** The framework evaluates frozen representations from EEG
+
+foundation models across three sequential phases. **Phase I** establishes the existence of the Identity Trap by
+
+quantifying subject-variance dominance and testing its linear removability via least-squares concept erasure
+
+(LEACE). **Phase II** characterizes the underlying mechanisms using three tools: localizing the depth of
+
+subject-identity emergence (layer-wise probing), isolating the physiological carrier via spectral input ablation
+
+(FOOOF), and evaluating task-axis alignment across subjects (direction consistency). **Phase III** synthesizes
+
+these diagnostic outputs into an integrated report, converging on a final cell-level verdict for the specific
+
+cohort-model pair.
+
+**3.7.1 Variance decomposition of frozen representations**
+
+For each (dataset, FM) we decompose per-window embedding variance via a crossed two-factor sum-of-squares
+
+partition with label and subject as factors; this is the marginalization step of demixed PCA ([Kobak et al.](#26),
+
+[2016](#26)).
+
+SStotal ≈ SSlabel + SSsubject + SSresidual*,*
+
+(1)
+
+where, for a factor *g* ∈ {label*,* subject} with groups indexed by *c*, we compute the between-group SS marginally
+
+over the other factor as
+
+SS*g* =
+
+X
+
+*c*
+
+*nc*
+
+¯**f***c* − ¯**f**
+
+2
+
+*,*
+
+(2)
+
+with ¯**f***c* the per-group mean embedding, ¯**f** the grand mean, *nc* the group window count, and SSresidual
+
+obtained by subtraction and clipped at zero. We operate at the window level so the partition is defined for
+
+single-session trait cells (ADFTD: each recording yields ≥ 2 windows). Cluster-bootstrap CIs over subjects
+
+(*B* = 2*,*000) preserve the within-subject correlation structure ([Field and Welsh](#26)[,](#26) [2007](#26)). Reading the partition
+
+is cell-conditional. In within-subject paired cells the two factors are orthogonal so the fractions sum to *\<*1;
+
+in trait cells the subject factor structurally contains the label factor, which naturally allows the marginal
+
+fractions to sum to *\>*1 because they represent overlapping variance components. We therefore emphasize the
+
+within-cell label-fraction shift (FT − frozen) rather than absolute fractions. Let *f*label = SSlabel*/*SStotal and
+
+*f*subj = SSsubject*/*SStotal denote the label- and subject-variance fractions; throughout, ∆ denotes the change
+
+after the relevant intervention (here fine-tuning; in Sec. [3.7.3](#10), aperiodic removal), so ∆*f*label is the FT −
+
+frozen change in label-variance fraction and ∆*f*subj is the analogous change in subject-variance fraction. Scope
+
+condition: all cells; for Stress the 3/17 mixed-cutoff subjects are dropped, leaving a 14-subject strict-trait
+
+subset.
+
+-----
+
+|  |
+| :-: |
+| [**Page 10**]() |
+
+Preprint
+
+10
+
+**Column-effect test on** ∆*f*label**.** Across the 12 (cell, FM) pairs we contrast the 6 consensus-marker pairs
+
+against the 6 no-consensus pairs on ∆*f*label using a one-sided Mann–Whitney U test; the test is non-parametric
+
+and distribution-free, appropriate for the small sample. The 12 pairs share data within cell (cell-level *n* = 4
+
+with 3 FMs nested per cell), so we read U as an effect-size summary (we report the rank-biserial *r* in the
+
+Results) rather than as axis-level inference.
+
+**3.7.2 Subject-axis erasure**
+
+Variance decomposition measures how much of the representation subject identity occupies; erasure tests
+
+whether that identity is confined to a removable linear axis and at what cost to the clinical label. We apply
+
+LEACE ([Belrose et al.](#25)[,](#25) [2023](#25)), least-squares concept erasure: the minimum-displacement affine map that
+
+renders a target concept linearly unpredictable. For per-window embeddings **X** and one-hot subject labels
+
+**Z**, LEACE removes the subspace spanned by **W**Σ**XZ**, with **W** = Σ
+
+−1*/*2
+
+**XX**
+
+the whitening transform, which we
+
+estimate under Ledoit–Wolf shrinkage for numerical conditioning. Centred one-hot labels for *k* subjects span
+
+*k* − 1 dimensions, so the erased subspace has rank *k* − 1: it is the between-subject-mean subspace. After
+
+erasure no linear classifier recovers subject identity above chance; the guarantee is linear only, so we report the
+
+identity still recoverable by a nonlinear probe (a one-hidden-layer MLP) alongside it. The map is undefined
+
+when *k* − 1 ≥ *d*, where the subject subspace fills the feature space; we test this condition and skip the cell
+
+when it holds. To quantify the cost of erasure to the task, we re-run the recording-level label probe (Sec. [3.7.3](#10))
+
+on the erased features and report ∆erase, the change in label balanced accuracy. Scope condition: all cells for
+
+the erasure and nonlinear-residual read-out. ∆erase is interpretable only in within-subject paired cells, where
+
+the label varies within subject and is therefore separable from the erased between-subject subspace; in trait
+
+cells the label is a per-subject constant whose class-mean direction lies inside the subject subspace, so erasure
+
+removes it by construction and ∆erase is undefined. It is read only where the un-erased baseline also clears
+
+chance.
+
+**3.7.3 Spectral Anchor Ablation (FOOOF)**
+
+We intervene on the EEG via FOOOF ablation, which modifies the spectral shape (aperiodic background vs.
+
+periodic peaks) while preserving frequency support, and observe how the FM’s frozen probe responds.
+
+For each recording we fit a per-channel FOOOF decomposition ([Donoghue et al.](#25)[,](#25) [2020](#25)) on the 1–45 Hz
+
+band, parameterizing the log-power spectrum as
+
+log10PSD(*f*) = *b* − *χ* log10 *f*
+
+|
+
+{z
+
+}
+
+aperiodic *L*(*f*)
+
+\+
+
+*N*
+
+X
+
+*n*=1
+
+*Gn*(*f*)*,*
+
+(3)
+
+where *b* is an offset, *χ* (Greek chi) the aperiodic exponent (slope of 1*/f* on log-log axes; higher *χ* means
+
+relatively more low-frequency power), and each *Gn*(*f*) a Gaussian peak in log-power. With *X*(*f*) the per-
+
+channel FFT, ˆ*A*(*f*) = 10*L*(*f*)*/*2 the fitted aperiodic amplitude envelope, and *Pn*(*f*)= ˆ*A*(*f*)2(10*Gn*(*f*) − 1) the
+
+linear-power contribution of peak *n*, we construct three phase-preserving reconstructions
+
+| e*X*(*f*)| =
+
+
+
+
+
+
+
+|*X*(*f*)|*/* ˆ*A*(*f*)
+
+aperiodic-removed,
+
+pmax(|*X*(*f*)|2 − P*n Pn*(*f*)*,* 0) periodic-removed,
+
+| e*X*per-rem(*f*)|*/* ˆ*A*(*f*)
+
+both-removed,
+
+(4)
+
+each combined with the original phase spectrum and inverted via FFT. Each reconstruction is re-extracted
+
+through the FM and probed with two diagnostics. The label probe is a binary *L*2-penalized logistic regression
+
+on per-window features under subject-stratified group *K*-fold (*K* = 5). The pipeline matches the LP
+
+recipe (percentile clip + standard scaler) and aggregates to the recording level by mean-pooling per-window
+
+posteriors; balanced accuracy is averaged over 8 seeds (the LP seed set). The subject-identity probe is a
+
+multi-class classifier of subject identity (one class per subject) under a 5-fold *temporal-block* protocol: per
+
+subject, the windows are concatenated across recordings in canonical order and split into 5 contiguous blocks;
+
+-----
+
+|  |
+| :-: |
+| [**Page 11**]() |
+
+Preprint
+
+11
+
+fold *f* tests block *f* from every subject and trains on the remaining four blocks. The classifier is linear
+
+discriminant analysis with Ledoit–Wolf shrinkage of the within-class covariance toward a scaled identity
+
+matrix. The shrinkage stabilizes the covariance estimate when the number of windows per subject is small.
+
+The classifier uses a closed-form solver with no stochastic optimization, so we run it at a single seed. Per-fold
+
+balanced accuracy is averaged across the 5 folds. On multi-recording cells (EEGMAT, SleepDep, Stress) the
+
+blocks cross recording boundaries, so the probe also tests whether the subject signal is stable across sessions.
+
+ADFTD has only one recording per subject by design, so its blocks are always within a single recording.
+
+**FT extension.** To extend the intervention from the frozen representation to the fine-tuned representation,
+
+we re-extract and fine-tune each backbone end-to-end on the ablated input under the same recipe as Sec. [3.5](#8)
+
+and run both probes (state and subject) on the resulting test-fold per-window features concatenated across
+
+the 5 CV folds. Per (cell, FM, condition) we average ∆probeBA = ablated minus original input over 3
+
+fine-tuning seeds; the FT extension covers both conditions (aperiodic-removed and periodic-removed).
+
+Output. The diagnostic returns a per-cell 1*/f*-role reading derived from the joint change in label-probe
+
+BA and subject-probe BA under aperiodic removal, where each ∆ is computed as aperiodic-removed minus
+
+original.
+
+Scope condition: all four cells for the label probe and subject probe at frozen and FT representations.
+
+**3.7.4 Layer-wise probe**
+
+To localize the depth at which subject identity emerges within the encoder, we replay each FM’s forward
+
+pass with eight intermediate-depth captures and apply the same two read-outs used elsewhere in the paper
+
+(temporal-block subject-ID probe; canonical recording-level linear probe with three CV seeds) at every
+
+captured depth. Pooling at each captured depth uses the backbone’s own canonical scheme, so the final-depth
+
+row reproduces the main-paper frozen feature to numerical precision.
+
+Scope condition: all four cells for both probes.
+
+**3.7.5 Within-subject direction and signal-to-noise characterization**
+
+For within-subject paired cells we measure (i) whether subjects encode the state contrast along a consistent
+
+direction in FM feature space, and (ii) whether per-subject contrast magnitudes separate from cross-subject
+
+heterogeneity. For each subject *s* we form the per-subject contrast vector
+
+**∆***s* = ¯**f***s,*1 − ¯**f***s,*0*,*
+
+(5)
+
+where ¯**f***s,y* is the window-mean embedding for subject *s* under label class *y*. The within-subject direction
+
+consistency index ¯*c* (WSCI) is the mean pairwise cosine similarity across the *n* per-subject contrast vectors,
+
+¯*c* =
+
+*n*
+
+2
+
+−1
+
+X
+
+*i\<j*
+
+**∆**
+
+⊤
+
+*i* **∆***j*
+
+∥**∆***i*∥∥**∆***j*∥
+
+;
+
+(6)
+
+high ¯*c* implies a shared cross-subject axis, ¯*c* ≈ 0 implies idiosyncratic directions. The per-subject SNR is a
+
+signal-to-noise ratio of mean contrast magnitude *σs* = ∥**∆***s*∥ to its cross-subject standard deviation,
+
+SNRper-subj =
+
+*σs*
+
+SD*s*(*σs*)
+
+*.*
+
+(7)
+
+¯*c* and SNR together characterize direction agreement and magnitude-vs-noise; we do not compose them
+
+into a single assessment. Scope condition: within-subject paired cells only (EEGMAT, SleepDep); marked
+
+inapplicable in trait cells.
+
+**Within-cell label-structure detector (cosine PERMANOVA).** ¯*c* is undefined in trait cells (no
+
+within-subject contrast) and uninterpretable when subjects do not share a direction (¯*c* ≈ 0). To detect
+
+whether a label-associated signature exists in feature geometry, independent of whether subjects share a
+
+-----
+
+|  |
+| :-: |
+| [**Page 12**]() |
+
+Preprint
+
+12
+
+contrast direction, we run PERMANOVA ([Anderson](#25)[,](#25) [2001](#25)) on the cosine dissimilarity matrix of per-window
+
+embeddings. The design factor is the labeling unit (subject for ADFTD; recording within pair block for
+
+EEGMAT and SleepDep; recording for Stress). We use 999 permutations per (cell, FM, state), giving a floor
+
+of *p* ≈ 0*.*001. We read PERMANOVA as a within-cell test for whether label-related geometric structure exists
+
+at all, not as the axis-level consensus-vs-no-consensus contrast (which is reported on ∆*f*label in Sec. [3.7.1](#8)).
+
+Scope condition: all four cells. Per-cell assessments are tabulated in App. [C](#23).
+
+**4 Results**
+
+The Results proceed in four steps. We start with the baseline performance picture: full fine-tuning rarely
+
+improves over a frozen linear probe (Sec. [4.1](#12)). To see what fine-tuning starts from, we then characterize the
+
+frozen representation itself; subject identity dominates, and the encoder amplifies it into a linearly separable
+
+direction within its first few transformer blocks (Sec. [4.2](#12)). A natural next question is which input feature
+
+carries that subject identity. The aperiodic 1*/f* background is one such carrier on LaBraM and CBraMod
+
+(Sec. [4.3](#14)). Sec. [4.4 ](#14)summarizes the per-cell evidence for the final assessment.
+
+**4.1 Baseline performance and the fine-tuning paradox**
+
+Tab. [2 ](#12)reports subject-disjoint balanced accuracy across the four cells under three FMs (linear probe and full
+
+fine-tuning), four convolutional / hybrid baselines trained from scratch, and a classical handcrafted-feature
+
+LogReg.
+
+Table 2: **Subject-disjoint 5-fold CV balanced accuracy across the four cells.** Rows: classical
+
+handcrafted-feature LogReg, four non-FM deep baselines, and three foundation models under linear probe
+
+(LP) and full fine-tuning (FT). Columns ordered by the four-cell layout. Values are 3-seed mean with sample
+
+std (seeds {42*,* 123*,* 2024}); **bold** = global best within column. Method details: Sec. [3.5](#8).
+
+**Method**
+
+**Strategy**
+
+**EEGMAT**
+
+**ADFTD**
+
+**SleepDep**
+
+**Stress**
+
+*within*×*consensus trait*×*consensus within*×*no-consensus trait*×*no-consensus*
+
+Classical LR
+
+–
+
+**0.847** ± **0.050**
+
+0.587 ± 0.004
+
+0.542 ± 0.037
+
+0.506 ± 0.019
+
+EEGNet
+
+–
+
+0.671 ± 0.042
+
+0.793 ± 0.016
+
+0.500 ± 0.014
+
+**0.545** ± **0.059**
+
+ShallowConvNet –
+
+0.699 ± 0.008
+
+0.788 ± 0.041
+
+0.505 ± 0.040
+
+0.476 ± 0.031
+
+DeepConvNet
+
+–
+
+0.602 ± 0.021
+
+0.773 ± 0.038
+
+0.482 ± 0.095
+
+0.524 ± 0.066
+
+EEGConformer
+
+–
+
+0.676 ± 0.032
+
+0.792 ± 0.021
+
+0.514 ± 0.048
+
+0.530 ± 0.045
+
+LaBraM
+
+LP
+
+0.755 ± 0.070
+
+**0.814** ± **0.023**
+
+0.542 ± 0.037
+
+0.464 ± 0.032
+
+FT
+
+0.718 ± 0.032
+
+0.769 ± 0.045
+
+0.546 ± 0.045
+
+0.429 ± 0.063
+
+CBraMod
+
+LP
+
+0.708 ± 0.037
+
+0.751 ± 0.010
+
+0.542 ± 0.050
+
+0.440 ± 0.019
+
+FT
+
+0.694 ± 0.014
+
+0.772 ± 0.042
+
+0.481 ± 0.049
+
+0.438 ± 0.024
+
+REVE
+
+LP
+
+0.755 ± 0.021
+
+0.762 ± 0.017
+
+**0.556** ± **0.024**
+
+0.497 ± 0.019
+
+FT
+
+0.727 ± 0.021
+
+0.796 ± 0.009
+
+0.542 ± 0.061
+
+0.491 ± 0.015
+
+Fine-tuning rarely beats the frozen linear probe: 10 of 12 pairs fall within ±1 pp of the corresponding
+
+LP. ADFTD is the one cell where FM pretraining yields a measurable advantage over the classical and
+
+non-FM-deep baselines. On EEGMAT the classical RF beats every FM tier. On Stress and SleepDep all four
+
+tiers fall within a 0*.*43–0*.*57 band. The Wang *et al.* 0*.*9047 Stress headline ([Wang et al.](#28), [2025b](#28)) does not
+
+reproduce under subject-disjoint cross-validation; the gap is ∼ 45 pp.
+
+**4.2 Subject-dominant baseline geometry**
+
+We decompose per-window frozen and fine-tuned features into label, subject, and residual variance components
+
+(Sec. [3.7.1](#8); Fig. [3](#13)). The frozen subject-variance fraction is 13–89× a matched random-Gaussian null in 12
+
+-----
+
+|  |
+| :-: |
+| [**Page 13**]() |
+
+Preprint
+
+13
+
+**LaBraM**
+
+**CBraMod**
+
+**REVE**
+
+0
+
+25
+
+50
+
+75
+
+100
+
+variance explained (%)
+
+**1.3**
+
+**9.7**
+
+**1.1**
+
+**2.6**
+
+**1.8**
+
+**4.6**
+
+**frz**
+
+**FT**
+
+**frz**
+
+**FT**
+
+**frz**
+
+**FT**
+
+null *f*subj ≈ 2.05%
+
+EEGMAT
+
+(Within-subject × consensus marker)
+
+**LaBraM**
+
+**CBraMod**
+
+**REVE**
+
+**0.5**
+
+**0.3**
+
+**0.5**
+
+**0.3**
+
+**2.2**
+
+**0.3**
+
+**frz**
+
+**FT**
+
+**frz**
+
+**FT**
+
+**frz**
+
+**FT**
+
+null *f*subj ≈ 0.83%
+
+SleepDep
+
+(Within-subject × no consensus marker)
+
+**LaBraM**
+
+**CBraMod**
+
+**REVE**
+
+0
+
+25
+
+50
+
+75
+
+100
+
+variance explained (%)
+
+**6.6**
+
+**13.3**
+
+**5.5**
+
+**10.7**
+
+**4.6**
+
+**5.2**
+
+**frz**
+
+**FT**
+
+**frz**
+
+**FT**
+
+**frz**
+
+**FT**
+
+null *f*subj ≈ 0.66%
+
+ADFTD
+
+(Subject/label-trait × consensus marker)
+
+**LaBraM**
+
+**CBraMod**
+
+**REVE**
+
+**2.9**
+
+**2.5**
+
+**1.4**
+
+**2.2**
+
+**2.1**
+
+**2.6**
+
+**frz**
+
+**FT**
+
+**frz**
+
+**FT**
+
+**frz**
+
+**FT**
+
+null *f*subj ≈ 0.29%
+
+Stress (DASS)
+
+(Subject/label-trait × no consensus marker)
+
+subject\_frac
+
+label\_frac
+
+frozen
+
+fine-tuned
+
+null subject\_frac
+
+Figure 3: **Variance decomposition across the four cells.** Window-level subject and label fractions for
+
+frozen and fine-tuned features. Stacked bars: subject (lower) + label (upper); gap to 100% is residual. Dashed
+
+red line marks the matched random-Gaussian null *f*subj (mean over 20 seeds; per-cell numeric callout in each
+
+panel). Frozen subject fraction exceeds the null by 13–89× across 12 (cell, FM) pairs; under fine-tuning,
+
+subject fraction rises in 12 of 12 pairs (largest on Stress: +32 / +63 / +43 pp on LaBraM / CBraMod /
+
+REVE), while label fraction rises only in cells with a consensus cross-subject marker (per-pair values in
+
+Tab. [A1](#22); null-control values in Tab. [A2](#23)).
+
+of 12 (cell × FM) pairs (per-pair values in Tab. [A2](#23)); fine-tuning increases the subject fraction in all 12
+
+pairs (+10 to +63 pp, largest on Stress), while ∆*f*label is positive in 6 of 6 consensus-marker pairs (+0*.*6 to
+
+\+8*.*4 pp) and spans zero in 6 of 6 no-consensus pairs (−1*.*9 to +0*.*8 pp). The two ∆*f*label ranges do not overlap
+
+(one-sided Mann–Whitney U on the 12 values: *p* = 0*.*0022, rank-biserial *r* = +0*.*94; Sec. [3.7.1](#8)).
+
+This subject dominance is a removable linear axis, not diffuse structure (Tab. [3](#14)). Closed-form erasure
+
+(Sec. [3.7.2](#10)) drives the linear subject probe to chance in all 12 pairs. A nonlinear probe still recovers part of
+
+the identity, substantial for REVE, which we report alongside. Whether removing the axis helps the task can
+
+be asked only in within-subject paired cells, where the label varies within subject. On EEGMAT, the one
+
+such cell with an above-chance baseline, the frozen probes start below the classical baseline (0*.*847); erasure
+
+lifts all three FMs and closes this gap, with LaBraM reaching 0*.*875. On SleepDep (no-consensus, near-chance
+
+baseline) the change is small and inconsistent across FMs, as expected when little label signal is present.
+
+This is a single clean demonstration; App. [E ](#24)extends it to five further cohorts with a within-subject contrast,
+
+where ∆erase stays positive on all three consensus-marker cohorts and turns mixed-to-negative on the two
+
+without an established marker (positive in 12 of 12 consensus cell×FM values including the primary cell;
+
+one-sided sign test *p* = 2*.*4 × 10−4).
+
+A layer-wise re-probe (Sec. [3.7.4](#11); Fig. [4](#15)) shows that the subject axis becomes linearly decodable inside the
+
+encoder rather than at the embedding output: the encoder actively amplifies subject identity into a separable
+
+-----
+
+|  |
+| :-: |
+| [**Page 14**]() |
+
+Preprint
+
+14
+
+Table 3: **Subject-axis erasure on frozen features.** BA ×100; chance = 100*/k*; erased subspace rank
+
+\= *k* − 1. Subject BA is a linear subject classifier before and after erasure; nonlinear residual is an MLP after
+
+erasure (LEACE guarantees linear erasure only). ∆erase is the change in recording-level label BA (3 seeds,
+
+mean ± SD), defined only in within-subject paired cells; trait cells (ADFTD, Stress) are marked “—” because
+
+the label is a fixed subject attribute lying inside the subject subspace.
+
+**Cell**
+
+**FM**
+
+**Subj. pre Subj. post Nonlin.**
+
+∆erase
+
+EEGMAT
+
+LaBraM
+
+79.6
+
+0.0
+
+1.6 +12*.*0 ± 7*.*4
+
+CBraMod
+
+70.5
+
+0.0
+
+2.5
+
+\+6*.*0 ± 3*.*3
+
+REVE
+
+99.5
+
+0.0
+
+3.3
+
+\+7*.*4 ± 0*.*7
+
+ADFTD
+
+LaBraM
+
+93.4
+
+0.3
+
+1.5
+
+—
+
+CBraMod
+
+90.6
+
+0.3
+
+1.4
+
+—
+
+REVE
+
+99.4
+
+0.6
+
+11.5
+
+—
+
+SleepDep
+
+LaBraM
+
+73.2
+
+0.1
+
+4.3
+
+\+1*.*9 ± 0*.*7
+
+CBraMod
+
+73.2
+
+0.4
+
+5.5
+
+\+0*.*9 ± 4*.*7
+
+REVE
+
+97.3
+
+1.1
+
+56.4
+
+\+7*.*4 ± 2*.*9
+
+Stress
+
+LaBraM
+
+64.7
+
+4.2
+
+6.9
+
+—
+
+CBraMod
+
+59.0
+
+4.0
+
+5.2
+
+—
+
+REVE
+
+98.0
+
+5.3
+
+40.0
+
+—
+
+direction within its first two to three blocks. The label probe is cell-conditional; the per-cell trajectories feed
+
+the per-cell assessment in Sec. [4.4](#14).
+
+**4.3 Aperiodic** 1*/f* **as a subject-identity carrier**
+
+We intervene on the input EEG via FOOOF spectral-shape ablation (aperiodic background versus periodic
+
+peaks; frequency support preserved) and observe the FM probe response (Sec. [3.7.3](#10); Fig. [5](#16)).
+
+**Removing the aperiodic** 1*/f* **component drops the subject probe uniformly on LaBraM and**
+
+**CBraMod.** On LaBraM and CBraMod, FOOOF −aperiodic drops the linear subject probe BA by 9 to
+
+19 pp across all four cells (per-(cell, FM) values in Tab. [A4](#24); LaBraM: −18*.*4 / −10*.*9 / −17*.*9 / −9*.*1 pp on
+
+EEGMAT / ADFTD / SleepDep / Stress; CBraMod: −18*.*9 / −10*.*2 / −17*.*1 / −9*.*3 pp). The drop is large,
+
+uniform across cells of very different paradigms, and goes in the same direction on both FMs.
+
+REVE’s baseline subject probe is already at ≥ 0*.*93 BA and shifts by ≤ 1*.*2 pp under −aperiodic; we
+
+therefore limit the aperiodic-anchor claim to LaBraM and CBraMod (Sec. [5.5](#20)). FOOOF −periodic shows no
+
+effect across all 12 (cell, FM) pairs (≤ 0*.*8 pp on both probes). Because both ablations pass through the same
+
+FOOOF decompose-and-invert reconstruction (Eq. [4](#10)) and differ only in which component is removed, this
+
+−periodic null rules out the reconstruction round-trip itself as the cause and attributes the −aperiodic drop
+
+to the removed aperiodic content. The label-probe response under −aperiodic is cell-conditional and feeds
+
+the per-cell 1*/f* role column of Tab. [4](#18).
+
+**The same intervention extends to the fine-tuned representation.** To test whether FT inherits
+
+the frozen aperiodic dependence, we re-extracted and fine-tuned each FM end-to-end on both ablated inputs
+
+under the same recipe as the baseline run (3 seeds; Sec. [3.7.3](#10)) and recomputed both probes on the resulting
+
+features (Fig. [5](#16)b, bottom row). On LaBraM and CBraMod, the FT subject probe drops under −aperiodic on
+
+7 of 8 (cell, FM) pairs (mean ∆ ranging from −4 to −20 pp, with the per-seed range staying below zero).
+
+LaBraM × ADFTD is the borderline case (−2*.*0 ± 4*.*7 pp). This is consistent with two properties of that cell:
+
+its frozen subject probe is already near ceiling, and its high recording-level redundancy gives the encoder
+
+multiple non-aperiodic carriers to amplify. −Periodic at the FT level shifts the subject probe by |∆| ≤ 2*.*5 pp
+
+on all 8 (cell, LaBraM/CBraMod) pairs, matching the frozen null and confirming that the FT carrier is the
+
+1*/f* component, not narrowband peaks. REVE’s FT subject probe shifts by |∆| ≤ 2*.*5 pp on every cell under
+
+both ablations, preserving the negative control at the FT representation.
+
+-----
+
+|  |
+| :-: |
+| [**Page 15**]() |
+
+Preprint
+
+15
+
+0.00
+
+0.25
+
+0.50
+
+0.75
+
+1.00
+
+Probe balanced accuracy
+
+EEGMAT
+
+SleepDep
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+Relative transformer depth
+
+0.00
+
+0.25
+
+0.50
+
+0.75
+
+1.00
+
+Probe balanced accuracy
+
+ADFTD
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+Relative transformer depth
+
+Stress
+
+**consensus marker**
+
+**no consensus marker**
+
+**within-subject paired**
+
+**subject-label trait**
+
+subject-ID probe
+
+label probe
+
+Figure 4: **Layer-wise subject and label probes.** Rows show the subject relation of the label (within-subject
+
+paired on top, trait on the bottom); columns show the consensus axis (consensus on the left, no-consensus
+
+on the right). Each panel shows two probes: the temporal-block subject-ID probe (red) and the canonical
+
+recording-level label probe (blue). Lines are the mean across the three FMs (LaBraM, CBraMod, REVE);
+
+shaded bands span their min–max range (*n* = 3 FMs, an envelope rather than a confidence interval). The
+
+horizontal axis is relative transformer depth (0 is post-embedding pre-block; 1 is the final pooled feature).
+
+Across all four cells the subject probe rises toward 0*.*55–0*.*99 within two to three transformer blocks; the wide
+
+early-depth band reflects FMs that reach this ceiling at different depths. The label probe is cell-conditional.
+
+Dotted lines mark label chance (0*.*5) and the per-cell subject-ID chance.
+
+**4.4 Cell-conditional label-side outcomes**
+
+Two cell-level diagnostics remain. The layer-wise label-probe trajectory shows how much label-aligned variance
+
+survives to the final pooled feature, and the within-subject direction-consistency test asks whether subjects
+
+share a contrast axis at all. The combined assessment matrix appears with the Discussion (Tab. [4](#18)).
+
+**Layer-wise label-probe trajectory** (Sec. [3.7.4](#11); Fig. [4](#15)). On EEGMAT, the label probe is stable across
+
+depth (0*.*69–0*.*78) for all three FMs. On ADFTD, the label probe peaks early (relative depth ∼ 0*.*17, BA
+
+0*.*78–0*.*83) and descends as later blocks compress along the subject axis without further label gain. On
+
+SleepDep, the label probe is flat near chance (0*.*50–0*.*59) at every depth. On Stress, the label probe descends
+
+monotonically with depth on all three FMs (LaBraM 0*.*49 → 0*.*42; CBraMod 0*.*49 → 0*.*36; REVE 0*.*47 → 0*.*41):
+
+the modest label-aligned signal in the pre-block embedding does not survive to the final pooled feature.
+
+**Within-subject direction consistency** (Sec. [3.7.5](#11); Fig. [6](#17)). EEGMAT yields group-level mean pairwise
+
+cosine ¯*c* ∈ \[+0*.*07*,* +0*.*15\] across three FMs (subjects share a contrast axis above the isotropic null). SleepDep
+
+yields ¯*c* ≈ 0 (subjects do not share a contrast axis); cosine PERMANOVA (Sec. [3.7.5](#11); App. [C](#23), Tab. [A3](#23))
+
+still detects label-associated structure on every (FM, state) pair (*p* ≤ 0*.*001). A local per-subject contrast
+
+-----
+
+|  |
+| :-: |
+| [**Page 16**]() |
+
+Preprint
+
+16
+
+100
+
+101
+
+Freq (Hz)
+
+10−2
+
+100
+
+P
+
+S
+
+D
+
+(
+
+*µ*
+
+V
+
+2
+
+/H
+
+z
+
+)
+
+EEGMAT
+
+100
+
+101
+
+Freq (Hz)
+
+10−2
+
+100
+
+SleepDep
+
+100
+
+101
+
+Freq (Hz)
+
+100
+
+10

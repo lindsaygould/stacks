@@ -1,0 +1,557 @@
+Effects of transcranial magnetic stimulation on the human brain recorded with intracranial electrocorticography 
+
+www.nature.com/mp Molecular Psychiatry
+
+ARTICLE Effects of transcranial magnetic stimulation on the human brain recorded with intracranial electrocorticography
+
+Jeffrey B. Wang Phillip E. Gander 1,2,11, Umair 7,10, Matthew Hassan2,3,4,11, Joel E. Bruss5,6, Hiroyuki Oya 7, A. Howard III7, Corey J. Keller 2,3,4,12 and Aaron Brandt D. D. Boes Uitermarkt5,6,8,9,12✉
+
+6, Nicholas T. Trapp8,9,
+
+© The Author(s), under exclusive licence to Springer Nature Limited 2024
+
+Transcranial magnetic stimulation (TMS) is increasingly used as a noninvasive technique for neuromodulation in research and clinical applications, yet its mechanisms are not well understood. Here, we present the neurophysiological effects of TMS using intracranial electrocorticography (iEEG) in neurosurgical patients. We first evaluated safety in a gel-based phantom. We then performed TMS-iEEG in 22 neurosurgical participants with no adverse events. We next evaluated intracranial responses to single pulses of TMS to the dorsolateral prefrontal cortex (dlPFC) (N = 10, 1414 electrodes). We demonstrate that TMS is capable of inducing evoked potentials both locally within the dlPFC and in downstream regions functionally connected to the dlPFC, including the anterior cingulate and insular cortex. These downstream effects were not observed when stimulating other distant brain regions. Intracranial dlPFC electrical stimulation had similar timing and downstream effects as TMS. These findings support the safety and promise of TMS-iEEG in humans to examine local and network-level effects of TMS with higher spatiotemporal resolution than currently available methods.
+
+Molecular Psychiatry (2024) 29:1228–1240; https://doi.org/10.1038/s41380-024-02405-y
+
+INTRODUCTION Transcranial magnetic stimulation (TMS) is a noninvasive techni- que for modulating the regional excitability of the human brain \[1, 2\]. Clinically, it is FDA cleared for depression, smoking cessation, migraines, and obsessive-compulsive disorder, with clinical trials underway for many other neuropsychiatric disorders \[3, 4\]. It is also increasingly used as a neuroscientific experimental tool to probe neural circuitry within the human brain. The neurophysio- logical effects of TMS in animal models have been investigated extensively, demonstrating that TMS induces transient alterations in single neuronal firing rates within 1 millisecond of the TMS pulse and often lasting 40-100 milliseconds, with time periods of increased and decreased activity commonly observed \[5-7\]. However, efforts to understand the physiological effects of TMS in humans have been hampered by methodological limitations \[8, 9\], specifically the lack of either high spatial or temporal resolution, as is the case with surface EEG and fMRI, respectively. Neural activity can be measured with high spatiotemporal resolution from intracranial electroencephalography (iEEG) recorded from neurosurgical epilepsy patients using electrodes either implanted within the brain or on its surface. iEEG has been used to delineate the temporal dynamics and spatial spread following intracranial electrical stimulation \[10-14\] and is a
+
+promising tool for providing similar resolution following non- invasive neuromodulatory techniques. Indeed, recent work with non-invasive transcranial direct and alternating current stimula- tion (tDCS & tACS) in humans has shown the utility of investigating these effects with iEEG \[14-18\]. These studies demonstrated that higher stimulation amplitude than is typically used may be needed to reliably induce intracranial effects \[18\]. Moreover, protocols that were presumed to drive specific oscillation frequencies did not find supporting evidence from iEEG \[16\]. To date these iEEG studies have not been extended to TMS, though studies of TMS with intracranial recordings have been highly informative in nonhuman primates \[5, 6\]. If applied to humans, these data acquired with high spatiotemporal resolution could help to better characterize the effects of TMS on the human brain, illuminating both local responses induced directly by TMS and downstream network-level responses propagated to con- nected brain regions.
+
+We need reliable neural markers that signal TMS is effectively engaging and modifying a brain region or network \[13\]. These markers represent a critical prerequisite to personalizing treat- ment protocols and improving outcomes. TMS-iEEG may facilitate these efforts by providing an approach that relates the neural effects of TMS measured intracranially with those measured
+
+1Biophysics Graduate Program, Stanford University Medical Center, Stanford, CA 94305, USA. 2Department of Psychiatry and Behavioral Sciences, Stanford University Medical Center, Stanford, CA 94305, USA. 3Veterans Affairs Palo Alto Healthcare System, and the Sierra Pacific Mental Illness, Research, Education, and Clinical Center (MIRECC), Palo Alto, CA 94305, USA. 4Wu Tsai Neurosciences Institute, Stanford University, Stanford, CA, USA. 5Department of Neurology, Carver College of Medicine, University of Iowa, 200 Hawkins Drive, Iowa City, IA 52242, USA. 6Department of Pediatrics, Carver College of Medicine, University of Iowa, 200 Hawkins Drive, Iowa City, IA 52242, USA. 7Department of Neurosurgery, Carver College of Medicine, University of Iowa, 200 Hawkins Drive, Iowa City, IA 52242, USA. 8Department of Psychiatry, Carver College of Medicine, University of Iowa, 200 Hawkins Drive, Iowa City, IA 52242, USA. 9Iowa Neuroscience Institute, University of Iowa, Iowa City, IA 52242, USA. 10Department of Radiology, Carver College of Medicine, this work: University Corey J. Keller, of Iowa, Aaron 200 D. Hawkins Boes. ✉Drive, email: Iowa aaron-boes@uiowa.edu
+
+City, IA 52242, USA. 11These authors contributed equally: Jeffrey B. Wang, Umair Hassan. 12These authors jointly supervised
+
+Received: 6 December 2022 Revised: 19 December 2023 Accepted: 2 January 2024 Published online: 5 February 2024
+
+J.B. Wang et al.
+
+1229 noninvasively with EEG. Another potential avenue of TMS-iEEG research would be to evaluate whether the patterns of network engagement by TMS measured intracranially relate to the pattern of functional connectivity of the stimulation site measured with functional imaging. Functional connectivity MRI is increasingly being used to guide the stimulation target, but direct experi- mental data to evaluate whether TMS effectively modulates the remote sites that are functionally connected to the stimulation site is lacking.
+
+Current consensus guidelines on TMS safety include intracranial hardware as a contraindication for TMS administration \[19, 20\]. Emerging safety data relevant to using TMS in the setting of intracranial hardware has been encouraging \[15, 21-27\]; see ref. \[28\] for a more extensive review. Recent animal studies have demonstrated that TMS can be applied safely in the presence of iEEG \[5\], but the safety of this technique has not been evaluated in humans. Nearly 20 years ago, TMS was shown to induce current locally in iEEG electrodes when delivered at subthreshold intensity (≤7% machine output) \[26, 29\]. For example, Wagner et al. were able to directly record the currents induced within brain tissue by TMS stimulation (albeit not focusing on the neurophysiologic effect of stimulation) \[26\]. Strafella et al. showed differences of neuronal firing rates within the subthalamic nucleus during stimulation of the motor cortex \[29\]. However, to date there has not been a study of the safety and electrophysiological effects of TMS at clinically used intensities while recording from multi-site intracranial electrodes in the human brain.
+
+In this study we first conduct experiments in a gel-based phantom brain to investigate the safety of applying TMS at clinically relevant intensities while recording iEEG. After demon- strating safety in vitro, we show that TMS has a favorable safety profile based on in-vivo combined TMS and iEEG (TMS-iEEG) in 22 patients. Next, in a subset of 10 patients, we evaluate the local and downstream electrophysiological effects of single pulses of TMS applied to the dorsolateral prefrontal cortex (dlPFC), the therapeutic target for depression and other neuropsychiatric disorders \[11\]. Here, we demonstrate that these single TMS pulses induce neuronal responses both locally within the dlPFC (19% of recorded electrodes) and in remote regions functionally con- nected to the stimulation site (8.2% of recorded electrodes across the whole brain), including deep structures such as the anterior cingulate cortex (ACC) and insula. Together, these findings show that 1) TMS-iEEG is a viable tool for studying the electrophysio- logical effects of TMS on the human brain and that 2) TMS is capable of inducing responses both locally and in functionally connected downstream neuronal populations in humans.
+
+METHODS Safety testing using a gel-based phantom brain We addressed the safety of performing TMS with iEEG by first using a gel- based phantom brain as a model. The analyses were focused on evaluating three main concerns: 1) electrodes heating, 2) electrode displacement, and 3) induction of secondary electric currents. To evaluate these possibilities, we delivered TMS to a gel phantom with intracranial electrodes placed within the gel and on the surface to mimic human experimental conditions, as described previously to investigate safety related to intracranial electrodes \[30\]. The distance from the TMS coil to the electrode contacts was set to 10 mm, which conservatively approximates the smallest distance possible (and thus the highest amplitude in magnetic field) between the coil and iEEG electrodes in human experiments, where TMS must cross the skin, skull, and cerebrospinal fluid space prior to reaching the electrodes \[31, 32\].
+
+TMS equipment & stimulation parameters. TMS equipment included a MagVenture MagPro X100 230V system with a figure-of-eight liquid-cooled Cool-B65 A/P coil (MagVenture; Alpharetta, GA, USA). Stimulation pulse was biphasic sinusoidal with a pulse width of 290 microseconds for all experiments except for those measuring displacement, which was
+
+Molecular Psychiatry (2024) 29:1228 – 1240
+
+monophasic to avoid the possible cancellation of displacing forces. For safety testing in the phantom brain, the stimulation intensity range was set to 100% machine output delivered at 10-40 Hz.
+
+Gel phantom apparatus and electrodes. We used a custom-made gel phantom filled with polyacrylic acid saline gel placed in an 8-inch cubic container with a 3/16-inch polymethyl methacrylate wall, according to the American Society for Testing and Materials standards section F2182. The electrodes included a 32-contact grid electrode and an 8-contact penetrating depth electrode array with 1-cm spacing, made of non- ferromagnetic platinum (SD08R-SP10X-000 and a 4 connector L-SRL-8DIN; Ad-Tech; Racine, WI, USA), all of which are embedded in a silicon-based sheet (silastic) material. Inter-contact impedance within the gel phantom at 100 Hz was 2.82+/− 1.1 kiloohms (mean and standard deviation) and at 1000Hz was 1.44 +/− 0.87 kiloohms. Details on the measurement of relevant parameters and details on the phantom brain testing are provided in Fig. 1 and Supplementary materials.
+
+TMS in neurosurgical patients Subjects. 22 neurosurgical patients with medically intractable epilepsy participated in this study and were included in the safety analysis (10 females, age range 13-56, mean 28 +/− 13). A subset of 10 patients (5 females, age range 14-52 years, mean 25 +/− 11 SD) received 50 pulses of 0.5 Hz TMS applied to the dlPFC and were selected for the main analysis quantifying the evoked response after dlPFC TMS. Each patient was admitted to the University of Iowa Hospitals and Clinics for 14 days of monitoring with intracranial electrodes to localize their seizure focus (Table 1, Supplementary Tables 1 and 2). Logistical details of their admission are provided in Supplementary Methods. All experimental procedures were approved by the University of Iowa Institutional Review Board. Written informed consent was obtained from all participants.
+
+Subject neuroimaging. Prior to implantation of intracranial electrodes, patients underwent an anatomical and functional MRI scan within two weeks of the electrode implantation surgery. After surgery, patients received an anatomical scan for both clinical purposes and to identify the position of each electrode contact. Details are provided in Supplementary Methods.
+
+Transcranial magnetic stimulation and iEEG recording. The TMS experi- ment was conducted 12-13 days post-implantation surgery and after restarting seizure medications. Electrode implantation and recording protocols have previously been described in detail \[33, 34\] and are provided in Supplementary Methods. TMS was performed with a Cool-B65 Active/Placebo (A/P) liquid cooled butterfly coil using the same MagVenture system described above. Neuronavigation using frameless stereotaxy was guided with Brainsight and the pre-implantation T1/ MPRAGE anatomical scan. Motor threshold procedures were performed for each participant prior to experimental testing. The hand knob of the motor cortex on MRI was targeted and motor threshold was defined by hand movement in at least 50% of trials.
+
+The main analysis included single pulses of TMS delivered at 0.5 Hz to the dlPFC to evaluate the distribution of evoked responses. Pulses were delivered at 0.5Hz at 100% or 120% of motor threshold. 100% motor threshold was utilized if 120% was not tolerated by the participant due to discomfort. The anatomical target of stimulation was the dlPFC, defined by the Beam F3 region \[35\], identified by transforming published coordinates (MNI 1 mm: −41.5, 41.1, 33.4 \[36\]) into each subjectLs native T1 and displaying it as a target in Brainsight. The stimulation site was modified slightly in some cases if access was impeded by head wrap or anchor bolts for securing electrodes. The motor threshold and locations of TMS delivery are provided in Table 2.
+
+We had three sham conditions that utilized the MagVenture Active/ Placebo coil. 1) To evaluate neural responses that may be due to auditory effects \[37\], we applied sham TMS to the dlPFC, with the A/P TMS coil flipped 180-degrees away from the head. 2) We applied another sham condition with a flipped coil that mimicked the sound of TMS while also delivering cutaneous electrical stimulation coincident with each pulse that closely matched the sensory effect of active TMS. 3) To evaluate specificity of the TMS stimulation site in relation to the distribution of evoked potentials, we applied the identical simulation protocol of 0.5Hz single pulses of TMS to brain areas other than the dlPFC in a subset of 6 participants. Non dlPFC sites included the superior temporal gyrus, motor cortex, and the parietal lobe. Additional details and any subject-specific
+
+J.B. Wang et al. 1230
+
+deviations from these parameters are described in Supplementary Tables 1 and 2. Other participants that did not receive 0.5 Hz dlPFC stimulation were included in the assessment of TMS-iEEG safety. These subjects received alternate stimulation protocols, with details provided in Supplementary Table 2. For all experiments, the electromagnetic field was simulated using SimNIBS as described in Supplementary Methods.
+
+Molecular Psychiatry (2024) 29:1228 – 1240
+
+Intracranial Stimulation. In addition to the TMS control conditions (sham and non-dlPFC active conditions) we also utilized direct electrical stimulation from the intracranial contacts implanted in the dlPFC as an additional control condition (N = 6). This was done to evaluate the specificity of the TMS response, specifically to evaluate the possible role of sensory and/or cutaneous effects since intracranial stimulation is not
+
+J.B. Wang et al.
+
+1231 Fig. 1 TMS reliably and safely induces intracranial neural responses. a Schematic of experimental setup. After surgical implantation of iEEG electrodes, subjects received single pulses of TMS while simultaneously recording from iEEG contacts. Two experimental conditions were used: a sham condition with the TMS coil flipped in the opposite direction and a TMS condition with the TMS coil oriented correctly. b Thermometry traces of temperature of intracranial electrodes while exposed to TMS in an in vitro phantom brain. c Schematic of phantom to study the voltage induced by TMS directed towards intracranial electrodes. Electrodes were placed within a gel phantom in three parallel lines, one at the center of the figure-of-8 coil and the other two each 17.5 mm from the center, aligned along the axis of stimulus delivery. d Voltage as a function of time to evaluate induced currents. Note that the voltage drops exponentially as a function of distance from the coil both orthogonal and parallel to the axis of stimulation. e Representative subject’s (Subject 483) brain, with implanted contacts shown as a circle. f Representative TMS\>sham intracranial TMS evoked potential (iTEP), denoted as significant iTEP in the manuscript. For all electrophysiology figures, gray region around time zero represents the time period for which the TMS artifact was removed. Vertical arrow denotes the time when the pulse was delivered. Shaded regions are ±1 SEM. g Representative TMS = Sham neural evoked response. h Representative electrode without a neural response in either TMS or sham condition.
+
+Molecular Psychiatry (2024) 29:1228 – 1240 perceived by the subject. Intracranial direct electrical stimulation has been
+
+voltage induced by TMS was around 5V at 5mm from the coil described previously from our groups \[10, 38-40\] and details are provided
+
+when stimulation intensity was set at 100% machine output. This in Supplementary Methods.
+
+corresponds to a voltage gradient of 0.3V/mm and a charge density / phase of approximately 7.2 μC/cm2, well below the 30 Electrophysiology analysis
+
+μC/cm2 commonly used as a recommended safety threshold for Preprocessing of iEEG Data. Data preprocessing and analysis was
+
+intracranial stimulation \[43\]. Furthermore, these values match the performed offline using the FieldTrip toolbox \[41\] and with custom scripts
+
+estimated voltage induced by TMS directly within brain tissue \[32\], (MATLAB; Mathworks; Portola Valley, CA, USA). Artifact correction is described in Supplementary Methods. It includes TMS pulse artifact removal, decay artifact removal, and line noise removal. After preproces- sing, depth electrodes underwent further adjacent electrode bipolar montage re-referencing, downsampled to 300Hz, epoching from -1000ms to 500ms, and baseline correcting to the pre-stimulus voltage between
+
+demonstrating that intracranial electrodes do not cause additional electrical stimulation during TMS. In summary, we find that temperature, motion, voltage, and charge remain within clinically tolerable limits when delivering TMS at clinically relevant intensities while recording with iEEG in vitro. -250ms and -50ms. Finally, data was filtered from 1-35 Hz (second order Butterworth filter) to isolate the slower evoked potential within the delta to
+
+Demonstrating safety of TMS-iEEG in humans low gamma bands. As a negative control, random 1500 ms epochs were
+
+22 participants with medically intractable epilepsy enrolled in the created from the baseline (i.e. prior to TMS stimulation) data by choosing
+
+study and received TMS while recording concurrently with iEEG. random start times during the baseline period from a uniform distribution. iEEG data during sham TMS was processed in an identical manner as active TMS to act as an additional negative control.
+
+Across all sessions and all stimulation protocols there were no adverse events reported beyond those routinely reported during TMS, such as a worsening of an existing headache or scalp
+
+Significance Testing and Quantification of Intracranial TMS-Evoked Potentials (iTEPs). To examine and quantify evoked potentials after TMS delivery, we utilized nonparametric clustering as previously described \[42\] with details in Supplementary Methods. We defined a channel to have a significant TMS-specific neural response if it met the following criteria: 1) TMS was
+
+discomfort at the site of stimulation. In those situations when headache or scalp discomfort was reported participants were given options to reduce the stimulation intensity or discontinue the experiment rather than stimulate additional sites. TMS was typically tolerated at 2-4 stimulation sites per participant, with significantly different from both the baseline and sham conditions; 2) TMS
+
+0.5 Hz qualitatively better tolerated than repetitive TMS protocols. response exceeded 10 μV; and 3) Sham was not significantly different from
+
+There was no change in the frequency of seizures during TMS baseline. Sham vs. baseline was required in significance testing as there were contacts where sham and TMS both elicited significant responses but at different amplitudes. Requiring a TMS-evoked potential to be significantly different from both baseline and sham was a conservative strategy aimed to reduce the probability of significant iTEPS resulting from artifact or noise. The specific threshold of 10 μV for TMS response was chosen following visual inspection of noise across participants, which was
+
+sessions. A single individual with hundreds of seizures per day each lasting a few seconds had four seizures during one TMS session, which was not different than baseline seizure frequency during the hospitalization. For this patient two seizures occurred during set-up, one during sham stimulation, and one during 0.5 Hz stimulation, at which point the session was discontinued. consistent from subject to subject.
+
+TMS-evoked potentials observed with TMS-iEEG were specific to active TMS RESULTS
+
+Ten participants received single pulses of TMS delivered to the We start by reviewing safety testing in vitro from a phantom brain
+
+dlPFC at 0.5Hz. Of these, two participants were excluded from as well as in vivo in humans (N = 22). Next, we discuss human
+
+analysis due to significant TMS-related amplifier saturation experimental data acquired from 10 neurosurgical participants
+
+observed in \>10% of contacts (see Methods for details). An that received single pulses of TMS delivered to the dlPFC while
+
+example of a subjectLs intracranial response to TMS is depicted in recording iEEG. Of those subjects, two were eliminated due to
+
+Fig. 1f with all electrode responses available in Supplementary excess artifact as described in Methods (iEEG recording). Of the
+
+Material. As can be seen, we were able to successfully isolate iTEPs remaining eight subjects, we analyzed a total of 1414 electrodes.
+
+that were specific to TMS instead of sham (Fig. 1e-h). This TMS \> An overview of the experimental paradigm is shown in Fig. 1a.
+
+sham analysis allowed us to isolate iTEPs while controlling for the auditory responses. Contacts generally fell into three categories: 1) TMS is safe in combination with iEEG in vitro
+
+responsive (eliciting a strong iTEP) to TMS specifically over sham First, we evaluated the safety of concurrent TMS-iEEG in a
+
+(TMS \> sham; 8.7% of all contacts; Fig. 1f), 2) responsive to both phantom brain model. We observed: 1) no significant heating of
+
+TMS and sham (TMS = sham; 5.8% of all contacts; Fig. 1g), and 3) electrodes, with all measurements showing minimal change from
+
+not responsive to either condition (TMS = baseline; 85.3% of all baseline (\<0.1 degree Celsius) (Fig. 1b); 2) no electrode
+
+contacts; Fig. 1h). Notably, contacts responding to both TMS and displacement; and 3) the induced voltage within electrodes drops
+
+sham were enriched in auditory regions such as the left and right exponentially as a function of distance from the coil both
+
+transverse temporal cortex (100% and 88%, respectively), suggest- orthogonal and parallel to the axis of stimulation (Fig. 1c, d).
+
+ing that the TMS = sham condition was effective in controlling for Across the various stimulation protocols, we found the maximum
+
+the auditory evoked responses associated with TMS delivery.
+
+J.B. Wang et al. 1232
+
+Molecular Psychiatry (2024) 29:1228 – 1240
+
+J.B. Wang et al.
+
+1233
+
+Molecular Psychiatry (2024) 29:1228 – 1240
+
+J.B. Wang et al. 1234
+
+D
+
+TMS Sham
+
+100 ms
+
+Fig. 2 TMS induces local evoked potentials within the dlPFC that correlate with electrical field strength. A, B Merged image of significant intracranial TMS-evoked potentials (iTEPs) and electric field strength. C Group plot of realigned electrodes around the average TMS stimulation site. Black and white electrodes denote significant (TMS \> sham) and non-significant (TMS=sham) iTEPs, respectively. D Averaged iTEPs measured at dlPFC from two representative subjects. E Aggregated average percentage of iTEPs in regions above and below 50% of the maximum induced electric field across the brain (High and Low E-Field respectively, 50% E-field).
+
+Finally, to confirm whether the delivery of TMS pulses at 0.5 Hz induced plasticity, we compared our first and second half of pulses and found no significant difference in iTEP amplitude (Supple- mentary Fig. 2, One-Sample T-test, N = 98 channels, t(97) = -0.19, p = 0.848).
+
+Evaluating local evoked responses of TMS applied to the dlPFC To evaluate local effects of TMS at a group level we generated a unified coordinate system centered on the stimulation coil, such that electrode locations relative to the coil were combined across subjects. Figure 2 depicts these results, where all coregistered contacts within 30 mm of the stimulation site (total of 37 contacts) are plotted. Three of eight analyzed subjects had electrodes within 30 mm. We found that in general, significant iTEPs (TMS \> sham) were observed in 19.0% of contacts within 30mm of the stimulation site (Fig. 2A, C, and local iTEPs from two subjects are shown in D; individual trials from three local contacts are shown in Supplemental Figure 10). This proportion was significantly higher than the 8.2% of contacts outside of the 30 mm surrounding the dlPFC (p = 0.02, 2-proportion z-test). Next, we show that electro- des exposed to a higher electric field, defined by the 50% of the maximum electric field or higher, were more likely to exhibit significant iTEPs (TMS \> sham) (Fig. 2E; 13.9% (N = 6) versus 1.8% (N = 54), two-sample t-test t(58) = 2.78; p \< 0.01). A similar result was observed when splitting by median E-field values (Supple- mental Figure 6; median split: 9.91% +/- 1.76% versus 5.70% +/- 2.28 (N = 30 each), Rank Sum Test z = 3.30, p \< 0.001). In summary, we demonstrate that a small subset (19%) of electrodes near the dlPFC stimulation site exhibit significant iTEPs, which can partially be explained by the positive relationship between iTEPs and electric field strength.
+
+TMS induces network level brain responses that include the ACC and insular cortex TMS may also have therapeutic effects by modulating brain regions indirectly, such that the TMS-induced magnetic field is subthreshold, but activity is modulated through network level effects that preferentially influence sites connected to the stimulation site. To evaluate this possibility, we visualized regional patterns of significant iTEPs (TMS \> sham) at the group level based on the proportion of significant iTEP electrode contacts (see
+
+Molecular Psychiatry (2024) 29:1228 – 1240
+
+local A
+
+intracranial TEPs (iTEPs)
+
+4 cm
+
+C
+
+BElectric Field
+
+4 cm
+
+100
+
+80 604020High E-Field
+
+Methods; Fig. 3A; individual channel responses across parcella- tions can be found in Supplementary Fig. 15). In general, there was electrode coverage across cortical structures, except for the occipital lobe (Supplementary Fig. 3). We had 7 subjects with dlPFC coverage (4 left, 3 right) and 6 subjects with ACC coverage (3 left, 3 right, 1 bilateral). We had a total of 3 subjects with electrode coverage of the dlPFC and ipsilateral ACC. Ipsilateral to TMS, regions with the highest proportion of significant iTEPs were the dorsal ACC (dACC, 44%), pars opercularis (23%), and insula (14%). Contralateral to TMS, the rostral ACC and dACC demon- strated the most consistent iTEPs (20%) along with the post- central gyrus. Regions with a high proportion of significant iTEPs are visualized both on the brainLs transparent surface (Fig. 3C) and MRI slices (Fig. 3D). In these views, iTEPs can be observed in high proportion in the dACC extending superiorly into the dorsomedial prefrontal cortex. Group averaged iTEPs in the ACC (N = 5 patients, n = 5 contacts) and insula (N = 4, n = 4) are shown in Fig. 3D. As can be observed, group iTEPs in the ACC and insula following dlPFC TMS were significantly larger than responses from cutaneous or auditory stimulation of the dlPFC (TMS vs auditory in early window: T(7) = −2.57, p = 0.04203; TMS vs sham in early window: T(7) = −2.461, p = 0.042; TMS vs auditory, late window: T(7) = −2.58, p = 0.039; TMS vs sham, late window: T(7) = −2.518, p = 0.041). In summary, we determined that regional patterns of significant iTEPs following dlPFC TMS were observed in bilateral dACC and ipsilateral insula, pars opercularis, and frontal gyri.
+
+Network level iTEPs relate to functional connectivity of the stimulation site To evaluate whether the pattern of significant evoked responses was related to the functional connectivity of the stimulation site we performed a resting state functional connectivity MRI (rs-fcMRI) analysis seeded from the stimulation site. This was performed both with resting state functional MRI data from the individual participants as well as from a large normative cohort (Fig. 4A; N = 98; see Methods), which both had similar patterns of dlPFC- seeded rs-fcMRI connectivity (spatial correlation, PearsonLs r = 0.74, p \< 0.001; also see Supplementary Fig. 4). When focusing on regions with the highest percentage of significant iTEPs such as the dACC/ dorsomedial prefrontal cortex, we observed robust rs-fcMRI connectivity between dlPFC stimulation site and these regions (Fig. 4A, outlined in black). Across brain regions, those with
+
+704030205060
+
+100
+
+Local Response N=3 n=37
+
+20 40 60 80
+
+4 cm
+
+TMS
+
+Average Stimulus Site TMS = Sham TMS \> Sham
+
+Electric Field (V/m)
+
+Sub A Aggregated Sub B
+
+E
+
+20\*\*
+
+15105
+
+0Low
+
+E-Field
+
+J.B. Wang et al.
+
+1235
+
+Fig. 3 TMS evokes downstream iTEPs within the ACC and Insula. A, B Bar chart of percentage of electrodes within a Cortical Parcellation (see Methods) that showed a significant iTEP (left; TMS \> Sham) as well as response to sham TMS (right; sham \> baseline, indicating regions likely showing an auditory response). Regions are split based on ipsilateral and contralateral to the TMS site (top and bottom, respectively). C Heat maps depicting the percentage of local electrodes that expressed a significant iTEP (TMS \> Sham). TMS coil and underlying green dot denote the TMS stimulus site. Note the consistent neural responses in ACC. D Heat map overlayed depicting the percentage of ACC electrodes that expressed a significant iTEP specifically during TMS. E Group iTEPs within the ACC and Insula evoked after TMS of the dlPFC, as compared to cutaneous or auditory stimulation over the dlPFC. Individual iTEP traces can be found in Supplementary Fig 9.
+
+Fig. 4 dlPFC TMS evokes downstream iTEPs in the ACC in a functionally connected and site-specific manner. A Resting state functional MRI (rs-fcMRI) maps (N = 98 healthy controls), with a seed determined by the average TMS induced electric field. Depicted are T-Values with FSL’s implementation of nonparametric clustering for multiple comparison correction, with a Z-Stat cutoff of 3.1 (p \< 0.001). B Comparison of rs-fcMRI connectivity values in regions with and without − 0.18; p \< 0.001, 2-sample Student’s T Test). Error bars are iTEPs. ±1 SEM. \* indicates C Heat map statistical of electrodes significance that expressed (T(+)iTEPs= an 2.96 iTEP +/− specifically 0.31; T(-)iTEPs= after 1.61 TMS +/ of the dlPFC (Left) and the parietal region (Right) in the same two subjects (Middle) Time-locked average traces from both subjects. D Across non- dlPFC TMS targets, (5 targets, 6 subjects) iTEPs were not observed in the dACC like they were with dlFPC TMS. Green dots represent the stimulation sites.
+
+significant iTEPs demonstrated significantly higher rs-fcMRI con- nectivity with the dlPFC stimulation site compared to those without significant p \< 0.001; Fig. iTEPs 4B). (TNext, (+)iTEPs to = further 2.96 +/−0.31; explore the T(-)iTEPs relationship =1.61+/− between 0.18;
+
+rs-fcMRI and evoked potentials (iTEPs) response, we conducted a regression analysis where the connectivity between the stimulation site and each cortical parcel was derived from a normative cohort and represented as z-values. These z-values were correlated with the percentage of iTEP-associated electrodes, as depicted in Supplementary Figs. 4 and 8. This regression analysis revealed a moderately positive relationship (R= 0.21, p \< 0.001 per permuta- tion test). Additionally, a Spearman rank correlation was performed that also supported this relationship (R = 0.346 (p \< 0.001 per permutation test). These findings suggest that the functional connectivity derived from rs-fMRI data can provide predictive information regarding the responsiveness of electrodes to TMS.
+
+Evaluating potential confounds One concern is that the ACC and insula iTEP response profile observed in this study is not specific to dlPFC TMS but rather a general response that could be observed with TMS applied to any location, especially since pain is known to activate the ACC and insula \[44\] and TMS can be uncomfortable. To evaluate this possibility, we performed several additional analyses. First, we
+
+Molecular Psychiatry (2024) 29:1228 – 1240
+
+determined whether the pattern of evoked responses in the dACC was specific to the dlPFC stimulation site or whether 0.5 Hz TMS applied to other targets elicited a similar response. TMS was applied to active control sites in the parietal lobe, superior temporal gyrus, and motor cortex (also see Methods). Across 5 other stimulation sites in 6 subjects (25 electrodes in the dACC) we did not observe any dACC iTEPs (Fig. 4C, D). Notably, parietal lobe stimulation induced strong iTEPs in the lateral prefrontal cortex - demonstrating remote iTEPs after parietal TMS - but the dACC iTEP response profile observed with dlPFC stimulation in these same participants was not seen following parietal lobe stimulation (Fig. 4C). These results support the notion of anatomical specificity of remote effects of dlPFC TMS at the ACC.
+
+Second, we leverage direct electrical stimulation of the dlPFC in select individuals with electrode coverage of the dlPFC and dACC. As direct electrical stimulation is not reported to be painful (and not perceived), observation of evoked potentials in the ACC after electrical stimulation to the dlPFC would strengthen the argument that dACC iTEPs result from cortical propagation of electrical activity from the dlPFC stimulation site as opposed to representing a non-specific effect to a painful stimulus. Thus, we applied direct electrical stimulation to the dlPFC and measured ACC and insular evoked responses in six patients with electrode coverage at both locations (Fig. 5; N = 6, see Methods). Following single pulse
+
+J.B. Wang et al. 1236
+
+EStimdlPFC CCEPs
+
+50ms dlPFC ROI
+
+ACC ROI
+
+Fig. 5 Direct electrical stimulation of the dorsolateral prefrontal cortex (dlPFC) elicits responses in anterior cingulate cortex (ACC) and insula. A Displays the grouped average cortico-cortical evoked potentials (CCEPs) for the stimulation region (dlPFC), with the gray trace representing the baseline activity. B Presents the grouped average CCEPs for the ACC, also with the gray trace representing the baseline activity. C Presents the grouped average CCEPs at the Insula region, with the gray trace representing baseline activity. The brain surface views in A-C represents the MNI coordinates of the electrodes within the respective region, where the color of each individual CCEP trace corresponds to the color of the respective electrode MNI coordinate. L/R hemispheres are mirrored for visualization. D Individual electrode CCEPs recorded from the dlPFC are displayed, with the gray trace representing the baseline activity. E Exhibits individual electrode CCEPs recorded from the ACC, again with the gray trace representing the baseline activity. F Individual electrode CCEPs recorded from Insula region and the gray trace representing baseline activity. These findings highlight the presence of evoked responses resembling the time course of responses to transcranial magnetic stimulation (TMS), further supporting the role of dlPFC stimulation in activating the ACC and insula regions. Comparative reference to Fig. 3, Supplementary Figs. 1 and 9 is suggested for further context. More details of individual CCEPs traces can be found in Supplementary Fig. 7.
+
+electrical stimulation to the dlPFC, we observed significant electrically-evoked potentials in the dlPFC, ACC, and insular regions (Fig. 5 and Supplementary Fig. 7). Similarity in the evoked potential in the ACC between TMS (N = 5) and direct electrical stimulation (N = 6) is seen at the 50ms positive peak, 150ms negative peak, and 250ms positive peak. Finally, to evaluate whether neural responses may be due to a combination of auditory and cutaneous stimulation we also applied electrical stimulation to the scalp overlying the dlPFC concurrent with the TMS coil discharged 180-degrees away from the head. This cutaneous + auditory sham condition closely mimics the experi- ence of receiving active TMS and was performed in four participants, but the evoked response did not resemble that of active TMS (Fig. 3E, shown in gray). Together, these analyses support the notion that ACC responses following dlPFC TMS are likely due to stimulation of the dlPFC and/or immediately surrounding structures and not due to pain or somatosensory perceptual changes.
+
+DISCUSSION Summary of findings After demonstrating safety using a phantom brain model, we performed TMS-iEEG in 22 participants without any observed adverse events. Next, we showed that single pulses of TMS to the dlPFC induces neural responses at 8.7% of electrodes across the brain. The time course of these evoked responses were variable from site-to-site, occasionally occurring as early as could reliably be observed (i.e. 15 ms), with the majority of responses occurring
+
+Molecular Psychiatry (2024) 29:1228 – 1240
+
+B AdlPFC
+
+Anterior Cingulate
+
+C
+
+Insula N=6, n=9
+
+N=6, n=9 N=6, n=9 50ms
+
+50ms
+
+Insula ROI D
+
+E FS1a S1b S2a
+
+S1a S1b S2a
+
+S1a S1b S2
+
+S2b S3 S4
+
+S2b S3 S4
+
+S3 S4a S4b
+
+S5a S5b S6
+
+S5a S5b S6
+
+S5a S5b S6
+
+200ms
+
+between 50-250 ms. This time course is consistent with what has been reported from single unit recordings in experimental animals where TMS-induced changes may last hundreds of milliseconds \[5-7\]. These responses were observed locally within the dlPFC at a higher rate (19% of electrodes in 2 of 3 participants with electrodes within 30mm of coil). In addition to local responses, a few remote sites of evoked response were also observed that appeared to be specific to the active TMS condition, including the dACC and insular cortex. The anatomical specificity of this dACC response being present after direct electrical stimulation of the dlPFC from intracranial electrodes but not being present in a sham condition that included noxious scalp cutaneous stimulation supports the notion that these remote responses from dlPFC TMS are not due exclusively to the auditory, somatosensory, or pain response of TMS. Taken together, these findings suggest that TMS recruits neuronal populations locally and downstream in functionally connected regions. Work presented here can be taken as evidence for the safety and promise of TMS-iEEG as a new method for interrogating the mechanisms of TMS in humans with high spatiotemporal precision.
+
+Evoked potentials near the stimulation site in TMS In our study, while TMS induces iTEPs within 3 cm of the targeted area at a higher rate than observed in electrodes located outside this 3cm perimeter, still only a minority of local electrodes had significant iTEPs (19% vs 8.2%, p = 0.02 in 2 of 3 participants with ‘localL electrode coverage). This finding of a lack of robust local response to stimulation is consistent with findings in non-human primates and humans. In non-human primates, neurons directly
+
+J.B. Wang et al.
+
+1237
+
+Molecular Psychiatry (2024) 29:1228 – 1240 below the coil in a 2 mm diameter region demonstrated a direct
+
+Interestingly, functional connectivity between the dlPFC and the alteration in neuronal firing in response to TMS \[5\]. Whereas the
+
+insula has been shown to predict the antidepressant effects of direct single unit changes were very focal there was a much wider
+
+dlPFC TMS \[76\]. Although a high percentage of electrodes within area of TMS-induced low frequency oscillatory activity \[5\]. In
+
+the insula exhibited a response to TMS while exhibiting no humans, a recent review of all TMS-fMRI studies concluded that for
+
+response to sham, it is important to note that other electrodes stimulation sites outside of primary sensory cortex TMS does not
+
+within the insula demonstrated a significant response to an increase BOLD activity locally \[45-48\]. For our analysis we had to
+
+auditory sham, limiting the conclusions we can make regarding exclude the first 15 ms immediately after each TMS pulse due to
+
+the region. dlPFC TMS may also alter functional connectivity stimulation artifact. As a result, we likely miss the immediate direct
+
+between the inferior frontal gyrus, which contains the pars depolarization of neurons and monosynapic activity resulting from
+
+opercularis, and the rest of the limbic system \[77\]. Finally, the TMS. The iTEPS are most likely the result of a slower polysynaptic
+
+precentral gyrus has been implicated along with the dlPFC, dorsal- process. This could represent slow propagation from the
+
+parietal cortex, and anterior midline structures as part of a stimulation site to target through cortico-cortical or cortico-
+
+cognitive control network, may contribute to TMSLs potential subcortcal-cortical pathways, or recurrent propagation pathways
+
+efficacy in a subset of patients \[57, 78\]. after reaching the target site early in the first 15 ms \[10\]. This late potential is less likely to represent slow propagation of the electric
+
+Limitations and future directions field due to the relatively weak relationship of the E-field and iTEPs
+
+This analysis has limitations, some of which can be addressed in (e.g. Fig. 2A-C, E) and the fact that magnetic fields induced by TMS
+
+future experiments. First, the TMS artifact saturated the iEEG only last for hundreds of microseconds \[49\].
+
+amplifiers and degraded the physiological signal within the first 15 milliseconds after TMS. To account for this, we focused our Network-level modulation of the ACC and other brain regions
+
+analyses to start 15 ms after TMS was administered. While this Repetitive TMS to the dlPFC modifies both the dlPFC and a
+
+strategy minimized the potential for TMS artifact contaminating network of connected regions including the ACC and adjacent
+
+the physiological signal, it limited our analysis of the immediate medial prefrontal structures. Evidence of this has been derived
+
+(\<15ms) effects of TMS and thus our ability to assess for from EEG \[50-52\], structural MRI \[52, 53\], and fMRI \[54-59\].
+
+immediate mono- or polysynaptic responses for TMS. This may However, without a direct link to intracranial neurophysiology, it
+
+explain why iTEPs were only observed in 19% of electrodes near has been difficult to confirm the nature of these remote ACC
+
+the stimulation site. Future work will focus on minimizing responses. Specifically, it is difficult to source localize subregions
+
+stimulation artifact so as to resolve these immediate (\<15ms) of the ACC using EEG and resolve millisecond temporal relation-
+
+neural effects. Related to this point, we were conservative in ships in the ACC using fMRI. In our study, the dACC was the node
+
+what we defined as a TMS-specific iTEP. We aired on the side of with the highest proportion of significant neural responses
+
+being overly conservative to avoid over-interpreting artifactual following TMS compared to sham pulses. The dACC also
+
+or non-TMS specific signals. In future analyses it may be possible demonstrated strong resting state functional connectivity to the
+
+to modify our analytic approach in a way that increases dlPFC and exhibited evoked responses to direct electrical
+
+sensitivity for TMS-specific effects through enhanced artifact stimulation of the dlPFC, together supporting a possible causal
+
+rejection strategies and through new amplifiers that accom- connection between the dlPFC and dACC.
+
+modate a wider input range such that TMS does not saturate the A critical question in the field is if therapeutic TMS for
+
+signal. depression elicits its clinical effects locally at the dlPFC or
+
+Second, our sample size was small, and patients were downstream in regions functionally connected to the dlPFC. Our
+
+heterogeneous with respect to seizure onset, electrode type, results demonstrate a potential dlPFC-dACC functional connec-
+
+and the distribution of anatomical coverage. Therefore, findings tion, supporting the notion that modulation of the dACC may play
+
+from this study may be skewed towards regions with greater a role in clinical improvement due to TMS. Indeed, the dACC is a
+
+anatomical coverage and miss regions with robust responses but critical node in the salience network, which influences affective
+
+without coverage. Furthermore, for some regions sample size was behavior, is activated by negative emotions \[60\], and exhibits
+
+low (2-6; see Supplementary Table 2), raising potential concerns decreased gray matter \[61\], and decreased metabolism \[62-66\] in
+
+regarding consistency between subjects. However, we also note patients with depression compared to healthy controls. Moreover,
+
+that our primary network claims (Fig. 3) were consistent across lesions of the salience network are associated with depressed
+
+patients, e.g., each of the patients with ACC coverage demon- mood \[67\], while electrical stimulation in this region can evoke
+
+strated strong iTEPs after dlPFC TMS (Supplementary Fig. 9). We positive emotion \[68\]. The more ventral subgenual ACC (sgACC)
+
+take these results not as a comprehensive map of the evoked also has strong evidence relating its activity to depression. In
+
+responses but rather as an important proof-of-concept that TMS contrast to the dACC, the sgACC tends to have increased
+
+effects can be recorded in human neurosurgical patients with metabolism in depression \[66, 69-71\], which normalizes after
+
+iEEG. A larger study will be necessary to further explore iTEPs in treatment \[66\], and appears to play a role in ruminations
+
+these under sampled regions and to more systematically assess characteristic of depression \[72-74\]. The pattern of resting fMRI
+
+the distribution of responses to TMS stimulation of various regions connectivity between the dlPFC and these two ACC regions is
+
+across the brain. different, with dlPFC activity positively correlated with dACC
+
+On a related note, regarding heterogeneity in our patient activity \[75\] and negatively correlated with sgACC activity \[55\]. A
+
+population, we used the Beam F3 coordinate for determining our major question in the field is if TMS to the dlPFC modulates both
+
+stimulation site from an anatomical MRI. Beam F3 was selected the dACC and sgACC directly, or if the effects are direct at one site
+
+because it is a commonly used stimulation target for treating and indirect at another. While our electrode coverage was greater
+
+depression \[35, 79-81\]. For our initial study, our goal was to at the dACC relative to the sgACC (see Supplementary Fig. 3), our
+
+identify brain-wide changes associated with TMS as applied results to date support a causal dlPFC-dACC connection elucidated
+
+clinically. However, this method does not take into consideration by single pulses of TMS. Whether a similar propagation pattern
+
+individual differences in the functional organization of the dlPFC, exists for sgACC in response to dlPFC TMS will require further
+
+which has been shown to be associated with treatment efficacy in study with denser sampling of the sgACC.
+
+the research setting \[55, 82\]. Future studies could evaluate In addition to the dACC, we also note that TMS delivery to the
+
+whether greater convergence of downstream effects is evident dlPFC has led to evoked potentials within the insula, pars
+
+when the stimulation target is identified using functional opercularis of the inferior frontal gyurus, and precentral gyrus.
+
+connectivity MRI, and whether the remote modulation occurs at
+
+J.B. Wang et al. 1238
+
+sites predicted based on functional connectivity to the stimulation
+
+13\. Keller CJ, Huang Y, Herrero JL, Fini ME, Du V, Lado FA, et al. Induction and target \[55, 57\].
+
+Quantification of Excitability Changes in Human Cortical Networks. J Neurosci. There are several avenues of research that can be pursued using
+
+2018;38:5384-98. this TMS-iEEG approach with slight modifications to the study
+
+14\. Huang Y, Hajnal B, Entz L, Fabó D, Herrero JL, Mehta AD, et al. Intracortical design. A relatively large area of cortex is stimulated by TMS according to the simulated electric field (Fig. 2B). It is possible that our findings are not specific to the dlPFC but also from stimulation of immediately surrounding structures such as the inferior frontal gyrus and premotor areas. Future studies could target nearby structures to characterize the specificity of the dlPFC cortical
+
+Dynamics Underlying Repetitive Stimulation Predicts Changes in Network Con- nectivity. J Neurosci. 2019;39:6122-35. 15. Chhatbar PY, Kautz SA, Takacs I, Rowland NC, Revuelta GJ, George MS, et al. Evidence of transcranial direct current stimulation-generated electric fields at subthalamic level in human brain in vivo. Brain Stimul. 2018;11:727-33. 16. Lafon B, Henin S, Huang Y, Friedman D, Melloni L, Thesen T, et al. Low frequency transcranial electrical stimulation does not entrain sleep rhythms measured by regions targeted by TMS relative to more closely adjacent regions.
+
+human intracranial recordings. Nat Commun. 2017;8:1199. Finally, these experiments were conducted on patients with
+
+17\. Opitz A, Falchier A, Yan CG, Yeagle EM, Linn GS, Megevand P, et al. Spatio- medication refractory epilepsy taking anti-seizure medication.
+
+temporal structure of intracranial electric fields induced by transcranial electric Although electrodes in the epileptic network were removed (see Methods), the seizure focus and early epileptic spread regions and seizure medications can impact local and global brain excitability and connectivity \[83-85\]. Thus, further study is needed to determine how these responses may differ from healthy participants not on medications.
+
+stimulation in humans and nonhuman primates. Sci Rep. 2016;6:31236. 18. Vöröslakos M, Takeuchi Y, Brinyiczki K, Zombori T, Oliva A, Fernández-Ruiz A, et al. Direct effects of transcranial electric stimulation on brain circuits in rats and humans. Nat Commun. 2018;9:483. 19. Rossi S, Hallett M, Rossini PM, Pascual-Leone A, Safety of TMS Consensus Group. Safety, ethical considerations, and application guidelines for the use of tran- scranial magnetic stimulation in clinical practice and research. Clin Neurophysiol. 2009;120:2008-39. 20. Rossini PM, Burke D, Chen R, Cohen LG, Daskalakis Z, Di Iorio R, et al. Non-invasive CONCLUSIONS
+
+electrical and magnetic stimulation of the brain, spinal cord, roots and peripheral Taken together, these results provide compelling proof-of-concept to suggest that the physiological effects of TMS can be recorded with intracranial electrodes in humans. We observed no adverse effects of TMS-iEEG experiments in twenty-two participants to date. While encouraging, caution must be taken to ensure continued patient safety. We hope this article will help to establish
+
+nerves: Basic principles and procedures for routine clinical and research appli- cation. An updated report from an I.F.C.N. Committee. Clin Neurophysiol. 2015;126:1071-107. 21. Doyle Gaynor LMF, Kühn AA, Dileone M, Litvak V, Eusebio A, Pogosyan A, et al. Suppression of beta oscillations in the subthalamic nucleus following cortical stimulation in humans. Eur J Neurosci. 2008;28:1686-95. 22. Kühn AA, Trottenberg T, Kupsch A, Meyer B-U. Pseudo-bilateral hand motor a foundation for this new TMS-iEEG approach by providing safety
+
+responses evoked by transcranial magnetic stimulation in patients with deep data from a phantom brain and human participants, along with
+
+brain stimulators. Clin Neurophysiol. 2002;113:341-5. artifact removal and processing steps that will lay the methodical
+
+23\. Kumar R, Chen R, Ashby P. Safety of transcranial magnetic stimulation in patients groundwork for future hypothesis-driven investigations. We are optimistic that TMS-iEEG will provide an informative novel methodology in the ongoing efforts to understand the underlying mechanisms of TMS.
+
+with implanted deep brain stimulators. Mov Disord. 1999;14:157-8. 24. Phielipp NM, Saha U, Sankar T, Yugeta A, Chen R. Safety of repetitive transcranial magnetic stimulation in patients with implanted cortical electrodes. An ex-vivo study and report of a case. Clin Neurophysiol. 2017;128:1109-15. 25. Udupa K, Bahl N, Ni Z, Gunraj C, Mazzella F, Moro E, et al. Cortical Plasticity Induction by Pairing Subthalamic Nucleus Deep-Brain Stimulation and Primary
+
+REFERENCES
+
+Motor Cortical Transcranial Magnetic Stimulation in ParkinsonLs Disease. J Neu- rosci. 2016;36:396-404. 1. Dayan E, Censor N, Buch ER, Sandrini M, Cohen LG. Noninvasive brain stimulation:
+
+26\. Wagner T, Gangitano M, Romero R, Théoret H, Kobayashi M, Anschel D, et al. from physiology to network dynamics and back. Nat Neurosci. 2013;16:838-44.
+
+Intracranial measurement of current densities induced by transcranial magnetic 2. Hallett M. Transcranial magnetic stimulation: a primer. Neuron. 2007;55:187-99.
+
+stimulation in the human brain. Neurosci Lett. 2004;354:91-94. 3. Lefaucheur JP, Aleman A, Baeken C, Benninger DH, Brunelin J, Di Lazzaro V, et al.
+
+27\. Wessel JR, Diesburg DA, Chalkley NH, Greenlee JDW. A causal role for the human Evidence-based guidelines on the therapeutic use of repetitive transcranial
+
+subthalamic nucleus in non-selective cortico-motor inhibition. Curr Biol. magnetic stimulation (rTMS): An update (2014-2018). Clin Neurophysiol.
+
+2022;32:3785-91.e3. 2020;131:474-528.
+
+28\. Rossi S, Antal A, Bestmann S, Bikson M, Brewer C, Brockmöller J, et al. Safety and 4. Elias GJ, Boutet A, Parmar R, Wong EH, Germann J, Loh A, et al. Neuromodulatory
+
+recommendations for TMS use in healthy subjects and patient populations, with treatments for psychiatric disease: A comprehensive survey of the clinical trial
+
+updates on training, ethical and regulatory issues: Expert Guidelines. Clin Neu- landscape. Brain Stimul. 2021;14:1393-403.
+
+rophysiol. 2021;132:269-306. 5. Romero MC, Davare M, Armendariz M, Janssen P. Neural effects of transcranial
+
+29\. Strafella AP, Vanderwerf Y, Sadikot AF. Transcranial magnetic stimulation of the magnetic stimulation at the single-cell level. Nat Commun. 2019;10:2642.
+
+human motor cortex influences the neuronal activity of subthalamic nucleus. Eur 6. Mueller JK, Grigsby EM, Prevosto V, Petraglia FW III, Rao H, Deng ZD, et al.
+
+J Neurosci. 2004;20:2245-9. Simultaneous transcranial magnetic stimulation and single-neuron recording in
+
+30\. Oya H, Howard MA, Magnotta VA, Kruger A, Griffiths TD, Lemieux L, et al. Map- alert non-human primates. Nat Neurosci. 2014;17:1130-6.
+
+ping effective connectivity in the human brain with concurrent intracranial 7. Moliadze V, Zhao Y, Eysel U, Funke K. Effect of transcranial magnetic stimulation
+
+electrical stimulation and BOLD-fMRI. J Neurosci Methods. 2017;277:101-12. on single-unit activity in the cat primary visual cortex. J Physiol. 2003;553:665-79.
+
+31\. Davis NJ. Variance in cortical depth across the brain surface: Implications for 8. Boes AD, Kelly MS, Trapp NT, Stern AP, Press DZ, Pascual-Leone A. Noninvasive
+
+transcranial stimulation of the brain. Eur J Neurosci. 2021;53:996-1007. Brain Stimulation: Challenges and Opportunities for a New Clinical Specialty. J
+
+32\. Lu M, Ueno S. Comparison of the induced fields using different coil configura- Neuropsychiatry Clin Neurosci. 2018;30:173-9.
+
+tions during deep transcranial magnetic stimulation. PLoS One. 9. Chervyakov AV, Chernyavsky AY, Sinitsyn DO, Piradov MA. Possible Mechanisms
+
+2017;12:e0178422. Underlying the Therapeutic Effects of Transcranial Magnetic Stimulation. Front
+
+33\. Gander PE, Kumar S, Sedley W, Nourski KV, Oya H, Kovach CK, et al. Direct Hum Neurosci. 2015;9:303.
+
+electrophysiological mapping of human pitch-related processing in auditory 10. Keller CJ, Honey CJ, Mégevand P, Entz L, Ulbert I, Mehta AD. Mapping human
+
+cortex. Neuroimage. 2019;202:116076. brain networks with cortico-cortical evoked potentials. Philos Trans R Soc Lond B
+
+34\. Nourski KV, Howard MA III. Invasive recordings in the human auditory cortex. Biol Sci. 2014;369:20130528.
+
+Handb Clin Neurol. 2015;129:225-44. 11. Matsumoto R, Nair DR, Ikeda A, Fumuro T, LaPresto E, Mikuni N, et al. Parieto-
+
+35\. Beam W, Borckardt JJ, Reeves ST, George MS. An efficient and accurate new frontal network in humans studied by cortico-cortical evoked potential. Hum
+
+method for locating the F3 position for prefrontal TMS applications. Brain Stimul. Brain Mapp. 2012;33:2856-72.
+
+2009;2:50-54. 12. Matsumoto R, Nair DR, LaPresto E, Najm I, Bingaman W, Shibasaki H, et al.
+
+36\. Fried PJ, Rushmore RJ, Moss MB, Valero-Cabré A, Pascual-Leone A. Causal evi- Functional connectivity in the human language system: a cortico-cortical evoked
+
+dence supporting functional dissociation of verbal and spatial working memory potential study. Brain. 2004;127:2316-30.
+
+in the human dorsolateral prefrontal cortex. Eur J Neurosci. 2014;39:1973-81.
+
+Molecular Psychiatry (2024) 29:1228 – 1240
+
+J.B. Wang et al.
+
+1239
+
+Molecular Psychiatry (2024) 29:1228 – 1240 37. Poorganji M, Zomorrodi R, Hawco C, Hill AT, Hadas I, Rajji TK, et al. Differentiating
+
+59\. Oathes DJ, Zimmerman JP, Duprat R, Japp SS, Scully M, Rosenberg BM, et al. transcranial magnetic stimulation cortical and auditory responses via single pulse
+
+Resting fMRI-guided TMS results in subcortical and brain network modulation and paired pulse protocols: A TMS-EEG study. Clin Neurophysiol.
+
+indexed by interleaved TMS/fMRI. Exp Brain Res. 2021;239:1165-78. 2021;132:1850-8.
+
+60\. Etkin A, Egner T, Kalisch R. Emotional processing in anterior cingulate and medial 38. Rocchi F, Oya H, Balezeau F, Billig AJ, Kocsis Z, Jenison RL, et al. Common fronto-
+
+prefrontal cortex. Trends Cogn Sci. 2011;15:85-93. temporal effective connectivity in humans and monkeys. Neuron.
+
+61\. Goodkind M, Eickhoff SB, Oathes DJ, Jiang Y, Chang A, Jones-Hagata LB, et al. 2021;109:852-868.e8.
+
+Identification of a common neurobiological substrate for mental illness. JAMA 39. Keller CJ, Bickel S, Entz L, Ulbert I, Milham MP, Kelly C, et al. Intrinsic functional
+
+Psychiatry. 2015;72:305-15. architecture predicts electrically evoked responses in the human brain. Proc Natl
+
+62\. Bench CJ, Friston KJ, Brown RG, Scott LC, Frackowiak RS, Dolan RJ. The anatomy Acad Sci USA. 2011;108:10308-13.
+
+of melancholia-focal abnormalities of cerebral blood flow in major depression. 40. Sawada M, Adolphs R, Dlouhy BJ, Jenison RL, Rhone AE, Kovach CK, et al. M

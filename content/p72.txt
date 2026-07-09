@@ -1,0 +1,1307 @@
+Journal of Personality and Social Psychology
+
+Manuscript version of
+
+Is My Loneliness Killing Me? Effects of Loneliness and Social Isolation on Transitions Between Cognitive Status Categories and Death
+
+Tomiko Yoneda, Kathryn L. Jackson, Emily C. Noyer, Christopher R. Beam, Gabrielle Pfund, Stephen Antonoplis, Emorie Beck, Katy Bedjeti, Pei Qin, Kayla M. Garner, Jing Luo, Karina Van Bogart, Lily Pieramici, Katherina Hauner, Nicholas A. Turiano, Paraic S. O'Suilleabhain, Lisa Barnes, David A. Bennett, Graciela Muniz Terrera, Daniel K. Mroczek, Bryan D. James, Andrew Steptoe, Anthony D. Ong, Eileen K. Graham
+
+Funded by:
+
+• National Institutes of Health
+
+© 2026, American Psychological Association. This manuscript is not the copy of record and may not exactly replicate the final, authoritative version of the article. Please do not copy or cite without authors’ permission. The final version of record is available via its DOI: https://dx.doi.org/10.1037/pspp0000606
+
+This article is intended solely for the personal use of the individual user and is not to be disseminated broadly.
+
+Abstract
+
+Loneliness and social isolation are associated with numerous adverse physical and
+
+psychological health outcomes in older adulthood, including cognitive impairment and mortality
+
+risk. Yet, how the individual and joint effects of loneliness and social isolation contribute to these
+
+outcomes remains unclear, particularly given the interplay between individual differences
+
+(loneliness) and environmental factors (social isolation) in shaping these important health outcomes
+
+in older adulthood (i.e., person-environment interactions). We used Cox regression, logistic
+
+regression, and multistate survival models to systematically investigate the individual and adjusted
+
+associations among loneliness, social isolation, cognitive aging outcomes, and mortality risk.
+
+Further, extensive between-study variability in operational definitions, modelling approaches, and
+
+covariate adjustments may be contributing to mixed results in the existing literature. In this
+
+Registered Report, we applied a multi-study approach (i.e., coordinated data analysis) in which
+
+independent but identical models were fit across 11 longitudinal studies representing participants
+
+from 18 countries (Ntotal=175,070). Random effects meta-analyses synthesized results across studies,
+
+showing that loneliness was consistently associated with an elevated risk of cognitive impairment
+
+and mortality across statistical approaches, even after adjusting for social isolation. Conversely,
+
+social isolation was not consistently associated with cognitive impairment, and showed weaker
+
+associations with mortality risk. Together, our findings suggest that loneliness is a robust, proximal
+
+predictor of major aging outcomes and highlight avenues for theory development, strategies to
+
+strengthen cognitive resilience and independence in older adulthood, and more efficient resource
+
+allocation of public health resources.
+
+Keywords: loneliness; social isolation; cognitive impairment; dementia; older adulthood;
+
+multi-state survival models; mortality
+
+1
+
+Introduction
+
+Social connection and social contact are vital aspects of the human experience, undeniably
+
+essential for everything from development (Hartup, 1989; Orben et al., 2020) and brain function
+
+(Hari et al., 2015), to well-being (Diener, 2009) and health (Kaplan et al., 1977; Uchino, 2006).
+
+Thus, it is unsurprising that the absence of social connection and contact (i.e., loneliness and social
+
+isolation) is contributing to a major public health concern (Holt-Lunstad, 2022), posing problems
+
+across countries and cultures (Fakoya et al., 2020; Fokkema et al., 2012; Miyawaki, 2015; Surkalim
+
+et al., 2022). Indeed, the United States Surgeon General has declared loneliness and social isolation
+
+a public health epidemic (U.S. Department of Health and Human Services, 2023), highlighting the
+
+urgency of addressing these issues not only in the United States but also globally. This declaration
+
+aligns with growing international concerns, exemplified by initiatives such as the UK's appointment
+
+of a Minister for Loneliness in 2018 (UK Government, 2018).
+
+Individuals across the entire lifespan report experiencing loneliness and social isolation
+
+(Cacioppo et al., 2011; Lee et al., 2019; Röhr et al., 2021; Twenge et al., 2021). While loneliness is
+
+most prevalent among adolescents under 25 years and adults 65+ years (Beam & Kim, 2020; Victor
+
+& Yang, 2012), both loneliness and social isolation are a substantial concern for some older adults
+
+(Courtin & Knapp, 2017; d’Hombres et al., 2021; Donovan & Blazer, 2020; Freedman & Nicolle,
+
+2020; National Academies of Sciences, 2020; Victor & Yang, 2012). Notably, both loneliness and
+
+social isolation are associated with several adverse physical and psychological health outcomes for
+
+the aging demographic (Cornwell & Waite, 2009; Coyle & Dugan, 2012; Donovan & Blazer, 2020;
+
+Holt-Lunstad, 2017; Ong et al., 2016; Prohaska et al., 2020). For example, loneliness and social
+
+isolation are linked to cognitive decline (Boss et al., 2015; Samtani et al., 2022), depressive
+
+symptoms (Cacioppo et al., 2006), poor sleep quality (Benson et al., 2021), heart disease
+
+(Hakulinen et al., 2018; Hu et al., 2021), and stroke (Hakulinen et al., 2018; Valtorta et al., 2016) in
+
+older adulthood (see also, Courtin & Knapp, 2017).
+
+2
+
+Given shifting aging demographics worldwide, there is a pressing need to describe and
+
+address the destructive impact of loneliness and social isolation. Cognitive impairment and
+
+mortality represent two of the most significant challenges to healthy aging, with profound
+
+implications for individual well-being and public health systems. Importantly, while there is not yet
+
+a cure for severe cognitive impairment (e.g., Alzheimer’s disease and related dementias), extensive
+
+research suggests that adherence to a healthy lifestyle, including maintaining social connections and
+
+contact, may mitigate symptoms or slow progression to dementia (Di Marco et al., 2014; Litke et
+
+al., 2021; Zhang et al., 2022). Thus, understanding the roles of loneliness and social isolation in
+
+cognitive aging offers promising avenues for intervention. In the current study, we used a multi-
+
+study approach (i.e., coordinated data analysis) across 11 independent studies to investigate the
+
+individual and adjusted effects of loneliness and social isolation on the risk of cognitive impairment
+
+and mortality, indicators that are paramount to optimal aging and development.
+
+Theoretical and Empirical Distinctions: Loneliness and Social Isolation
+
+Conceptually, loneliness and social isolation are often considered in tandem or used
+
+interchangeably (Perissinotto et al., 2019), yet there are important distinctions between them.
+
+Loneliness is characterized by a feeling of distress arising from a discrepancy between desired and
+
+actual social connection (Smoyak, 1984), regardless of the size or density of an individual’s social
+
+network. Conversely, social isolation is the tangible state of impoverished social contact with others
+
+(Ong et al., 2016). These distinctions have important implications for the pathways through which
+
+they may influence health outcomes, as well as important theoretical implications. In their seminal
+
+discussion of the social psychological theory of loneliness, Peplau and Perlman (1979) highlighted
+
+how loneliness and social isolation are not synonyms, but instead reflect the discrepancy between
+
+desired and achieved level of social interaction. Given individual differences in sociability between
+
+people (Soto & John, 2017), as well as differences in implications of objective versus subjective
+
+indicators of social well-being for health (Fiorillo & Sabatini, 2011), recognizing the distinction
+
+3
+
+between subjective and objective social experiences is essential. That is, the distinction hinges on
+
+perception, wherein loneliness is a feeling of distress that arises alongside perceived social isolation
+
+(Cornwell & Waite, 2009) and social isolation is objectively being alone (Donovan & Blazer, 2020).
+
+Thus, akin to the transactional theory of stress and coping (Lazarus & Folkman, 1984), loneliness
+
+may be viewed as resulting from a transactional process between a person and their environment,
+
+whereas social isolation may be viewed as the objective, environmental state. Investigating the
+
+individual and adjusted effects of loneliness and social isolation provides opportunities to examine
+
+the relative importance and interplay between individual differences (loneliness) and environmental
+
+factors (social isolation) in shaping health outcomes (i.e., person-environment interactions).
+
+Notably, loneliness has been conceptualized as a relatively stable individual difference:
+
+some individuals desire more social connections (Cacioppo & Patrick, 2008), and some individuals
+
+are more likely to experience loneliness, regardless of the social environment (Marangoni & Ickes,
+
+1989). Research focusing on daily life experiences of older adults has emphasized the moderating
+
+role of other individual differences in the experience of loneliness, as well as the importance of
+
+research differentiating loneliness and social isolation: although all participants who experienced
+
+social interactions subsequently reported lower momentary loneliness, older adults who were higher
+
+in trait loneliness benefited more (i.e., reported less momentary loneliness) following social
+
+interactions (Zhaoyang et al., 2022). This research is consistent with theories emphasizing that
+
+individuals scoring higher in trait loneliness have heightened hypersensitivity and reactivity to
+
+socially relevant stimuli (Cacioppo et al., 2009), as well as the positive feedback loop between
+
+loneliness and social isolation. Specifically, feelings of loneliness may elicit hypervigilance for
+
+social threats, and the perception of the world as a lonely, unsafe place may prompt lonely
+
+individuals to distance themselves socially, leading to further expectations of negative interactions
+
+accompanied by heightened emotional responses (Hawkley & Cacioppo, 2010). These dynamics
+
+reflect reactive person–environment transactions, in which individual differences in loneliness
+
+4
+
+shape how social environments are interpreted and responded to, with downstream implications for
+
+social isolation. Yet, despite the intimate connection between loneliness and isolation, there are
+
+individual differences in the extent to which individuals perceive loneliness in the context of social
+
+isolation.Thus, appropriately teasing apart the individual and adjusted effects1 of loneliness and social
+
+isolation on health outcomes (i.e., incremental validity), including on the risk of cognitive
+
+impairment and mortality in older adulthood, across several longitudinal studies of aging may
+
+provide opportunities to inform theory and intervention strategies. For instance, interventions
+
+targeting loneliness may focus on management of emotion regulation and perceived stress, whereas
+
+interventions targeting social isolation may focus on lifestyle changes. However, several studies
+
+investigating social isolation have not accounted for loneliness (e.g., Chen et al., 2011; Crooks et
+
+al., 2008; James et al., 2011; Valenzuela et al., 2011; Zhang et al., 1999) and vice versa (e.g., Freak-
+
+Poli et al., 2022; Lobo et al., 2008; Sundström et al., 2020).
+
+The Prevalence of Loneliness and Social Isolation
+
+Loneliness and social isolation can affect individuals of all ages, genders, and cultural
+
+backgrounds. The prevalence of loneliness in older adults varies across cultures and measurement
+
+approaches, with estimates ranging from 10% to 40% (Dykstra, 2009; Ong et al., 2016; Victor et
+
+al., 2000). The prevalence of loneliness is higher among those who are widowed or never married
+
+(Cohen-Mansfield et al., 2016; Dahlberg et al., 2022; Fried et al., 2015) or experience poor health
+
+(Cohen-Mansfield et al., 2016; Dahlberg et al., 2022). Similarly, the prevalence of social isolation is
+
+1 To ensure clarity in our analyses and interpretations, we define our key terms as follows: a) Individual associations: These refer to the relationship between a single predictor (loneliness or social isolation) and an outcome, without adjusting for the other predictor. These associations represent the total effect of each social factor, which may include both direct effects and effects that operate through the other social factor. b) Adjusted associations: These refer to the relationship between a predictor and an outcome while statistically controlling for the other predictor. These associations represent the unique contribution of each social factor, over and above what is shared with the other factor. We chose these terms to avoid potential misconceptions: a) 'Individual' is preferred over 'unique' because the unadjusted associations are not necessarily unique to each predictor, as they may include shared variance. b) 'Adjusted' is preferred over 'independent' because even after statistical adjustment, the predictors may not be truly independent due to their conceptual and empirical overlap.
+
+5
+
+higher for individuals who are retired (Mullins et al., 1991), 65 years and older (Mullins et al.,
+
+1991), or experience chronic pain (Blyth & Noguchi, 2017). Research also finds that self-reported
+
+loneliness and social isolation are more common in older adults with unacknowledged hearing loss
+
+(Mick & Pichora-Fuller, 2016) and communication difficulties and disorders (Palmer et al., 2016).
+
+Thus, many of the factors associated with heightened prevalence of loneliness and social isolation
+
+highlight the importance of identifying, investigating, and delineating ways in which research can
+
+support older adults who are experiencing loneliness and/or social isolation. Given the established
+
+prevalence of loneliness and social isolation among older adults, understanding the extent to which
+
+loneliness and social isolation are predictive risk factors for adverse outcomes is essential from a
+
+public health perspective. In the current project we focus on the extent to which loneliness and
+
+social isolation are associated with cognitive aging processes and mortality risk.
+
+Cognitive Outcomes and Mortality Risk in Older Adulthood
+
+There are extensive individual differences in cognitive functioning in older adulthood,
+
+ranging from what is expected in normal aging to the more progressed state of severe cognitive
+
+impairment (e.g., dementia). Between these ends of the spectrum, mild cognitive impairment (MCI)
+
+is used to characterize or diagnose individuals who report cognitive complaints and decline that is
+
+not severe enough to interfere with day-to-day activities or warrant a dementia diagnosis (Petersen
+
+et al., 1999). In other words, older adults can be categorized as having 1) no cognitive impairment,
+
+2\) mildly impaired cognitive functioning (e.g., MCI), or 3) severely impaired cognitive functioning
+
+(e.g., dementia)2 (see Supplementary Text 1 for a Glossary of cognitive terms and mapping of
+
+2 Mildly impaired cognitive functioning is a primary symptom of MCI, while severely impaired cognitive functioning is a primary symptom of dementia. The terms MCI and dementia typically reflect clinical diagnoses, though some researchers will operationalize MCI or dementia based on performance on cognitive tests. When we refer to the current project (including research questions, hypotheses, and analytic approaches), we use the terms “mildly impaired cognitive functioning” and “severely impaired cognitive functioning” rather than “MCI” and “dementia”, as not all of the datasets meeting eligibility involved clinical MCI or dementia diagnoses. That is, although some datasets included clinical diagnoses based on clinical conferences (e.g., Rush MAP), we will conceptually harmonize cognitive status categories at the lowest possible denominator (i.e., mildly impaired and severely impaired cognitive functioning). When we refer to previous research investigating cognitive outcomes, we use the terminology that was originally used (e.g., when researchers investigated the “risk of MCI” or the “risk of dementia”) to more accurately reflect the outcomes reported in the literature.
+
+6
+
+cognitive status categories to cognitive terms). Transitioning between these cognitive status
+
+categories is not necessarily a linear process. Specifically, MCI (i.e., mildly impaired cognitive
+
+functioning) increases the risk of dementia (i.e., severely impaired cognitive functioning) (see
+
+Bruscoli & Lovestone, 2004), but not all individuals with MCI will progress to dementia
+
+(Kaduszkiewicz et al., 2014; Visser et al., 2006). For instance, in a population-based cohort of older
+
+adults (N=2050), only 29% of individuals with prevalent or incident MCI progressed to dementia
+
+over a median follow-up of 5 years (Roberts et al., 2014). However, compared to individuals with
+
+no cognitive impairment, individuals with MCI had a substantially elevated risk of dementia
+
+(Hazard Ratio \[HR\]=23.2, 95% Confidence Interval \[CI\] \[14.4, 37.2\]) (Roberts et al., 2014).
+
+Individuals with mildly impaired cognitive functioning may also revert to no cognitive
+
+impairment (Roberts et al., 2014). Based on older adults with MCI (N=567), 7% reverted to no
+
+cognitive impairment when assessed two years later (Welstead et al., 2021). Yet individuals who do
+
+revert to no cognitive impairment (i.e., transition backward) still remain at higher risk of incident
+
+dementia (Koepsell & Monsell, 2012). The increased risk of dementia is approximately 6.6-fold in
+
+individuals who were diagnosed with MCI and reverted back to no cognitive impairment compared
+
+to individuals who never received an MCI diagnosis, suggesting that mildly impaired cognitive
+
+functioning has critical prognostic implications for eventual dementia diagnosis (Koepsell &
+
+Monsell, 2012).
+
+Finally, cognitive impairment also increases the risk of mortality (Rajan et al., 2014;
+
+Taniguchi et al., 2019; Wilson et al., 2006), and the risk of both cognitive impairment and mortality
+
+increase alongside older age. These age-related links between cognitive impairment and mortality
+
+emphasize the importance of simultaneously accounting for both cognitive outcomes and mortality
+
+risk when investigating the effect of predictive factors on any of these outcomes. That is,
+
+longitudinal panel datasets repeatedly assess participants across several years, while also tracking
+
+participant deaths during follow-up occasions (and sometimes beyond). Using these longitudinal
+
+7
+
+datasets, the majority of the existing literature treats the risk of mildly impaired cognitive
+
+functioning (e.g., MCI), severely impaired cognitive functioning (e.g., dementia), and mortality as
+
+individual outcomes. However, cognitive aging processes and mortality are competing risks,
+
+especially in old age. To summarize: 1) individuals with mildly impaired cognitive functioning are
+
+at a greater risk of severely impaired cognitive functioning, 2) individuals with mildly or severely
+
+impaired cognitive functioning are at a greater risk of mortality, 3) individuals may die due to
+
+alternative causes prior to development of cognitive impairment, and 4) increasing age is a risk
+
+factor for cognitive impairment and mortality. Given this issue of heightened risk among cognitive
+
+outcomes and selective mortality, research investigating the impact of predictors (e.g., loneliness
+
+and social isolation) on any of these outcomes (e.g., mildly impaired cognitive functioning, severely
+
+impaired cognitive functioning, or death) in singularity is not properly accounting for the competing
+
+risks of the other outcome, which may lead to biased estimates.
+
+Yet, most research does not consider or account for more than one outcome. For instance,
+
+out of 16 cohort studies examining loneliness and dementia systematically identified by Qiao et al.
+
+(2022), only one study statistically examined both cognitive decline and mortality; specifically,
+
+Tilvis et al. (2004) found that loneliness was not associated with the relative risk of mortality when
+
+adjusting for cognitive functioning at baseline and age-related cognitive decline. Thus, it is possible
+
+that the increased risk of mortality in individuals experiencing heightened loneliness may be
+
+accounted for, at least partially, by cognitive decline in older adulthood.
+
+Empirical Research: Loneliness, Social Isolation, Cognitive Aging, and Mortality Risk
+
+A rich body of empirical research has investigated whether loneliness and social isolation
+
+are associated with the risk of cognitive outcomes in older adulthood. Based on up to 65 reports,
+
+meta-analyses find consistent associations between higher loneliness or social isolation with
+
+impairment across several domains of cognitive functioning (see Boss et al., 2015; Evans et al.,
+
+2019; Kang & Oremus, 2022). Similarly, based on up to 77 independent studies, meta-analyses
+
+8
+
+revealed that social connectedness and social contact are inversely associated with cognitive decline
+
+(see Kuiper et al., 2015; Piolatto et al., 2022; Samtani et al., 2022). While most studies find an
+
+inverse association between social isolation and cognitive function (e.g., Evans et al., 2018), some
+
+research has failed to find this relationship (e.g., Wilson et al., 2007). These conflicting findings
+
+may be due to differences in measurement approaches or sample characteristics, which our multi-
+
+study approach aims to address. Further, although these associations are reliable, effect sizes are
+
+relatively small (e.g., the association between loneliness and global cognitive functioning, r= -0.08;
+
+95% CI \[-0.14, -0.02\], K=6; Harrington et al., 2023). Findings between social isolation and risk of
+
+dementia are similarly consistent (see also Fratiglioni et al., 2004). Based on meta-analyses of
+
+longitudinal studies, poor social engagement (k=17, see Penninkilampi et al., 2018) and living alone
+
+(i.e., social isolation) (k=12, see Desai et al., 2020) were associated with an increased risk of
+
+incident dementia. Overall, these findings suggest that both loneliness and social isolation are
+
+reliable risk factors for cognitive impairment and cognitive decline, and that social isolation is
+
+reliably linked with the risk of dementia.
+
+Despite the reliable associations between loneliness and cognitive functioning and decline,
+
+the association between loneliness and the risk of dementia, however, appears to be less congruent.
+
+For instance, Victor et al. (2021) concluded that there is insufficient evidence for loneliness as a
+
+risk factor for dementia, as earlier loneliness predicted incident dementia in only five out of eleven
+
+studies. In contrast, Qiao et al. (2022) (k=16) concluded that loneliness was consistently associated
+
+with an increased risk of dementia, but not risk of MCI (2022). Similarly, recent research based on
+
+a large sample of adults from the UK Biobank (N=492,322; Mage=57, SD=8) found that loneliness
+
+was associated with a 60% increased risk of several types of dementia, adjusting for social isolation
+
+(Sutin et al., 2022). However, two additional reports using the same dataset but with different
+
+operationalizations of loneliness and social isolation and shorter follow-up periods found that the
+
+increased risk of loneliness on dementia was no longer significant after adjusting for social isolation
+
+9
+
+(Elovainio et al., 2022; Shen et al., 2022). Thus, consistent with theory emphasizing the importance
+
+of distinguishing between loneliness and social isolation (e.g., Peplau & Perlman, 1979), the extent
+
+to which loneliness is associated with risk of dementia when adjusting for social isolation appears
+
+to be less consistent compared to the effect of loneliness or social isolation on cognitive impairment
+
+or decline, or the effect of social isolation on risk of dementia. Moreover, these studies emphasize
+
+the challenge of delineating the extent to which mixed findings reflect true differences versus
+
+methodological differences.
+
+Given the associations between loneliness and social isolation with detrimental cognitive
+
+and health outcomes, it is understandable that both loneliness and social isolation are also robustly
+
+and consistently associated with mortality risk (Crowe et al., 2021; Henriksen et al., 2019; Holt-
+
+Lunstad et al., 2010; Long et al., 2023; Luo et al., 2012; Steptoe et al., 2013). The landmark meta-
+
+analysis by Holt-Lunstad et al. (2015), which included data from 70 independent studies, found that
+
+social isolation is associated with a 29% increase in mortality risk, loneliness is associated with a
+
+26% increase in mortality risk, and living alone is associated with a 32% increase in mortality risk.
+
+However, the authors emphasized that the vast majority of studies examined either loneliness,
+
+social isolation, or living alone, thereby limiting direct comparisons between these predictors. Of
+
+the studies that did contrast loneliness and social isolation, results have been mixed, with some
+
+finding that loneliness (Holwerda et al., 2012) or social isolation (Steptoe et al., 2013) was a more
+
+important indicator of mortality risk.
+
+Theoretical Pathways: Loneliness, Social Isolation, Cognitive Aging, and Mortality Risk
+
+Theory and empirical research show that some of the pathways linking loneliness and social
+
+isolation to cognitive aging and mortality risk may be overlapping and bidirectional (del Pozo Cruz
+
+et al., 2021; Luo & Waite, 2014; Shankar, 2017). Specifically, cognitive decline may exacerbate
+
+loneliness and social isolation, as individuals experiencing cognitive impairment may feel lonelier
+
+and/or isolate themselves (Gibson & Springer, 2022; Yu et al., 2016). Similarly, both may
+
+10
+
+accelerate aging and cognitive impairment (Berkman, 1988; Crowe et al., 2021; Hawkley &
+
+Cacioppo, 2010; Kuiper et al., 2015), as social activity and social relationships are important for
+
+maintaining cognitive functioning (Fratiglioni et al., 2004; Park et al., 2022; Penninkilampi et al.,
+
+2018). Additionally, both loneliness and social isolation may adversely affect health status, which
+
+can subsequently influence the risk of cognitive decline, dementia, and mortality. For instance,
+
+having a limited social network (i.e., social isolation) may adversely influence macrosocial forces
+
+important for healthy cognitive aging, including access to resources and social support (Holwerda et
+
+al., 2014). Individuals who are lonely or socially isolated are also more likely to engage in
+
+detrimental health behaviours (e.g., smoking, poor sleep quality, poor diet, low physical activity)
+
+(Christiansen et al., 2016; Kobayashi & Steptoe, 2018), leading to the increased risk of dementia
+
+(see Lee et al., 2010) and mortality (see Loef & Walach, 2012).
+
+Extensive research also documents unique pathways linking loneliness and social isolation
+
+with cognitive outcomes and mortality risk in older adulthood. Specifically, loneliness may impact
+
+cognitive health and mortality via: a) Heightened stress reactivity: Lonely individuals often
+
+experience chronic activation of stress response systems, leading to elevated cortisol levels and
+
+inflammatory markers (Hackett et al., 2012). b) Altered cognitive processes: Loneliness is
+
+associated with heightened attention to social threats and negative social information, which may
+
+contribute to cognitive load and reduced cognitive resources for other tasks (Cacioppo et al., 2009).
+
+c) Sleep disruption: Loneliness is linked to poor sleep quality (Hawkley et al., 2010), which is a risk
+
+factor for cognitive decline and mortality. d) Health behaviors: Lonely individuals may be less
+
+likely to engage in health-promoting behaviors, such as physical activity or seeking medical care
+
+(Shankar et al., 2011). Longitudinal studies also show a bidirectional link between loneliness and
+
+cognitive decline in older adults, with loneliness predicting faster cognitive decline and cognitive
+
+impairment increasing feelings of loneliness over time (Boss et al., 2015; Lara et al., 2019).
+
+11
+
+On the other hand, social isolation may influence cognitive health and mortality via: a)
+
+Reduced cognitive stimulation: a lack of social interaction may lead to decreased cognitive
+
+engagement and lower cognitive reserve (Fratiglioni et al., 2004). b) Limited access to resources:
+
+Socially isolated individuals may have reduced access to health information, healthcare services,
+
+and practical support for daily living (Berkman & Glass, 2000). c) Physiological effects: Social
+
+isolation has been linked to increased blood pressure and poorer immune function, which may
+
+contribute to cognitive decline and mortality risk (Courtin & Knapp, 2017). d) Lack of social
+
+control: Without regular social contact, there may be less external motivation to maintain healthy
+
+behaviors or adhere to medical treatments (Umberson, 1987). These pathways align with the
+
+cognitive reserve hypothesis (Stern, 2009), which posits that engaging in social activities may build
+
+cognitive resilience, potentially delaying the onset of dementia symptoms.
+
+Together, this extensive literature highlights the crucial need to examine the individual and
+
+adjusted links between loneliness and social isolation with cognitive outcomes and mortality risk.
+
+It's also important to note that loneliness and social isolation may interact in their effects on health
+
+outcomes. For instance, the impact of social isolation on cognition might be exacerbated by feelings
+
+of loneliness, or conversely, the stress-related effects of loneliness might be buffered by
+
+maintaining some level of social contact. By examining the individual and adjusted effects of
+
+loneliness and social isolation on cognitive status and mortality, our study aims to disentangle these
+
+potentially distinct pathways. This approach permits opportunities to clarify whether interventions
+
+should focus on addressing subjective feelings of loneliness, improving objective social
+
+connections, or both, to most effectively promote cognitive health and longevity in older adulthood.
+
+The Current Project
+
+Together, the literature suggests that: 1) higher loneliness and social isolation are linked to
+
+greater risk of cognitive impairment and decline; 2) higher social isolation is linked to an increased
+
+risk of dementia, but the impact of loneliness on the risk of dementia is less conclusive; 3) the links
+
+12
+
+between loneliness or social isolation with the risk of mild cognitive impairment is less clear; and 4)
+
+higher loneliness and social isolation are associated with greater mortality risk. However, in many
+
+cases, conclusions are complicated as research focuses solely on either loneliness or social
+
+isolation. Specifically, a great deal of this work does not consider both loneliness and social
+
+isolation, does not model loneliness and social isolation together, does not distinguish the subjective
+
+versus objective aspects of social isolation, varies in the reliability of measures assessing loneliness
+
+and social isolation, and/or aggregates assessments of loneliness and social isolation. Studies that
+
+have considered both factors highlight the importance of delineating the relative contributions of
+
+each (Freak-Poli et al., 2022; Joyce et al., 2021; Shen et al., 2022; Yu et al., 2016). Furthermore, the
+
+vast majority of research investigating the effect of loneliness or social isolation on cognitive
+
+outcomes or mortality risk has not accounted for the competing risk of the other outcome(s), which
+
+may result in biased estimates. That is, cognitive outcomes are strongly associated with mortality
+
+risk (see subsection 'Cognitive Outcomes and Mortality Risk in Older Adulthood'). Importantly,
+
+omitting key confounds (e.g., ignoring death as a competing risk factor) when investigating
+
+correlates of cognitive aging processes can result in biased estimates and/or may obscure the
+
+individual associations. Our approach of examining both outcomes simultaneously provides a more
+
+comprehensive understanding of the aging process. Moreover, the timing of when loneliness and
+
+social isolation may have the most substantial effect on the progression through cognitive
+
+functioning states is unclear.
+
+In the current project, we used Cox proportional hazard models, logistic regression, and
+
+multistate survival models to systematically delineate the individual and adjusted associations
+
+between loneliness, social isolation, cognitive outcomes, and mortality risk. Understanding the
+
+relative contributions of loneliness and social isolation to cognitive outcomes and mortality risk is
+
+crucial for several reasons: a) Theoretical advancement: By examining these constructs
+
+simultaneously, we can better understand whether the subjective experience of loneliness or the
+
+13
+
+objective state of social isolation has a stronger impact on health outcomes in older adults; b)
+
+Intervention development: Clarifying the unique effects of loneliness and social isolation can
+
+inform more targeted and effective interventions. For instance, if loneliness shows stronger
+
+associations with cognitive decline, interventions might focus more on cognitive reframing and
+
+emotional support. Conversely, if social isolation is more impactful, interventions might prioritize
+
+increasing objective social contacts; and c) Resource allocation: In a context of limited public
+
+health resources, understanding which aspect of social disconnection most strongly predicts adverse
+
+outcomes can guide more efficient allocation. Our study's design, which examines both the
+
+individual and adjusted effects of loneliness and social isolation across multiple datasets, is
+
+specifically tailored to address these important questions about the relative contributions. See Table
+
+1 for a 2x2 mapping of our first four research questions (RQs), analytic approach, hypotheses, and
+
+number of models and effects of interest.
+
+Moreover, between-study and between-review variability in statistical approach and
+
+operational definitions of loneliness and social isolation has further complicated conclusions drawn
+
+from previous research, in addition to hindering theory development. In response, we applied a
+
+coordinated data analysis methodological framework (Graham et al., 2022; Hofer & Piccinin, 2010;
+
+Willroth et al., 2022; Yoneda, 2025). Using this approach, independent but identical models (to the
+
+extent possible) were fit to 11 longitudinal aging studies. Coordinated data analysis is particularly
+
+well positioned to address idiosyncrasies across a set of findings by ensuring that statistical models
+
+and adjustment of covariates are held constant, permitting opportunities to explore how differences
+
+in operational definitions (e.g., loneliness assessed via multi-item scales versus single items) may
+
+influence the magnitude and reliability of associations. Furthermore, this approach facilitates the
+
+evaluation of robustness and generalizability, while preserving significant heterogeneity across
+
+datasets. Notably, a common theme across the numerous systematic reviews is an emphasis on the
+
+extensive heterogeneity across study designs, analytic approaches, and operational definitions of
+
+14
+
+key constructs, thereby complicating between-study comparisons. This between-study variability
+
+underscores the importance of research that harmonizes across as many critical study features as
+
+possible.
+
+Table 1
+
+Individual predictors Adjusted predictors
+
+Individual
+
+outcomes
+
+RQ1: Is loneliness or social isolation
+
+individually associated with the risk of severely
+
+impaired cognition or death?
+
+Analysis: Cox and Logistic regression,
+
+separate models for loneliness and social
+
+isolation, and for risk of severe cognitive
+
+impairment and for risk of death (4 models)
+
+Hypotheses: Loneliness and social
+
+isolation will be individually associated with the
+
+risk of severe cognitive impairment and the risk
+
+of deathNumber of effect sizes: k=4
+
+RQ2: Is loneliness or social isolation
+
+independently associated with the risk of
+
+severely impaired cognition or death?
+
+Analysis: Cox and Logistic regression,
+
+including both loneliness and social isolation for
+
+risk of severe cognitive impairment, and for risk
+
+of death (2 models)
+
+Hypotheses: Social isolation will be a
+
+more robust predictor of severe cognitive
+
+impairment, when adjusting for loneliness
+
+Number of effect sizes: k=4
+
+15
+
+Adjusted
+
+outcomes
+
+Research Questions 1–4 with Associated Analytic Approach, Hypotheses, and Number of Effect Sizes
+
+Note. RQ=Research Question; MSM= Multistate Survival Model; Number of effect sizes represent the
+
+number of individual meta-analyses we will fit per research question.
+
+Method
+
+The current study was completed via secondary analysis of existing datasets that were either
+
+public and de-identified prior to our access to them or we completed a data use agreement that
+
+provided access to the requisite data to complete the analyses (see Supplementary Table 1). Under
+
+RQ3: Is loneliness or social isolation
+
+individually associated with risk of transitioning
+
+to mildly or severely impaired cognitive states
+
+and/or risk of death?
+
+Analysis: MSM (cognitive outcomes and
+
+mortality), separate models for loneliness and
+
+social isolation (2 models)
+
+Hypotheses: Loneliness and social
+
+isolation will be individually associated with the
+
+risk of transitioning forward through cognitive
+
+status categories, when accounting for death
+
+Number of effect sizes: k=14
+
+RQ4: Are loneliness and social isolation
+
+independently associated with risk of
+
+transitioning to mildly or severely impaired
+
+cognitive states and/or risk of death?
+
+Analysis: MSM (cognitive outcomes and
+
+mortality), including both loneliness and social
+
+isolation (1 model)
+
+Hypotheses: Social isolation will be a
+
+more robust predictor of transitioning forward
+
+through cognitive status categories, when
+
+accounting for death and for loneliness
+
+Number of effect sizes: k=14
+
+16
+
+the study title “Advancing the Study of Social Isolation, Loneliness, and Cognitive Functioning in
+
+Older Adults Through the Use of Integrative Data Analysis”, the Northwestern University
+
+Biomedical Institutional Review Board confirmed that this project constitutes non-human subject
+
+research and does not require a protocol.
+
+Research Questions and Hypotheses
+
+Our study addresses four primary research questions (RQs), and corresponding hypotheses3,
+
+examining the relationships between loneliness, social isolation, cognitive status, and mortality risk
+
+(see Table 1 and Supplementary Text 2 for a full description). Across these RQs, we report the
+
+model estimates including sociodemographic covariates (age, sex, and education). Finally, in
+
+addition to these four primary research questions, we asked how depressive symptoms impact the
+
+associations between loneliness, social isolation, cognitive functioning, and death (RQ5). To
+
+address this question, we repeated all analyses from RQ’s 1-4 further adjusting for depressive
+
+symptoms. Together, these research questions assist in addressing the theoretical and empirical
+
+question of whether loneliness and social isolation represent distinct constructs that are individually
+
+or incrementally important for health outcomes in older adulthood (see also Lawson & Robins,
+
+2021). Given the conceptual similarities and differences between loneliness and social isolation
+
+(i.e., perceived isolation versus objective isolation), the individual effects of either (RQ’s 1 & 3)
+
+represent the importance of poor social health in general for cognitive outcomes and mortality risk.
+
+That is, although loneliness and social isolation are conceptually distinct, we suspect that the
+
+investigation of loneliness not accounting for social isolation likely still includes some variability
+
+related to social isolation, and vice versa. Conversely, the adjusted effects of loneliness (i.e.,
+
+adjusting for social isolation, RQ’s 2 & 4) reflect the extent to which individual differences in
+
+perceived loneliness are associated with cognitive outcomes and/or mortality risk, considering the
+
+3 A full written explanation of the research questions and hypotheses are included in Supplementary Text 2. This content was originally included in the Registered Report that was accepted in principle, but to streamline the primary manuscript, was moved to the supplement as the content overlaps directly with the information reported in Table 1.
+
+17
+
+extent to which individuals report being objectively alone. Likewise, the adjusted effects of social
+
+isolation (i.e., adjusting for loneliness, RQ’s 2 & 4) reflect the extent to which being objectively
+
+alone is associated with cognitive outcomes and mortality risk, accounting for the extent to which
+
+individuals are bothered by being alone.
+
+As recommended by Lawson and Robins (2021), researchers should test the individual
+
+importance of a construct by including both sibling constructs in a prediction model and having
+
+them “compete” to explain variance in a wide range of outcomes. Here, we tested the links between
+
+loneliness and social isolation (sibling constructs) and several related outcomes relevant to older
+
+adult health, independence, and well-being (risk of mildly and severely impaired cognitive
+
+functioning; risk of death; seven transitions between no cognitive impairment, mildly impaired
+
+cognitive functioning, severely impaired cognitive functioning, and death). Further, we tested these
+
+associations across a wide range of datasets (K=11), which, in a similar vein, permitted the ability
+
+to evaluate the replicability and robustness across datasets. Given previous research, we expected
+
+that higher levels of loneliness and social isolation would be associated with a greater likelihood of
+
+severe cognitive impairment and of death, as well as transitioning forward through cognitive status
+
+categories and to death. Moreover, we expected that, compared to loneliness, higher social isolation
+
+would be a more robust indicator of severe cognitive impairment and of death, as well as
+
+transitioning forward through cognitive status categories and to death. As previous research has not
+
+yet investigated whether loneliness or social isolation are associated with the backward transition
+
+from mildly impaired cognitive functioning back to no impaired cognitive functioning, we did not
+
+make predictions for the impact of loneliness or social isolation on backward transitions (i.e.,
+
+analyses examining these specific transitions were exploratory). We acknowledge that while the
+
+deleterious effects of loneliness and social isolation likely apply to many health outcomes in older
+
+adulthood, our focus on cognitive status and mortality allows for a manageable and interpretable
+
+18
+
+multistate modelling approach; adding additional health states would significantly increase model
+
+complexity and potentially reduce our ability to draw clear conclusions.
+
+DesignTo address our research questions and hypotheses, we used several modelling approaches
+
+(Cox regression, logistic regression, and multi-state survival models). Multistate survival modelling
+
+not only accounts for the issue of selective mortality in longitudinal datasets, but our
+
+comprehensive approach (also using Cox and logistic model) provides opportunities to tease apart
+
+the extent to which associations are impacted by accounting for death. See Figure 1 for a visual
+
+depiction of the possible transitions between cognitive status categories and death modelled by the
+
+multistate survival models.
+
+Figure 1 Possible Transitions between Cognitive Status Categories and Death in the Four-State Model
+
+Note. N values represent the sum of the observed transitions of each type across all included datasets. Each participant may represent multiple transitions (i.e., participants may make multiple transitions during the study period).We used a coordinated data analysis framework, including meta-analysis as a final step to
+
+synthesize our findings. This approach permits evaluation of the replicability across many large
+
+longitudinal datasets with varying start times, countries of origin, design features, and measurement
+
+tools, while preserving important individual dataset variability. However, applying a coordinated
+
+data analysis approach, in combination with the complex nature of multistate survival models,
+
+19
+
+required us to limit the covariates and mediators included in models. For instance, investigating the
+
+role of culture and race is important, particularly in light of research suggesting that cognitive aging
+
+processes may develop differently across Black and Mexican American populations in the US
+
+(Mehta & Yeo, 2017). Yet many of the samples meeting eligibility for the current project are
+
+racially homogenous. Thus, to maximize harmonization across analyses, we did not examine racial
+
+differences; however, we report prevalence of race within each dataset when race data were
+
+available (see Supplementary Table 3). The SHARE datasets do not have race data; instead, we
+
+report country of birth as the closest possible proxy (see Supplementary Table 4).
+
+Datasets were identified using the Integrative Analysis of Longitudinal Studies of Aging and
+
+Dementia (maelstrom-research.org/network/ialsa) and the Gateway To Global Aging (g2aging.org)
+
+platforms. Across these two sites, we searched for long-term longitudinal studies that contained the
+
+minimum required data for inclusion in the proposed analyses. At a minimum, datasets were
+
+required to have 1) at least one measurement occasion of loneliness (e.g., “how lonely do you feel”)
+
+prior to or at the same measurement occasion of assessments of cognitive function, 2) at least one
+
+measurement occasion of social isolation containing multiple items assessing quantity or
+
+frequencies of social contact (i.e., “how often do you meet with friends/family?”, “do you live
+
+alone?”, “do you frequently attend social events?”) prior to or at the same measurement occasion of
+
+assessments of cognitive function, 3) at least five measurement occasions of cognitive functioning
+
+performance or an evaluation of cognitive status (i.e., dementia, MCI), and 4) a measurement of
+
+mortality that includes death status and death date.
+
+20
+
+Sampling plan
+
+We used data from 11 longitudinal studies4 (detailed below). These datasets are either
+
+publicly available or access can be requested directly from the study sites, with the exception of
+
+ELSA death data (see Supplementary Table 1). Data were downloaded following in-principle
+
+acceptance of this Registered Report.
+
+English Longitudinal Study of Aging (ELSA)
+
+ELSA is a nationally representative longitudinal sample of English adults aged 50 and older
+
+living in private households (Clemens et al., 2019). The study began in 2002-2003, with core
+
+interviews repeated every two years for a total of eight waves. We used data starting in wave 8
+
+(2016) when cognitive assessments began (analytic N=14,086).
+
+Health and Retirement Study (HRS)
+
+HRS is a representative panel study of United States retirees aged 51 and over. Data
+
+collection was initiated in 1992 and occurred approximately every two years (Sonnega et al., 2014).
+
+Data were used from the eight waves of measurement that occurred since 2002, when the relevant
+
+psychosocial data collection began (analytic N=37,826).
+
+Origins of Variances in the Oldest-Old: Octogenarian Twins (OCTO-Twin)
+
+OCTO-Twin is a sample from the Swedish population-based twin registry (McClearn et al.,
+
+1997). At study initiation, twin pairs were enrolled if they were born in 1913 or earlier and both
+
+twins consented to participation. A total of 351 twin pairs were enrolled (N = 702) in 1991, and new
+
+waves of data collection occurred every two years until 2002 (when the majority of the sample was
+
+deceased) for a total of five measurement occasions included in analysis (analytic N=697).
+
+4 When we registered this report, we thought that The Household, Income, and Labour Dynamics in Australia (HILDA) Survey and The German Socio-Economic Panel (SOEP) met our eligibility criteria. Similarly, we believed that Luxembourg from SHARE met eligibility. While all three of these datasets measure hundreds of variables repeatedly, upon data access we found that they did not include the measurement of variables necessary for the current project (e.g., due to timing) and were therefore excluded. See Supplementary Table 2 for registration deviations.
+
+21
+
+The Swedish Adoption/Twin Study of Aging (SATSA)
+
+SATSA is a long-term longitudinal study aimed at investigating gerontological genetics
+
+(Pedersen et al., 1991). The original sample, first collected in 1984, consisted of pairs of twins
+
+reared apart, matched with control pairs of twins reared together (total N = 3,838). Data collection
+
+occurred approximately every three years, for a total of nine waves of data available for analysis
+
+(analytic N=1,836).
+
+Survey of Health, Ageing, and Retirement in Europe (SHARE)
+
+SHARE is a panel survey of older adults aged 50 and over who live in private households,
+
+across all 26 countries of the EU, Switzerland, and Israel (Borsch-Supan et al., 2013). The survey
+
+began in 2004 with new data collection occurring every two years, for a total of up to nine waves.
+
+Of the 26 countries, 16 met eligibility for the current project, as they included at least five waves of
+
+data. We executed analyses using SHARE datasets independently in four groups of countries, based
+
+on geopolitical grounds and by broad category of welfare state, consistent with previous research
+
+(Solé-Auró & Gumà, 2023): 1) Northern European (analytic N=13,898): Denmark and Sweden; 2)
+
+Central European (analytic N=42,423): Austria, Belgium, France, Germany, the Netherlands, and
+
+Switzerland; 3) Southern European (analytic N=25,776): Greece, Italy, and Spain; 4) Eastern
+
+European (analytic N=30,670): Czech Republic, Estonia, Poland, and Slovenia. Israel was analyzed
+
+independently, as it cannot be grouped within European regions (analytic N=4,653). Thus, SHARE
+
+represents independent analyses across five datasets (analytic Ntotal=117,420).
+
+Rush Memory and Aging Project (MAP)
+
+MAP is a longitudinal epidemiological cohort study that began in 1997 focusing on
+
+common chronic conditions, decline in cognitive and motor function, and risk of AD and related
+
+dementias (Bennett et al., 2012). Participants were older adults recruited from retirement
+
+communities, subsidized senior housing facilities, church groups, and social service agencies in
+
+northeastern Illinois. All participants agreed to annual clinical evaluation and organ donation. It was
+
+22
+
+approved by an Institutional Review Board of Rush University Medical Center and all participants
+
+signed informed and repository consents and an Anatomic Gift Act. Data were available for up to
+
+20 measurement occasions (analytic N=2,356).
+
+Minority Aging Research Study (MARS)
+
+MARS is a longitudinal epidemiologic cohort study of cognitive decline and risk of AD in
+
+older African Americans, beginning in 2004 (Barnes et al., 2012). Participants are African
+
+American adults aged 65+ years. At study enrollment, participants had no known dementia, agreed
+
+to annual clinical evaluation and blood draw, and (optionally) consented to brain donation after
+
+death. All participants signed an informed consent and consented to share data; a subset signed an
+
+Anatomic Gift Act. Data were available for up to 12 measurement occasions (analytic N=849).
+
+Transparency and Openness
+
+Each dataset used is cited in the text with appropriate marker papers and listed in the
+
+reference section. Analytic methods and program packages are appropriately cited in the text and
+
+listed in the reference section. Data Transparency: Data used for the current study are either
+
+publicly available to qualified users or available after completing data use agreements5. Specific
+
+information about accessibility for each dataset is included in the text and in Supplementary Table
+
+1\. All research materials, including analytic plan, instructions to analysts, deviations and
+
+justifications, and analytic code, are available on the OSF project page (URL:
+
+https://osf.io/vqyeu/overview?view\_only=d67be59fefb94c269cb4f356fc0dd968). All data decisions
+
+were made prior to data access or analysis. See Supplementary Table 2 for all deviations and
+
+decisions that were made after seeing the data (Willroth & Atherton, 2024). After In Principle
+
+Acceptance, we posted the manuscript on the OSF as a pre-registration
+
+(https://osf.io/vqyeu/files/osfstorage).
+
+5 One exception to this is for ELSA death data. Although ELSA data are mostly publicly available, after in-principle acceptance of this Registered Report, death data in ELSA were no longer available (publicly or by request) due to new government privacy laws. Therefore, an internal ELSA analyst was invited to fit the models on site (co-author PQ).
+
+23
+
+Prior Exposure to Data
+
+To increase transparency regarding prior exposure to these data, Supplementary Table 5
+
+reports existing publications and manuscripts (K=103) that included co-authors of the current
+
+project using the same dataset(s). The table also provides details regarding primary differences
+
+between the current study and the existing report/publication. The existing projects include data
+
+from ELSA (k=8), HRS (k=17), OCTO (k=10), SATSA (k=5), SHARE (k=1), and Rush MAP
+
+(k=24). In addition, our group has (co)authored several coordinated data analyses (k=38) including
+
+the datasets that meet eligibility criteria. The table emphasizes that co-authors of the proposed
+
+project have been involved in several existing projects using the datasets that meet eligibility to
+
+investigate loneliness, social isolation, cognition, and mortality. However, none of these projects
+
+included investigation of all four of the current primary variables and none including loneliness or
+
+social isolation have used multistate survival models. Importantly, the researcher decisions
+
+regarding operational definitions of the primary independent and dependent variables are clearly
+
+justified based on previous research and the harmonization approach is consistent across datasets.
+
+VariablesWe aimed to conceptually harmonize all variables across studies. This approach allowed us
+
+to conduct comparable analyses across datasets while maintaining awareness of the underlying
+
+differences in assessment. In our results, we present both dataset-specific results and pooled,
+
+synthesized results to allow examination of potential systematic differences.
+
+Cognitive Status Categories
+
+We followed a decision tree for operational definitions of cognitive status categories in
+
+which we maximized available data and preserved the strength of studies. Specifically, the highest
+
+preference of cognitive status information was based on a clinical diagnosis of MCI and dementia,
+
+followed by the Clinical Dementia Rating scale, followed by traditional assessments used by
+
+medical professionals to screen for cognitive impairment (e.g., the Mini Mental State Examination),
+
+24
+
+followed by composites of cognitive test scores (see Supplementary Text 3 for more details).
+
+Supplementary Table 6 provides a comprehensive overview of how cognitive status is assessed and
+
+harmonized across all included datasets, including operation definition of each cognitive status
+
+category. As shown, there is considerable variation in the original measures used, ranging from
+
+clinical diagnoses to specific cognitive test batteries. Our harmonization process aimed to create
+
+comparable categories across studies while respecting the integrity of each dataset's original
+
+assessment approach. We recognize that perfect equivalence across datasets is not achievable due to
+
+inherent differences in assessment methods. For instance, clinical diagnosis-based categorizations
+
+(e.g., in MAP) may not be directly comparable to categories based on cognitive test scores (e.g., in
+
+ELSA). We address this limitation by using language reflecting broad categories (no impairment,
+
+mild impairment, severe impairment) that can be reasonably applied across diverse assessment
+
+methods. Furthermore, we clearly document the original criteria and our harmonization decisions
+
+for each dataset.6
+
+Loneliness
+
+For each study, loneliness items were pulled from every available occasion of measurement.
+
+Multi-item scales were summed, where higher scores reflect more loneliness. Summed scores were
+
+then standardized using Percent of Maximum Possible (POMP) scoring (Cohen et al., 1999), scaled
+
+from 0 to 10 to aid in interpretation and convergence. Specifically,
+
+POMP = \[(observed score - min possible score) / (max possible score - min possible
+
+score)\] x 10
+
+6 For datasets in which categories are defined based on cognitive test cut off scores (ELSA, HILDA, SOEP, and each country in SHARE), we required that the summed cognitive tests can be clearly delineated into cognitive status categories. Specifically, previous research (Yoneda et al., 2020) found that the range of summed cognitive test scores were not normally distributed in two countries (Spain and Italy) from SHARE, such that the majority of individuals fell within a range too close to 0 (in raw scores) to distinguish cognitive states based on standard deviations. We did not expect this to be an issue for the majority of datasets (ELSA, HILDA, SOEP, and most countries in SHARE: Austria, Belgium, Denmark, France, Germany, the Netherlands, Sweden, and Switzerland); however, we acknowledged that this could be an issue in some of the countries from SHARE (Czech Republic, Poland, Estonia, and Slovenia). In the case that we could not clearly delineate the cognitive status categories in an individual dataset, we planned to exclude the dataset, but delineation of cognitive categories was possible in all datasets (possibly because countries were pooled to reflect regions in Europe).
+
+25
+
+POMP scoring in this context is preferred over z-standardization, as it preserves differences
+
+in variation across samples. To improve comparability across datasets, we also POMP scored the
+
+response options for any study that only had a single item of loneliness. Notably, POMP scoring
+
+allows for optimal comparability across studies, regardless of whether they use multi-item scales or
+
+single items. See Supplementary Table 7 for available loneliness items and operational definition
+
+for each included dataset.
+
+Social Isolation
+
+For each study, social isolation items were pulled from every available occasion of
+
+measurement. We harmonized social isolation items to the extent possible across datasets using the
+
+approach reported by Shanker et al. (2011) as a guide. Notably, the operational definition of social
+
+isolation varies extensively across studies, even when studies use the same dataset. For example,
+
+across 32 existing publications using the ELSA dataset, social isolation has been operationalized 20
+
+unique ways. The most common approach was originally reported by Shanker et al. (2011), in
+
+which participants were given one point for endorsing any of the following five items: 1) if they
+
+were not married/not cohabiting with a partner; 2) had less than monthly contact (including face-to-
+
+face, telephone, or written/email contact) with children; 3) had less than monthly contact other
+
+immediate family; 4) had less than monthly contact with friends; and 5) if they did not participate in
+
+any organizations, religious groups, or committees. Using this approach, scores ranged from 0 - 4,
+
+with higher scores indicating greater social isolation. This approach was used in 12/32 studies
+
+(38%) and a further 14 (44%) of the existing reports applied slight variations of Shanker et al.’s
+
+(2011) approach.
+
+Given t

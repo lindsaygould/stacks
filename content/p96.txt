@@ -1,0 +1,858 @@
+N100 as a response prediction biomarker for accelerated 1 Hz right DLPFC-rTMS in major depression 
+
+Available online 19 July 2024 0165-0327/© 2024 The Authors. Published by Elsevier B.V. This is an open access article under the CC BY-NC license ( http ://creativecommons.org/licenses/by- nc/4.0/ ).
+
+Research paper N100 as a response prediction biomarker for accelerated 1 Hz right DLPFC-rTMS in major depression
+
+Jack Z. Sheen a,\*, Frank Mazza a,e, Davide Momi e, Jean-Philippe Miron a,c,g,h, Farrokh Mansouri a, Thomas Russell b, Ryan Zhou b, Molly Hyde a,b, Linsay Fox b, Helena Voetterl i, Elie Bou Assi j,k, Zafiris J. Daskalakis a,c,d,f, Daniel M. Blumberger a,c,d, John D. Griffiths a,c,e,1, Jonathan Downar a,c,d,1
+
+a Institute of Medical Science, University of Toronto, Toronto, Canada b Krembil Research Institute, University Health Network, Toronto, Canada c Department of Psychiatry, Faculty of Medicine, University of Toronto, Canada d Temerty Centre for Therapeutic Brain Intervention, Centre for Addiction and Mental Health, Canada e Krembil Centre for Neuroinformatics, Centre for Addiction and Mental Health, Toronto, Canada f Department of Psychiatry, University of California San Diego, San Diego, CA, USA g Centre Hospitalier de l’Universit´e de Montr´eal (CHUM), Centre de Recherche du CHUM (CRCHUM), Montreal, QC, Canada h D´epartement de Psychiatrie, Facult´e de M´edecine, Universit´e de Montr´eal, Montr´eal, QC, Canada i Research Institute Brainclinics, Brainclinics Foundation, Nijmegen, the Netherlands j Centre de Recherche du CHUM (CRCHUM), Montreal, QC, Canada k Department of Neuroscience, Universit´e de Montr´eal, Montreal, QC, Canada
+
+A R T I C L E I N F O
+
+Keywords: Major depressive disorder Low frequency rTMS Biomarkers TEPs N100 TMS-EEG
+
+A B S T R A C T
+
+Background and objective: Repetitive transcranial magnetic stimulation (rTMS) is a safe and effective treatment for major depressive disorder (MDD); however, this treatment currently lacks reliable biomarkers of treatment response. TMS-evoked potentials (TEPs), measured using TMS-electroencephalography (TMS-EEG), have been suggested as potential biomarker candidates, with the N100 peak being one of the most promising. This study investigated the association between baseline N100 amplitude and 1 Hz right dorsolateral prefrontal cortex (R- DLPFC) accelerated rTMS (arTMS) treatment in MDD. Methods: Baseline TMS-EEG sessions were performed for 23 MDD patients. All patients then underwent 40 ses- sions of 1 Hz R-DLPFC (F4) arTMS over 5 days and a follow-up TMS-EEG session one week after the end of theses arTMS sessions. Results: Baseline N100 amplitude at F4 showed a strong positive association (p \< .001) with treatment outcome. The association between the change in N100 amplitude (baseline to follow-up) and treatment outcome did not remain significant after Bonferroni correction (p = .06, corrected; p = .03, uncorrected). Furthermore, treatment responders had a significantly larger mean baseline F4 TEP amplitude during the N100 time frame compared to non-responders (p \< .001). Topographically, after Bonferroni correction, F4 is the only electrode at which its baseline N100 amplitude showed a significant positive association (p \< .001) with treatment outcome. Limitations: Lack of control group and auditory masking. Conclusion: Baseline N100 amplitude showed a strong association with treatment outcome and thus demon- strated great potential to be utilized as a cost-effective and widely adoptable biomarker of rTMS treatment in MDD.
+
+\* Corresponding author at: Institute of Medical Science, Temerty Faculty of Medicine, University of Toronto, 27 King’s College Circle Toronto, Ontario M5S 1A1, Canada.
+
+E-mail address: jack.sheen2018@gmail.com (J.Z. Sheen). 1 Both authors contributed equally as the lead supervisor.
+
+Journal of Affective Disorders 363 (2024 ) 174–181
+
+Contents lists available at ScienceDirect
+
+Journal of Affective Disorders
+
+journal homepage: www.elsevier.com/locate/jad
+
+https://doi.org/10.1016/j.jad.2024.07.131 Received 12 March 2024; Received in revised form 4 July 2024; Accepted 16 July 2024
+
+J.Z. Sheen et al. Journal of Affective Disorders 363 (2024) 174–181
+
+175 1. Introduction
+
+receptors agonist baclofen (Premoli et al., 2014). Therefore, the cur- rent understanding of TEPs suggest that the amplitude of N100 is Major depressive disorder (MDD) is now the foremost cause of
+
+associated with GABA-B receptor (GABABR) mediated slow inhibitory disability worldwide (Friedrich, 2017). Repetitive transcranial magnetic
+
+processes involving the activation of G proteins by second messengers stimulation (rTMS) has entered increasingly widespread use as an
+
+(Premoli et al., 2014; Bettler et al., 2004) and this process can poten- effective evidence-based treatment for medication-resistant MDD
+
+tially be influenced by rTMS (Dubin et al., 2016; Levitt et al., 2019). (Brunoni et al., 2017; Lefaucheur et al., 2020; Milev et al., 2016a). A
+
+The association between N100 amplitude and treatment outcome in biomarker of rTMS treatment response in MDD, however, has yet to be
+
+MDD has been reported in several studies. Using the auditory oddball determined. Although clinical features have shown some group-level
+
+ERP paradigm, Spronk and colleagues reported a decrease in N100 predictive power, it has been difficult to demonstrate reliable
+
+amplitude following rTMS treatment in MDD (Spronk et al., 2008). In a individual-level predictive power for any biomarker to date (Simon and
+
+later study by the same group, again using the auditory oddball ERP Perlis, 2010; Bagby et al., 2002). The ideal biomarker would, in addition
+
+paradigm, demonstrated a positive association between baseline N100 to having high individual-level predictive accuracy, be cost-effective
+
+amplitude and antidepressant treatment outcome for MDD, suggesting and simple to acquire in real-world clinical settings.
+
+that MDD patients with more negative N100 amplitudes at baseline will Since rTMS is focused on the level of the cortex, it is plausible that the
+
+improve more on antidepressant medications (Spronk et al., 2011). In outcome of rTMS treatment is related to how the cortical neurons react
+
+terms of TMS-EEG studies, in line with the results from the auditory to the stimulation. This cortical reactivity can reflect both functional and
+
+oddball paradigm studies, Sun and colleagues demonstrated that a anatomical differences across patients that results in varying rTMS
+
+greater N100 amplitude at baseline led to a greater suicidality treatment outcomes in MDD. To measure cortical reactivity, electroen-
+
+improvement after magnetic seizure therapy (MST) in MDD patients cephalography (EEG) can be combined with rTMS to examine changes in
+
+(Sun et al., 2016). In 2021, Voineskos and colleagues showed that the neuronal dynamics in response to electrical stimulation on a millisecond
+
+change in TEP N100 peak amplitude from baseline to post-treatment time scale. More specifically, TMS pulses can induce depolarization of
+
+was positively associated with high frequency (HF) 10Hz arTMS treat- local or distal neuronal networks, which in turn results in variations in
+
+ment outcome in MDD, suggesting that a more positive change in N100 the summation of pyramidal neuron and interneuron post-synaptic po-
+
+amplitude post rTMS led to larger improvements in MDD symptoms tentials that can be recorded by EEG electrodes as voltage fluctuations.
+
+(Voineskos et al., 2021). When time locked to TMS pulses, these voltage deflections are known as
+
+The primary aim of this study is to investigate the association be- TMS-evoked potentials (TEPs). Current understanding suggests that
+
+tween baseline N100 amplitude and low frequency (LF) arTMS outcome TEPs are unlikely to be the result of non-neurological artefacts, as TEPs
+
+in MDD to evaluate the use of baseline N100 amplitude as a treatment are only observed following TMS stimulation of functionally preserved
+
+outcome biomarker. To the best of our knowledge, our study is the first cortical regions, and are absent when stimulation targets lesioned
+
+to examine this association in 1 Hz LF-rTMS instead of HF-rTMS. cortical regions, despite of intact scalp and ocular muscles and nerves
+
+Increasing reports on the often-overlooked LF-rTMS is crucial, since (Gosseries et al., 2015). TEP features such as peak amplitude and latency
+
+LF-rTMS has several important advantages over HF-rTMS (Kaur et al., may thus reflect local cortical reactivity and have the potential to predict
+
+2019\) and the singular potential for use in home settings that would rTMS treatment outcome (Tremblay et al., 2019).
+
+dramatically improve rTMS accessibility in a time when MDD is To produce the most generalizable results, the selection of TEP peaks
+
+becoming increasingly prevalent (Miron et al., 2020). Since the mech- as candidates of treatment response biomarkers should be done with
+
+anistic differences between 1 Hz and HF-rTMS are still under investi- careful a priori consideration. Amongst the various TEP peaks, the N100,
+
+gation, we hypothesized that the association between baseline F4 N100 a negative deflection closest to 100 ms after the TMS pulse, has been
+
+amplitude and treatment outcome for our study would agree with the suggested to have a more substantial role in MDD (Arns and Voetterl,
+
+previously suggested positive association between baseline N100 2021) as well as one of the best test-retest reliability at the DLPFC
+
+amplitude and MST treatment outcome (Sun et al., 2016). (Kerwin et al., 2018). Potentially contributing to its great test-retest reliability, another major advantage of N100 is that, compared to
+
+2\. Methods earlier peaks, N100 is less prone to contamination from TMS muscle artefacts (lasting around 50 ms post TMS pulse) and decay artefacts
+
+2.1. Study design and participants (peaking before 50 ms post TMS pulse) (c.f. supplementary material of reference (Rogasch et al., 2014)). Thus, N100 was selected a priori as the
+
+23 MDD participants, 13 female and 10 male, between the ages of TEP peak of interest for this study.
+
+26–61 were included in this single-arm, prospective, open-label feasi- Although preliminary, several studies have provided insights as to
+
+bility study. Participants were included if they met criteria for MDD the mechanism underlying TEPs and current evidence suggest that
+
+diagnosis on the Mini International Neuropsychiatric Interview, and gamma-aminobutyric acid (GABA), the most prominent inhibitory
+
+have maintained a stable medication regimen from 4 weeks prior to the neurotransmitter of the central nervous system, has an important role in
+
+start of the study and could maintain a stable medication regimen MDD (Gold et al., 1980; Korpi and Sinkkonen, 2006; Kralic et al., 2002)
+
+throughout the study. Please see supplementary materials for the full as well as in the modulation of TEP peak amplitudes (Premoli et al.,
+
+inclusion/exclusion criteria. 2014; Darmani et al., 2016; Bettler et al., 2004). Significant GABA deficits (Gold et al., 1980; Hasler et al., 2007; Price et al., 2009; Schür
+
+2.2. EEG data acquisition et al., 2016) along with substantial decreases in DLPFC GABAergic interneuron size and density (Rajkowska et al., 2007) have been found
+
+EEG acquisitions were performed at the baseline session, which in MDD patients, and rTMS responders have been shown to have a larger
+
+occurred within one week prior to the arTMS treatment sessions, and at increase in GABA levels compared to non-responders (Dubin et al., 2016;
+
+the follow-up session, which occurred within one week after the arTMS Levitt et al., 2019). By examining the effect of various GABA receptor
+
+treatment sessions. EEG was acquired using a 16-lead, 512 Hz EEG agonists and antagonists on the amplitude of TEP peaks, pharmacolog-
+
+system (EasyCap, Brain Products, Munich, Germany). The FCz and AFz ical studies have reported that the amplitude of N45, an early TEP peak,
+
+electrodes on the EEG cap were used as reference and ground electrodes, can be modulated through the GABA-A receptors, which mediates fast
+
+respectively. Stable impedances of \<5kΩ were acquired prior to the start inhibitory processes (Premoli et al., 2014; Darmani et al., 2016), while
+
+of the recording session and monitored throughout the recording. Par- the amplitude of N100, a later TEP peak, is decreased by GABA-A re-
+
+ticipants first underwent a 5-minute pre-stimulation resting state ses- ceptor agonists alprazolam and diazepam, and increased by GABA-B
+
+sion, then a 10-minute 1 Hz R-DLPFC rTMS EEG session (1 single train, 1
+
+J.Z. Sheen et al. Journal of Affective Disorders 363 (2024) 174–181
+
+second inter-pulse interval, 600 pulses per session, 120 % of resting
+
+2.6. Statistical analysis motor threshold), followed by another 5-minute post stimulation resting state session. For the rTMS EEG session, rTMS was delivered with a
+
+All statistical analyses were performed in R (version 4.0.4) (R Core MagPro R20 stimulator equipped with a MC-B70 coil (MagVenture,
+
+Team, 2021). Linear regression was used to investigate the association Farum, Denmark). The coil was placed over the F4 electrode, which
+
+between N100 amplitude during the baseline session and treatment most closely represents the location of R-DLPFC determined according
+
+outcome. This was first completed for the F4 electrode (Fig. 1), which is to a previously published heuristic using scalp measurements (Mir-
+
+the site of stimulation and thus the region of interest, then for all other Moghtadaei et al., 2017). All recordings were conducted from 9 am to
+
+14 electrodes (Fig. 4). The association between the change in F4 N100 12 pm during the day.
+
+amplitude from the baseline session to the follow-up session (follow-up F4 N100 amplitude minus baseline F4 N100 amplitude) and treatment
+
+2.3. arTMS treatment procedures
+
+outcome were also investigated using linear regression (Fig. 2). The change in mean F4 N100 amplitude from baseline to follow-up was
+
+arTMS treatment sessions took place within one week after the baseline session. rTMS was delivered with a MagPro R20 stimulator equipped with a MC-B70 coil (MagVenture, Farum, Denmark). Resting motor threshold (rMT) was determined according to standard tech- niques (McClintock et al., 2017). Treatment consisted of an arTMS course of 8 hourly sessions per day over the 5 consecutive weekdays from Monday to Friday, totaling 40 sessions. Each rTMS session con- sisted of low-frequency 1 Hz stimulation delivered over a 10 min period (1 single train, 600 pulses per session, 50-minute inter-session interval) at 120 % of rMT over the right dorsolateral prefrontal cortex (R-DLPFC). R-DLPFC was located according to a previously published heuristic using
+
+176
+
+evaluated using paired t-test (Supplementary Fig. 3). The difference in baseline F4 N100 amplitude between treatment responders and non- responders was assessed using the Mann Whitney U test (Fig. 3). The difference between the mean amplitude during the baseline period (used for baseline corrections) and pre-stimulation resting period was assessed using the Mann Whitney U test as well (Supplementary Fig. 7). The Bonferroni correction was used to adjust p-values for multiple compar- isons (Bland and Altman, 1995). Where applicable, both the uncorrected p-value and corrected p-value are presented for ease of interpretation since the Bonferroni correction increases the risk of Type II errors (Garamszegi, 2006).
+
+scalp measurements (Mir-Moghtadaei et al., 2017).
+
+3\. Results
+
+2.4. Clinical outcome
+
+3.1. Demographics
+
+Clinical treatment outcome was measured using percent improve- ment in Beck Depression Inventory-II (BDI-II) (Beck et al., 1961) scores, which was calculated using the baseline and second follow-up (four weeks after the arTMS treatment session) BDI-II scores.
+
+23 participants, 13 female and 10 male, between the ages of 26–61, were included in the study. The mean age in years was 41.8 ± 10.6 SD. Full demographic and clinical characteristics are given in Table 1. Average baseline BDI-II was 34.0 ± 9.3. The response rate 4 weeks after treatment was 39.1 %. The remission rate 4 weeks after treatment was 2.5. EEG data analysis
+
+34.8 %. Full clinical outcomes are summarized in Table 2.
+
+EEG data was preprocessed and analyzed using MNE (Gramfort et al., 2013). The first 3 min of the rTMS EEG recording was included in the
+
+3.2. Association between N100 amplitude and treatment outcome
+
+analysis to isolate the time period when the patient is least accustomed to the stimulation and is most mentally alert, a decision that was made a priori. Our previous unpublished ECG analysis on the same dataset also showed that the effect of rTMS on heart rate was most significant during the first 3 min of stimulation. This 3-minute rTMS EEG recording
+
+Baseline N100 amplitude at the F4 electrode was found to have a significant positive association with treatment outcome (p \< .001), suggesting that larger N100 amplitude at baseline led to greater improvement in BDI score. Every decrease in μV for F4 N100 amplitude
+
+segment includes 180 pulses, which exceeds the number of total pulses administered in previous studies (Rogasch et al., 2014; Sun et al., 2016). Preprocessing steps were based on the previously published methods by Rogasch et al. (Rogasch et al., 2014). To remove artefacts generated by the rTMS pulse, all data from 10 ms before the pulse to 6 ms after the pulse were excluded from the analysis. A zero-phase FIR 1 Hz highpass filter and a zero-phase 60 Hz notch filter were applied. Data was epoched from 300 ms pre-pulse to 500 ms post-pulse. Examination for bad trials and channels was done manually to remove data with clearly visible contaminants such as noisy electrodes and patient movements; bad trials were removed while bad channels were interpolated. Two rounds of fast independent component analysis (FastICAs) were per- formed to remove artefactual components according to features pre- sented in Rogasch et al. (Rogasch et al., 2014). The first round was used to remove remaining rTMS pulse artefacts, after which a zero-phase FIR 80 Hz lowpass filter was applied, then a second round of ICA was used to remove other artefacts including decay artefacts, eye blinks, eye movements, muscle artefacts, auditory and noise-related artefacts, and electrode artefacts. Lastly, data was baseline corrected to the period from 300 to 100 ms before the onset of the rTMS pulse and re-referenced to the all-channel average.
+
+TEP was obtained for each electrode by averaging all trials. N100 amplitude was determined by finding the most negative peak between 80 and 130 ms after the rTMS pulse onset.
+
+Fig. 1. Association between baseline F4 N100 amplitude and BDI-II percent improvement. Baseline N100 amplitude at the F4 electrode was found to have a significant positive association with treatment outcome (p \< .001), suggesting that larger N100 amplitude at baseline led to greater improvement in BDI-II score. Every decrease in μV for F4 N100 amplitude led to a 49.61 % increase in BDI-II percent improvement (slope = 49.61) and 45.1 % of the variance in BDI-II percent improvement was explained by the model containing only the base- line F4 N100 amplitude as the independent variable (R2 = 0.451).
+
+J.Z. Sheen et al. Journal of Affective Disorders 363 (2024) 174–181
+
+177
+
+Table 1 Demographic and clinical characteristics (n = 23).
+
+Characteristics No. (St. dev)
+
+Age, years 41.8 (10.6) Fig. 2. Association between the change in F4 N100 amplitude and BDI-II
+
+Women 56.50 % percent improvement. The change in F4 N100 amplitude from the baseline
+
+Age of onset, years 20.2 (10.0) session to the follow-up session (follow-up F4 N100 amplitude minus baseline
+
+Length of current depressive episode, months 12.2 (12.3) F4 N100 amplitude) was significantly positively associated with treatment outcome prior to Bonferroni correction (p = .03 uncorrected, p = .06 cor- rected), suggesting that patients with larger decrease in F4 N100 amplitude post-treatment (more positive change in amplitude) experienced more im- provements. Every μV increase in the change of F4 N100 amplitude results in a
+
+Baseline BDI-II Antidepressant Antidepressant combination Antipsychotic augmentation Psychostimulant augmentation Benzodiazepine 34.0 (9.3)
+
+57.9 % 15.8 % 10.5 % 26.3 % 5.3 % 29.2 % increase in BDI-II percent improvement (slope = 29.2) and 19 % of the
+
+ATHF total score 6.7 (5.4) variance in BDI-II percent improvement was explained by the model containing
+
+ATHF number of trials, current episode 1.3 (1.4) only the change in F4 N100 amplitude as the independent variable (R2 = 0.19).
+
+ATHF highest score 3.2 (1.3)
+
+Abbreviations: BDI-II = Beck Depression Inventory-II, ATHF = Antidepressant (decrease in μV equates to increase in N100 amplitude, since N100 is a
+
+Treatment History Form. negative peak) led to a 49.61 % increase in BDI-II percent improvement (slope = 49.61) and 45.1 % of the variance in BDI-II percent improve- ment was explained by the model containing only the baseline F4 N100 amplitude as the independent variable (R2 = 0.451) (Fig. 1). This
+
+Table 2 Clinical outcomes of 1 Hz R-DLPFC arTMS (n = 23).
+
+analysis was repeated after removing non-standard TEPs and the asso-
+
+Outcome measure: BDI-II No. (St. dev) ciation remained significant despite decreased sample size (Supple-
+
+Score baseline 34.0 (9.3) mentary Fig. 1). TEPs for individual patients are presented in
+
+Score 4 weeks after treatment 22.7 (14.2) Supplementary Fig. 2a and b. The change in F4 N100 amplitude from the
+
+Percent improvement 4 weeks after treatment 33.6 % (35.2 %) baseline session to the follow-up session (follow-up F4 N100 amplitude minus baseline F4 N100 amplitude) was significantly positively associ-
+
+Response rate (\>50 % improvement) 4 weeks after treatment 39.1 % (9/23) Remission rate (≤12 on BDI-II) 4 weeks after treatment 34.8 % (8/23)
+
+ated with treatment outcome prior to Bonferroni correction (p = .03
+
+Abbreviations: BDI-II = Beck Depression Inventory-II.
+
+Fig. 3. Difference in baseline F4 TEPs between responders and non-responders. Responders had a significantly more negative mean baseline F4 TEP amplitude (− 0.46 ± 0.15 μV) during the N100 time frame of 80 to 130 ms (vertical orange shading) compared to non-responders (− 0.06 ± 0.09 μV) (p \< .001, 95 % CI \[0.35 0.47\]). Line shadings represent 95 % confidence intervals.
+
+uncorrected, p = .06 corrected), suggesting that patients with larger decrease in F4 N100 amplitude post-treatment (more positive change in amplitude) experienced more improvements. Every μV increase in the change of F4 N100 amplitude results in a 29.2 % increase in BDI-II percent improvement (slope = 29.2) and 19 % of the variance in BDI- II percent improvement was explained by the model containing only the change in F4 N100 amplitude as the independent variable (R2 = 0.19) (Fig. 2). The mean F4 N100 amplitude decreased from baseline (− 0.66 ± 0.50 μV) to follow-up (− 0.58 ± 0.38 μV), however, the
+
+J.Z. Sheen et al. Journal of Affective Disorders 363 (2024) 174–181
+
+decrease was not statistically significant (t = − 0.1603, p = .87) (Sup- plementary Fig. 3). In addition, after rTMS treatment, patients with a lower baseline F4 N100 amplitude showed a larger increase (more negative change) in N100 amplitude whereas patients with a higher baseline F4 N100 amplitude showed a larger decrease (more positive change) in N100 amplitude (p = .0001, R2 = 0.5751); this suggests that the rTMS treatment may have a normalizing effect on N100 amplitude in MDD patients (Supplementary Fig. 8). Supplementary Fig. 4 demon- strates the average baseline F4 TEP for all patients, with the shaded region representing the timeframe of N100. Fig. 3 demonstrates the difference in mean baseline F4 TEP amplitude between treatment re- sponders (BDI-II percent improvement ≥ 50) and non-responders (BDI-II percent improvement \< 50). Responders had a significantly more negative mean baseline F4 TEP amplitude (− 0.46 ± 0.15 μV) during the N100 time frame of 80 to 130 ms compared to non-responders (− 0.06 ± 0.09 μV) (p \< .001, 95 % CI \[0.35, 0.47\]).
+
+The association between baseline N100 amplitude and BDI-II percent improvement for all electrodes is presented in Fig. 4. Significance is presented as − log of the uncorrected p-values. The baseline N100 amplitude is most significantly associated with BDI-II improvement at the R-DLPFC region (p at F4 \< 0.001, p at F8 = 0.028) and the left- DLPFC region (p at F3 = 0.015). After Bonferroni correction, only the baseline F4 N100 amplitude remains significantly associated with BDI-II percent improvement (p \< .001). A topographic map of t-values for the association between baseline N100 amplitude and treatment outcome is presented in Supplementary Fig. 5. Full statistical summary of the topographic plots is presented in Supplementary Table 1.
+
+4\. Discussion
+
+To the best of our knowledge, this is the first study to assess the
+
+Fig. 4. Association between baseline N100 amplitude and BDI-II percent improvement for all electrodes. Significance is presented as − log of the uncorrected p- values. The baseline N100 amplitude is most significantly associated with BDI-II improvement at the R-DLPFC region (p at F4 \< 0.001, p at F8 = 0.028) and the left- DLPFC region (p at F3 = 0.015). After Bonferroni correction, only the baseline F4 N100 amplitude remains significantly associated with BDI-II percent improvement (p \< .001).
+
+178
+
+association between baseline N100 amplitude and treatment outcome of low frequency accelerated R-DLPFC arTMS in MDD. Our results, which were obtained through practical EEG and rTMS methods that do not require particularly extensive apparatus to be added to conventional clinical setups, are in line with previous reports and thus add to the growing body of evidence supporting the potential of utilizing baseline TEPs as biomarkers of rTMS treatment outcome in MDD. First and foremost, the baseline F4 N100 amplitude had a strong positive associ- ation with BDI percent improvement (Fig. 1). Second, prior to Bonfer- roni correction, the change in F4 N100 amplitude from baseline to follow-up had a weak positive association with treatment outcome (Fig. 2). Also, the mean F4 N100 amplitude decreased after arTMS treatment, but this decrease was not statistically significant (Supple- mentary Fig. 3). Moreover, the mean baseline F4 TEP amplitude during the N100 time frame was found to be significantly more negative for treatment responders than non-responders (Fig. 3). Lastly, prior to Bonferroni correction, baseline N100 amplitudes at the F3 electrode, representing the left-DLPFC (L-DLPFC) region, and F4 electrode, repre- senting the R-DLPFC region, were found to be significantly associated with treatment outcome. Baseline N100 amplitudes at other electrodes had no statistically significant association with treatment outcome (Fig. 4).
+
+The strong positive association between baseline F4 N100 amplitude and treatment outcome (Fig. 1), which suggests patients with larger F4 N100 amplitude at baseline led to larger improvements in MDD symp- toms post 1 Hz arTMS, is in line with results by Sun and colleagues, who utilized MST as the treatment instead of 1 Hz rTMS and used suicidality scores instead of BDI scores; this association was highly significant in both studies (p \< .001) (Sun et al., 2016). Since N100 amplitude can be increased by the application of GABABR agonist baclofen and is thus linked to slow cortical inhibition (Premoli et al., 2014), our result
+
+J.Z. Sheen et al. Journal of Affective Disorders 363 (2024) 174–181
+
+179 suggests that MDD patients with greater slow cortical inhibition at
+
+coil placed at contralateral hemispheres during TMS-EEG as well as baseline benefit more from 1 Hz low frequency rTMS treatment. More-
+
+having differing treatment targets, the resulting topographic maps were over, GABA deficiency (Gold et al., 1980; Hasler et al., 2007; Price et al.,
+
+very similar between the two studies. This similarity has several pre- 2009; Schür et al., 2016) as well as the decrease in DLPFC GABAergic
+
+liminary implications: first, the association between baseline N100 interneuron size and density (Rajkowska et al., 2007) seen in MDD pa-
+
+amplitude and treatment outcome is likely not the result of common tients indicate that patients with greater baseline N100 amplitude may
+
+TMS-EEG artefacts such as muscle, electrode noise (from coil contact, have inhibitory circuitry that are more akin to that of healthy in-
+
+increased impedance, etc.), or auditory artefacts since the opposing coil dividuals and are thus more easily influenced by the stimulations; pa-
+
+placement between the two studies did not result in mirrored topo- tients with substantially damaged inhibitory circuitry may require more
+
+graphic maps. If the contribution of such artefacts to the association intensive and prolonged treatments.
+
+between baseline N100 amplitude and treatment outcome is substantial, The weak positive association (uncorrected) between the change in
+
+the strongest effect would be expected to occur at the hemisphere where F4 N100 amplitude and treatment outcome (Fig. 2) is also in line with
+
+the rTMS coil is placed, as this would be the region where the most previous reports by Voineskos and colleagues. Since the N100 is a
+
+muscle movements, electrode noises, and loudest sounds (DLPFC posi- negative TEP, a larger change in F4 N100 amplitude (post-treatment
+
+tioning of the coil is close to the ipsilateral ear) would take place. N100 amplitude is less negative than baseline value) indicates a more
+
+Furthermore, this result confirms the well-known involvement of sizable decrease in F4 N100 amplitude and suggests MDD patients who
+
+DLPFCs in MDD (Yadollahpour et al., 2016) since no other regions experience larger decreases in cortical inhibition after 1 Hz arTMS will
+
+manifested notable significance. However, because the opposing coil see more improvements in MDD symptoms post treatment. A statisti-
+
+placements during TMS-EEG did not produce notable variations in sig- cally non-significant decrease in mean F4 N100 amplitude for all pa-
+
+nificance patterns, and that, as suggested by Du and colleagues, the tients post arTMS was also observed (Supplementary Fig. 3), which
+
+N100 is possibly a non-regionally specific marker of response of the agrees with results from Voineskos and colleagues in trend (Voineskos
+
+cortex to stimulations (Du et al., 2017), the particular target site of TMS et al., 2021). However, these results are in apparent contradiction with
+
+single pulses used to generate the N100 peaks is likely not critical. studies speculating that MDD patients are GABA deficient and that MDD
+
+Nonetheless, it should be noted that the significance at R-DLPFC is much treatments should thus increase cortical inhibition, which would man-
+
+higher than that of L-DLPFC in both studies, which is possibly due to ifest as increased mean N100 amplitude post-treatment, in order to carry
+
+intrinsic mechanistic differences between L-DLPFC and R-DLPFC in out their anti-depressant effects. If increasing cortical inhibition is the
+
+MDD (i.e., hyperactivity versus hypoactivity respectively (Yadollahpour main driving mechanism behind the anti-depressant effect of 1 Hz R-
+
+et al., 2016)) that is unrelated to TMS-EEG or treatment targets. DLPFC arTMS, the association between the change in baseline N100
+
+Limitations of this preliminary study include: a small sample size, the amplitude and treatment outcome should also be negative, suggesting
+
+lack of control group, and the absence of auditory masking. Although that patients who experience a larger increase in baseline N100 ampli-
+
+our sample size is comparable to that of similar studies (Rogasch et al., tude post-treatment will receive greater benefit from the treatment.
+
+2014; Sun et al., 2016; Voineskos et al., 2021), a larger sample size is Together with the previously discussed concordance with MST-based
+
+necessary to overcome false positive and negative findings and allow for results from Sun and colleagues, such results suggest it is possible that
+
+an appropriately accurate determination of a baseline N100 amplitude the predictive potential of N100 amplitude may not be specifically
+
+(or mean baseline TEP amplitude) classification threshold to distinguish associated with the effect of 1 Hz stimulation, but rather with neural
+
+between treatment responders and non-responders. Having a control underpinnings of N100 that are related to the therapeutic effects of a
+
+group with placebo treatment could have further validated our results. broad range of non-invasive brain stimulation techniques, i.e., HF-rTMS,
+
+In addition, the interval between each successive pulse is 1000 ms in our LF-rTMS, and MST; since the mechanistic differences (excitatory vs
+
+study, which is significantly shorter than the interval pulse interval of inhibitory etc.) between such interventions are still unclear, further
+
+other studies (Rogasch et al., 2014). This short inter pulse interval could investigation is required.
+
+have allowed TEPs to contaminate the baseline period used in baseline Furthermore, we demonstrated a strongly significant difference in
+
+corrections. However, we were able to demonstrate that there was no mean baseline F4 TEP amplitude during the N100 time frame (80 to 130
+
+statistically significant difference (p = .93) between the mean amplitude ms) between treatment non-responders and responders, with responders
+
+of the baseline period (− 0.0012 ± 0.22 μV) and the mean amplitude of having a significantly more negative mean baseline F4 TEP amplitude
+
+the pre-stimulation resting period recorded before the onset of the first (Fig. 3). Although the confidence intervals are large due to the small
+
+rTMS pulse (− 0.0010 ± 0.24 μV). This suggests that the influence of sample sizes of each group (9 for responders and 14 for non-responders),
+
+TEPs on the recording is no longer significant at 700 ms post-pulse and this preliminary finding supports the classification of patients into 1 Hz
+
+that the inter pulse interval of 1000 ms is adequate for the establishment arTMS responders and non-responders using baseline single electrode
+
+of the baseline period used in baseline corrections (Supplementary TEP amplitude during the N100 time frame (mean amplitude during
+
+Fig. 7). 80–130 ms) in addition to baseline F4 N100 amplitude (most negative
+
+In terms of the lack of auditory masking, Rogasch and colleagues peak during 80–130 ms) alone. Future studies with larger sample sizes
+
+have demonstrated that the FastICA removal of the auditory component and standardized setups can therefore aim to define an appropriate
+
+did not significantly affect the N100 amplitude on a group level classification voltage threshold that can be used to direct each patient to
+
+(Rogasch et al., 2014). In addition, Poorganji and colleagues have shown the most beneficial treatment in a timely manner.
+
+that the N100 amplitude at the TMS target site electrode was not Lastly, the all-electrode topographic map of significance (− log p) for
+
+significantly different between subjects with auditory masking and those the association between baseline N100 amplitude and treatment
+
+without auditory masking (Poorganji et al., 2023). Moreover, if the outcome is very similar to the topographic map of the same purpose
+
+neurological auditory component, despite of being often recognized as a reported by Sun and colleagues (Sun et al., 2016). For both studies, the
+
+TMS-EEG artefact, significantly altered the N100 amplitude, and the association between baseline N100 amplitude and treatment outcome is
+
+altered N100 amplitude still showed an association with treatment strongest near the F4 electrode (R-DLPFC region) and followed by the F3
+
+outcome, then the auditory artefacts may in fact be an inseparable electrode (L-DLPFC region); the spectral color pattern of significance
+
+neurological component of the N100 treatment response biomarker. To also forms an x-like pattern in both studies. For TMS-EEG, Sun and
+
+further investigate the effects of the auditory component, we analyzed colleagues placed the rTMS coil near the L-DLPFC region (Sun et al.,
+
+the association between baseline F4 N100 amplitude and treatment 2016), while the rTMS coil was placed over the R-DLPFC region in our
+
+outcome both with and without the auditory component, and our results study. For treatment, our target area was F4 while Sun and colleagues
+
+show that the auditory component, which was clearly identifiable in the had the coil focused on Fz. Interestingly, despite having the stimulator
+
+majority of the patients, did not significantly affect the association
+
+J.Z. Sheen et al. Journal of Affective Disorders 363 (2024) 174–181
+
+180 between baseline F4 N100 amplitude and treatment outcome (p with
+
+Magventure for investigator-initiated studies. He received medication auditory component = 0.000089, R2 = 0.504; p without auditory
+
+supplies for an investigator-initiated trial from Indivior. component = 0.000273, R2 = 0.451) (Supplementary Fig. 6). However,
+
+ZJD has received research and equipment in-kind support for an it should be noted that because of technical restrictions, temporal
+
+investigator-initiated study through Brainsway Inc. and Magventure Inc. electrodes such as T3 and T4 (used as ECG electrodes) were not avail-
+
+His work has been supported by the Canadian Institutes of Health able. Data from temporal electrodes would have better assisted in the
+
+Research (CIHR), the National Institute of Mental Health (NIMH), Brain examination of whether the auditory component was a confounding
+
+Canada and the Temerty Family and Grant Family and through the factor since they are best situated to record the auditory evoked po-
+
+Centre for Addiction and Mental Health (CAMH) Foundation and the tential. If the auditory component indeed contributes to a significant
+
+Campbell Institute. proportion of the relationship between F4 N100 amplitude and MDD
+
+JD has received research support from the Arrell Family Foundation, treatment outcome, there is then a possibility of using auditory evoked
+
+the Buchan Family Foundation, Brain Canada, the Canadian Biomarker potential measures independently as a treatment response biomarker,
+
+Integration Network in Depression, the Canadian Institutes of Health which could simplify the biomarker acquisition procedure even further
+
+Research (CIHR), the Klarman Family Foundation, NIH, the Ontario compared to TEP setups. Thus, despite our best efforts, the impact of the
+
+Brain Institute, the Toronto General and Western Hospital Foundation, auditory component cannot be fully excluded and remains a potential
+
+and the Weston Family Foundation; he has received travel stipends from confounding factor to be examined by future studies using high-density
+
+Lundbeck and ANT Neuro; he has served as an advisor for BrainCheck, EEG.Restorative Brain Clinics, and TMS Neuro Solutions, holds equity in Arc
+
+To conclude, the results of the present study suggest that, in agree-
+
+Health Partners, and is a co-founder of Ampa. ment with previous literature, baseline N100 amplitude is a promising
+
+JPM reports research support from the Brain & Behavior Research treatment outcome prediction biomarker for accelerated 1 Hz R-DLPFC
+
+Foundation (BBRF), the R´eseau Qu´eb´ecois sur le Suicide, les troubles de rTMS in MDD at the group level. In particular, our study demonstrated
+
+l’Humeur et les troubles Associ´es (RQSHA), the Canadian Research that a strong association between baseline N100 amplitude and treat-
+
+Initiative in Substance Misuse (CRISM), the Fonds de Recherche du ment outcome is obtainable through cost-effective and widely adoptable
+
+Qu´ebec - Sant´e (FRQS), the Branch Out Neurological Foundation, and (TEP recordings can be done concurrently with 1 Hz rTMS treatment
+
+the Canadian Institutes of Health Research (CIHR). sessions) TMS-EEG methods that may not require the additional utili-
+
+JDG has received research support from the Labatt Family Network, zation of apparatus unique to standalone TEP recording sessions. Future
+
+the CAMH Discovery Fund, the University of Toronto EMHSeed pro- studies should aim to increase sample size, further investigate the
+
+gram, and the Tri-Council Canada-UK AI Initiative. mechanism of N100 as well as the potential confounding effect of the auditory evoked potential, standardize TMS-EEG techniques, and
+
+Acknowledgements eventually aim to obtain a reliable classification threshold that can streamline clinical flow by promptly directing patients to the rTMS
+
+We would like to sincerely thank Jane Lee, Jianjun Shen, Katharine protocol that is most effective for them as an individual.
+
+Dunlop, Eileen Lam, Terri Cairo, Peter Fettes, Laura Schulze, Arsalan Moghtadaei, Kamran Moghtadaei, Julian Kwok, Meaghan Todd, Nuno Funding
+
+Ferreira, Igbinosa Uwadiae, Michael Aiello, Aisha Dar, Umar Dar, Vanathy Niranjan, Duong Nguyen, Sandy Ma, Sunny Hong, Ekaterina This work was supported in part by the Toronto General and Western
+
+Kosyachkova, and Kevin Kadak for their most valued support, without Hospital Foundation, the Arrell Family Foundation, the Brain &
+
+which this study would not have been possible. We would also like to Behavior Research Foundation and the Branch Out Neurological
+
+express our heartfelt appreciation for the trust, patience, and dedication Foundation.
+
+of all the participants in this study. JPM would like to thank the Brain & Behavior Research Foundation and the Branch Out Neurological Foun- CRediT authorship contribution statement
+
+dation for their financial support of this project.
+
+Jack Z. Sheen: Writing – review & editing, Writing – original draft,
+
+Appendix A. Supplementary data Visualization, Software, Project administration, Methodology, Formal analysis, Data curation, Conceptualization. Frank Mazza: Formal
+
+Supplementary data to this article can be found online at https://doi. analysis. Davide Momi: Formal analysis. Jean-Philippe Miron:
+
+org/10.1016/j.jad.2024.07.131. Writing – review & editing, Investigation. Farrokh Mansouri: Formal analysis. Thomas Russell: Data curation. Ryan Zhou: Data curation. Molly Hyde: Data curation. Linsay Fox: Data curation. Helena Voet-
+
+References
+
+terl: Data curation, Conceptualization. Elie Bou Assi: Formal analysis.
+
+Arns, M., Voetterl, H., 2021. Neurophysiological effects of rTMS: revisiting the role of the Zafiris J. Daskalakis: Writing – review & editing. Daniel M. Blum- berger: Writing – review & editing. John D. Griffiths: Writing – review & editing, Supervision, Formal analysis. Jonathan Downar: Writing –
+
+N100 as a clinically useful marker in depression. Clin. Neurophysiol. 132 (9), 2259–2260. https://doi.org/10.1016/j.clinph.2021.06.010. Bagby, R.M., Ryder, A.G., Cristi, C., 2002. Psychosocial and clinical predictors of
+
+response to pharmacotherapy for depression. J. Psychiatry Neurosci. 27 (4), review & editing, Validation, Supervision, Resources, Project adminis-
+
+250–257 (PMID: 12174734). tration, Methodology, Funding acquisition, Conceptualization.
+
+Beck, A.T., Ward, C.H., Mendelson, M., Mock, J., Erbaugh, J., 1961. An inventory for
+
+measuring depression. Arch. Gen. Psychiatry 4, 561–571. https://doi.org/10.1001/ archpsyc.1961.01710120031004. Declaration of competing interest
+
+Bettler, B., Kaupmann, K., Mosbacher, J., Gassmann, M., 2004. Molecular structure and
+
+physiological functions of GABA(B) receptors. Physiol. Rev. 84 (3), 835–867.
+
+JZS, FMazza, DM, FMansouri, TR, RZ, MH, LF, HV, EBA do not
+
+https://doi.org/10.1152/physrev.00036.2003. Bland, J.M., Altman, D.G., 1995. Multiple significance tests: the Bonferroni method. BMJ report any conflict of interest.
+
+310 (6973), 170. https://doi.org/10.1136/bmj.310.6973.170. DMB receives research support from CIHR, NIH, Brain Canada and the Temerty Family through the CAMH Foundation and the Campbell
+
+Brunoni, A.R., Chaimani, A., Moffa, A.H., et al., 2017. Repetitive transcranial magnetic stimulation for the acute treatment of major depressive episodes: a systematic review with network meta-analysis. JAMA Psychiatry 74 (2), 143–152. https://doi.org/ Research Institute. He received research support and in-kind equipment
+
+10.1001/jamapsychiatry.2016.3644. support for an investigator-initiated study from Brainsway Ltd. and he has been the site principal investigator for sponsor-initiated studies for
+
+Darmani, G., Zipser, C.M., B¨ohmer, G.M., et al., 2016. Effects of the selective α5-GABAAR
+
+antagonist S44819 on excitability in the human brain: a TMS-EMG and TMS-EEG phase I study. J. Neurosci. 36 (49), 12312–12320. https://doi.org/10.1523/ Brainsway Ltd. He also receives in-kind equipment support from
+
+JNEUROSCI.1689-16.2016.
+
+J.Z. Sheen et al. Journal of Affective Disorders 363 (2024) 174–181
+
+181 Du, X., Choa, F.S., Summerfelt, A., et al., 2017. N100 as a generic cortical
+
+Basic Transl. Clin. Res. Neuromodul. 10 (2), 479. https://doi.org/10.1016/j. electrophysiological marker based on decomposition of TMS-evoked potentials
+
+brs.2017.01.404. across five anatomic locations. Exp. Brain Res. 235 (1), 69–81. https://doi.org/
+
+Miron, J.-P., Sheen, J., Mansouri, F., et al., 2020. The role of low-frequency repetitive 10.1007/s00221-016-4773-7.
+
+transcranial magnetic stimulation in major depression: a call to increase the Dubin, M.J., Mao, X., Banerjee, S., et al., 2016. Elevated prefrontal cortex GABA in
+
+evidence base. Brain Stimul. Basic Transl. Clin. Res. Neuromodul. 13 (5), patients with major depressive disorder after TMS treatment measured with proton
+
+1296–1297. https://doi.org/10.1016/j.brs.2020.06.013. magnetic resonance spectroscopy. J. Psychiatry Neurosci. 41 (3), E37–E45. https://
+
+Poorganji, M., Zomorrodi, R., Hawco, C., et al., 2023. Isolating sensory artifacts in the doi.org/10.1503/jpn.150223.
+
+suprathreshold TMS-EEG signal over DLPFC. Sci. Rep. 13 (1), 6796. https://doi.org/ Friedrich, M.J., 2017. Depression is the leading cause of disability around the world.
+
+10.1038/s41598-023-29920-2. JAMA 317 (15), 1517. https://doi.org/10.1001/jama.2017.3826.
+
+Premoli, I., Castellanos, N., Rivolta, D., et al., 2014. TMS-EEG signatures of GABAergic Garamszegi, L.Z., 2006. Comparing effect sizes across variables: generalization without
+
+neurotransmission in the human cortex. J. Neurosci. 34 (16), 5603–5612. https:// the need for Bonferroni correction. Behav. Ecol. 17 (4), 682–687. https://doi.org/
+
+doi.org/10.1523/JNEUROSCI.5089-13.2014. 10.1093/beheco/ark005.
+
+Price, R.B., Shungu, D.C., Mao, X., et al., 2009. Amino acid neurotransmitters assessed by Gold, B.I., Bowers, M.B., Roth, R.H., Sweeney, D.W., 1980. GABA levels in CSF of
+
+proton magnetic resonance spectroscopy: relationship to treatment resistance in patients with psychiatric disorders. Am. J. Psychiatry 137 (3), 362–364. https://doi.
+
+major depressive disorder. Biol. Psychiatry 65 (9), 792–800. https://doi.org/ org/10.1176/ajp.137.3.362.
+
+10.1016/j.biopsych.2008.10.025. Gosseries, O., Sarasso, S., Casarotto, S., et al., 2015. On the cerebral origin of EEG
+
+R Core Team, 2021. R: A Language and Environment for Statistical Computing. R responses to TMS: insights from severe cortical lesions. Brain Stimul. 8 (1), 142–149.
+
+Foundation for Statistical Computing, Vienna, Austria. https://www.R-project.org/. https://doi.org/10.1016/j.brs.2014.10.008.
+
+Rajkowska, G., O’Dwyer, G., Teleki, Z., Stockmeier, C.A., Miguel-Hidalgo, J.J., 2007. Gramfort, A., Luessi, M., Larson, E., et al., 2013. MEG and EEG data analysis with MNE-
+
+GABAergic neurons immunoreactive for calcium binding proteins are reduced in the Python. Front. Neurosci. 7, 267. https://doi.org/10.3389/fnins.2013.00267.
+
+prefrontal cortex in major depression. Neuropsychopharmacology 32 (2), 471–482. Hasler, G., van der Veen, J.W., Tumonis, T., Meyers, N., Shen, J., Drevets, W.C., 2007.
+
+https://doi.org/10.1038/sj.npp.1301234. Reduced prefrontal glutamate/glutamine and gamma-aminobutyric acid levels in
+
+Rogasch, N.C., Thomson, R.H., Farzan, F., et al., 2014. Removing artefacts from TMS- major depression determined using proton magnetic resonance spectroscopy. Arch.
+
+EEG recordings using independent component analysis: importance for assessing Gen. Psychiatry 64 (2), 193–200. https://doi.org/10.1001/archpsyc.64.2.193.
+
+prefrontal and motor cortex network properties. Neuroimage 101, 425–439. https:// Kaur, M., Michael, J.A., Fitzgibbon, B.M., Hoy, K.E., Fitzgerald, P.B., 2019. Low-
+
+doi.org/10.1016/j.neuroimage.2014.07.037. frequency rTMS is better tolerated than high-frequency rTMS in healthy people:
+
+Schür, R.R., Draisma, L.W.R., Wijnen, J.P., et al., 2016. Brain GABA levels across empirical evidence from a single session study. J. Psychiatr. Res. 113, 79–82.
+
+psychiatric disorders: a systematic literature review and meta-analysis of (1) H-MRS https://doi.org/10.1016/j.jpsychires.2019.03.015.
+
+studies. Hum. Brain Mapp. 37 (9), 3337–3352. https://doi.org/10.1002/ Kerwin, L.J., Keller, C.J., Wu, W., Narayan, M., Etkin, A., 2018. Test-retest reliability of
+
+hbm.23244. transcranial magnetic stimulation EEG evoked potentials. Brain Stimul. 11 (3),
+
+Simon, G.E., Perlis, R.H., 2010. Personalized medicine for depression: can we match 536–544. https://doi.org/10.1016/j.brs.2017.12.010.
+
+patients with treatments? Am. J. Psychiatry 167 (12), 1445–1455. https://doi.org/ Korpi, E.R., Sinkkonen, S.T., 2006. GABA(A) receptor subtypes as targets for
+
+10.1176/appi.ajp.2010.09111680. neuropsychiatric drug development. Pharmacol. Ther. 109 (1–2), 12–32. https://doi.
+
+Spronk, D., Arns, M., Bootsma, A., van Ruth, R., Fitzgerald, P.B., 2008. Long-term effects org/10.1016/j.pharmthera.2005.05.009.
+
+of left frontal rTMS on EEG and ERPs in patients with depression. Clin. EEG Kralic, J.E., O’Buckley, T.K., Khisti, R.T., Hodge, C.W., Homanics, G.E., Morrow, A.L.,
+
+Neurosci. 39 (3), 118–124. https://doi.org/10.1177/155005940803900305. 2002. GABA(A) receptor alpha-1 subunit deletion alters receptor subtype assembly,
+
+Spronk, D., Arns, M., Barnett, K.J., Cooper, N.J., Gordon, E., 2011. An investigation of pharmacological and behavioral responses to benzodiazepines and zolpidem.
+
+EEG, genetic and cognitive markers of treatment response to antidepressant Neuropharmacology 43 (4), 685–694. https://doi.org/10.1016/s0028-3908(02)
+
+medication in patients with major depressive disorder: a pilot study. J. Affect. 00174-0.
+
+Disord. 128 (1–2), 41–48. https://doi.org/10.1016/j.jad.2010.06.021. Lefaucheur, J.-P., Aleman, A., Baeken, C., et al., 2020. Evidence-based guidelines on the
+
+Sun, Y., Farzan, F., Mulsant, B.H., et al., 2016. Indicators for remission of suicidal therapeutic use of repetitive transcranial magnetic stimulation (rTMS): an update
+
+ideation following magnetic seizure therapy in patients with treatment-resistant (2014–2018). Clin. Neurophysiol. 131 (2), 474–528. https://doi.org/10.1016/j.
+
+depression. JAMA Psychiatry 73 (4), 337–345. https://doi.org/10.1001/ clinph.2019.11.002.
+
+jamapsychiatry.2015.3097. Levitt, J.G., Kalender, G., O’Neill, J., et al., 2019. Dorsolateral prefrontal γ-aminobutyric
+
+Tremblay, S., Rogasch, N.C., Premoli, I., et al., 2019. Clinical utility and prospective of acid in patients with treatment-resistant depression after transcranial magnetic
+
+TMS-EEG. Clin. Neurophysiol. 130 (5), 802–844. https://doi.org/10.1016/j. stimulation measured with magnetic resonance spectroscopy. J. Psychiatry Neurosci.
+
+clinph.2019.01.001. 44 (6), 386–394. https://doi.org/10.1503/jpn.180230.
+
+Voineskos, D., Blumberger, D.M., Rogasch, N.C., et al., 2021. Neurophysiological effects McClintock, S.M., Reti, I.M., Carpenter, L.L., et al., 2017. Consensus recommendations
+
+of repetitive transcranial magnetic stimulation (rTMS) in treatment resistant for the clinical application of repetitive transcranial magnetic stimulation (rTMS) in
+
+depression. Clin. Neurophysiol. 132 (9), 2306–2316. https://doi.org/10.1016/j. the treatment of depression. J. Clin. Psychiatry 78 (1), 0. https://doi.org/10.4088/
+
+clinph.2021.05.008. JCP.16cs10905.
+
+Yadollahpour, A., Hosseini, S.A., Shakeri, A., 2016. rTMS for the treatment of depression: Milev, R.V., Giacobbe, P., Kennedy, S.H., et al., 2016a. Can. J. Psychiatry 61 (9),
+
+a comprehensive review of effective protocols on right DLPFC. Int. J. Ment. Health 561–575. https://doi.org/10.1177/0706743716660033.
+
+Addict. 14, 539–549. https://doi.org/10.1007/s11469-016-9669-z. Mir-Moghtadaei, A., Dunlop, K., Mansouri, F., et al., 2017. Scalp-based heuristics for
+
+locating the nodes of the salience network for use in neurostimulation. Brain Stimul.
+
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[\#1](#1)   
+[mailto:jack.sheen2018@gmail.com](mailto:jack.sheen2018@gmail.com)   
+<http://www.sciencedirect.com/science/journal/01650327>   
+<https://www.elsevier.com/locate/jad>   
+<https://doi.org/10.1016/j.jad.2024.07.131>   
+<https://doi.org/10.1016/j.jad.2024.07.131>   
+<http://crossmark.crossref.org/dialog/?doi=10.1016/j.jad.2024.07.131&domain=pdf>   
+<http://creativecommons.org/licenses/by-nc/4.0/>   
+<http://creativecommons.org/licenses/by-nc/4.0/>   
+[\#8](#8)   
+[\#7](#7)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#7](#7)   
+[\#8](#8)   
+[\#8](#8)   
+[\#7](#7)   
+[\#7](#7)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#7](#7)   
+[\#7](#7)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#7](#7)   
+[\#8](#8)   
+[\#8](#8)   
+[\#7](#7)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#7](#7)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#3](#3)   
+[\#5](#5)   
+[\#4](#4)   
+[\#4](#4)   
+[\#7](#7)   
+[\#8](#8)   
+[\#4](#4)   
+[\#4](#4)   
+[\#3](#3)   
+[\#4](#4)   
+[\#4](#4)   
+[\#5](#5)   
+[\#3](#3)   
+[\#4](#4)   
+[\#4](#4)   
+[\#5](#5)   
+[\#3](#3)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#4](#4)   
+[\#8](#8)   
+[\#8](#8)   
+[\#4](#4)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+[\#8](#8)   
+<https://doi.org/10.1016/j.jad.2024.07.131>   
+<https://doi.org/10.1016/j.jad.2024.07.131>   
+<https://doi.org/10.1016/j.clinph.2021.06.010>   
+<http://refhub.elsevier.com/S0165-0327(24)01189-3/rf0015>   
+<http://refhub.elsevier.com/S0165-0327(24)01189-3/rf0015>   
+<http://refhub.elsevier.com/S0165-0327(24)01189-3/rf0015>   
+<https://doi.org/10.1001/archpsyc.1961.01710120031004>   
+<https://doi.org/10.1001/archpsyc.1961.01710120031004>   
+<https://doi.org/10.1152/physrev.00036.2003>   
+<https://doi.org/10.1136/bmj.310.6973.170>   
+<https://doi.org/10.1001/jamapsychiatry.2016.3644>   
+<https://doi.org/10.1001/jamapsychiatry.2016.3644>   
+<https://doi.org/10.1523/JNEUROSCI.1689-16.2016>   
+<https://doi.org/10.1523/JNEUROSCI.1689-16.2016>   
+<https://doi.org/10.1007/s00221-016-4773-7>   
+<https://doi.org/10.1007/s00221-016-4773-7>   
+<https://doi.org/10.1503/jpn.150223>   
+<https://doi.org/10.1503/jpn.150223>   
+<https://doi.org/10.1001/jama.2017.3826>   
+<https://doi.org/10.1093/beheco/ark005>   
+<https://doi.org/10.1093/beheco/ark005>   
+<https://doi.org/10.1176/ajp.137.3.362>   
+<https://doi.org/10.1176/ajp.137.3.362>   
+<https://doi.org/10.1016/j.brs.2014.10.008>   
+<https://doi.org/10.3389/fnins.2013.00267>   
+<https://doi.org/10.1001/archpsyc.64.2.193>   
+<https://doi.org/10.1016/j.jpsychires.2019.03.015>   
+<https://doi.org/10.1016/j.brs.2017.12.010>   
+<https://doi.org/10.1016/j.pharmthera.2005.05.009>   
+<https://doi.org/10.1016/j.pharmthera.2005.05.009>   
+<https://doi.org/10.1016/s0028-3908(02)00174-0>   
+<https://doi.org/10.1016/s0028-3908(02)00174-0>   
+<https://doi.org/10.1016/j.clinph.2019.11.002>   
+<https://doi.org/10.1016/j.clinph.2019.11.002>   
+<https://doi.org/10.1503/jpn.180230>   
+<https://doi.org/10.4088/JCP.16cs10905>   
+<https://doi.org/10.4088/JCP.16cs10905>   
+<https://doi.org/10.1177/0706743716660033>   
+<https://doi.org/10.1016/j.brs.2017.01.404>   
+<https://doi.org/10.1016/j.brs.2017.01.404>   
+<https://doi.org/10.1016/j.brs.2020.06.013>   
+<https://doi.org/10.1038/s41598-023-29920-2>   
+<https://doi.org/10.1038/s41598-023-29920-2>   
+<https://doi.org/10.1523/JNEUROSCI.5089-13.2014>   
+<https://doi.org/10.1523/JNEUROSCI.5089-13.2014>   
+<https://doi.org/10.1016/j.biopsych.2008.10.025>   
+<https://doi.org/10.1016/j.biopsych.2008.10.025>   
+<https://www.R-project.org/>   
+<https://doi.org/10.1038/sj.npp.1301234>   
+<https://doi.org/10.1016/j.neuroimage.2014.07.037>   
+<https://doi.org/10.1016/j.neuroimage.2014.07.037>   
+<https://doi.org/10.1002/hbm.23244>   
+<https://doi.org/10.1002/hbm.23244>   
+<https://doi.org/10.1176/appi.ajp.2010.09111680>   
+<https://doi.org/10.1176/appi.ajp.2010.09111680>   
+<https://doi.org/10.1177/155005940803900305>   
+<https://doi.org/10.1016/j.jad.2010.06.021>   
+<https://doi.org/10.1001/jamapsychiatry.2015.3097>   
+<https://doi.org/10.1001/jamapsychiatry.2015.3097>   
+<https://doi.org/10.1016/j.clinph.2019.01.001>   
+<https://doi.org/10.1016/j.clinph.2019.01.001>   
+<https://doi.org/10.1016/j.clinph.2021.05.008>   
+<https://doi.org/10.1016/j.clinph.2021.05.008>   
+<https://doi.org/10.1007/s11469-016-9669-z>   

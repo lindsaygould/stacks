@@ -1,0 +1,653 @@
+Hybrid neural–cognitive models reveal how memory shapes human reward learning 
+
+nature human behaviour
+
+Article https://doi.org/10.1038/s41562-025-02324-0 Hybrid neural–cognitive models reveal how memory shapes human reward learning
+
+Received: 4 October 2024
+
+Maria K. Eckstein 1 , Christopher Summerfield 2, Nathaniel D. Daw 1,3 &
+
+Accepted: 19 September 2025
+
+Kevin J. Miller 1,4
+
+Published online: 5 February 2026
+
+A long-standing challenge for psychology and neuroscience is to understand the transformations by which past experiences shape future behaviour. Reward-guided learning is typically modelled using simple reinforcement learning (RL) algorithms. In RL, a handful of incrementally updated internal variables both summarize past rewards and drive future choice. Here we describe work that questions the assumptions of many RL models. We adopt a hybrid modelling approach that integrates artificial neural networks into interpretable cognitive architectures, estimating a maximally general form for each algorithmic component and systematically evaluating its necessity and sufficiency. Applying this method to a large dataset of human reward-learning behaviour, we show that successful models require independent and flexible memory variables that can track rich representations of the past. Using a modelling approach that combines predictive accuracy and interpretability, these results call into question an entire class of popular RL models based on incremental updating of scalar reward predictions.
+
+Reward-guided decisions are widely assumed to depend on a small num- ber of latent variables that concisely summarize the history of actions and rewards and are calculated using simple incremental updates after each experience. For example, within the framework of reinforcement learning (RL), standard cognitive models posit that choices are based on ‘Q-values’, which approximate the expected reward associated with each action and are calculated by repeatedly applying an incremen- tal learning rule that compares the actual outcome to its previous estimate1,2. Such models are often simply called ‘RL models’, and they form the foundation for many studies investigating the psychology and neuroscience of reward-guided learning. These models have achieved an impressive record of success, providing computational explanations for basic as well as complex learning phenomena3–9 and for neural cor- relates of reward-guided learning in a variety of tasks and species10–12. However, the literature has also accumulated a number of observa- tions that these models do not easily account for. For example, indi- vidual events in the past can disproportionately affect behaviour13–17, suggesting that task-relevant memory contains more than Q-value-like
+
+summary statistics of the reward history. Additionally, behaviour is often sensitive to global statistics of the past (for example, the range of rewards or the grouping of choice options) that are not easily captured by standard RL models18–21. Lastly, neural signals previously thought to relate straightforwardly to Q-values have been found to show marked diversity that is in tension with standard RL models22–26. These findings collectively suggest that the memory representations that humans and animals use to make reward-based choices go beyond incrementally learned summary statistics and may rely on a variety of additional internal memory mechanisms. However, a coherent computational account of such a learning algorithm is lacking.
+
+Artificial neural networks (ANNs) are able to model highly expres- sive functions27. Sequential tasks can be modelled using recurrent neural networks (RNNs), which can learn to represent the past using high-dimensional internal states; these states are derived by mem- ory mechanisms that are implemented in a potentially large number of trainable network parameters. With the ability to learn complex, time-dependent mapping functions, RNNs seem able to capture both the
+
+Nature Human Behaviour | Volume 10 | May 2026 | 972–987 972
+
+Check for updates
+
+1Google DeepMind, London, UK. 2Department of Experimental Psychology, University of Oxford, Oxford, UK. 3Princeton Neuroscience Institute and Department of Psychology, Princeton University, Princeton, NJ, USA. 4Sainsbury Wellcome Centre, University College London, London, UK.
+
+e-mail: mariaeckstein@google.com; kevinjmiller@google.com
+
+Article https://doi.org/10.1038/s41562-025-02324-0
+
+a Reward-based Learning b Incremental-learning model
+
+c ANN model (for example, RL ‘Q-learning’) (for example, RNN)
+
+Actiont Rewardt Trial t
+
+Actiont Rewardt
+
+Actiont Rewardt
+
+δ = r – Q(a) Q(a) += α δ
+
+Transparent algorithm
+
+Latent Black box Q-values
+
+state Observed
+
+Unobserved
+
+Actiont+1 Rewardt+1 Trial t + 1
+
+Actiont+1 Rewardt+1 Actiont+1 Rewardt+1Cognitive model
+
+d Task procedure D F Action
+
+J K
+
+e Procedurally generated protocols
+
+f Aggregate performance
+
+Trial t
+
+Trial t + 1
+
+Reward available Reward obtained 1001001005050507525752575250 0 0
+
+100 1001005050502525257575750 0 0 0 50 100 150 0 50 100 150 Optimal 1.0choices Choices Actiont Rewardt Inter-trial
+
+interval You won 81 points\!
+
+0.5(impossible)
+
+0
+
+Random choices
+
+\<4,000 ms 400 ms 800
+
+ms 500
+
+ms
+
+–0.5 Individuals (n = 862) –1.0
+
+Group average
+
+1 2 3 4 5 Trial
+
+Trial Task block
+
+Fig. 1 | Overview. a–c, Cognitive modelling. Panel a illustrates reward-based
+
+lasted for 150 trials. Panel e shows examples of procedurally generated protocols. learning. Reward-based learning tasks involve choosing one action at a time to
+
+Each row shows the protocol for one of three example participants. The number win a reward, in an iterative fashion involving many trials. Panel b illustrates an
+
+of points available for each action diffused over time (left), independently for incremental-learning model. Variants of RL, specifically Q-learning, are popular
+
+each action (colour). A different reward schedule was used for each participant behavioural models for such tasks. Q-values approximate the expected reward
+
+and each task block. Participants’ choices (right) reflected individual reward associated with each action on the basis of an incremental, trial-wise delta-rule
+
+schedules. Panel f shows aggregate performance. Each participant (grey dots) update. Panel c illustrates an ANN model. While classic cognitive models facilitate
+
+performed multiple task blocks (horizontal axis). ‘Relative reward’ is a measure understanding of the underlying mechanism, ANNs typically predict empirical
+
+of task performance that is comparable across different reward schedules (see behaviour more accurately. d–f, Experimental design. Panel d shows the task
+
+‘Behavioural analyses’ in Methods). The black dots show means over participants, procedure. On each trial, participants saw the same four stimuli, pressed a key
+
+and the error bars (almost invisible) indicate standard errors. to select one and obtained the corresponding reward (1–100 points). Each task
+
+long-term dependencies and the potentially complex learning mecha-
+
+were rewarded according to noisy reward magnitudes that drifted nisms that underlie human behaviour during reward-based learning28–31.
+
+over time (a non-stationary ‘bandit’ task; Fig. 1e)37. On each trial of the These networks have the advantage that they typically capture more
+
+task, the participants selected one of the four actions and were given behavioural variance than handcrafted cognitive models, provid-
+
+the corresponding reward (Fig. 1d). We collected the dataset online ing an estimate of the model performance that is possible for a given
+
+(880 participants, 862 of whom passed the inclusion criteria; 4,134 dataset30,32,33. However, fitting behaviour with RNNs typically comes at
+
+task blocks; 617,871 valid trials; all participants provided informed the expense of interpretability—unlike in classic cognitive modes such as
+
+consent in accordance with Google DeepMind’s Human Behavioural RL, in which each parameter serves a prescribed role, their computations
+
+Research Ethics Committee, and the study complied with all relevant typically require substantial additional work to interpret34,35.
+
+ethical regulations), which is comparable in size to the largest exist- A budding research field has started to combine ANNs and classic
+
+ing datasets from related tasks38,39. Participants tended to choose the cognitive models28,31–33,36. Whereas handcrafted cognitive models are
+
+actions with larger rewards, indicating that they successfully learned interpretable but frequently underfit the data, ANNs are sufficiently
+
+the task (average rewards exceeded chance (t861 = 149.2; P \< 0.001; expressive to model complex behaviours but usually hard to under-
+
+d = 5.09; 95% confidence interval (CI) of relative rewards, (66.2, 67.9)) stand. For example, Peterson et al.36 iteratively replaced components of
+
+and were numerically above chance on 4,085/4,134 task blocks; Fig. 1f). a classic computational model with more expressive ANN counterparts
+
+Both the large size of our dataset and the variability of reward contin- to test increasingly general theories of human decision-making, using
+
+gencies between participants were crucial to our approach because gambling tasks. Here we extend this approach to study reward-based
+
+they allowed RNNs and hybrid models to extract additional variance learning and memory, which requires modelling both how informa-
+
+compared with basic RL models (Supplementary Fig. 7). tion about the past is integrated into memory and how the contents
+
+We first modelled this dataset using the two extreme approaches, of memory are used to guide choice. To do this, we created a hybrid
+
+a classic RL-based incremental-update model and a generic RNN. We neural–cognitive method that flexibly interpolates between a classic
+
+identified the best RL model (Fig. 2a) through systematic comparison RL model (Fig. 1b) and an RNN (Fig. 1c). Iteratively replacing RL model
+
+between many RL model variants, using standard methods40,41 (Sup- components with flexible ANNs, we measured which relaxation of con-
+
+plementary Table 2; implementation details are provided in ‘Model straints improved the model’s ability to capture human behaviour. We
+
+architectures’ in Methods). Specifically, we started with the simplest then inspected the best model’s fitted ANN modules to shed light on
+
+model (called ‘Simple RL’), a tabular Q-learner with two free model the underlying mechanisms and to understand how experience shapes
+
+parameters (learning rate and inverse decision temperature), and memory representations and how these representations drive choice.
+
+fitted it to participant behaviour by identifying the parameter val- ues that maximized the negative log-likelihood of human behaviour Results
+
+under the model in the training split of the dataset. We then tested a We collected a large dataset from a reward-learning task in which human
+
+variety of modifications to Simple RL that have been explored in the participants repeatedly chose among four possible actions, which
+
+literature, including Q-value forgetting4,42 and a parallel perseveration
+
+Nature Human Behaviour | Volume 10 | May 2026 | 972–987 973
+
+\+
+
+Article https://doi.org/10.1038/s41562-025-02324-0
+
+aBest RL b RL-ANN c Vanilla RNN
+
+Qt(a) rt at Qt(a) rt at rt at Delta-rule value update with variable learning rate
+
+δt = rt – Qt(a)
+
+Value update distilled from Qt+1(a) + = α δt
+
+human
+
+st behaviour
+
+at+1 at+1
+
+d Model fits
+
+e f
+
+Best RL Q-value update
+
+module that learns from actions rather than rewards7,43,44. Among all tested RL model variants, we identified a winning model with six free parameters, called ‘Best RL’. Best RL consists of two submodules. The ‘reward module’ takes as inputs the observed reward, denoted rt, and the value, Qt(at), of the action at that led to this reward, and calculates an updated Q-value, Qt+1(at), for this action, using the equations specified in Fig. 2a (left). In Best RL, Q-values Qt+1(at) hence are linear in both the reward rt and the previous value Qt(at), such that larger rewards and larger previous values lead to monotonically larger updated values (Fig. 2e). Best RL’s forgetting mechanism gradually decays Q-values back to the initial value Qinit. The reward module hence captures pure reward-based learning. In addition, Best RL has an ‘action module’, which takes as input the previous action, at, and sets its persevera- tion indicator ct+1(at) to a value determined by a free parameter. This allows the model to express either action repetition (ct(at) \> 0) or action switching (ct(at) \< 0). Perseveration for all other actions, ct+1(a ≠ at), is 0 (Fig. 2a, right). The outputs of both modules, ‘reward logits’ Qt+1 and ‘action logits’ ct+1, are combined additively before sampling the action at+1 that is taken on the next trial (for the model details and equations, see ‘Model architectures’ in Methods).
+
+cct+1t+1((a) ¬a) = = κ
+
+0
+
+Qt+1(a) Qt+1(¬a) ct+1(a) ct+1(¬a) Qt+1 ct+1 ) %(y caruccae vitciderPe
+
+ulaVQinit
+
+at+1
+
+General architecture, Same, interpretable architecture
+
+flexible computation, Fixed operations
+
+black box
+
+65
+
+Fig. 2 | Best RL and RL-like models. a–c, Model architectures. Best RL (a) is the best handcrafted model based on Q-learning, identified using extensive model comparison (Supplementary Results and Supplementary Table 2). It contains a standard Q-value update (left oval) with decay of unchosen action values (left oval, dotted recurrent arrows for Q(¬a)), as well as a reward-agnostic choice perseveration mechanism (right oval). The outputs of both computations are combined additively to sample the next choice. RL-ANN (b) has the same architecture as Best RL, consisting of a reward module that computes Q-values (left oval) and an action module that computes a perseveration kernel (right oval). However, RL-ANN uses ANNs to allow each module to perform any update rule, making it a generalization of linear update models that encompasses Best RL as a special case. Vanilla RNN (c) is a standard RNN and the most flexible model. It provides an upper bound in terms of behavioural prediction. d, Model
+
+Flexible operations
+
+P \< 0.001
+
+P \> 0.05
+
+RL-ANN P \< 0.001
+
+Q-value update
+
+1.00 420
+
+Value Qt(at)
+
+0.75
+
+Max
+
+0.50
+
+60
+
+0.250
+
+0 25 50 75 100
+
+Reward rt
+
+Reward rt
+
+Qinit
+
+Min
+
+0 25 50 75 100
+
+fits. Predictive accuracy was derived from the loss of each fitted model to held- out participants not seen during training (see ‘Model training’ in Methods). Best RL and RL-ANN predicted human choices significantly worse than Vanilla RNN, with no significant difference between them, according to two-sided t-tests (see the main text for statistics). The data are presented as mean values over held-out blocks (n = 413) plus/minus s.e.m. e,f, Reward processing. In classic Q-learning as modelled by Best RL (e), updated values Qt+1(at) increase monotonically both in the observed reward rt and in the previous value Qt(at) (colour), with strictly linear relationships (for model details and equations, see ‘Model architectures’ in Methods). After fitting to human behaviour, RL-ANN (f) acquired a qualitatively similar update rule with monotonically increasing and near-linear relationships. For ease of visualization, we averaged sampled values Qt(at) (colour) within quantile groups to obtain discrete lines.
+
+Best RL is a prime example of a classic handcrafted cognitive model: each mechanism is clearly defined by simple equations, which are modified by just a small number of interpretable model parameters (for example, the inverse decision temperature, β). However, these constraints limit the model’s expressivity and potentially its ability to capture human behaviour. To assess whether this is the case, we com- pared Best RL to a highly expressive ‘Vanilla RNN’, which can employ a large number of free parameters to model increasingly complex func- tions. At the core of Vanilla RNN is a recurrent memory module that allows the model to directly share its high-dimensional hidden-layer activations, the latent state st, with itself on subsequent trials (for details and equations, see ‘Model architectures’ in Methods; Fig. 2c). This allows Vanilla RNN to rely on a rich and flexible memory of past trials when making choices. Compared with Best RL, Vanilla RNN has the additional advantage of processing all inputs (at, rt and sst) jointly, allowing it to identify arbitrarily complex interactions between them. (Besides the basic RNN architecture, we also fitted more sophisticated sequence models such as long short-term memory networks (LSTMs45 and transformers46, which led to qualitatively similar results; see ‘Addi- tional model fits’ in the Supplementary Information.)
+
+Nature Human Behaviour | Volume 10 | May 2026 | 972–987 974
+
+Article https://doi.org/10.1038/s41562-025-02324-0
+
+We fit both models to our human data using a cross-entropy loss (equivalent to negative log-likelihood) that quantified how well each model predicted human choices. Note that the models were not trained to find the reward-maximizing policy for the task but to recre- ate the observed human data as accurately as possible. This approach is sometimes referred to as ‘system identification’ in engineering47 or ‘behavioural cloning’ in machine learning48,49. We evaluated all models by cross-validating over participants. This amounts to using a subset of participants to identify the algorithm that best predicted the behaviour of the remaining participants, who completed a different set of task schedules. We trained all models on the same 80% of participants (690 participants; 3,302 task blocks) and tested all models’ predictive performance on the same held-out 10% (86 participants; 413 blocks), using the remaining 10% (86 participants; 419 blocks) to select the best hyperparameters for each model (for example, the number of hidden units). Training, validating and testing on different sets of partici- pants eliminates the risk that increasingly flexible models overfit to the training data, and it makes models with different numbers of free parameters directly comparable (see ‘Model training’ in Methods and Supplementary Table 1). We confirmed that different models were behaviourally distinguishable by generating synthetic behaviour from each model and confirming that the correct model could be identified; this was generally possible because less-flexible models were unable to imitate more-flexible ones (Supplementary Fig. 1). In terms of model comparison, we found that Vanilla RNN predicted the behaviour of unseen participants substantially better than Best RL, correctly antici- pating 68.3% (95% CI, (66.9%, 69.7%)) of unseen participants’ choices, compared with just 60.6% (95% CI, (59.2%, 62.0%)) by Best RL (chance is 25%; Vanilla RNN versus Best RL, paired t-test: t412 = 28.9, P \< 0.001, d = 1.39; Fig. 2d). This confirms that, as expected, Vanilla RNN can pre- dict human behaviour more accurately than the best classic RL model. A data sensitivity analysis (Supplementary Fig. 7a) showed that Vanilla RNN’s advantage became increasingly prominent for increasing sizes of training data, indicating that collecting more data can improve the extraction of systematic behavioural variance.
+
+Next, we created a series of models that interpolate between the extremes of Best RL and Vanilla RNN. We first created a hybrid model that inherits the architecture of Best RL (Fig. 2a) but replaces its hand- crafted equations with flexible ANNs (Fig. 2b). As in Best RL, the reward module is responsible for updating the chosen action’s Q-value at each time step. The module has access to the previous reward rt (for example, ‘received 70 points’) and value Qt(at) (for example, ‘expected 50 points’), but not the identity of the chosen action at (for example, ‘pressed the D key’). In turn, the action module updates the chosen action’s perseveration indicator, for which it has access only to the previous action at (for example, ‘pressed the D key’). Unlike Best RL, both modules use flexible ANNs to map their respective inputs to the corresponding updated output. This model, which we call ‘RL-ANN’, is motivated by the insight that Best RL’s strictly linear Q-value updates (Fig. 2e) (in conjunction with Best RL’s restrictive perseveration mechanism; Supplementary Fig. 6) might be insufficient to capture human learning. For example, existing models propose that value updates might depend on reward in various nonlinear ways19,50, but the strictly linear Q-learning model does not account for possibili- ties like these. Similarly, values might depend nonlinearly—or even non-monotonically—on previous values and rewards, but the model does not express this possibility. By replacing Best RL’s linear update equations with generic ANNs, we were able to simultaneously test all nonlinear model variants of this kind, without the necessity of speci- fying each one by hand. During training, RL-ANN’s value and action modules have the flexibility to acquire update rules of any functional form and will settle on the one that allows the model as a whole to best match human behaviour. In this sense, RL-ANN represents a whole class of cognitive models: any model that shares Best RL’s architecture can in principle be instantiated by RL-ANN, independent of the specific
+
+functional form of its updates (for an example, see Supplementary Fig. 1). When we assessed how well RL-ANN predicts the behaviour of unseen participants, however, this added flexibility did not close the gap to Vanilla RNN (RL-ANN: 60.8%; 95% CI, (59.4%, 62.3%); Vanilla RNN: 68.3%; 95% CI, (66.9%, 69.7%); paired t-test: t412 = 32.7, P \< 0.001, d = 1.35; Fig. 2d; also see Supplementary Fig. 3 for additional variants of Best RL). This suggests that there is no RL-like model—defined as a model that shares Best RL’s cognitive architecture, albeit with complete flex- ibility in terms of the implemented functions—that can predict human behaviour on our task as well as Vanilla RNN. This shows that there exist no modifications to Best RL’s update rules that improve the prediction of human task behaviour.
+
+Perhaps surprisingly, RL-ANN did not significantly improve pre- dictions compared to Best RL (RL-ANN: 60.8%; 95% CI, (59.4%, 62.3%); Best RL: 60.6%; 95% CI, (59.2%, 62.0%)); paired t-test: t412 = 1.54, P = 0.12, d = 0.70), suggesting that Best RL’s original update rules might already be the best in its class. To see if this was the case, we conducted two analyses. We first inspected RL-ANN’s learned update functions and compared them to their handcrafted counterparts in Best RL. This analy- sis can reveal whether among all possible mechanisms RL-ANN could implement, human behaviour lent the most support to the special case of Best RL. We visualized Best RL’s Q-value update (Fig. 2e) by calculating the updated values Qt+1(at) for every combination of inputs (0 \< rt \< 100 points; 0 \< Qt(at) \< 1), using the standard Q-value equations (Fig. 2a, left; see ‘Model analysis’ in Methods). We also visualized RL-ANN’s Q-value update by extracting the fitted reward module and probing it across its range of inputs (0 \< rt \< 100 points; Qt(at) between the 5th and the 95th percentile of observed Q-values), while recording its outputs Qt+1(at). Indeed, RL-ANN showed an update rule that was monotonic and approximately linear in both rt and Qt, similar to Best RL (Fig. 2f), sug- gesting that human behaviour was best approximated by an algorithm very similar to RL. The corresponding analysis of the action module is shown in the Supplementary Results (Supplementary Fig. 6a). Second, we generated and analysed synthetic behavioural data from both Best RL and RL-ANN, assessing whether the slight differences in the update rule between both would lead to meaningful differences in behaviour. We used each trained model to simulate a behavioural dataset with the same characteristics as the human dataset (the same sample size, reward schedules and train–test–validation split; see ‘Model analysis’ in Methods). We found that behavioural datasets from both models were qualitatively similar (Supplementary Figs. 10 and 11) but differed from human behaviour (Fig. 4). Thus, even when given the opportunity to learn new, more expressive operations for updating Q-values, RL-ANN approximately recovers the simple solution found in classic RL models and, like them, falls short in predicting human behaviour (Fig. 2d).
+
+Our second hybrid model aims to address this issue by gener- alizing the architecture further and considering a broader space of models. It is inspired by the finding that learning is affected not only by properties of the chosen option but also by those of options that were available but not chosen, a notion commonly referred to as ‘context’18,19,21,51,52. For example, an action that won 50 points might be processed differently depending on whether other available actions were expected to win 10 points or 90. To allow for this possibility, we provided the ‘Context-ANN’ model with additional connections that allow learned information about unchosen actions to modify the learn- ing rule (Fig. 3b). Context-ANN’s reward module receives as additional input its own value estimates Qt (the previous trial’s Q-values of all four actions); the action module receives as additional modulatory input ct (the previous trial’s perseveration indicators for all four actions). These modulatory inputs allow Context-ANN to adopt any learning algorithm that can be expressed as a function of the primary input (rt, at) and the corresponding choice variables for all available actions (Qt, ct). In model comparison, Context-ANN fit human behaviour substantially better than RL-ANN, increasing the percentage of correctly predicted choices from 60.8% (95% CI, (59.4%, 62.3%)) to 65.4% (95% CI, (63.9%, 66.9%);
+
+Nature Human Behaviour | Volume 10 | May 2026 | 972–987 975
+
+Article https://doi.org/10.1038/s41562-025-02324-0
+
+aRL-ANN b Context-ANN c Memory-ANN d Model fits
+
+Value update is
+
+Qt(a) rt at Qt rt at ct rt at P only based on chosen value
+
+at+1 at+1 Add context of past history;
+
+discriminate context and choice
+
+ei j k l
+
+paired t-test: t412 = 28.3, P \< 0.001, d = 1.27; Fig. 3d). Each module played a unique role in improving the prediction accuracy (Supplementary Tables 3 and 4). Nevertheless, Context-ANN still fell short of Vanilla RNN (68.3%; 95% CI, (66.9%, 69.7%); paired t-test: t412 = 16.8, P \< 0.001, d = 0.83), indicating that the inclusion of context processing was not sufficient to capture human behaviour on our task and that an even more flexible architecture is required.
+
+We hence turned to the role of memory processing, testing whether a model that can retain a richer representation of the past can
+
+Represents context
+
+) %(y caruccae vitciderPGuides choice
+
+at+1
+
+Guides choice \> 0.05
+
+N NA-LRN NA-txetnoCP \< 0.001 N NA-yromeMN NRa llinaVReward rt
+
+P \< 0.001
+
+st(r) st(a)
+
+65
+
+Qt+1 ct+1 Qt+1 ct+1
+
+P \< 0.001
+
+Contextualize computation on the basis of counterfactuals
+
+60
+
+Best RL
+
+f g h Q-value update
+
+1.00
+
+2 10
+
+3 6 9
+
+Fig. 3 | Interpretability. a–c, Model architectures. Context-ANN (b) and Memory-ANN (c) were incremental extensions of RL-ANN (a). d, Model fits. Both Context-ANN and Memory-ANN provided significant improvements, with Memory-ANN not differing from the predictive accuracy of Vanilla RNN, according to two-sided t-tests (see the main text for statistics). The data are presented as mean values over held-out blocks (n = 413) plus/minus s.e.m. e–i, Model algorithms. Panel e shows the Best RL Q-value update (details in Fig. 2e). Panel f shows the Memory-ANN Q-value calculation. Memory-ANN implements a monotonic but nonlinear, sigmoidal function (Supplementary Fig. 8b), mapping higher rewards onto higher values. The colours show the first principal component (PC1) of the memory state s(r)
+
+t , which we interpret as reward sensitivity. The reference point (Qinit) indicates the initial Q-value, towards which values of non-chosen actions gradually decayed. As shown in g, Q-values change over time. When iteratively probed with the same reward magnitude rtest (colour), Memory-ANN produces different Q-values Qt+1(at) depending on the trial t. Panel h shows how Q-values are based on prior history. Different states s(r) were obtained by subjecting Memory-ANN to 150 different iterations of observing reward rprime (colour). Injecting different states s(r) led to wide variations in the
+
+80.75
+
+4 Qinit
+
+1 60.50 4
+
+0.25Qinit
+
+0
+
+0
+
+25 50 75 100
+
+0 25 50 75 100
+
+0 50 100 150 0 50 100 150 Reward rt
+
+Trial t
+
+Trial t
+
+State encodes reward history
+
+at multiple timescales State st–1.0 –0.5 0 0.5 1.0 Trial t
+
+(r)
+
+PC3 PC4 PC6 PC7 PC8 PC1 PC2 PC5
+
+100 L o rem 21–1 11
+
+750
+
+0
+
+050–10
+
+–1
+
+25–20
+
+0
+
+–30
+
+0 50 100 150
+
+Trial t 0–1 –1
+
+0 50 100 150
+
+0 25 50 75 100
+
+0 25 50 75 100 Reward rt
+
+response to the same rtest, which was given for 150 time steps. As shown in i, the state encodes the reward history at multiple timescales. Coefficients were obtained from regressing past rewards r1:t−1 against each PC of s(r)
+
+t (see ‘Behavioural analyses’ in Methods). Some PCs showed sensitivity to the most recent history of rewards, while others showed sensitivity to the long-term history of rewards. j, PC1 update. incoming rewards rt. PC1 of s(r)
+
+t The memory representation s(r)
+
+t is affected by exhibits monotonic, near-linear, incremental integration. k,l, Behavioural relevance. PC1 modulates the behavioural response (k). The mapping from reward magnitudes to action reselection (‘Percent stay’) is modulated by PC1 of s(r)
+
+t (colour). P \< 0.001 in paired, within-participant, Bonferroni-corrected, two-sided t-tests comparing stay frequency between PC1 ≤ 0 and PC1 \> 0, separately for each bin of reward magnitudes (x axis). PC1 also predicts response times (l). The relation between PC1 of s(r)
+
+t (fitted to human behaviour) and response times (RTs) (log-transformed; both mean-centred within blocks) is shown. The data are presented as mean values over all blocks (n = 4,134) for each PC1 bin, plus/minus 95% bootstrapped CIs. P \< 0.001 in mixed-effects linear regression (see the main text).
+
+explain human behaviour better than previous models. Indeed, several studies have shown that both recent53 and distant13,17 outcomes affect human learning in ways that cannot be explained by incremental updat- ing alone. It has also been suggested that humans keep track of addi- tional latent variables beyond Q-values—for example, remembering past prediction errors to adapt the future speed of learning54. (We implemented several versions of such variable-learning-rate models, which showed slightly better performance than Best RL but still fell far short of Vanilla RNN; see ‘Model architectures’ in Methods and
+
+Nature Human Behaviour | Volume 10 | May 2026 | 972–987 976
+
+Perseverance is only based on chosen action
+
+0.8 0.70.6 0.5 0.4 0.3
+
+0–4–8
+
+Reward processing takes into account all Q-valuesRepresent context and guides choice
+
+Memory-ANN Q-value calculation
+
+Qinit +1.5 s.d.
+
+–1.5 s.d. Qinit
+
+PC1 modulates PC1 update behavioural response Reward rt Centered PC1 of st(r) PC1 predicts RTs
+
+Represent context and guides choiceAction processing takes into account all
+
+c-valuesRepresents
+
+context
+
+Initialize network at sinit(r)
+
+0–1
+
+–2–3
+
+Q-values change over time
+
+Test with rtest
+
+Inject state s(r) after priming with rprime
+
+0.8 0.7 0.6 0.5 0.4 0.3
+
+20
+
+Q-values based on prior history
+
+Test with rtest= 82
+
+0.8 0.70.60.5 0.4 0.3
+
+Article https://doi.org/10.1038/s41562-025-02324-0
+
+Supplementary Results). To test whether the ability to retain richer representations of the past is crucial to explain learning in our task, we created our final hybrid model: Memory-ANN. Whereas Context-ANN receives the modulatory inputs Qt and ct to account for unchosen actions, Memory-ANN requires inputs that have potential access to the entire task history and could represent any summary statistic thereof, including high-dimensional and nonlinear ones. The latent states of an RNN have precisely these properties. We hence replaced the reward module’s hidden turns the units inputs, reward from QANN t and the into previous Qt(ata ), reward with time the RNN). activities step, which Likewise, of the we reward we denote replaced module’s
+
+s(r)
+
+t (this the action fications s(a) t and were module’s input ct with the previous activities of its hidden units, (turning the action ANN into an action RNN; Fig. 3c). These modi-
+
+sassumed (a) t ) from have the choice effect variables of explicitly (Qt and separating ct), which memory in previous variables models (s(r) t to be identical. Hence, Memory-ANN has the ability to express a wide range of memory-based learning models that are based on modulating reward (and action) processing on the basis of any learned features of the reward (and action) history. Note, however, that Memory-ANN is still more constrained than Vanilla RNN: the same update applies regardless of which action is being updated, the values of all unchosen actions decay strictly exponentially, reward processing does not have access to past or present actions and vice versa for action processing, and the outputs of reward and action processing are com- bined by simple addition. Memory-ANN improved the prediction of human behaviour substantially compared with Context-ANN (Context-ANN: 65.4%; 95% CI, (63.9%, 66.9%); Memory-ANN: 68.3%; 95% CI, (66.9%, 69.7%); paired t-test: t412 = 17.9, P \< 0.001, d = 0.95; Fig. 3d). Most importantly, Memory-ANN’s predictions were not significantly different from those of Vanilla RNN, the most general model we tested (Memory-ANN: 68.3%; 95% CI, (66.9%, 69.7%); Vanilla RNN: 68.3%; 95% CI, (66.9%, 69.7%); paired t-test: t412 = 0.32, P = 0.75, d = 0.14). This indi- cates that Memory-ANN extracted all systematic variance in the dataset that can be extracted by an RNN, suggesting that its architectural constraints (Fig. 3c) identified relevant biases in human behaviour. Indeed, there was no constraint whose removal improved model pre- diction (Supplementary Tables 4, 5, 7 and 8). Taken together, these results suggest that our participants performed the task by creating rich memories of reward and action history and used them to guide reward learning.
+
+What mechanisms underlie the learning processes in Memory-ANN? To answer this question, we inspected the functions
+
+learned by the neural network modules during model fitting. We first considered reward processing, evaluating the reward module by prob- ing Qt+1(ait across t) (see ‘Model its range analysis’ of inputs in (rMethods). t and s(r)
+
+t ) while recording its outputs We found that the reward module maps rewards rr onto new values Qt+1(at) in a monotonic, roughly sigmoidal way (Fig. 3f and Supplementary Fig. 8b). Notably, the reward module does not have access to previous values can that it Memory-ANN reconstruct them does using not take its hidden into account state input previous s(r)
+
+t Qt(at) (nor ), which means values Qt(at) when calculating new values Qt+1(at). This is in stark contrast to most RL models, which posit that values are learned incrementally. Instead, Memory-ANN simply maps large rewards onto large Q-values and small rewards onto small Q-values, without calculating reward prediction errors fixed over or incremental time (Supplementary updates. If Fig. Memory-ANN’s 12a), this simple latent mapping state mecha-
+
+s(r)
+
+t was
+
+nism would lead to somewhat rigid choice behaviour (Supplementary Fig. 12b). However, the flexibility of the latent state enables adaptive choices: a task (Supplementary s(r)
+
+t follows a stereotypical trajectory over the time course of Fig. 5f), which leads to a gradual change in the assignment of Q-values to rewards as the task progresses. To assess this, we initialized a fresh reward module and probed it with sequences of identical rewards, recording the resulting Q-values. Across the range of rewards, earlier trials lead to smaller Q-values than later ones, which can support a behavioural shift from more ‘exploratory’ to more ‘exploitative’ adapts choices (Fig. 3g and Supplementary the calculation of future Q-values by encoding Results). complex
+
+s(r)
+
+t also
+
+moments summarizing the history of rewards. We forced a fresh reward module into several extreme states by priming it with different reward sequences and tested its responses to a new reward. This reward elicited tremendously different Q-values depending on the injected state, an effect that took up to several dozen trials to disappear (Fig. 3h). We finally causally probed the role of state s(r) by injecting activity into different principal components (PCs), observing the corresponding short- and long-term perturbations in the calculation of Q-values (Sup- plementary Fig. 12e), and testing the effects of individual trigger rewards (Supplementary Fig. 12c) or reward sequences (Supplementary Fig. 12d) on state s(r). tion We of Q-values. next identified We conditioned the mechanisms the trained by which Memory-ANN s(r)
+
+t biases the calcula- on each participant’s action sequence to obtain, for each participant, the trial-by-trial sequence of latent variables Q, c, s(r) and s(a) (Supplemen- tary Fig. 5a–g), and applied principal component analysis to s(r). The
+
+Fig. 4 | Behavioural model validation. a–g, Comparison of human and simulated model behaviour. As shown in a, humans prefer increasing rewards. Humans (top left) repeated a choice (‘stayed’; y axis) more often when the rewards for this choice had increased (positive reward change; x axis) rather than decreased (negative reward change) on the previous two trials. Best-RL (Supplementary Fig. 11a) and RL-ANN (top right) showed the inverse pattern, whereas Context-ANN and Memory-ANN qualitatively reproduced the effect. The data are presented as mean values over blocks (n = 4,134) for each reward change bin, plus/minus 95% bootstrapped CIs. Panel b shows example action sequences. These are raw sequences of chosen actions (coloured circles) from humans and models performing the reward schedule shown in the top row of Supplementary Fig. 5a. Humans showed two common patterns: multiple repeats, extended periods of the same action (grey lines); and cyclic responses, sets of four sequential trials in which each action was sampled once (black lines). Panel c shows the effect of reward change on stay probability (see a). The data are presented as the regression coefficients from the model stay \~ reward × reward\_change (n = 862 participants), plus/minus standard errors of the coefficient estimates. As indicated in d, humans showed longer sequences of identical actions (average length, 6.9; 95% CI, (6.1, 7.6)) than expected by chance (chance length, 1.3; t861 = 14.6, P \< 0.001, d = 0.50) or seen in RL-ANN (average length, 4.5; 95% CI, (3.9, 5.1); t861 = 9.4, P \< 0.001, d = 0.32) and Context-ANN (average length, 5.5; 95% CI, (4.8, 6.1); t861 = 5.4, P \< 0.001, d = 0.19). Memory-ANN sequence length did not differ from that of humans (average length, 7.5; 95% CI, (6.8, 8.3); t861 = −1.8,
+
+P = 0.075, d = 0.06). As shown in e, human choices contained more cyclic sequences than synthetic data (human mean, 5.37; 95% CI, (5.01, 5.68); RL-ANN mean, 2.68; 95% CI, (2.59, 2.76), t861 = 10.9, P \< 0.001, d = 0.37; Context-ANN mean, 3.87; 95% CI, (3.77, 3.97), t861 = 7.77, P \< 0.001, d = 0.26). Memory-ANN produced the qualitatively closest number of cyclic sequences compared to humans (Memory-ANN mean, 4.62; 95% CI, (4.48, 4.76), t861 = 5.7, P \< 0.001, d = 0.19). As shown in f, we used the Lempel–Ziv–Welch algorithm to compress human and model action sequences (see ‘Behavioural analyses’ in Methods), quantifying systematic temporal structure. Human sequences were substantially more compressible than those of RL-ANN and Context-ANN (human mean, 1.73; 95% CI, (1.70, 1.76); RL-ANN mean, 1.45; 95% CI, (1.44, 1.45), t861 = 20.48, P \< 0.001, d = 0.70; Context-ANN mean, 1.60; 95% CI, (1.59, 1.61), t861 = 9.47, P \< 0.001, d = 0.322). Memory-ANN compressibility did not differ from that of humans (mean, 1.74; 95% CI, (1.72, 1.76), t861 = 0.69, P = 0.49, d = 0.02). In d–f, the data are presented as violin plots of the raw data distribution (n = 862 participants) and error bars indicating 95% CIs of the mean. P \< 0.001 in paired, two-sided t-tests. Panel g shows the integration timescale. Weights of trial-history regression models trained to predict future choices on the basis of past choices and rewards (see ‘Behavioural analyses’ in Methods) are plotted. Only Memory-ANN reproduced the patterns seen in human behaviour qualitatively. The data are presented as mean values over participants (n = 862) for each trial, plus/minus 95% bootstrapped CIs. (The corresponding plots for Simple RL, Best RL and Vanilla RNN for all these measures are shown in Supplementary Figs. 10 and 11).
+
+Nature Human Behaviour | Volume 10 | May 2026 | 972–987 977
+
+Article https://doi.org/10.1038/s41562-025-02324-0
+
+first component (PC1) modified the gain of the sigmoidal mapping from rewards to Q-values, effectively controlling the sensitivity of Q-values to reward magnitude (Fig. 3f). At high gains (blue), even small
+
+reward differences lead to large differences in Q-values, whereas at small gains (yellow), large reward differences are required to produce moderate differences (Fig. 3f). We therefore interpreted PC1 as tracking
+
+acP \> 0.05
+
+Chance
+
+g
+
+b
+
+806040
+
+100806040
+
+200210–1–2
+
+Humans prefer increasing rewards Example action sequences
+
+Human RL-ANN 100
+
+100
+
+1
+
+Increasing rewards
+
+Integration timescale
+
+Human:
+
+)
+
+) htgnel(t aepere lpitluMRL-ANN: –0.2 –0.1 0 0.1 0.2 –0.2 –0.1 0
+
+0.1 0.2 Context-
+
+Memory- ANN
+
+ANN
+
+Context-ANN:
+
+Memory-ANN:
+
+–0.2 –0.1 0 0.1 0.2 –0.2 –0.1 0
+
+0.1 0.2 Reward change (rt – rt–1)
+
+d Multiple repeats e Cyclic responses f
+
+Compressibility P \< 0.001
+
+P \> 0.05
+
+P \< 0.001
+
+) tnuoc(s elcyC) %(y tilibisserpmoCs namuHN
+
+NA-LRN
+
+NA-txetnoCN
+
+NA-yromeMs
+
+namuHN
+
+NA-LRN NA-txetnoCP \< 0.001
+
+P \< 0.001
+
+P \< 0.001 P \< 0.001 P \< 0.001
+
+N NA-yromeMs
+
+namuHN NA-LR303.5 103.0
+
+2.5 02.0
+
+1
+
+1.5
+
+0.3
+
+1.0
+
+N NA-txetnoCN NA-yromeM100 301031
+
+s namuHN NA-LR1000 N NA-txetnoCN NA-yromeMHumans RL-ANN
+
+Context-ANN Memory-ANN
+
+t neiciffeocn oissergeR5 10 15 20 5 10 15 20 5 10 15 20 5 10 15 20
+
+Reward (previous action was chosen) Reward (other action was chosen)
+
+Trial t – i
+
+Nature Human Behaviour | Volume 10 | May 2026 | 972–987 978
+
+Article https://doi.org/10.1038/s41562-025-02324-0
+
+the model’s current sensitivity to reward. Confirming this interpreta- tion, we found that large values of PC1 are associated with a high prob- ability of repeating a choice that led to a large reward and a small probability of repeating a choice that led to a small reward, while low values of PC1 are associated with a shallower relationship (Fig. 3k). The value of PC1 also correlated with participants’ response times, showing that a model-derived variable predicted behaviour in a dimension that was not included in the training data (mixed-effects regression, slope = −0.968.9, z = −13.3, P \< 0.001; Fig. 3l). These modulations occurred within participants, showing that fluctuations in reward sensitivity captured gradual changes in participants’ behavioural strategies, rather than individual differences between participants. (For more discussion of individual differences, see Supplementary Results.) Subsequent PCs affected the gain, range, bias and scale of the sigmoid (Supplementary Fig. 8). This mechanism enables Memory-ANN to flexibly adapt its behaviour to the current reward context. The cor- responding analysis for Memory-ANN’s action module is shown in the Supplementary Results (Supplementary Fig. 6a). new information How does s(r)
+
+t alters represent existing the representations. past history? We We first probed determined the reward how
+
+module latent integrated state across rewards s(r)
+
+t+1 its as range the in a output. monotonic, of inputs We (rfound near-linear t and that s(r)
+
+t ), this time collecting the PC1 (reward sensitivity) way, increasing slightly after big rewards and decreasing slightly after small ones (Fig. 3j). Several other state PCs showed similar monotonic, near-linear integration pat- terns, exhibiting steeper (for example, PC3 and PC4) or shallower slopes (for example, PC5) (Supplementary Fig. 8). This supports the notion that of integration s(r)
+
+t integrates new rewards using parallel update rules with a variety timescales (see also Supplementary Fig. 12). We next assessed the contents of the representations, using a decoding analysis. For each delay i, we used lagged regression to predict each state PC from the reward rt−i. We found that a subset of PCs showed large regression weights to just a handful of the most recent rewards, consistent with the idea that these PCs track individual recent outcomes while being insensi- tive to all earlier events (Fig. 3i, left). Some other PCs were sensitive to the entire history of rewards, potentially providing a baseline for how reward-rich the environment is overall, and whether this is changing for better or for worse (Fig. 3i, right). These results were consistent across multiple independent runs of Memory-ANN (Supplementary Fig. 2) and were recoverable when Memory-ANN was fit to synthetic data (Sup- plementary Fig. 1). These findings indicate that Memory-ANN flexibly modulates the mapping from rewards and Q-values, continuously adjusting to the time on task and the reward history.
+
+Finally, we tested whether Memory-ANN captured qualitative features of human behaviour that more restricted models were unable to capture55. We used each fitted model to simulate task behaviour ‘open-loop’ (without knowledge of human choices), and on the same tasks as humans (see ‘Model analysis’ in Methods). First, we sought a behavioural signature of the history-dependent processing of reward sequences. For this, we considered pairs of trials in which the same action was selected twice in a row, and we quantified the tendency to select that action again on the following trial as a function of the change in reward magnitudes (Fig. 4a). Best-RL (Supplementary Fig. 11a) and RL-ANN preferred actions for which the second-most-recent reward rt−1 was larger than the most recent reward rt (colour), on which we condi- tioned. This arises because these models make choices on the basis of running averages, and a larger reward in the past increases this average. Humans, in contrast, preferred actions whose second-most-recent rewards were lower56,57, as if anticipating that a recent increase in reward magnitudes will continue in the future. Only Context-ANN and Memory-ANN reproduced this effect qualitatively (Fig. 4a,c). This shows that memory representations need to contain information about unchosen actions or task history to capture how participants modify their responses. Second, we assessed behavioural patterns related to the history-dependent processing of actions. We focused
+
+on stereotyped action sequences, such as multiple repeats (AAAA) and cyclic responses (ABCD), in which the time horizon extends for multiple trials58. Memory-ANN was able to capture the strong human preference for such multi-trial patterns, while no other model was able to do so (Fig. 4b,d–f). The prevalence of these behavioural motifs implies that human participants committed to stretches of exploiting an action they believed was best (AAAA), interspersed with brief episodes of system- atically exploring whether a different action might be better (ABCD)59. We then characterized the overall structure within the observed choice patterns, computing the compressibility of all action sequences using a standard algorithm (see ‘Behavioural analyses’ in Methods) and com- paring humans to model predictions (Fig. 4f). Only Memory-ANN achieved a similarly high compression ratio as humans; Context-ANN showed intermediate compressibility, and RL-ANN showed the low- est compressibility. This reveals that the choices of humans and of Memory-ANN had structured relationships with other choices nearby, which was less the case in simpler models. Finally, we assessed the his- tory dependence of actions using lagged regression60. We found that participants showed shallow and non-monotonic history dependence that was reproduced by Memory-ANN but not by other models (Fig. 4g). Memory-ANN hence captures a range of patterns that are characteristic of human behaviour, including many that violate classic models. While some of these patterns have been described in the past14,56–59,61, they have not previously been captured in a single model. It is a challenge in computational cognitive science that the identification of new pat- terns often leads to the creation of idiosyncratic model features and a multiplication of model architectures, rather than consolidation in a single framework.
+
+Discussion In psychology and neuroscience, reward-learning behaviour is com- monly understood using computational models based on Q-learning, in which memory consists entirely of a set of incrementally updated decision variables. We have shown that this family of models cannot adequately account for reward-guided learning in humans, using a large dataset from a classic reward-learning task and a systematic model comparison approach that integrates deep neural networks into clas- sic cognitive architectures. We identify instead a model that contains both decision variables that drive choice directly and a set of latent memory variables that modulate the update of these decision vari- ables but do not directly drive choice. These memory variables track a complex history of rewards and choices over multiple timescales. We show that this model captures human behaviour in detail, both reproducing a number of intricate features of the dataset and matching generic neural networks in quantitative quality of fit. At the same time, it is interpretable as an algorithmic model of human reward learning. Recent work implicitly recognizes the complexity of how humans use memory in reward-learning tasks, highlighting that learning pro- cesses often operate at multiple different timescales. This has been framed as a multiplicity of memory mechanisms13,14,53,62–65 and is consist- ent with evidence that the brain represents task-history information at a diversity of timescales26,66–68. Memory beyond decision variables is also present in several handcrafted models of human reward learn- ing. For example, Bayesian inference models37,69,70 track a measure of the model’s uncertainty that creates non-Markovian dependencies between choice variables, variable-learning-rate models71,72 track a measure of environmental volatility, and actor-critic models73,74 and reference-point models75 track an action-independent measure of expected value. However, all these models are based on handcrafted equations, and the ones we have tested here fall short compared with more flexible ANN-based models. Memory-ANN reveals that learning at different timescales is supported by a flexible recurrent memory system that is one step removed from behavioural choice, and it shows that the way in which observed outcomes are mapped to future choices is a complex, yet interpretable, function of task history.
+
+Nature Human Behaviour | Volume 10 | May 2026 | 972–987 979
+
+Article https://doi.org/10.1038/s41562-025-02324-0
+
+The cognitive architecture of Memory-ANN is modular in two ways. First, reward-based learning and action-based learning are divided into two parallel modules. This idea has origins in early work on the psychology of learning—for example, in the distinction between Thorndike’s76 law of effect (actions that lead to good outcomes should be repeated) and law of exercise (actions that have been taken in the past should be repeated). A separation of reward-based from action-based learning is present in a number of computational models of behaviour5,43,70,77, and evidence from neuroscience suggests that the brain may incorporate such modularity78–81. These models typically imagine that action-based learning takes the form of perseveration, in which actions that have been taken in the past are more likely to be taken in the future43, and that reward-based learning takes the form of incremental RL1,2. Memory-ANN retains the basic separation between reward-based and action-based learning but allows for each module to implement substantially more sophisticated mechanisms. This uses Memory-ANN’s second kind of modularity: both reward-based and action-based learning are divided into a ‘deep’ memory component, which learns rich hidden representations of the past but does not drive choice, and a ‘shallow’ choice component that guides action selec- tion. This architecture shares features with models of more complex reward-learning tasks, many of which draw on hierarchical cognitive architectures6,82–85. Evidence from neuroscience also supports the idea of a gradient of abstraction in the neural architecture82,86,87. Our results suggest that humans may use hierarchically structured algorithms even in superficially simple reward-learning tasks.
+
+One limitation of the current work is a lack of focus on individual differences. We fit a single model to the whole population, which allows us to infer the likely mechanisms that characterize the behaviour of all participants but does not provide insight into individual differences between them. Others have modelled individual differences within RNN-based frameworks31,88, and similar approaches could be used to extend the current work. However, RNN-like models implicitly capture individual differences even when they are not modelled explicitly89, which means that in principle, some of our results concerning differen- tial performance between Memory-ANN and Best RL might reflect the network better capturing aspects of between-participant differences, rather than (as we interpret it) improved modelling of the progression of learning within each participant. While additional analyses ruled out the possibility that this difference between the models accounts for our key results (for example, that Memory-ANN outperforms Best RL and that aspects of its architecture and latent state dynamics capture within-participant learning), it remains possible that some of our con- clusions reflect a contribution of both between- and within-participant effects. Additional work, both experimental and analytical, will be required to fully tease apart these possibilities. Overall, this direction offers intriguing new prospects for studying individual differences as well as the dynamic fluctuations that occur within individuals over time (Supplementary Information).
+
+Science faces a theory discovery problem: it is fundamentally more difficult to create new models than to evaluate existing ones90,91. In psy- chology and neuroscience, new laboratory technologies have enabled scientists to collect larger datasets than ever before, a development that might provide new solutions to this problem5,32,92–95. We used a combination of hypothesis-driven architecture search and data-driven function approximation36 to successfully identify a predictive yet inter- pretable model of human reward-based learning. With the rich tradition of classic cognitive modelling providing the theoretical framework to guide our model search, machine learning tools contributed the ability to approximate any functional form on the basis of sufficient data. This approach allowed us to compare the most relevant model classes in the most general case. The same approach could be applied to a wide range of open questions, both within the cognitive sciences and beyond. There is a ubiquitous need for models that can capture the complexity in rich datasets and also provide interpretable explanations.
+
+Methods Dataset Participants. We recruited 880 participants on Prolific (app.prolific.co). No statistical methods were used to predetermine the sample size, but our sample size is orders of magnitude larger than those of most traditional lab-based human experimental studies and similar to those reported in previous publications focused on large-scale experiments36,39,96,97. In agreement with the ethical guidelines of the Google DeepMind Human Behavioral Research Ethics Committee, all participants were local to the UK and fluent in English. The participants provided informed consent and were paid at a rate of 12 pounds per hour; there was no performance-based bonus payment. The study was not preregistered.
+
+Experimental procedure. The participants completed one training block and several testing blocks of our bandit paradigm (see below), each using different visual stimuli. After each block, the participants were truthfully informed how many points they had won, how many points they could have won (the sum of points from each trial’s best choice option) and how many points they would have won by choosing randomly (the average points of all choice options). At the end of the study, the participants were asked for their highest level of education and offered the opportunity to voice thoughts and concerns. The exper- imental task was written using jsPsych98 and served on cognition.run.
+
+Exclusion criteria. Eighty participants were asked to complete one training and three testing blocks of 150 trials each. The remaining 800 participants were asked to complete one training block of 50 trials and five testing blocks of 150 trials, for a total of 4,240 task blocks. Four participants in the first (5%) and 14 participants (1.75%) in the second sample failed to finish the experiment and were excluded, leading to an initial sample of 880 − 18 = 862 participants who collectively finished (80 − 4) × 3 + (800 − 14) × 5 = 4,158 task blocks. We further excluded blocks in which participants missed more than 15 of the 150 trials (10%), 24 blocks in total (0.58%). Hence, our final dataset comprised 4,134 blocks (with 617,871 valid trials) from 862 participants. Of these 862 participants, 858 (99.5%) provided valid demographic information: 341 (39.7%) were female, and 517 (60.3%) were male; the average age was 39.7 years, with a range of 18–88 and a standard deviation of 13.1 years.
+
+Task The participants performed a classic four-armed drifting bandit task37,99. On each trial t of this task, participants chose one of four bandits and observed the corresponding reward rt. At the first trial t = 1, each arm was initialized independently and uniformly at random between 1 and 100 points. The mean reward μt,i at each trial t and arm i was determined by a Gaussian random walk that evolved according to standard deviation σd and centrality λ:
+
+μt,i ∼ N(λ × μt−1,i + (1 − λ) × 50,σd)
+
+The actual reward rt,i observed by participants was sampled from a Gaussian distribution with mean μt,i and standard deviation σo:
+
+rt,i ∼ N(μt,i,σo)
+
+Following prior work37,99, we used λ = 0.9836, σd = 2.8 and σo = 4. Unlike prior work37,99, we created a new reward schedule for each partici- pant for each task to increase the behavioural variation in the dataset and facilitate the fitting of neural network models.
+
+On each trial, the participants saw four visual stimuli on the screen, one representing each bandit (Fig. 1d). Each bandit was presented in the same location on each trial, but new stimuli were used on each task iteration, and their positions were randomly shuffled between partici- pants. Participants had four seconds to select a bandit using the keys ‘D’, ‘F’, ‘J’ and ‘K’. When participants failed to make a response within this
+
+Nature Human Behaviour | Volume 10 | May 2026 | 972–987 980
+
+Article https://doi.org/10.1038/s41562-025-02324-0
+
+time window, they were encouraged to respond faster on the next trial and reminded of the response keys. The participants were also to

@@ -1,0 +1,2273 @@
+Coding-agents can replicate scientific machine learning papers 
+
+|  |
+| :-: |
+| [**Page 1**]() |
+
+Coding-agents can replicate scientific machine learning papers
+
+Atharva Hansa,∗ and Ilias Bilionisa
+
+aSchool of Mechanical Engineering, Purdue University, West Lafayette, IN, 47907, USA
+
+Abstract
+
+Scientific machine learning papers typically make computational claims, e.g., that the relative mean square error is less than 5%
+
+or that the 95% predictive credible interval covers the test data. A coding agent can be prompted to replicate those claims from
+
+paper materials alone, but the prompt does not by itself reliably preserve progress or check whether generated evidence supports the
+
+paper’s claims. We introduce Paper-replication, a workflow that makes each selected paper claim a target with recorded evidence,
+
+and implement it as a coding-agent skill. The workflow makes the agent record those targets, reconstruct the paper’s method, run
+
+computational experiments, link generated outputs to provenance and comparisons with the paper’s claims, record where matched
+
+evidence appears in the replication report, and pass validation checks before completion. We evaluate Paper-replication on twelve
+
+independent runs across four scientific machine learning papers. All twelve workspaces pass the completion gate, and all 158
+
+recorded targets are matched with report coverage. Even in this completed workspace state, repeated runs differ in how papers are
+
+divided into targets, in numerical fidelity to the source papers, in elapsed replication time, in the number of intermediate executions
+
+replaced before final evidence is accepted, and in the rules used to accept evidence. Paper-replication makes completion depend on
+
+workspace evidence and validation checks rather than on the agent’s final message.
+
+Keywords: Coding agents, Harness engineering, Paper replication, Scientific reproducibility, Scientific machine learning
+
+1\. Introduction
+
+Computational claims of scientific machine learning papers
+
+depend on differentiable solvers and neural differential equa-
+
+tions [(Chen et al.](#14), 2018; Rackauckas et al., 2020; Hans et al.,
+
+[2023a,](#15) 2024), physics-informed neural networks and physics-
+
+informed learning objectives ([Raissi et al](#16)., 2019; Karniadakis
+
+[et al](#15)., 2021), sparse discovery of dynamical systems and partial
+
+differential equations [(Brunton et al.](#14), 2016; Rudy et al., 2017),
+
+and Bayesian or sampling-based inverse-problem methods ([Stu-](#16)
+
+[art](#16), 2010; Hans et al., 2020, 2023b; Alberts and Bilionis, 2023).
+
+A reader can inspect the equations and algorithms in the text,
+
+but the reported results also depend on code, data, numerical
+
+solvers, preprocessing, stochastic training, and implementation
+
+choices [(Hans,](#15) 2024; Hans et al., 2025). Reproducible-research
+
+practice therefore treats code, data, computational environments,
+
+and the record of how each result was produced as part of the
+
+scientific record [(Peng,](#16) 2011; Stodden et al., 2016). It also em-
+
+phasizes versioned project organization ([Wilson et al.,](#16) 2017), ex-
+
+plicit tracking of random seeds and intermediate results [(Sandve](#16)
+
+[et al](#16)., 2013), executable notebooks (Kluyver et al., 2016), and
+
+workflow provenance ([Davidson and Freire,](#14) 2008; Belhajjame
+
+[et al](#14)., 2013; Goecks et al., 2010).
+
+Terminology around reproducibility and replicability varies
+
+across fields [(Barba](#14), 2018). We define paper replication as the
+
+task of reconstructing a paper’s method from paper materials, re-
+
+generating the computational results that support its claims, and
+
+∗Corresponding author.
+
+Email address: hans1@purdue.edu (Atharva Hans)
+
+recording evidence for each claim. Replicating a paper from pa-
+
+per materials alone is a narrower and harder task than rerunning a
+
+released package. The available materials may include the LATEX
+
+source, figures, tables, appendices, and data references, but they
+
+need not include sampled training sets, seeds, optimizer states,
+
+sampler states, preprocessing conventions, or plotting rules. In
+
+machine learning, reproducibility taxonomies treat a paper-only
+
+record as weaker evidence than a runnable package with code,
+
+data, dependencies, and environment information ([Tatman et al.,](#16)
+
+[2018)](#16). Surveys of artificial-intelligence papers also find that em-
+
+pirical details are often underreported[ (Gundersen and Kjensmo,](#15)
+
+[2018)](#15). Stochastic training makes these omissions matter because
+
+data sampling, initialization, implementation choices, and hy-
+
+perparameters can change the result even when the algorithmic
+
+description stays fixed ([Henderson et al.,](#15) 2018; Bouthillier et al.,
+
+[2021;](#14) Pineau et al., 2021).
+
+Research code generation methods address one part of paper
+
+replication: they convert paper descriptions into code or imple-
+
+mentation tasks. PaperCoder is a multi-agent framework that
+
+turns machine learning papers into code repositories through
+
+planning, implementation analysis, and modular code genera-
+
+tion [(Seo et al](#16)., 2025). ResearchCodeBench converts recent
+
+machine learning papers into executable implementation chal-
+
+lenges [(Hua et al](#15)., 2026), and ResearchCodeAgent uses a multi-
+
+agent system with planning, memory, and actions to codify
+
+methods from the machine learning literature ([Gandhi et al.,](#15)
+
+[2025)](#15). Other benchmarks evaluate algorithmic reproduction
+
+from natural-language-processing papers ([Xiang et al.,](#16) 2025),
+
+reconstruction of masked language-modeling research code [(Yan](#16)
+
+[et al](#16)., 2025), and progressive code-masking experiments (Kim
+
+arXiv:2607.02134v1 \[cs.AI\] 2 Jul 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 2**]() |
+
+[et al](#15)., 2025). These studies show that agents can help read pa-
+
+pers, recover implementation details, and write or repair research
+
+code.
+
+Paper-reproduction benchmarks shift the focus from code
+
+generation to reproducing reported results. PaperBench asks
+
+agents to replicate papers from the International Conference on
+
+Machine Learning by reading the paper, building a codebase,
+
+and executing experiments, and grades attempts with author-
+
+informed rubrics [(Starace et al](#16)., 2025). CORE-Bench evaluates
+
+computational reproducibility when code and data packages
+
+are available [(Siegel et al](#16)., 2024). Social-science benchmarks
+
+and systems ask agents to assess reproducibility from a paper
+
+and reproduction package (Hu[ et al.,](#15) 2025), replicate claims
+
+across stages that include data retrieval, experiment design, ex-
+
+ecution, and interpretation [(Nguyen et al.](#15), 2026), reproduce
+
+findings with original data and code ([Alizadeh et al.,](#14) 2026), re-
+
+pair controlled reproducibility failures ([Shah et al.](#16), 2026), or
+
+reimplement analyses from a paper’s method description and
+
+original data without the original code ([Kohler et al.](#15), 2026). Re-
+
+cent benchmarks also extend the question to astrophysics [(Ye](#16)
+
+[et al](#16)., 2025), materials science (Huang et al., 2026), and collider
+
+physics ([Faroughy et al.](#15), 2026). These studies show that agents
+
+can run experiments and assess reproduced outputs. They also
+
+show that paper replication is not only a question of whether
+
+an agent can produce code or run an experiment. In many of
+
+these settings, a benchmark harness, a masked codebase, a re-
+
+production package, an original dataset, or an author-informed
+
+rubric defines what the agent must produce and how the result is
+
+judged. When replication starts from paper materials alone, the
+
+workflow must define this evidentiary standard. The workflow
+
+must first identify the paper claims selected for replication as
+
+targets. Each accepted target must then link its claim to the
+
+agent’s reconstruction of the paper’s method, a successful run,
+
+provenance, comparison evidence, and report coverage. Without
+
+those links, generated output can look plausible even if it comes
+
+from a copied paper-provided asset, a substitute method, or an
+
+unrecorded run. Existing work does not define paper replication
+
+as a target-level evidence contract in a persistent workspace. It
+
+also leaves open how to make completion a workspace state
+
+rather than an agent final-message claim.
+
+Coding agents provide the capabilities needed to carry out
+
+this workflow. Codex [(OpenAI,](#15) 2026b) and Claude Code (An-
+
+[thropic](#14), 2026) can inspect files, edit code, run commands, and
+
+iterate on failures. Coding-agent benchmarks test related capa-
+
+bilities by requiring agents to inspect repositories, edit code, run
+
+tests, and resolve issues [(Jimenez et al.](#15), 2024; Yang et al., 2024).
+
+For paper replication, these capabilities map to inspecting the
+
+paper source, writing implementations, executing experiments,
+
+comparing outputs, and preparing a replication report. These
+
+actions are necessary, but they do not by themselves define what
+
+counts as acceptable evidence for a replicated claim.
+
+A prompt can tell the agent what standard to follow, but a
+
+prompt alone does not make that standard durable. The agent
+
+must remember which targets remain, preserve assumptions
+
+across interruptions, distinguish generated outputs from paper-
+
+provided assets, and decide whether a comparison supports a
+
+claim. Agent benchmarks report failures in long-horizon rea-
+
+soning, decision making, and instruction following ([Liu et al.,](#15)
+
+[2024).](#15) Studies of intrinsic self-correction also show that a lan-
+
+guage model cannot reliably judge and repair its own reasoning
+
+without external feedback ([Huang et al.](#15), 2024). A prompt that
+
+asks the agent to finish the replication can then lead it to report
+
+completion before the workspace contains the required target-
+
+level evidence [(Manheim and Garrabrant](#15), 2018). For paper
+
+replication, the agent’s final message is not enough evidence.
+
+The workflow must store state and check evidence outside that
+
+message.
+
+Paper replication therefore requires a workflow that lever-
+
+ages the coding agent’s ability to work with files and run
+
+commands, while defining progress and completion through
+
+workspace records and validation checks. A coding-agent
+
+skill provides one way to give this workflow to an existing
+
+agent ([Anthropic,](#14) 2025; OpenAI, 2026a). The skill is a reusable
+
+set of task instructions and workspace utilities for a class of
+
+tasks. For paper replication, the skill can specify how the agent
+
+initializes or reopens the replication workspace, which records
+
+it writes, which checks it runs, and when a target can be marked
+
+as matched.
+
+We introduce Paper-replication as this workflow and imple-
+
+ment it as a coding-agent skill. Paper-replication uses targets
+
+as the unit for recording evidence and checking completion. It
+
+addresses the prompt-only failure modes above through har-
+
+ness engineering [(Lopopolo,](#15) 2026): it changes the environment
+
+in which the agent works by adding a persistent replication
+
+workspace and validation checks rather than relying on prompt
+
+instructions alone. Starting from the paper materials, the agent
+
+records the target set in a reproduction matrix, keeps one active
+
+target in a task ledger, records its reconstruction of the paper’s
+
+method in specification files, records experiment executions
+
+and provenance, keeps generated outputs separate from paper-
+
+provided assets, records comparison evidence between each
+
+generated output and the corresponding paper claim, and records
+
+coverage of the matched evidence in the final replication report
+
+before completion. The replication workspace is the record of
+
+the run. Validation checks determine whether recorded evidence
+
+qualifies as reproduced. Because paper claims can be numeric,
+
+distributional, structural, or visual, the accepted evidence is
+
+claim-specific rather than exact numerical equality. Completion
+
+is therefore a workspace state relative to the recorded target set
+
+and the validation checks applied to it.
+
+We evaluate Paper-replication on twelve independent runs
+
+across four scientific machine learning papers: physics-informed
+
+information field theory (PIFT) ([Alberts and Bilionis,](#14) 2023),
+
+data-driven solutions with physics-informed neural networks
+
+(PINN-I) ([Raissi et al.](#16), 2017a), data-driven discovery with
+
+physics-informed neural networks (PINN-II) ([Raissi et al.,](#16)
+
+[2017b)](#16), and sparse identification of nonlinear dynamical sys-
+
+tems (SINDy) ([Brunton et al.,](#14) 2016). Across these runs, the
+
+workspaces record learned fields, solution errors, discovered
+
+coefficients, posterior structure, sparse supports, trajectories,
+
+and figures shaped by stochastic sampling, neural-network
+
+optimization, or simulated dynamics. All twelve runs reach a
+
+completed workspace state under the completion gate. Across
+
+repeated runs, the stored records also show variation in tar-
+
+2
+
+-----
+
+|  |
+| :-: |
+| [**Page 3**]() |
+
+get decomposition, paper-anchored numeric fidelity, elapsed
+
+replication time, correction work, and recorded acceptance-rule
+
+type.
+
+Our contributions are threefold. First, we define paper repli-
+
+cation as a target-level evidence task for a coding agent. Each
+
+target must link a generated output to the paper claim, the agent’s
+
+reconstruction of the paper’s method, a successful run, prove-
+
+nance, comparison evidence, and report coverage before it can
+
+be marked as matched. Second, we implement this task as Paper-
+
+replication, a coding-agent skill with a persistent replication
+
+workspace and validation checks. The workspace records the
+
+target set, the agent’s reconstruction of the paper’s method and
+
+assumptions, run records, provenance records, comparison evi-
+
+dence, report coverage, and completion state, while the checks
+
+determine whether the recorded evidence can count as repro-
+
+duced. Third, we define and apply a repeated-run case-study
+
+analysis for evaluating Paper-replication. The analysis mea-
+
+sures paper-level completion, target coverage, paper-anchored
+
+numeric fidelity, elapsed replication time, correction work, and
+
+judgment variation across independent agent runs.
+
+2\. Methods
+
+We use the term paper to refer to scientific papers whose
+
+reproducible claims are computational: they focus on math-
+
+ematical techniques, their implementation, and the results of
+
+computations. This scope includes papers that use previously
+
+collected experimental data as inputs to those computations. It
+
+excludes reproducing the physical process by which such data
+
+were collected.
+
+We define paper replication as the task of reconstructing
+
+a paper’s method from its text, regenerating the results that
+
+support its claims, and recording evidence for each claim. We
+
+call the workflow that enforces this setting Paper-replication and
+
+implement it as a coding-agent skill. The agent receives a prompt
+
+that instructs it to use Paper-replication and specifies the paper’s
+
+LATEX source, datasets provided by or referenced in the paper,
+
+the compute environment, and policy choices such as whether
+
+author code is allowed. In our setting, author code is not allowed.
+
+The agent must therefore infer the method, implement it, run
+
+computational experiments, and prepare a report comparing its
+
+results with the paper’s claims.
+
+A prompt can state the Paper-replication goal, but a prompt
+
+alone does not give the agent a way to track progress or verify
+
+its own work. With direct prompting, the agent often stops after
+
+reproducing only part of the paper, loses track of which claim
+
+to address next, or treats its own description of progress as evi-
+
+dence. The agent can also count copied figures from the paper’s
+
+LATEX source, figures produced to match the paper without im-
+
+plementing the method, or results from substitute methods as
+
+successful replications. Paper-replication addresses these failure
+
+modes through harness engineering: it changes the environment
+
+in which the agent works by adding persistent workspace records
+
+and validation checks rather than relying on prompt instructions
+
+alone ([Lopopolo, ](#15)2026). First, it stores the agent’s state in files
+
+under the replication workspace. Second, it runs validation
+
+checks outside the agent before the agent can mark a claim as
+
+reproduced. These files and checks record which claim the agent
+
+is working on, what evidence it has produced, and which checks
+
+must pass before the claim counts as reproduced. To enable those
+
+checks, Paper-replication decomposes the paper-level replication
+
+task into explicit targets and evidence records for each target.
+
+Figure [1](#4) summarizes the Paper-replication workflow.
+
+2.1. Replication targets and evidence
+
+Paper-replication makes the agent define the results and
+
+claims it must reproduce. Let P denote the paper materials avail-
+
+able to the agent: the LATEX source tree, referenced figure and
+
+table assets, bibliography, appendices, and any datasets provided
+
+by or referenced in the paper. The agent inspects P and records
+
+each computational claim that requires reproduction as an el-
+
+ement of a finite target set T = {tj}J
+
+j=1
+
+. A target is a result or
+
+claim selected for reproduction; it may correspond to a figure,
+
+table, reported scalar, learned field, empirical or posterior distri-
+
+bution, trajectory, discovered equation, or structural statement.
+
+For each target, the agent records where the claim appears in the
+
+paper, which parts of the LATEX source or paper assets support
+
+its reconstruction, which data and method component it must
+
+use, what output the run must produce, how that output will be
+
+judged, what status the target currently has, and where the result
+
+must appear in the replication report. These fields make each
+
+claim traceable from the paper source to the required method
+
+component, generated output, acceptance rule, and final report.
+
+This traceability prevents an output from satisfying a target un-
+
+less the agent links it to the paper’s method and to the required
+
+comparison. The reproduction matrix stores one record for each
+
+target, so progress and evidence are defined at the target level.
+
+After the agent records what a target requires, Paper-
+
+replication ties the candidate result to the records needed to
+
+evaluate it. For each target tj, let
+
+byj = Fj
+
+Dj; θj,ωj
+
+(1)
+
+denote the candidate result produced by the agent’s reconstructed
+
+implementation Fj from input data Dj, recorded configuration
+
+θj, and random seed or stochastic state ωj. Let y
+
+⋆
+
+j denote the
+
+corresponding quantity or property reported in the paper. It may
+
+be a value in the text, a table entry, a distributional property, or a
+
+structural feature of a figure rather than a stored numeric array.
+
+For each target, Paper-replication requires the agent to record an
+
+evidence bundle
+
+Ej = &#16;byj, Rj, Pj,Cj,Gj,
+
+(2)
+
+where Rj is the execution record for the run that produces the
+
+output, Pj links that output to the code, configuration, seed,
+
+and paper passages or equations used to justify the implementa-
+
+tion, Cj comparesbyj with y
+
+⋆
+
+j under the target’s acceptance rule,
+
+meaning the criterion the agent assigns to that target based on
+
+the claim’s scientific content, and Gj records inclusion of the
+
+result in the replication report. Paper-replication allows a target
+
+to be marked as matched only when every required part of its
+
+evidence bundle exists and the external checks accept it. An
+
+output artifact alone, such as a generated figure or table, does
+
+not count as evidence.
+
+3
+
+-----
+
+|  |
+| :-: |
+| [**Page 4**]() |
+
+Agent work
+
+Workspace records
+
+Validation checks
+
+inspect paper
+
+materials
+
+record target
+
+list
+
+record method
+
+reconstruction
+
+run
+
+experiments
+
+compare and
+
+report
+
+source inventory
+
+\+ hashes
+
+reproduction matrix
+
+\+ task ledger
+
+specification
+
+files
+
+run record
+
+\+ provenance record
+
+\+ comparison
+
+report coverage
+
+\+ replication report
+
+paper-asset
+
+checks
+
+active-target
+
+check
+
+specification
+
+check
+
+provenance
+
+\+ comparison checks
+
+report-coverage check
+
+\+ completion gate
+
+Figure 1: The Paper-replication workflow centers on two mechanisms: a persistent workspace that records the agent’s state, and validation checks that decide whether
+
+recorded evidence can count as reproduced. The top row shows the work performed by the agent, the middle row shows the workspace records produced by that work,
+
+and the bottom row shows the validation checks applied to those records. The agent first inspects the paper materials and records the paper source, assets, and hashes.
+
+It then records the target list in the reproduction matrix, records its reconstruction of the paper’s method in specification files, records experiment executions and
+
+provenance, and compares generated outputs with the paper’s claims. The workspace records preserve these steps as the source inventory, reproduction matrix, task
+
+ledger, specification files, run record, provenance record, comparison evidence, report coverage, and replication report. The checks use the workspace records to test
+
+each step before completion: paper assets must remain separate from generated outputs, the task ledger and reproduction matrix must agree on the active target,
+
+specification files must record the agent’s reconstruction of the paper’s method, matched targets must have run-generated provenance and comparison evidence under
+
+the recorded acceptance rule, and matched evidence must appear in the report. The completion gate passes only when every recorded target has accepted evidence, no
+
+target remains active, and the final replication report PDF exists.
+
+The target and evidence formulation depend on the paper
+
+materials and the computing environment available to the agent.
+
+It requires the agent to be able to identify and inspect P, and
+
+it requires each dataset to be included with the paper materials
+
+or described well enough for the agent to generate it when the
+
+experiment uses synthetic data. It also requires a computing
+
+environment capable of running the experiments needed to re-
+
+produce the paper’s claims. The formulation does not assume
+
+that the paper states every implementation detail, that missing
+
+choices such as seeds, tolerances, initialization, or plotting con-
+
+ventions are uniquely determined, or that exact numerical or
+
+visual agreement is attainable. When the paper omits details on
+
+preprocessing, architecture, optimization, sampling, or plotting,
+
+Paper-replication prompts the agent to treat them as hypotheses
+
+to test and record. A target can be matched only when those
+
+hypotheses lead to a runnable implementation and a recorded
+
+comparison betweenbyj and y
+
+⋆
+
+j that satisfies the target’s accep-
+
+tance rule. When required data, compute resources, or method
+
+details remain unavailable, Paper-replication does not allow the
+
+target to be marked as matched. The target remains unmatched,
+
+and the agent records the reason in the workspace files and
+
+replication report.
+
+2.2. Persistent workspace
+
+Paper-replication implements this target and evidence con-
+
+tract through a workspace for each paper. A manifest file records
+
+the paper source, a hash used to detect source changes, run rules
+
+such as author-code access, the available compute environment,
+
+and how to rerun the workflow. These entries let the agent re-
+
+sume after an interruption without changing the paper source or
+
+run conditions.
+
+Before the target list is finalized, Paper-replication makes
+
+the agent inspect P and build a source-based record of it. The
+
+agent starts from the main LATEX file and records an inventory
+
+of included LATEX files, bibliography entries, appendices, figure
+
+assets, and data references. The agent also records relevant
+
+unreferenced LATEX files whose names suggest supplementary
+
+methods or appendices, because they can contain details outside
+
+the main LATEX file. This inventory helps the agent use the paper
+
+source as a guide for creating the target list, reconstructing the
+
+method, and later checking whether any paper claim was omitted.
+
+When the environment permits, the agent compiles the paper into
+
+a PDF and converts the pages into images. The rendered pages
+
+help the agent find claims that are visible in the paper but not easy
+
+to identify from the source files alone, including figure trends,
+
+subfigure labels, table entries, equations, and results embedded
+
+in image files. The agent uses these pages to check that such
+
+claims appear in the target list and to assign comparison criteria
+
+for them. During source inspection, Paper-replication records
+
+hashes of the paper source, referenced assets, and rendered pages.
+
+These hashes allow later checks to detect whether generated
+
+output was copied from paper-provided material. Hash checks
+
+do not rule out every transformed copy or adversarial reuse of
+
+paper-provided material by the agent. In these runs, we did not
+
+observe such reuse.
+
+After source inspection, the agent writes the target list to
+
+the reproduction matrix, which stores each target and its current
+
+status. The agent updates this matrix as each target’s status
+
+changes. A task ledger records the one target currently being
+
+worked on, open questions, checks that must pass, and completed
+
+work. Together, the matrix and ledger keep the agent focused on
+
+one result at a time and make unfinished work visible.
+
+Once the target list is in the reproduction matrix, Paper-
+
+replication requires a recorded reconstruction of the paper’s
+
+method before any target can be marked as matched. Specifica-
+
+tion files record the target definitions, the agent’s restatement of
+
+the paper’s equations and algorithms, the implementation plan,
+
+assumptions and unresolved details, and notes about the paper’s
+
+figures and tables. These files make the agent’s reconstruction
+
+choices inspectable instead of leaving them in the conversation.
+
+The equation and algorithm notes tie the implementation to the
+
+paper’s stated method, helping the agent distinguish a paper-
+
+faithful implementation from a substitute method. The figure
+
+and table notes help the agent identify claims that appear only in
+
+4
+
+-----
+
+|  |
+| :-: |
+| [**Page 5**]() |
+
+visual or tabular form, such as trends, regimes, error patterns, or
+
+structural features. When details are missing, the agent records
+
+each missing detail as a question, the assumption it used to
+
+answer that question, the check or experiment used to test the
+
+assumption, and the evidence that supports the final choice. This
+
+turns guesses into recorded hypotheses.
+
+With the target list and method specification in place, the
+
+agent then works through the target set, one target at a time.
+
+A target starts as planned, becomes active while the agent
+
+implements and tests it, and becomes matched, recorded as
+
+MATCHED, only after its evidence bundle passes the external
+
+checks. Targets that the workflow does not reproduce remain
+
+unmatched and do not count as matches. The task ledger and
+
+reproduction matrix must name the same active target, and a
+
+validation check rejects multiple active targets or the absence of
+
+an active target while unresolved work remains. This rule limits
+
+interference among partial experiments and provides the agent
+
+with a stopping condition: it must close the evidence contract
+
+for the current target before moving to the next.
+
+To connect each result to the computation that produced
+
+it, every substantive execution passes through a run recorder.
+
+The recorder stores the command used for the run, its working
+
+directory, start and finish times, whether the run succeeded, mes-
+
+sages and errors produced during the run, the outputs it was
+
+expected to produce, and hashes of the produced files. Failed
+
+runs and runs later replaced by corrected outputs remain in the
+
+record rather than being overwritten, so the workspace preserves
+
+the trial-and-correction path. When a run produces a candidate
+
+output, the agent registers that output against the target and the
+
+successful run identifier. The provenance record links the out-
+
+put to the implementation file, configuration file, seed, method
+
+components, and paper passages or equations used to justify the
+
+implementation. It also stores hashes of the output, implemen-
+
+tation file, and configuration file so later edits cannot silently
+
+change the output or implementation associated with the claim.
+
+Code and configuration are stored separately from generated
+
+outputs, and paper-provided assets are stored separately from
+
+both. This separation helps prevent the agent from treating a
+
+paper-provided figure or table as a generated result. Together,
+
+the run record and provenance record allow a later validator to
+
+determine which executable choices produced the claimed result
+
+and whether those choices changed after the claim was recorded.
+
+Because these records are stored in the workspace, a status
+
+check can recover the active target, unmatched targets, validation
+
+errors, and next action. Paper-replication therefore treats the
+
+workspace, not the chat transcript, as the record of the run.
+
+2.3. Validation and completion
+
+The workspace records progress, but recorded progress alone
+
+does not show that an output supports a paper claim. Paper-
+
+replication therefore requires a validation check before the agent
+
+can mark a target as matched. The check uses the target’s ac-
+
+ceptance rule, which the agent infers from the claim’s scientific
+
+content. The agent records the acceptance rule in the target
+
+record before judging the output, using any tolerance or accu-
+
+racy class stated in the paper. When the paper does not state
+
+such a criterion, the agent records the convention it uses and
+
+the reason for using it. This prevents the agent from treating
+
+a plausible-looking figure, table, or scalar as evidence unless
+
+the recorded comparison supports the target, and it prevents
+
+the agent from changing the judgment rule after seeing a failed
+
+comparison. The form of the acceptance rule depends on the
+
+kind of target.
+
+For a numeric target, the acceptance rule records the dis-
+
+crepancy metric, its units, and the tolerance used to judge the
+
+result. The candidate result is accepted only when the measured
+
+discrepancy betweenbyj and y
+
+⋆
+
+j is no larger than that tolerance.
+
+Numeric targets are claims that can be verified with numbers,
+
+such as a reported error, an estimated coefficient, a final loss, or
+
+a convergence rate.
+
+Targets that cannot be judged by a single numerical com-
+
+parison use acceptance rules that match the kind of claim being
+
+reproduced. For a distributional target, the acceptance rule com-
+
+pares the properties of the distribution reproduced by the agent
+
+with those reported or shown in the paper, rather than requiring
+
+identical samples. This rule applies to posterior samples, em-
+
+pirical distributions, uncertainty bands, and stochastic sampling
+
+behavior. Depending on the claim, the agent records summary
+
+statistics such as the mean or variance, quantiles, interval cover-
+
+age, support, number of modes, or a distance between distribu-
+
+tions. If that comparison requires a threshold for acceptance, the
+
+agent records the threshold in the target record before judging
+
+the output. For a structural target, the acceptance rule records
+
+the pattern or relationship that the reproduced result must show,
+
+such as sparsity, ordering, stability, a regime transition, phase-
+
+portrait geometry, attractor structure, or selective identifiability.
+
+For structural targets, the recorded comparison indicates which
+
+structural properties agree with the paper and which do not, and
+
+uses numerical summaries when available. For a visual target,
+
+the output’s appearance is part of the claim. The evidence there-
+
+fore records the reference output, the candidate output, and the
+
+visual comparison used to judge the match. Paper-replication
+
+uses visual matching only when the claim requires it, because
+
+stochastic trajectories, convergence curves, and sampling-based
+
+figures can support the same claim without pixelwise agreement.
+
+After the target-specific comparison is recorded, the external
+
+checks enforce the target-type requirements. They reject visual-
+
+only evidence for numeric and distributional targets, missing
+
+visual comparisons for visual targets, and structural compar-
+
+isons that do not explain how the reproduced structure agrees
+
+or disagrees with the paper. The checks also address copied
+
+paper material and method substitution, because an output can
+
+appear correct without being derived from a reconstruction of
+
+the paper’s method. Paper-provided figures, rendered pages, and
+
+paper-source files remain separate from generated outputs. A
+
+matched output must come from the replication workspace and
+
+must not match the paper source or paper-asset records. Hash
+
+checks compare generated outputs with indexed paper assets
+
+and rendered pages and detect direct reuse of paper-provided
+
+material. Because hash checks do not detect every transformed
+
+copy, Paper-replication also requires the recorded comparison
+
+for the target and the run provenance for the generated output.
+
+For method-replication targets, the provenance record must
+
+show how the run implements the paper’s method before the
+
+5
+
+-----
+
+|  |
+| :-: |
+| [**Page 6**]() |
+
+target can be matched. The agent records the implemented
+
+method components, the paper passages or equations that justify
+
+those components, and the code, configuration, and seed used
+
+for the run. This makes the replication claim depend on a trace
+
+from the paper’s method to the executable implementation, not
+
+only on similarity between the generated output and the reported
+
+result. If the agent cannot justify a method component from
+
+the paper materials or from a recorded assumption, the run
+
+cannot serve as evidence for the replication target. The final
+
+replication report may include the run only as a deviation or
+
+comparison, not as evidence that the target was matched. The
+
+external checks reject missing method provenance and records
+
+that support a claim only by showing that the output resembles
+
+the paper. These checks reduce the risk that the agent reuses
+
+a figure or table provided in the paper or substitutes another
+
+method, but they do not prove that the agent’s implementation is
+
+uniquely determined by the paper. Paper-replication therefore
+
+treats a passed check as recorded evidence for the target, not
+
+as proof that no other implementation choices could also be
+
+consistent with the paper.
+
+After target evidence passes validation, a report-coverage
+
+check connects that evidence to the paper-level replication claim.
+
+For each matched target, the agent records where the generated
+
+output or value appears in the final replication report. The report
+
+also records deviations, unmatched targets, and hardware or run-
+
+time conditions. If a target remains unmatched, the agent records
+
+the reason in the workspace files and the report. This prevents
+
+the agent from converting missing evidence into a successful
+
+paper-level claim.
+
+These report-coverage requirements are part of the final com-
+
+pletion gate. Let Vspec, Vprogress, and Vreport denote the validation
+
+checks for specification completeness, consistency of target state
+
+and evidence, and report coverage. In addition to these three
+
+checks, completion requires that every target be matched, that no
+
+target remain active, and that the final report PDF exist. Paper-
+
+replication allows the workspace to be marked complete only
+
+when
+
+Vcomplete = Vspec ∧ Vprogress ∧ Vreport
+
+∧
+
+
+
+
+
+J
+
+^
+
+j=1
+
+\[sj = MATCHED\]
+
+
+
+ ∧ \[a = 0\]
+
+∧ \[report PDF exists\].
+
+(3)
+
+Here J is the number of recorded targets, sj is the recorded status
+
+of target j, a is the active-target field, 0 denotes no active target,
+
+and bracketed expressions denote Boolean indicators. This gate
+
+makes completion a workspace state rather than a statement in
+
+the agent’s final message. A run may end with a documented non-
+
+reproduction, but Paper-replication cannot mark the workspace
+
+as complete while any target lacks accepted evidence. Comple-
+
+tion remains relative to the target set recorded in the reproduction
+
+matrix. During final review, the agent compares the reproduction
+
+matrix with the source inventory and rendered pages, adds any
+
+omitted computational claim as a target or records why it is out
+
+of scope, and then reruns the completion checks. The workflow
+
+does not guarantee that every paper can be replicated from the
+
+available materials, and an accepted target may still omit aspects
+
+of the paper’s claim that were not included in its acceptance
+
+rule. Within these limits, replication is complete only when
+
+every recorded target has accepted evidence, appears in the final
+
+replication report, and the report exists as a rendered PDF.
+
+2.4. Skill implementation
+
+The implemented skill has two layers: persistent agent in-
+
+structions and replication workspace utilities. The instruction
+
+layer is defined in SKILL.md, while separate Codex and Claude
+
+Code prompt files adapt those instructions to each agent inter-
+
+face. These instructions tell the agent to initialize or reopen the
+
+replication workspace before substantive work, start from the
+
+paper’s LATEX source, use the available compute environment
+
+and the specified author-code rule, keep exactly one active tar-
+
+get, and treat the workspace files rather than the chat transcript
+
+as the record of the run. Files under references/ define the
+
+workspace contract, author-code rule, available compute environ-
+
+ment, and acceptance-rule types used by the validation checks.
+
+These files do not contain paper-specific scientific instructions.
+
+Instead, they state the workflow rules in a form the agent can
+
+reopen after an interruption or after losing earlier chat context.
+
+The instruction files define the rules the agent must follow. The
+
+workspace utilities create and check the files that make those
+
+rules enforceable.
+
+The workspace utilities first create the files that make the
+
+workflow recoverable. They are implemented in scripts/
+
+paper\_replication.py. Initialization and synchronization
+
+commands create the workspace directories and write the man-
+
+ifest, reproduction matrix, task ledger, specification files, and
+
+replication report template. The manifest records the paper title,
+
+paper source, a hash used to detect source changes, run rules
+
+such as author-code access, the available compute environment,
+
+and how to rerun the workflow. The reproduction matrix stores,
+
+for each target, where the claim appears in the paper, which
+
+source files or assets support it, which run and configuration
+
+produce the output, how the output will be judged, the target’s
+
+current status, and where the result appears in the replication
+
+report. The task ledger stores the active target, open questions,
+
+checks that must pass, and completed work. Because these files
+
+live in the workspace, the status check can recover the active tar-
+
+get, unmatched targets, validation errors, and next action without
+
+relying on the chat transcript.
+
+Once the workspace exists, the agent uses the utilities to
+
+record the paper source and keep paper-provided material sep-
+
+arate from generated outputs. During source inspection, the
+
+agent starts from the main TeX file and records included TeX
+
+files, bibliography entries, appendix files, figure assets, and data
+
+references in spec/paper\_inventory.json. The workspace
+
+utilities also index paper-provided figures and source files under
+
+artifacts/paper\_figures/ and record their hashes. When
+
+the environment permits, the agent uses these utilities to compile
+
+the paper and render pages so visible claims can be checked
+
+against the target list. Generated outputs are stored separately
+
+under artifacts/figures/ and artifacts/tables/. This
+
+directory-and-hash separation lets later checks reject a candidate
+
+output that reuses a paper-provided asset, rendered page, or file
+
+from the paper’s source tree.
+
+6
+
+-----
+
+|  |
+| :-: |
+| [**Page 7**]() |
+
+After the paper source is recorded, the same utilities record
+
+the computations that generate candidate evidence. When the
+
+agent runs an experiment, it invokes the run recorder with the
+
+command for that run. The recorder stores the command, work-
+
+ing directory, start and finish times, whether the run succeeded,
+
+messages and errors produced during the run, expected out-
+
+puts, and hashes of the produced files in artifacts/runs/.
+
+When a run produces a candidate output, the agent registers
+
+that output against the target and the successful run identifier.
+
+The workspace utilities then write a provenance record under
+
+artifacts/provenance/. This record identifies the method
+
+components the agent implemented and links the output to the
+
+implementation file, configuration file, seed, successful run, and
+
+paper passages or equations used to justify the implementation.
+
+It also stores hashes of the output, implementation file, and con-
+
+figuration file so later edits cannot silently change the output
+
+or implementation associated with the claim. The utilities do
+
+not implement the source paper’s method for the agent. Instead,
+
+they check that the provenance record exists and is consistent
+
+with the registered target output. For a target to be matched, this
+
+record must show how the implementation follows the paper’s
+
+method, not only how the agent generated an output resembling
+
+the paper’s reported result. These records reduce the risk that
+
+output similarity alone counts as evidence for a matched target.
+
+The recorded workspace state then becomes the input to the
+
+external checks that the completion gate uses. The specification
+
+check verifies that the manifest, task ledger, paper inventory,
+
+source hashes, specification files, and reproduction matrix exist
+
+and contain the required records. The progress check verifies
+
+consistency between the task ledger and the reproduction matrix,
+
+confirms that matched targets have run-generated provenance, re-
+
+jects copied paper material based on path and hash, and enforces
+
+the comparison evidence required by each target’s acceptance
+
+rule. The report-coverage check verifies that matched figure
+
+and table targets appear in report/main.tex at their recorded
+
+report locations. The completion check runs these checks and
+
+then requires that every target be matched, that no target re-
+
+main active, and that report/main.pdf exist. The agent in-
+
+vokes these checks, but completion is a workspace state rather
+
+than a statement in the agent’s final message. Together, these
+
+checks preserve the two workflow principles used throughout
+
+Paper-replication: the run state persists in workspace files, and
+
+evidence counts only when workspace records and validation
+
+checks outside the agent accept it.
+
+2.5. Case study analysis
+
+We apply Paper-replication to four scientific machine learn-
+
+ing papers: PIFT, PINN-I, PINN-II, and SINDy. We choose
+
+these papers because together they require different kinds of
+
+target evidence, including learned fields, solution errors, discov-
+
+ered coefficients, posterior structure, sparse supports, trajecto-
+
+ries, and figures shaped by stochastic sampling, neural-network
+
+optimization, or simulated dynamics. For each paper, we run
+
+three independent agent replications with the same paper ma-
+
+terials, initial and follow-up prompt templates, available tools,
+
+compute environment, and policy that excludes author code. The
+
+workspaces do not share code, generated outputs, or persistent
+
+state, so each run reconstructs the paper independently. This lets
+
+us measure variation across independent agent runs using the
+
+same Paper-replication workflow.
+
+Each run begins with an initial prompt that specifies the
+
+paper source, replication workspace, available compute envi-
+
+ronment, and author-code rule, and instructs the agent to use
+
+Paper-replication until the completion gate passes. Because a
+
+long-running agent can still stop before the workspace is com-
+
+plete, each run also has a fixed queue of ten follow-up prompts.
+
+A follow-up prompt instructs the agent to reopen the same repli-
+
+cation workspace, run the status check, and continue until all
+
+recorded targets are matched and the completion gate passes.
+
+The queue allows the agent to resume from the same workspace
+
+if it stops before completion. If the gate has already passed, the
+
+agent reports the completed workspace state. Thus, the follow-
+
+up prompts support continuation, while completion remains
+
+defined by the workspace state.
+
+The resulting workspaces provide the records used for the
+
+case-study analysis. Let p = 1,..., N index papers and r =
+
+1,..., R index runs, with N = 4 and R = 3. For each workspace,
+
+we use the final reproduction matrix, target statuses, acceptance
+
+rules, comparison records, run records, execution outcomes,
+
+elapsed replication time, and report coverage. We call a run
+
+paper-level complete when the completion gate in Eq. ([3)](#6) passes.
+
+If a run does not pass this gate, we retain it as incomplete, along
+
+with its validation errors and the reasons for unmatched targets.
+
+Beyond completion, we analyze target coverage, paper-anchored
+
+numeric fidelity, effort, and variation in judgment.
+
+Repeated runs may organize the same paper differently. They
+
+may assign different target identifiers or split the same paper
+
+result into different numbers of targets. For cross-run compar-
+
+isons, we therefore group targets by the paper they support. The
+
+grouping uses the recorded paper location and scientific content,
+
+such as a figure, table, equation, caption statement, reported
+
+scalar, or paragraph-level claim. This lets us compare repeated
+
+runs even when their reproduction matrices are not organized in
+
+the same way.
+
+We use c to index the aligned paper claims produced by this
+
+grouping. The models below use p for papers and r for runs
+
+within a paper. A subscript pr denotes a run-level quantity for
+
+paper p, pc denotes a claim-level quantity for aligned claim c in
+
+paper p, and pcr denotes a run-level quantity for aligned claim
+
+c in run r of paper p. Symbols without these indices denote
+
+corpus-level parameters shared across papers.
+
+We first analyze variation in how the agent decomposes each
+
+paper into targets. Target coverage is the number of targets Qpr
+
+in the final reproduction matrix for run r of paper p. It measures
+
+how finely the agent decomposes the paper’s computational
+
+claims into separate targets. It does not measure correctness
+
+because every listed target must still satisfy the evidence contract
+
+and pass the external checks. We model target coverage with a
+
+Gamma-Poisson likelihood, parameterized by concentration and
+
+7
+
+-----
+
+|  |
+| :-: |
+| [**Page 8**]() |
+
+rate:
+
+Qpr | λp,ϕ ∼ GammaPoisson(ϕ, ϕ/λp),
+
+log λp = µQ + ap,
+
+ap | σQ ∼ Normal(0,σ2
+
+Q),
+
+µQ ∼ Normal(2.5, 12),
+
+σQ ∼ HalfNormal(1),
+
+ϕ ∼ HalfNormal(10).
+
+(4)
+
+Here Qpr is the observed target count for run r of paper p, while
+
+λp is the expected target count for paper p and ap is that paper’s
+
+deviation from the corpus mean. Because target coverage is a
+
+run-level count, the model has no claim-level term. The corpus-
+
+level parameters are the overall log target count µQ, the between-
+
+paper scale σQ, and the shared overdispersion parameter ϕ. We
+
+also report the decomposition ratio, defined for each paper as
+
+the largest final target count divided by the smallest final target
+
+count across its three runs. This ratio gives a direct summary of
+
+how much the agent’s target decomposition varies for the same
+
+paper.
+
+We next evaluate numerical fidelity for aligned claims with
+
+scalar paper-reported quantities. For scalar claims, we define
+
+standardized numeric anchors. A standardized numeric anchor
+
+is an aligned paper claim with a reproducible scalar quantity,
+
+such as a reported relative L2 field error or the percentage error
+
+of an identified coefficient. For paper p, aligned claim c, and
+
+run r, let dpcr ≥ 0 denote the discrepancy between the quantity
+
+reproduced by the agent and the value or accuracy class reported
+
+in the paper.
+
+Each anchor receives a fixed paper-anchored threshold τpc \>
+
+0\. We choose τpc from the accuracy scale reported for that paper
+
+claim and fix it before comparing repeated runs. We express
+
+dpcr in the same units as τpc. This threshold does not depend
+
+on the acceptance rule, metric name, or tolerance recorded by
+
+the agent in an individual workspace. For PINN-I and SINDy,
+
+the thresholds are taken directly from the reported error scales
+
+in the source papers. For PINN-II coefficient identification, we
+
+use a ten-percent coefficient-error threshold. The paper reports
+
+clean-data coefficient errors below five percent and evaluates
+
+robustness to up to ten percent data noise, so we use ten percent
+
+as an analysis convention for the reported coefficient-accuracy
+
+class. This threshold is an analysis convention based on the
+
+paper’s reported robustness scale, not a claim that data noise and
+
+coefficient error are equivalent. Table[ ](#8)1 summarizes the analysis
+
+rules used for the case-study claims.
+
+To compare heterogeneous scalar quantities on one scale,
+
+we define edpcr = max(dpcr,ϵpc), where ϵpc is a claim-specific
+
+resolution floor held fixed across runs. We set ϵpc to the smallest
+
+positive discrepancy observed in the stored results for that anchor.
+
+This floor prevents an exact recorded equality from producing
+
+infinite headroom. We then define
+
+hpcr = log10
+
+
+
+ τpc
+
+edpcr
+
+
+
+ .
+
+(5)
+
+Positive headroom means that the reproduced discrepancy lies
+
+inside the fixed threshold, zero means that it lies on the threshold,
+
+and negative headroom means that it lies outside. One unit of
+
+headroom represents a tenfold change in discrepancy relative to
+
+the threshold.
+
+Paper
+
+Claim family
+
+Paper-anchored
+
+analysis rule
+
+Analysis
+
+type
+
+PINN-I solution relative L2 error
+
+dpcr ≤ 10−2
+
+scalar
+
+PINN-II coefficient percentage error dpcr ≤ 10%
+
+scalar
+
+SINDy
+
+Lorenz coefficient relative
+
+error
+
+dpcr ≤ 10−3
+
+scalar
+
+SINDy
+
+sparse-support recovery
+
+and trajectory geometry
+
+exact support or structural
+
+agreement, depending on
+
+the target
+
+structural
+
+PIFT
+
+posterior collapse,
+
+bimodality, and selective
+
+identifiability
+
+distributional or structural
+
+evidence, depending on the
+
+target
+
+non-scalar
+
+Table 1: Analysis rules used in the case-study analysis. The scalar thresholds
+
+remain fixed across runs and do not depend on the tolerance recorded by the
+
+agent in an individual workspace. Claims without a paper-reported scalar are
+
+analyzed through the structural or distributional evidence required by their target
+
+acceptance rules.
+
+The scalar anchors vary across papers, aligned claims within
+
+a paper, and repeated runs. To describe these sources of variation,
+
+we model headroom with paper-level, claim-level, and run-level
+
+terms:
+
+hpcr | µ, bp, gpc,σε,p ∼ Normal(µ + bp + gpc,σ2
+
+ε,p),
+
+bp | σb ∼ Normal(0,σ2
+
+b),
+
+gpc | σg ∼ Normal(0,σ2
+
+g),
+
+µ ∼ Normal(0, 32),
+
+σb,σg,σε,p
+
+ind
+
+∼ HalfNormal(1.5).
+
+(6)
+
+Here hpcr is the observed headroom for aligned claim c in run
+
+r of paper p. The paper-level term bp shifts the average head-
+
+room for paper p, and σε,p is the paper-specific residual scale
+
+across repeated runs. The claim-level term gpc captures variation
+
+among aligned claims within paper p. The corpus-level parame-
+
+ters are the mean headroom µ, the between-paper scale σb, and
+
+the between-claim scale σg. Because hpcr = 0 corresponds to
+
+the fixed threshold, the prior µ ∼ Normal(0, 32) does not as-
+
+sume that reproduced quantities usually fall inside or outside the
+
+threshold. The prior scale allows discrepancies several orders of
+
+magnitude above or below the threshold. From this model, we
+
+also report the posterior predictive probability that another run
+
+of a scalar anchor has positive headroom.
+
+Not every paper claim admits a scalar discrepancy. Some
+
+claims concern distributions, such as posterior shape or bimodal-
+
+ity. Other claims concern qualitative structure in the reproduced
+
+equation, field, or trajectory. For these targets, we report the
+
+comparison evidence required by the target’s acceptance rule
+
+and do not force the result into the scalar headroom model. This
+
+keeps the analysis aligned with the kind of claim the source
+
+paper makes.
+
+We measure effort for each replication run as elapsed repli-
+
+cation time. For each workspace, replication time starts when
+
+the initial replication prompt is given to the agent and ends when
+
+the agent first reports completion after the completion gate has
+
+passed. Queued follow-up prompts sent after that point only
+
+confirm the completed workspace state, so they are not included
+
+in elapsed replication time. Let Hpr \> 0 denote this elapsed
+
+time in hours for run r of paper p. This quantity includes agent
+
+work, experiment execution, validation, report preparation, and
+
+8
+
+-----
+
+|  |
+| :-: |
+| [**Page 9**]() |
+
+waiting time before the first completion report. Because elapsed
+
+times are positive and can vary by multiplicative factors, we
+
+model effort as log10 Hpr:
+
+log10 Hpr | µH, up,σH ∼ Normal(µH + up,σ2
+
+H),
+
+up | σu ∼ Normal(0,σ2
+
+u),
+
+µH ∼ Normal(0, 1.52),
+
+σu,σH
+
+ind
+
+∼ HalfNormal(1).
+
+(7)
+
+Here log10 Hpr is the observed log elapsed time. The paper-level
+
+term up shifts the average effort for paper p. Because elapsed
+
+effort is defined for the workspace as a whole, the model has no
+
+claim-level term. The corpus-level parameters are the overall
+
+mean log effort µH, the between-paper scale σu, and the shared
+
+run-to-run residual scale σH after conditioning on paper.
+
+Replication time gives one measure of effort. As a second
+
+measure, we use the run records to count tracked executions
+
+and correction work. A tracked execution is any recorded com-
+
+mand used to generate, check, or prepare target outputs for the
+
+replication report. We call an execution superseded when it fails
+
+or when no final target provenance record links its output to a
+
+retained result because later correction work replaces it. Such
+
+corrections arise when the agent misses a method detail, resolves
+
+an underspecified step, rejects an initially plausible implementa-
+
+tion choice, or replaces an unstable run. We report the number
+
+of tracked executions and the number superseded as secondary
+
+effort diagnostics. These counts show how much correction
+
+work occurs before the final evidence is accepted.
+
+Judgment variation captures whether independent runs
+
+choose the same target-level acceptance rule for the same paper
+
+claim. For each aligned claim, we compare the acceptance rule
+
+type recorded across runs. We report the fraction of aligned
+
+claims for which every run of a paper records the same rule
+
+type.
+
+We fit all Bayesian models in NumPyro with the No-U-Turn
+
+sampler, using four chains and two thousand retained posterior
+
+draws per chain.
+
+3\. Results
+
+We evaluate Paper-replication using twelve independent
+
+replications drawn from four case-study papers, with three runs
+
+per paper. Each run uses the same paper materials, prompt
+
+templates, compute environment, and no-author-code policy de-
+
+scribed in Section[ 2.](#7)5. The coding agent is Codex with GPT-5.4
+
+at the Extra High reasoning setting. The agent runs from a Mac-
+
+Book Pro with an M4 Max chip and 128 GB of memory. It also
+
+has access through the cluster-execution skill to Purdue Gautschi
+
+resources: CPU nodes with 192 cores and 384 GB of memory,
+
+and GPU nodes with eight H100 GPUs, 112 CPU cores, and
+
+about 1 TB of memory per node. During each run, the agent
+
+chooses whether to keep work local or submit heavier jobs to
+
+the cluster. In the observed runs, PIFT and SINDy complete
+
+on local compute, while some PINN-I and PINN-II targets use
+
+cluster jobs. The resulting workspaces record local and cluster
+
+executions through the same run-record and provenance mech-
+
+anisms. This changes where work is executed, but it does not
+
+change the target-level evidence contract.
+
+Paper
+
+Runs
+
+Targets/run
+
+Matched
+
+Elapsed
+
+time (h)
+
+Superseded
+
+executions
+
+PIFT
+
+3
+
+8, 8, 25
+
+all
+
+2.2 \[1.1, 4.4\]
+
+3
+
+PINN-I
+
+3
+
+8, 8, 8
+
+all
+
+5.0 \[2.5, 9.9\]
+
+11
+
+PINN-II
+
+3
+
+9, 9, 15
+
+all
+
+6.9 \[3.0, 13.4\]
+
+10
+
+SINDy
+
+3
+
+20, 20, 20
+
+all
+
+1.9 \[1.0, 4.3\]
+
+1
+
+Table 2: Summary of the twelve case-study runs. Targets/run gives the number
+
+of targets in the final reproduction matrix for each of the three runs. Matched
+
+indicates that every recorded target reaches MATCHED and the completion gate
+
+passes. Elapsed replication time gives the posterior median and 95% credible
+
+interval from the effort model. The last column counts tracked executions that
+
+later correction work replaces before final evidence is accepted.
+
+We first evaluate paper-level completion under the comple-
+
+tion gate in Eq. [(3](#6)). Across the twelve final reproduction matri-
+
+ces, the agent records 158 targets. Every recorded target reaches
+
+MATCHED, every matched target has report coverage, and ev-
+
+ery workspace passes the completion gate. Paper-replication
+
+therefore reaches paper-level completion in all twelve runs, rela-
+
+tive to the recorded target sets and the validation checks applied
+
+to them. Table[ 2](#9) summarizes the completed workspaces, and
+
+Figure [2 ](#10)shows the corresponding elapsed replication time, final
+
+target count, and tracked executions for each run. Completion
+
+is stable across runs, while target decomposition, elapsed effort,
+
+and tracked executions vary by paper and by run.
+
+3.1. Target coverage and decomposition variation
+
+Target coverage is the number of targets in the final repro-
+
+duction matrix for a run. It measures how finely the agent
+
+decomposes a paper into recorded targets. It does not, by itself,
+
+measure correctness because every recorded target must still
+
+satisfy its evidence contract and pass external checks.
+
+Two papers show no run-level variation in target coverage.
+
+PINN-I records eight targets in all three runs, and SINDy records
+
+twenty targets in all three runs. Two papers vary by run. PIFT
+
+records eight, eight, and twenty-five targets, while PINN-II
+
+records nine, nine, and fifteen targets. The resulting decomposi-
+
+tion ratios are 3.1 for PIFT and 1.7 for PINN-II, compared with
+
+1.0 for PINN-I and SINDy (Figure[ ](#10)3). The Gamma-Poisson
+
+model in Eq. ([4)](#8) reflects the larger spread for PIFT, whose
+
+expected target count has posterior median 13.4 with a 95%
+
+credible interval from 8.8 to 20.5.
+
+The target-count differences come from decomposition
+
+choices rather than incomplete workspaces. For cross-run
+
+comparison, we align targets by the paper claim they support
+
+rather than by target identifier. Under that alignment, the extra
+
+PIFT targets occur when a single run records separate targets
+
+for different panels in a composite figure. The extra PINN-II
+
+targets occur when one run records appendix inference claims
+
+as additional targets. PINN-I and SINDy allow less variation of
+
+this kind because their reproducible claims are organized in the
+
+papers as named figures, tables, and examples.
+
+3.2. Paper-anchored numeric fidelity
+
+We next evaluate scalar paper claims under paper-anchored
+
+thresholds. This analysis is separate from workspace match-
+
+ing. A workspace match uses the target-specific acceptance rule
+
+9
+
+-----
+
+|  |
+| :-: |
+| [**Page 10**]() |
+
+PIFT PINN-
+
+I
+
+PINN-
+
+II
+
+SINDy
+
+0
+
+2
+
+4
+
+6
+
+8
+
+10
+
+12
+
+elapsed replication time (h)
+
+**(a)**
+
+PIFT PINN-
+
+I
+
+PINN-
+
+II
+
+SINDy
+
+0
+
+5
+
+10
+
+15
+
+20
+
+25
+
+final target count
+
+**(b)**
+
+PIFT PINN-
+
+I
+
+PINN-
+
+II
+
+SINDy
+
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+60
+
+70
+
+tracked executions
+
+**(c)**
+
+run 1
+
+run 2
+
+run 3
+
+superseded
+
+Figure 2: Per-run workspace evidence for the twelve case-study runs. Panel (a) shows elapsed replication time. Panel (b) shows the final target count in the
+
+reproduction matrix. Panel (c) shows tracked executions, with dark segments indicating executions that

@@ -1,0 +1,1053 @@
+Algorithm–hardware co-design of neuromorphic networks with dual memory pathways 
+
+nature machine intelligence
+
+Article https://doi.org/10.1038/s42256-026-01255-3 Algorithm–hardware co-design of neuromorphic networks with dual memory pathways
+
+Received: 8 December 2025
+
+Pengfei Sun 1,6 , Zhe Su 2,6 , Jascha Achterberg3, Giacomo Indiveri2,
+
+Accepted: 11 May 2026
+
+Dan F. M. Goodman 1 & Danyal Akarca 1,4,5
+
+Published online: 16 June 2026
+
+Spiking neural networks excel at event-driven sensing. Yet, maintaining task-relevant context over long timescales both algorithmically and in hardware, while respecting both tight energy and memory budgets, remains a core challenge in the field. Here we address this challenge through an algorithm–hardware co-design effort. At the algorithm level, inspired by the cortical fast–slow organization in the brain, we introduce a neural network with an explicit slow memory pathway that, combined with fast spiking activity, enables a dual memory pathway architecture in which each layer maintains a compact low-dimensional state that summarizes recent activity and modulates spiking dynamics. This explicit memory stabilizes learning while preserving event-driven sparsity, achieving competitive accuracy on long-sequence benchmarks with 40–60% fewer parameters than equivalent state-of-the-art spiking neural networks. At the hardware level, we introduce a near-memory-compute architecture that fully leverages the advantages of the dual memory pathway architecture by retaining its compact shared state while optimizing data flow, across heterogeneous sparse-spike and dense-memory pathways. We show experimental results that demonstrate more than a fourfold increase in throughput and over a fivefold improvement in energy efficiency compared with s ta te -o f- th e-art i mp le- me nt at ions. T o g e t her, t h e se contributions demonstrate that biological principles can guide functional abstractions that are both algorithmically effective and hardware-efficient, establishing a scalable co-design framework for real-time neuromorphic computation and learning.
+
+Brains solve temporal problems in real time and under tight energy budgets, and are unmatched by artificial systems. One hypothesis for the brain’s superior temporal processing abilities is that their computation is both continuous time and event-driven, based on discrete sparse spiking. Spiking neural networks (SNNs) inherit these two core principles, mak- ing them a promising and biologically grounded complement to dense artificial neural networks1,2. Yet one brain-like ability critically impor- tant for temporal processing remains hard to reproduce efficiently: retaining information over behaviourally relevant timescales. Standard
+
+leaky integrate-and-fire (LIF) neurons integrate spikes into a decaying membrane potential3, which captures evidence instantaneously but progressively suppresses older inputs over millisecond timescales4,5. Conversely, precise temporal codes (for example, time-to-first-spike) preserve timing but do not carry graded intensity over long windows6–8. Another way of thinking about this is that a purely feedforward SNN (FSNN) typically captures either what happened or when it happened, but not both. The fundamental challenge is therefore maintaining long-range temporal context without sacrificing event-driven efficiency.
+
+Nature Machine Intelligence | Volume 8 | June 2026 | 901–912 901
+
+Check for updates
+
+A full list of affiliations appears at the end of the paper. e-mail: p.sun@imperial.ac.uk; zhesu@ini.ethz.ch; d.akarca@imperial.ac.uk
+
+Article https://doi.org/10.1038/s42256-026-01255-3
+
+Several strategies have been explored to extend temporal capac-
+
+demonstrate more than 4 × higher throughput and over 5 × better ity in SNNs9. One approach augments recurrence, often via hetero-
+
+energy efficiency compared with state-of-the-art (SOTA) designs. geneous time constants or adaptive thresholds10–14, allowing activity
+
+Overall, we show how efficient temporal processing can be to persist through feedback. Another exploits biologically inspired
+
+achieved through hardware-algorithm co-design inspired by circuit transmission delays (axonal, synaptic or dendritic) to align spikes
+
+motifs in the brain. Imposing hardware considerations at the algorith- to task-relevant timescales and act as implicit temporal buffers15–25.
+
+mic level results in a network architecture with a temporal memory Both strategies improve temporal integration, yet each imposes
+
+that is explicit and low-rank. By designing hardware around explicit substantial implementation costs in hardware. Dense recurrence
+
+memory and applying carefully orchestrated optimizations, we obtain scales quadratically with layer width, erodes sparsity benefits, and
+
+a heterogeneous data-flow structure that efficiently integrates fast and requires continuous recirculation of activity, which increases both the
+
+slow memory. Jointly, this algorithm and hardware pairing achieves memory footprint and energy consumption. Long, learnable delays
+
+benchmark-beating temporal processing capabilities alongside SOTA avoid explicit recurrence but can demand deep on-chip buffers and
+
+energetic efficiency. We made the hardware architecture open source per-connection timing metadata, inflating area, power and latency in
+
+to enable community adoption and further co-design exploration. neuromorphic implementations26,27. We also note that reservoir-based spiking approaches—exemplified by liquid-state machines—exploit
+
+Results rich transient dynamics in a fixed recurrent substrate and learn only a
+
+Dual memory pathways for efficient temporal computation simple readout, offering an alternative route to temporal processing28.
+
+Feedforward spiking networks are computationally efficient but per- However, in more challenging real-world settings their accuracy can
+
+form poorly on tasks requiring long temporal dependencies, as their be limited, particularly under constrained hardware deployment29,30.
+
+leaky membranes encode only transient evidence and rapidly forget This creates a design challenge: temporal memory mechanisms must
+
+past inputs. Recurrent SNNs (RSNN) extend temporal integration by be sufficiently expressive to capture long-range dependencies while
+
+feeding activity back within each layer, enabling longer retention but remaining compatible with efficient neuromorphic implementation.
+
+at the cost of quadratic scaling and high memory traffic that erode Addressing this requires reconsidering both algorithmic structure and
+
+event-driven efficiency. Recent delay-based SNNs (DSNN), particularly hardware design2,31–36.
+
+those with learnable axonal delays, address this limitation by distribut- The mammalian cortex inspires a potential architectural solution.
+
+ing memory across time, achieving remarkable performance on neu- Cortical circuits maintain efficient long-range temporal context through
+
+romorphic benchmarks with only linear parameter complexity (ðªðªðªN))43. dendritic branches that integrate inputs over a spectrum of timescales,
+
+However, these models rely on deep programmable buffers, which can while neuronal populations have correspondingly heterogeneous
+
+increase hardware cost and latency. Here we introduce the DMP archi- temporal constants that shape fast somatic spiking without requiring
+
+tecture for spiking neural networks (DMP-SNN), which replaces these dense global recurrence24,37,38. Recent evidence suggests that cortical
+
+costly mechanisms with a compact, shared slow state that summarizes networks dynamically recruit fast and slow computational pathways
+
+recent activity and feeds back as an additional input current (Fig. 1a). according to task demands, revealing a functional organization built
+
+Acting as an explicit low-dimensional working memory, at only 5% of around multiple interacting timescales39,40. We distill this into a func-
+
+the hidden width, this state preserves the temporal context relevant tional abstraction: pair fast spiking dynamics with compact temporal
+
+to the task over behaviourally meaningful timescales while remaining memory. Following this abstraction, we introduce a memory-augmented
+
+fully compatible with efficient hardware implementation (Fig. 1b). spiking architecture in which each layer maintains a low-dimensional
+
+We evaluated this DMP architecture on two classes of sequential state vector m ∈ ℝd, with d ≪ N for a layer of N spiking neurons. This
+
+benchmarks. The first class targets long-range visual integration. state evolves under well-conditioned slow dynamics and feeds back as
+
+In sequential MNIST (S-MNIST), each 28 × 28 image is presented as a an additional input current to the neurons, acting as a compact linear
+
+784-step pixel stream, requiring integration across hundreds of steps. slow pathway that provides shared context and modulates fast spiking
+
+In permuted sequential MNIST (PS-MNIST), a fixed random permuta- within each layer. This deployment-oriented fast–slow decomposition
+
+tion destroys local spatial structure, so performance depends almost enables controllable trade-offs between memory footprint, and accu-
+
+entirely on long-range temporal memory44. The second class targets racy under tight resource budgets. Rather than storing full spike histo-
+
+event-based auditory classification45. The Spiking Heidelberg Digits ries or broadcasting dense recurrent activity, the network compresses
+
+(SHD) dataset encodes spoken digits as 700-channel spike trains gen- recent activity into a few slow modes and exposes that compressed
+
+erated by a cochlear model, and the Spiking Speech Commands (SSC) context at each time step. This dual memory pathway (DMP) architec-
+
+dataset similarly represents 35 spoken-word categories. Together, these ture is motivated by long-horizon temporal memory under stringent
+
+benchmarks span dense, clocked sequences and irregular, event-driven hardware constraints, and is thus tailored to regimes in which long-range
+
+input, and probe temporal dependencies on different timescales. temporal dependencies are the primary limiting factor.
+
+We benchmarked four spiking network architectures: FSNN, RSNN, To fully exploit the advantages afforded by this memory architec-
+
+DSNN and our DMP-SNN (Table 1). Feedforward SNNs fail on long-range ture, we introduce a digital near-memory-compute architecture that
+
+structure tasks (11.3% on PS-MNIST). Recurrence in RSNNs improves uses heterogeneous data-flow optimization to maximize arithmetic
+
+temporal integration (71.0% on PS-MNIST; 71.4% on SHD) but scales as intensity. This design overcomes limitations of previous hardware,
+
+ðªðªðªN2). Delay SNNs perform well on auditory tasks (91% on SHD; 70% on in which conventional recurrent SNN accelerators must scale both
+
+SSC) by learning axonal timing, but require long programmable delays. parameter storage and computation quadratically41, while hardware
+
+The DMP-SNN reaches 99.3% on S-MNIST and 97.3% on PS-MNIST. Our supporting long learnable delays requires deep buffers in digital imple-
+
+method matches delay-based models on SHD and SSC, and outper- mentations42 or large capacitors in mixed-signal designs23, both signifi-
+
+forms them in the single-layer SSC setting. Figure 2a shows that even cantly increasing energy consumption and chip area. The algorithmic
+
+a small number of memory states yields consistent gains, and that once structure we propose inherently enables a low-memory-footprint
+
+the state buffer length exceeds roughly 25% of the sequence, perfor- design that avoids these costs. Through algorithm–hardware
+
+mance is already competitive, indicating that the relevant temporal co-design, we empirically observe that our system matches or out-
+
+information has been captured. Figure 2b illustrates the learning performs recurrent and delay-based SNNs on event-driven auditory
+
+dynamics of the baseline model relative to the DMP-SNN, showing that classification and long-horizon sequential inference, all while using
+
+memory-augmentation leads to both quicker convergence and higher only a small number of memory states. Post-layout simulations of the
+
+accuracy. Crucially, this is achieved using only a low-dimensional aux- proposed hardware architecture in an advanced 22FDX technology
+
+iliary state with ðªðªðªd) overhead, where d ≪ N (typically 5–10% of the
+
+Nature Machine Intelligence | Volume 8 | June 2026 | 901–912 902
+
+Article https://doi.org/10.1038/s42256-026-01255-3
+
+a
+
+Model
+
+FSNN
+
+uli\[k\] = β uli\[k–1\] + Iil\[k\]
+
+sl–1\[k–1\]
+
+Wf
+
+Ili\[k\] = Wf sl–1\[k\] Soma
+
+sl\[k\]
+
+RSNN
+
+uli\[k\] = β uli\[k–1\] + Iil\[k\] + Irl\[k\]
+
+Wr
+
+sl–1\[k–1\]
+
+WfSoma
+
+sl\[k\]
+
+Ili\[k\] = Wf sl–1\[k\] Irl\[k\] = Wr sl\[k–1\]
+
+DSNN
+
+uli\[k\] = β uli\[k–1\] + Iil\[k\] Iil\[k\] = Wf sl–1\[k–d\]
+
+sl–1\[k–1\]
+
+Wfd
+
+sl\[k–d\]
+
+DMP-SNN
+
+uli\[k\] = β uli\[k–1\] + Iil\[k\] + Iml \[k\]
+
+Memory
+
+Wx Wm
+
+ml
+
+Iil\[k\] = Wf sl–1\[k\] Iml \[k\] = Wm ml\[k\]
+
+sl–1\[k–1\]
+
+Wf
+
+Soma
+
+sl\[k\]
+
+ml\[k\] = A ml\[k–1\] + Bxxl\[k\] = φ(Wx sl–1\[k\])
+
+Fast path
+
+Slow path
+
+Gating/ modulation
+
+Algorithm
+
+hidden width) can match or exceed SOTA performance with fewer parameters while providing long-timescale context (see solution I, the most parameter-efficient solution, and solution II, the best-performing solution, in Fig. 2c)13,14,24,46–49. Extended Data Table 1 further reports results on the DVS Gesture spatiotemporal event-stream benchmark, where incorporating DMP yields a consistent accuracy improvement with negligible parameter overhead.
+
+Context-dependent temporal demands reveal design trade-offs We next examined how frequently the auxiliary memory must be updated within the dual pathway architecture. To do this, we imposed temporal sparsity by updating the membrane potential over fixed numbers of steps. We found that sequence-vision tasks (S-MNIST,
+
+l\[k\]
+
+b
+
+Input spikes/ sensory drive
+
+Soma
+
+Integration
+
+Fused operators Shared slow state
+
+Slow memory
+
+m(t) = Am(t–1)
+
+\+Bx(t)
+
+Compact linear memory
+
+Fig. 1 | From fast–slow cortical motifs to the DMP architecture. a, Schematic
+
+level, each layer maintains a shared, low-dimensional state that captures slow comparison of FSNN, RSNN, DSNN and the proposed DMP-SNN, highlighting
+
+contextual dynamics and modulates fast spiking activity. At the hardware level, their discrete-time formulations, parameter counts and dynamic buffer
+
+this separation is mirrored by a heterogeneous accelerator that keeps the requirements. M, input dimension; N, output dimension; d, memory dimension
+
+compact state on-chip and fuses sparse and dense computations for efficient (d ≪ N); d, axonal delay. b, Dual memory pathway abstraction. At the algorithmic
+
+execution.
+
+PS-MNIST) were largely unaffected even at a skip length (dilation) of ten, whereas auditory tasks (SHD, SSC) degraded much sooner. Regu- lar dense inputs therefore tolerate coarse updates, whereas irregular spike streams require tighter coupling (Fig. 3a), which, foreshadow- ing our later results, is favourable for hardware since less frequent updates lower the switching activity and memory traffic with little loss on long-horizon vision benchmarks. To make this trend explicit, Extended Data Fig. 1 summarizes, for each memory-state size, the com- petitive configurations, showing that strong performance tends to favour relatively short buffers.
+
+Recent spiking state-space architectures have attempted to remove the feedforward drive (fast pathway) entirely, compensat- ing by using residual connections and additional mapping layers
+
+Nature Machine Intelligence | Volume 8 | June 2026 | 901–912 903
+
+Soma
+
+Formulation Parameters
+
+MNMN + N2
+
+Co- design
+
+Weight memory
+
+Dynamic bufferSparse spike path Soma Hardware N2NN + N × d MN + N
+
+MN
+
+N + d + + Nd
+
+d2 + d + M
+
+Input stationary
+
+Output stationary Neuron memory
+
+Dense memory path
+
+Article https://doi.org/10.1038/s42256-026-01255-3
+
+(Extended Data Fig. 2). Although this approach is also effective, it substantially increases model complexity—often by up to threefold in parameters—and imposes further residual computations that raise hardware cost50–53. In contrast, removing the feedforward pathway in our model caused accuracy to drop to chance across all datasets, irrespective of memory size. Extended Data Table 2 further reports the accuracy and parameter counts of these model variants, highlighting the improved accuracy–efficiency balance achieved by DMP relative to both the vanilla state-space model and its spiking counterpart. This indicates that the slow memory state alone cannot sustain task per- formance. The explicit temporal state instead serves as a lightweight contextual modulator that reinforces stimulus-driven spiking rather than acting as a standalone recurrent mechanism. Consistent with this, model capacity on the SHD dataset improved with larger hidden width and memory dimension until task-relevant timescales were captured, beyond which gains saturated (Fig. 3b). These results sug- gest that neuron count, memory size and temporal horizon should be co-tuned to achieve balanced temporal modelling without excessive computational or hardware overhead. Table 1 | Performance on temporally structured benchmarks
+
+We next hypothesized that the explicit state already carries long-range context and therefore reduce the need for long axonal Model Parameters Accuracy (%)
+
+delays. Delays are known to align spikes to task-relevant timescales
+
+PS-MNIST
+
+and to improve neuromorphic speech tasks, but long delays require
+
+FSNN 42,000 11.30
+
+deep buffers that scale with the maximum delay and specialized timing support54,55. Consistent with our hypothesis, we found that combining RSNN 122,000 71.00
+
+heterogeneous axonal delays with our memory-augmented neurons DSNN 43,000 72.06
+
+improved accuracy for small memory states and, importantly, shifted
+
+DMP-SNN (I) 61,000 95.50
+
+the learned delays towards shorter horizons. With memory dimension
+
+DMP-SNN (II) 102,000 96.65
+
+d = 5 and a maximum delay window θ = 5, accuracy increased by 2% despite the tight delay budget, and enlarging the delay window mainly DMP-SNN (peak accuracy) 202,000 97.32
+
+accelerated optimization rather than being strictly required (Fig. 3c,d). S-MNIST
+
+The learned axonal delay distributions are shown in Extended Data Fig. 3.
+
+FSNN RSNN 42,000 59.00 122,000 74.00
+
+Together, this points to a hardware-favourable hybrid solution in which the shared temporal state supplies the long-range component without per-connection buffering, whereas short delays provide fine DSNN 43,000 88.79
+
+timing alignment. In this regime, long programmable delays become
+
+DMP-SNN (I) 51,000 98.08
+
+optional rather than structural, and the network retains the benefits
+
+DMP-SNN (II) 73,000 99.20
+
+of delay coding, including robustness to low-precision weights and discretisation43, and fast motion detection56, while easing mapping to DMP-SNN (peak accuracy) 202,000 99.28
+
+heterogeneous neuromorphic hardware. SHD
+
+FSNN RSNN 37,000 48.60 70,000 71.40
+
+Dual memory networks enhance long-term credit assignment To assess whether the proposed architecture also facilitates long-range credit assignment, we used last-time step supervision and quantified DSNN 37,000 90.98
+
+how the loss at the final step back-propagates to the first layer over time.
+
+DMP-SNN (I) 38,000 89.00
+
+In this regime the network must retain task-relevant information across
+
+DMP-SNN (II) 40,000 91.23
+
+the entire sequence. As shown in Extended Data Fig. 4, gradients in the first layers remained non-negligible over the full 784 steps of S-MNIST DMP-SNN (peak accuracy) 46,000 91.69
+
+and over 200 steps of PS-MNIST, while accuracies remained high (98.7% SSC
+
+and 96%, respectively). On SHD, the network still propagated a useful
+
+FSNN 22,000/39,000 26.08/38.50
+
+signal (with an accuracy of about 60%), whereas SSC proved more chal-
+
+RSNN 39,000/72,000 50.90/60.00
+
+lenging, consistent with its noisier, multiscale temporal structure57.
+
+A direct comparison with a purely feedforward SNN shows that DSNN 23,000/39,000 60.01/69.40
+
+once the membrane time constant is the only source of memory, DMP-SNN (I) 23,000/40,000 65.09/69.50
+
+gradients vanish rapidly and performance collapses, whereas the
+
+DMP-SNN (II) 24,000/42,000 65.37/72.90
+
+DMP-SNN (peak accuracy) 24,000/42,000 65.37/72.90
+
+slow-memory variant continues to backpropagate through time. This supports the interpretation that adding a slow, local pathway preserves history without having to enlarge the neuron’s intrinsic time constant, Chance level: 10.00 (S-MNIST or PS-MNIST), 5.00 (SHD), 2.90 (SSC).
+
+and that it can be used as a drop-in component to strengthen existing
+
+Test accuracy (%) on PSMNIST, SMNIST, SHD and SSC for four model families: FSNN, RSNN,
+
+spiking models that already exploit heterogeneous temporal dynamics. DSNN and the proposed DMP-SNN. For SSC, results are shown for networks with one and two hidden layers (one- or two-layer). Beige rows mark DMP-SNN in three settings: solution I (the most parameter-efficient, matching strong baselines); solution II (accuracy–efficiency trade-off, achieving high accuracy and maintaining low parameter cost); and peak accuracy.
+
+Hardware implementation of dual memory demonstrates superior throughput and energy efficiency
+
+Chance-level accuracy is shown for reference. Bold font indicates this work.
+
+So far we have shown how the DMP-SNN achieves impressive algorith- mic performance alongside excellent parameter number scaling on neuromorphic benchmarks. However, these results do not yet cap- ture all of the advantages of DMP-SNN, which was developed through a co-optimization process to be particularly amenable to hardware implementations. We now introduce a new hardware architecture to realize the full benefits of DMP-SNN.
+
+Our hardware architecture is a digital near-memory-compute architecture that allows the co-optimization of data flow correspond- ing to the DMPs of the algorithm, instead of the default naive data flow of existing architectures that would simply integrate the het- erogeneous data flows of our algorithm. The end-to-end inference micro-architecture for DMP-SNN with a single hidden layer, based on digital near-memory-compute, is depicted in Fig. 4a. At a high level, this architecture supports four parallel computation paths and inte- grates post-synaptic operations through fine-grained operator fusion and heterogeneous operand stationarity. These design choices break temporal dependencies to balance latency across paths, maximize arithmetic intensity by fusing operators in hardware, and adapt data flow to handle variable sparsity patterns, collectively minimizing off-chip memory traffic. This modular design scales naturally with
+
+Nature Machine Intelligence | Volume 8 | June 2026 | 901–912 904
+
+Article https://doi.org/10.1038/s42256-026-01255-3
+
+a200
+
+s etatsy romeM200
+
+128
+
+80
+
+6040I 201050b75
+
+50250c Feedforward-architecture (light)
+
+Recurrent-architecture (dark) DMP-SNN (ours)
+
+task complexity, enabling flexible trade-offs between temporary stor- age and parallel throughput. The input stage receives task-agnostic binary spike addresses generated by neuromorphic vision or audi- tory sensors following the address-event representation protocol58, whereas the outputs correspond either to classification or regression results, or to spike streams propagated to downstream layers. We first describe the benchmarking results and then, in the next section, fur- ther detail the architectural innovations that made the benchmarking results possible.
+
+We benchmarked DMP-SNN on this co-designed hardware plat- form against other leading neuromorphic hardware platforms, namely Loihi242, ReckOn41, ElfCore59 and DenRAM23. Loihi2 is a programmable digital neuromorphic research platform. The benchmark considered in this paper refers specifically to the DSNN implementation proposed in a past work42. Our architecture achieves over 4 × higher through- put than a digital delay-based implementation on Loihi2, and over 1.9 × higher throughput than recurrent architectures such as ReckOn (Fig. 4b). These gains arise from compact slow-memory operations and parallelization strategies that eliminate data dependencies. Fur- thermore, DMP-SNN delivers more than 5 × higher energy efficiency than both the digital delay-based implementation on Loihi2 and
+
+100
+
+Accuracy (%)
+
+75 50128 150
+
+150
+
+100
+
+100 100
+
+II
+
+100
+
+80
+
+80
+
+80
+
+80 60604060II
+
+4040II
+
+I 6020102010I 201055540II 20I00000 25 50 75 100
+
+0 25 50 75 100
+
+0 25 50 75 100
+
+0 25 50 75 100 State buffer length (%)
+
+State buffer length (%)
+
+State buffer length (%)
+
+State buffer length (%)
+
+100
+
+100
+
+100
+
+100
+
+) %(y caruccA75
+
+75
+
+50502525000 15 30
+
+Epoch
+
+75
+
+50M
+
+M M M DMP-SNN 75
+
+Baseline
+
+502500 15 30
+
+0 30 60 90
+
+0 25 50 75 Epoch
+
+Epoch
+
+Epoch
+
+100
+
+DMP-SNN(II)
+
+DMP-SNN(I) DMP-SNN(II)
+
+TC-LIF 100
+
+100
+
+) %(y caruccADMP-SNN(I)
+
+DH
+
+Rhythm
+
+DelRec
+
+TC-LIF ASRNN GLIF 100
+
+DSNN
+
+RSNN DH
+
+LSNN
+
+Rhythm GLIF PLIF ASRNN DMP-SNN(II)
+
+75
+
+ASRNN
+
+SRNN 75
+
+FSNN
+
+50FSNN 50FSNN
+
+DSNN TC-LIF DSNN
+
+DMP-SNN(I)
+
+DMP-SNN(II)
+
+ASRNN RSNN
+
+RSNN
+
+DMP-SNN(I)
+
+DSNN
+
+TC-LIF RSNN
+
+FSNN
+
+0.04 0.10 0.20 0.04 0.10 0.20 0.04 0.10 0.20 0.04 0.10 0.20 0.50 1.00 Fig. 2 | Accuracy-efficiency across temporally structured benchmarks.
+
+and the proposed DMP-SNN on PS-MNIST, S-MNIST, SHD and SSC. The central a, From left to right: test accuracy on PS-MNIST, SMNIST, SHD and SSC for the
+
+line indicates the mean accuracy across n = 5 independent runs, and the shaded proposed DMP-SNN. For all datasets, the white dashed curve denotes an iso-
+
+area represents the standard error of the mean. Under identical training settings accuracy contour, where each point corresponds to a (memory size, state-buffer
+
+and neuron counts, the DMP-SNN starts from a higher accuracy and converges length) pair achieving the same target accuracy (chosen to be competitive with
+
+rapidly, consistently outperforming baseline across datasets. c, Comparison of previous works). The iso-accuracy contours indicate overall trends. The curve
+
+DMP-SNN with recent strong SNN models. DMP-SNN matches or outperforms highlights two configurations of DMP-SNN: solution I, a single operating point
+
+past work while using a purely feedforward architecture and notably fewer on the curve, and the most parameter-efficient configuration that matches SOTA
+
+parameters. M, model size. We compared the recent FSNN45, DSNN17, RSNN45, performance; solution II (accuracy-parameter trade-off), a higher-capacity
+
+LSNN14, GLIF46, PLIF10, ASRNN13, SRNN72, DH24, TC-LIF73, Rhythm49 and DelRec74. configuration with low additional parameter cost. b, Learning curves for baseline
+
+analogue delay-based designs such as DenRAM (Fig. 4c), primarily by eliminating the synaptic-delay buffer overhead (for example, capaci- tor arrays in analogue implementations). The integration of opera- tor fusion and heterogeneous operand stationarity yields a further 2.5 × improvement in energy efficiency over ElfCore, as confirmed in the ablation (refer to the ‘Experimental set-up’ section in the Methods). Finally, Fig. 4d shows that DMP-SNN incurs only a minor area overhead relative to ElfCore due to intermediate accumulation buffers, yet achieves more than 2 × higher area efficiency than ReckOn, owing to the removal of recurrent weight-matrix storage. Further details of the hardware validation procedure are provided in the Methods. Extended Data Fig. 5 further reports a hardware scaling analysis when doubling the LIF neuron layer.
+
+Overall, the experimental results demonstrate that DMP-SNN attains high computational efficiency on conventional digital hard- ware, surpassing architectures fabricated on more advanced technol- ogy nodes and even designs leveraging emerging memristive devices.
+
+Specific hardware optimizations for DMP-SNN. Our hardware archi- tecture realizes the full efficiencies of the DMP-SNN architecture at the level of advanced data and operator handling optimizations.
+
+Nature Machine Intelligence | Volume 8 | June 2026 | 901–912 905
+
+Article https://doi.org/10.1038/s42256-026-01255-3
+
+a b
+
+100
+
+100
+
+State buffer length
+
+) %(y caruccA) %(y caruccASHD SSC
+
+c d
+
+State buffer length
+
+0 5 40 100
+
+State buffer length θ
+
+Data-flow-dependency optimization. Although the compact slow memory state introduces little parameter overhead, its long integra- tion path leads to an imbalanced data flow: the fast spike-integration path can start immediately, whereas the memory-integration path cannot. Therefore, accelerating the memory-integration path is nec- essary to eliminate the throughput bottleneck. As the slow memory update is itself a linear operation, the memory integration with the post-synaptic neuron does not need to wait for the update to complete. Instead, the procedure can be divided into two fully parallel stages, as shown in Fig. 4e. The term on the right, v x\[k\], still depends on the scalar x\[k\]. However, computing the vector-matrix product P m\[k − 1\] requires approximately the same amount of time as computing x\[k\] and then forming v x\[k\]. As a result, the computational balance among the critical paths is maintained. In practice, the accumulation of x\[k\] can be fused with the neuron update ui, ensuring that the scalar x\[k\] becomes available concurrently with the binary spike vector from the upstream layer.
+
+Operator-fusion optimization. According to the roofline model60, operating in the compute-bound region maximizes arithmetic inten- sity and hence improves efficiency. In SOTA end-to-end neuromor- phic hardware41,59, a finite-state machine typically iterates over all neurons to perform leaky updates before spike integration, incur- ring at least two memory accesses per neuron. The DMP-SNN model introduces an additional access for the memory-integration path, further complicating efforts to maximize arithmetic intensity. The
+
+θ = 0 θ = 10 75
+
+θ = 40 θ = 100
+
+502500 20 40 Epoch
+
+75
+
+50S-MNIST 25PS-MNIST
+
+1 10 100 600
+
+00 5 10 40 128 Skip length
+
+Memory states
+
+100
+
+First layer Second layer
+
+) %(y caruccAθ = 0 θ = 5 θ = 40 θ = 100
+
+100
+
+50
+
+y aleD50
+
+00Fig. 3 | Context-dependent temporal demands. a, Task-dependent slow
+
+accelerates convergence, consistent with long-range context being carried by memory: increasing the memory-update interval (dilation; log-scale x-axis)
+
+the slow memory state. d, Effect of delay distribution with longer state buffer leaves SMNIST or PS-MNIST largely unchanged but degrades SHD or SSC,
+
+size. As θ grows, probability mass shifts towards shorter delays, the long-delay indicating that auditory streams require finer-grained long-term context,
+
+tail contracts and overall dispersion decreases, indicating that a longer window whereas long-horizon vision tolerates coarser, less-frequent updates.
+
+partially substitutes for explicit axonal delays. Box plots show the distribution b, Accuracy versus parameter budget and memory dimension saturates
+
+of delays at each state buffer length: the central line represents the mean, the once task-relevant timescales are captured, indicating that capacity should
+
+box edges indicate the 25th and 75th percentiles, and the whiskers extend to the be co-tuned rather than maximized. The bubble size denotes the number of
+
+minimum and maximum values. feedforward neurons. c, Increasing the state buffer length (θ) in the DSNN
+
+hardware implementation fuses leaky updates, spike integration and memory integration into a single process (Fig. 4f). By using tempo- rary register slots for intermediate accumulation, the design reduces memory access to only one per neuron for the entire sequence of computations, thereby enabling operation in the compute-bound regime.
+
+Operand-stationarity optimization. The DMP-SNN algorithm must simultaneously handle spike integration, corresponding to a sparse vector-matrix multiplication (weight accumulation), and memory integration, corresponding to a dense vector-matrix multiplication. Existing SOTA hardware includes Kraken61, which combines sparse spike-based integration with dense ternary CNN computation, and ElfCore59, which integrates sparse spike accumulation with dense eligibility-trace propagation. To optimize both data-flows, DMP-SNN adopts heterogeneous operand stationarity62. For spike integration, we use input stationarity to reduce weight-memory access when the input vector is sparse. We adopt output stationarity for memory integration, minimizing neuron-memory access (only one access per neuron) when the input vector is dense. In this scheme, Wf is indexed by the non-zero entries of the spike vector, whereas P and v are indexed by post-synaptic neuron addresses. As illustrated in Fig. 4g, four consecutive neuron states ui (or more) are preloaded into register slots for intermediate accumulation. To preserve efficient sparse access for Wf, the memory pointers are incremented in a skipped manner based on these four post-synaptic neuron indices.
+
+Nature Machine Intelligence | Volume 8 | June 2026 | 901–912 906
+
+Article https://doi.org/10.1038/s42256-026-01255-3
+
+a
+
+sl–1 \[k\]
+
+sl–1 \[0\]
+
+W0\[3:0\]
+
+AER
+
+Discussion Our work addresses a persistent tension: spiking models require access to long behavioural timescales, yet the mechanisms that typi- cally provide this context—such as dense recurrence or long learnable delays—are precisely those that burden hardware41. These mechanisms distribute state across many connections, increase memory traffic and demand deep buffers, causing temporal capability and implementation efficiency to diverge26. Here we show that this tension is not inherent and can be resolved through hardware-algorithm co-design. If tem- poral context is made explicit, compact and local to each layer, then long-range processing can coexist with hardware efficiency rather than compete with it2.
+
+On the algorithm level, we draw on a widespread cortical motif in which fast somatic spiking is shaped by slower, local dendritic integration39,40. We abstract the biologically observed fast–slow separation into an engineering design principle: a second state that is proximal to the layer but not per-synapse. Each layer maintains a low-dimensional slow state that summarizes recent activity and feeds back as an additional current. Being layer-shared, the state’s cost scales linearly rather than quadratically with network width;
+
+sl\[k\]
+
+ml\[k–1\] ul0 ul1 ul2 ul3 A RFB
+
+r otcafn oitarelecca. xAM300 Spike path Memory path
+
+) Jn(p etse mitr epy grenE200 SRAM Wf
+
+LIF logic
+
+Memory update
+
+ReLU (Σ + b) MAC
+
+Step
+
+Step SRAM
+
+k–1
+
+k Wx
+
+ml\[k\]
+
+neul\[0\]
+
+ν0 P0\[d–1:0\] SRAM
+
+MAC P ν
+
+t soca erad ezilamroN2.5 2.01.5
+
+1.00.50
+
+SRAM
+
+Output ul layer
+
+b c d
+
+200
+
+150
+
+100100500 0 Loihi2
+
+ReckOn
+
+ElfCore
+
+DMP
+
+Loihi2
+
+DenRAM ReckOn
+
+ElfCore
+
+DMP
+
+ReckOn
+
+ElfCore
+
+DMP
+
+e f g
+
+Ii\[k\] = Wfs\[k – 1\]
+
+Im\[k\] = Wmm\[k\]
+
+ui\[k\] = 1τs ui\[k – 1\] ui\[k\] = 1τs ui\[k – 1\] + Ii\[k\] + Im\[k \] Fig. 4 | Hardware design for the DMP architecture. a, Hardware architecture for end-to-end temporal, event-based sensory data inference. Four parallel data paths (spike integration, two memory integration paths and memory update) are shown in distinct colours, enabled by dependency breaking. Dual register slots are allocated for m\[k\] (memory update) and m\[k − 1\] (memory integration). Four further register slots temporarily store consecutive neuron membrane potentials ul for fused LIF operations and vector-matrix multiplications before writing back to neuron SRAM. Weight-matrix access patterns differ between spike and memory integration to enhance arithmetic intensity. b, DMP-SNN attains the highest throughput per sample by breaking computation dependencies. c, DMP-SNN provides up to 5 × higher energy efficiency compared with delay- based hardware designs. d, DMP-SNN offers 2 × greater area efficiency than
+
+ui\[k\] = +Ii\[k \] ui\[k\] = +Im\[k \] Load
+
+s\[k – 1\] Wf m\[k – 1\] P Compute
+
+m\[k\] = Am\[k – 1\] + Bx\[k\]
+
+Store Without fusion
+
+With fusion
+
+\= (WmA) m\[k – 1\] + (WmB) x\[k\]
+
+Load
+
+P ν
+
+Compute Break dependency Store Store
+
+Compute Load
+
+neuron
+
+Load weight
+
+Ii\[k\]
+
+Im\[k\] Input stationary
+
+Output stationary
+
+recurrent SNN architectures, enabled by its reduced parameter-memory footprint. e, Dependency breaking between slow memory update and memory integration enables parallel computation. Precomputed weight memories P and v are stored in SRAM. f, Comparison of data flow with and without fine-grained operator fusion. The example illustrates updates and integrations of four post-synaptic neuron membrane potentials. Operator fusion allows single- access SRAM reads for neuron states, requiring minimal additional register area while significantly increasing arithmetic intensity. g, Heterogeneous operand- stationary schemes are adopted: input-stationary (column-stationary) and output-stationary (row-stationary) access patterns are used for sparse spike integration and dense vector-matrix multiplications, respectively, further improving arithmetic intensity.
+
+because its dynamics are well conditioned63,64, it offers a more stable gradient pathway than the decaying membrane. Under strict last-time step supervision, this configuration sustained useful gradients over hundreds of steps on S-MNIST or PS-MNIST, whereas a purely feed- forward SNN did not, indicating that long-term credit assignment is carried by the explicit slow state rather than by inflating neuronal time constants.
+
+The hardware mirrors this separation. Instead of forcing sparse spike accumulation and dense linear updates through a single uniform core, we implement two coupled paths: one for spike-driven computa- tion and one for the shared state. Keeping the state on-chip, decoupling update from consume, and adopting distinct data-flow policies for sparse and dense kernels increase arithmetic intensity without extra off-chip traffic. Post-layout results in 22 nm confirm that this map- ping holds in silicon: performance matches or exceeds recurrent and delay-based baselines at lower energy and higher throughput, with only a modest area overhead from the additional state. In practice, these hardware gains arise directly from the same design principle used at the algorithmic level: isolate slow information, keep it compact, and move it through a dedicated path.
+
+Nature Machine Intelligence | Volume 8 | June 2026 | 901–912 907
+
+Article https://doi.org/10.1038/s42256-026-01255-3
+
+The DMP-SNN hardware targets a different point in the design space than large-scale neuromorphic platforms such as Loihi2 or SpiN- Naker 2. It is primarily designed for edge computing. For large-scale neuromorphic systems, DMP-SNN can serve as an independent core or be integrated into platforms such as Loihi2 or SpiNNaker. Deploy- ing it on these systems would enable broader evaluation of hardware efficiency and platform compatibility. More importantly, DMP-SNN addresses a key gap in neuromorphic design: the efficient integration of sparse and dense data paths. By incorporating dense data processing into SNNs through heterogeneous hardware integration, it improves model accuracy while maintaining high hardware efficiency.
+
+Finally, our results suggest a clear algorithm–hardware design principle for long-timescale spiking: make the slow state explicit, shared and low-rank; keep the fast path spike-driven; and execute the two in parallel on hardware. Under this formulation, long temporal horizons no longer compete with efficiency, and the biological fast– slow motif provides a high-level design pattern rather than a loose analogy. This establishes a scalable template for neuromorphic systems in which temporal competence and deployment practicality reinforce each other, rather than exist in trade-off.
+
+Methods Spiking neurons We model spiking neurons as LIF units. For neuron i in layer l at discrete time step k, the membrane potential by the membrane decay β discrete-time update
+
+and is the uinput li\[k\]. Its current dynamics Iliare \[k\], governed with the
+
+uli\[k\] = βuli\[k − 1\] + Ili\[k\], (1)
+
+The input current is
+
+Il\[k\] = Wf sl−1\[k\] (2)
+
+where Wf denotes feedforward synaptic weights and s l−1\[k\] the presyn- aptic spike vector from layer l − 1.
+
+A spike is emitted when the membrane exceeds threshold:
+
+sli\[k\] = Θ(uli\[k\] − θu), (3)
+
+where Θ(⋅) is the Heaviside step function (1 if its argument is positive and 0 otherwise), and θu is the membrane threshold.
+
+Building on this vanilla LIF neuron, we consider two variants that extend temporal capacity: ‘LIF with axonal delays’ models transmission delays as a temporal shift of presynaptic spikes, that is, sl−1\[k\] → sl−1\[k − d\]; ‘LIF with recurrent connections’ augments the update by adding an additional recurrent term within the layer.
+
+Slow memory pathway We implement the slow pathway using a state-space model that cap- tures long-term dependencies through well-conditioned linear dynam- ics. We treat the slow pathway as a generic linear memory module (for example, linear RNN or SSM-style). In our experiments, we instantiate it with an Legendre memory unit (LMU)-like state-space realization for its explicit parameterization and stable long-horizon dynamics. This design builds on the LMU framework63,65, which formulates a continuous-time memory as a linear time-invariant system. The LMU combines a single-input delay network with a nonlinear dynamical sys- tem, efficiently encoding recent input history through orthogonalized basis functions derived from Legendre polynomials. The delay network projects the input onto a set of orthogonal basis functions derived from Legendre polynomials, providing an efficient representation of temporal context for subsequent nonlinear computation. The delay network orthogonalizes the input signal over a sliding window of length θ (we denote it as state buffer length), whereas the nonlinear system
+
+leverages this orthogonalized memory to compute various functions over time. Mathematically, given an input scalar function x(t), the state update can be described as follows:
+
+m′ðªt) = Amðªt) + Bxðªt) (4)
+
+where mðªt) ∈ ℝd denotes the memory state vector with dimension d, and A and B are state-space matrices. Following the use of Padé approximation64,66, the state-space matrices can be expressed as follows:
+
+A = \[a\]ij ∈ ℝd×d, aij = ðª2i + 1){
+
+−1 if i \< j
+
+ðª−1)i−j+1 if i ≥ j
+
+B = \[b\]i ∈ ℝd×1, bi = ðª2i + 1)ðª−1)i, i,j ∈ \[0,d − 1\]
+
+(5)
+
+This continuous-time system can be converted to discrete-time k with a time resolution Δt:
+
+ml\[k\] = Aml\[k − 1\] + Bxl\[k\] (6)
+
+Here, A and B are the discretized versions of A and B, obtained using the zero-order hold method. Specifically, exact discretization yields
+
+A = eAΔt and B = A−1ðªeAΔt − I)B,
+
+and these matrices are usually frozen during training.
+
+DMP-SNN Each layer maintains a low-dimensional slow state ml\[k\] ∈ ℝd that sum- marises recent activity and feeds back as an additional current. As suggested by Chilkuri et al.67, we compress presynaptic spikes into a scalar drive:
+
+xl\[k\] = fxðªWxsl−1\[k\] + b) (7)
+
+Where fx is the mapping function. The shared memory is updated by
+
+ml\[k\] = Aml\[k − 1\] + Bxl\[k\]. (8)
+
+The membrane update is
+
+ul\[k\] = βul\[k − 1\] + Il\[k\] + Ilm\[k\] (9)
+
+The input current I and memory input Im are given by:
+
+Il\[k\] = Wfsl−1\[k\], (10)
+
+Ilm\[k\] = Wmml\[k\] (11)
+
+where Wm represents the weights from memory. This formulation couples a fast spiking pathway with a slow memory that evolves stably over long timescales. The full detailed equation is listed in Extended Data Table 3. We used the network parameters given in Extended Data Table 4 for all experiments, unless otherwise specified. Our method is trained via the SpikingJelly and SLAYER frameworks68,69 and used the mean membrane potential of the last layer as the output.
+
+Analysis of the gradient of DMP-SNN We analyse temporal credit assignment under last-time step supervi- sion. For a hidden layer l, let ul\[k\] ∈ ℝN and ml\[k\] ∈ ℝd denote the mem- brane potentials and slow memory at discrete time k, respectively. Ignoring input-driven terms (which act as biases and do not affect state-state Jacobians), the dynamics within the layer can be written as
+
+Nature Machine Intelligence | Volume 8 | June 2026 | 901–912 908
+
+Article https://doi.org/10.1038/s42256-026-01255-3
+
+ul\[k + 1\] = β ul\[k\] + Wm ml\[k + 1\], (12)
+
+ml\[k + 1\] = Aml\[k\], (13)
+
+with leak factor β ∈ (0, 1), memory readout matrix Wm ∈ ℝN×d, and state-transition matrix A ∈ ℝd×d arising from the state space construction.
+
+It is convenient to group membrane and memory into a joint state
+
+zl\[k\] = \[ ul\[k\]
+
+ml\[k\] \] ∈ ℝN+d.
+
+Equations (12) and (13) define a linear time-invariant update
+
+zl\[k + 1\] = Fzl\[k\], F = \[ βIN WmA
+
+\] , 0 A where IN denotes the N × N identity matrix. Over a temporal horizon from k to T, the same-layer Jacobian is therefore
+
+∂zl\[T\] ∂zl\[k\] = FT−k. (14)
+
+As F is block upper-triangular, its eigenvalues are
+
+specðªF) = {β ðªmultiplicityN )} ∪ specðªA),
+
+where specðªA) = {λiðªA)} denotes the spectrum of A and λiðªA) is the ith eigenvalue of A. The eigenvalue β arises from the membrane block βIN and the remaining eigenvalues arise from the memory block A. For a purely FSNN, the state reduces to the membrane only, zl\[k\] = ul\[k\], and F = βIN, so that
+
+∂ul\[T\] ∂ul\[k\] = βT−kIN,
+
+and all gradient components decay at rate ∣β∣ T−k. In the DMP-SNN, the modes associated with the membrane block still decay at this fast rate, but the memory block A contributes further modes whose decay is governed by |λiðªA)|T−k. As the slow memory feeds back into the mem- brane via the term Wmml\[k\] in equation (12), these memory modes are continuously injected into the membrane dynamics and appear as slow components in ul\[T\]. By construction, the spectral radius ρðªA) is close to one63, so these memory-aligned modes carry gradients over sub- stantially longer horizons.
+
+Intuitively, the DMP-SNN therefore provides two distinct temporal scales for credit assignment: a fast mode, inherited from the leaky mem- brane, and a slow mode, inherited from the well-conditioned memory dynamics. Empirically, this leads to a broad temporal tail in the gradient profile over k for the DMP-SNN, whereas the FSNN has a sharp peak near k = T and rapid decay towards earlier time steps (Extended Data Fig. 4).
+
+Dilated slow memory Dilated slow memory updates the memory-driven input only every fixed number of time steps, thereby skipping intermediate computa- tions on hardware. The memory-driven input to neuron n at time step k is
+
+Ilm\[k\] = Wm m(l)\[kd\], kd = ⌊k/ds⌋ds (15)
+
+where ds is the the skip length (dilation factor), ml\[kd\] denotes the memory m\[2ds\],…,mðª⌊k/dvector s⌋dsubsampled s)\]⊤ ). Between every updates ds steps (that is, (when kmod \[m\[0\],m\[ds\], ds ≠ 0), the membrane potential evolves without the memory injection.
+
+Hardware baselines State-of-the-art hardware implementations of efficient long-term memory for temporal signal processing include:
+
+Loihi242: an end-to-end framework that enables event-based SNN training with synaptic delays on GPUs and deployment on Intel’s Loihi2 neuromorphic chip. It represents the SOTA in digital hardware implementations featuring synaptic delays. Loihi2 is not specifically optimized for synaptic delay implementation; however, to the best of our knowledge, it provides the only publicly available SOTA results for a digital implementation of SNN delays.
+
+DenRAM23: an analogue feedforward SNN with dendritic compart- ments integrated with resistive random access memory in 130 nm technology, supporting both synaptic delays and weights. It repre- sents the SOTA analogue hardware approach using memristor-based delayed synapses.
+
+ReckOn41: a spiking RNN processor that supports task-agnostic online learning over multi-second timescales. It represents the SOTA in digital spiking RNN implementations.
+
+ElfCore59: a SNN processor equipped with a local self-supervised learning engine for multilayer temporal learning without labelled inputs. It represents the SOTA in digital hardware integrating both sparse spike and dense trace data paths. For the ablation study, we implemented a modified ElfCore-based architecture without operator fusion or heterogeneous operand stationarity59.
+
+Experimental set-up Implementation and evaluation methodology. The proposed DMP-SNN architecture and the ElfCore-based design were imple- mented in an advanced 22FDX process node and evaluated through post-layout simulations using QuestaSim and Innovus.
+
+Hardware performance metrics were obtained by averaging infer- ence results over the complete SHD test set. All networks were trained offline, and the reported accuracies correspond to hardware-based inference measurements.
+
+Reference baselines results. We compare our design against SOTA neuromorphic platforms, including Loihi2, DenRAM and ReckOn. The reported metrics for these platforms were extracted from their respective publications and normalized to account for differences in process technology and supply voltage.
+
+• Loihi2: achieves 88% hardware-measured accuracy and repre- sents the SOTA digital delay-based implementation.
+
+• DenRAM: achieves approximately 87% accuracy and repre- sents the SOTA memristor-based delay implementation. This value is based on hardware-aware simulations rather than full end-to-end silicon measurements.
+
+• ReckOn: achieves 86.2% hardware-measured accuracy and rep- resents a SOTA recurrence-based implementation.
+
+• ElfCore: achieves 90.3% accuracy on the full SHD test set and serves as the hardware baseline for ablation analysis.
+
+The proposed DMP-SNN also achieves 90.3% accuracy. Both Elf- Core and DMP-SNN deploy the identical trained network model. The key difference lies in the architectural enhancements-such as operator fusion and the heterogeneous operator-stationary strategy, which are applied exclusively in DMP-SNN. Therefore, the comparison between ElfCore and DMP-SNN isolates and quantifies the hardware-level ben- efits introduced by the proposed optimizations.
+
+Comparison metrics. The evaluation considers the following hardware-level metrics:
+
+• Maximum acceleration factor: The ratio between the core processing speed per time step and real-time execution (1 ms per SHD time step).
+
+Nature Machine Intelligence | Volume 8 | June 2026 | 901–912 909
+
+Article https://doi.org/10.1038/s42256-026-01255-3
+
+• Energy per time step: The average energy consumed to process a single inference time step.
+
+• Area cost: The post-layout, tape-out-ready silicon area of the computing core, reflecting hardware area efficiency under matched (and improved) functionality.
+
+Rationale for selecting ReckOn as the area baseline. ReckOn is chosen as the area comparison baseline for three primary reasons:
+
+1\. It is the only past work that reports the complete
+
+computing-core area in silicon. 2. Its architecture closely resembles ours, adopting a single-
+
+core design targeted at extreme edge computing scenarios such as sensor-level processing. 3. It fully uses on-chip resources for the same SHD task, ensuring
+
+a fair and meaningful area comparison.
+
+Data availability The spiking data used in this study are publicly available and open source. The dataset for SHD and SSC belong to Spiking Heidel- berg Datasets, which can be accessed via https://zenkelab.org/ datasets/. S-MNIST and PS-MNIST are derived from the original MNIST dataset, which can be accessed via http://yann.lecun.com/ exdb/mnist/.
+
+Code availability The source code for the algorithm and hardware implementation are available at https://github.com/sunpengfei1122/Dual\_memory\_path- ways (ref. 70) and Zenodo via https://doi.org/10.5281/zenodo.19839869 (ref. 71).
+
+References 1. Maass, W. Networks of spiking neurons: the third generation
+
+of neural network models. Neur. Netw. 10, 1659–1671 (1997). 2. Roy, K., Jaiswal, A. & Panda, P. Towards spike-based machine
+
+intelligence with neuromorphic computing. Nature 575, 607–617 (2019). 3. Gerstner, W. & Kistler, W.M. Spiking Neuron Models: Single
+
+Neurons, Populations, Plasticity 157 (Cambridge Univ. Press, 2002). 4. Li, G. et al. Brain-inspired computing: a systematic survey and
+
+future trends. Proc. IEEE 112, 544–584 (2024). 5. Yu, Z., Sun, P. & Goodman, D. F. M. Beyond rate coding: surrogate
+
+gradients enable spike timing learning in spiking neural networks. Neurom. Comput. Eng. 6, 014016 (2026). 6. Mostafa, H. Supervised learning based on temporal coding in
+
+spiking neural networks. IEEE Trans. Neur. Netw. Learn. Syst. 29, 3227–3235 (2017). 7. Comşa, I.-M. et al. Temporal coding in spiking neural networks
+
+with alpha synaptic function: learning with backpropagation. IEEE Trans. Neur. Netw. Learn. Syst. 33, 5939–5952 (2021). 8. Sun, P., Wu, J., Zhang, M., Devos, P. & Botteldooren, D. Delay
+
+learning based on temporal coding in spiking neural networks. Neur. Netw. 180, 106678 (2024). 9. Gast, R., Solla, S. A. & Kennedy, A. Neural heterogeneity controls
+
+computations in spiking neural networks. Proc. Natl Acad. Sci. USA 121, e2311885121 (2024). 10. Fang, W. et al. Incorporating learnable membrane time constant
+
+to enhance learning of spiking neural networks. In Proc. IEEE/CVF International Conference on Computer Vision 2661–2671 (IEEE/CVF, 2021). 11. Perez-Nieves, N., Leung, V. C. H., Dragotti, P. L. & Goodman, D. F. M.
+
+Neural heterogeneity promotes robust learning. Nat. Commun. 12, 5791 (2021).
+
+12\. Shaban, A., Bezugam, S. S. & Suri, M. An adaptive threshold
+
+neuron for recurrent spiking neural networks with nanodevice hardware implementation. Nat. Commun. 12, 4234 (2021). 13. Yin, B., Corradi, F. & Bohté, S. M. Accurate and efficient
+
+time-domain classification with adaptive spiking recurrent neural networks. Nat. Mach. Intell. 3, 905–913 (2021). 14. Bellec, G., Salaj, D., Subramoney, A., Legenstein, R. & Maass, W. Long short-term memory and learning-to-learn in networks of spiking neurons. In 32nd Conference on Neural Information Processing Systems (NeurIPS, 2018). 15. Sreenivasan, K. K. & D’Esposito, M. The what, where and how of
+
+delay activity. Nat. Rev. Neurosci. 20, 466–481 (2019). 16. Izhikevich, E. M. Polychronization: computation with spikes.
+
+Neur. Comput. 18, 245–282 (2006). 17. Sun, P., Chua, Y., Devos, P. & Botteldooren, D. Learnable axonal
+
+delay in spiking neural networks improves spoken word recognition. Front. Neurosci. 17, 1275944 (2023). 18. Wang, X., Lin, X. & Dang, X. A delay learning algorithm based on
+
+spike train kernels for spiking neurons. Front. Neurosci. 13, 252 (2019). 19. Yu, Q. et al. Improving multispike learning with plastic synaptic
+
+delays. IEEE Trans. Neur. Netw. Learn. Syst. 34, 10254–10265 (2022). 20. Grappolini, E. & Subramoney, A. Beyond weights: deep learning in
+
+spiking neural networks with pure synaptic-delay training. In Proc. 2023 International Conference on Neuromorphic Systems 1–4 (ICONS, 2023). 21. Hammouamri, I., Hassani, I.K. & Masquelier, T. Learning delays in
+
+spiking neural networks using dilated convolutions with learnable spacings. In International Conference on Learning Representations (ICLR, 2024). 22. Patiño-Saucedo, A. et al. Empirical study on the efficiency of
+
+spiking neural networks with axonal delays, and algorithm– hardware benchmarking. In 2023 IEEE International Symposium on Circuits and Systems (ISCAS) 1–5 (IEEE, 2023). 23. D’agostino, S. et al. DenRAM: neuromorphic dendritic architecture
+
+with RRAM for efficient temporal processing with delays. Nat. Commun. 15, 3446 (2024). 24. Zheng, H. et al. Temporal dendritic heterogeneity incorporated
+
+with spiking neural networks for learning multi-timescale dynamics. Nat. Commun. 15, 277 (2024). 25. Mészáros, B., Knight, J. C. & Nowotny, T. Efficient event-based
+
+delay learning in spiking neural networks. Nat. Commun. 16, 10422 (2025). 26. Patino-Saucedo, A. et al. Hardware-aware training of models with
+
+synaptic delays for digital event-driven neuromorphic processors. Preprint at https://arxiv.org/abs/2404.10597 (2024). 27. Karilanova, S., Dey, S. & Özçelikkale, A. Delays in spiking
+
+neural networks: a state space model approach. Preprint at https://arxiv.org/abs/2512.01906 (2025). 28. Maass, W., Natschläger, T. & Markram, H. Real-time computing
+
+without stable states: A new framework for neural computation based on perturbations. Neur. Comput. 14, 2531–2560 (2002). 29. Biswas, A., Medhe, S.A., Singhal, R. and Ganguly, U. Temporal and
+
+spatial reservoir ensembling techniques for liquid state machines. In 2024 International Conference on Neuromorphic Systems (ICONS) 78–81 (IEEE, 2024). 30. Deckers, L., Tsang, I. J., Van Leekwijck, W. & Latré, S. Extended
+
+liquid state machines for speech recognition. Front. Neurosci. 16, 1023470 (2022). 31. Thakur, C. S. et al. Large-scale neuromorphic spiking array
+
+processors: A quest to mimic the brain. Front. Neurosci. 12, 891 (2018). 32. Lenz, G., Ieng, S.-H. & Benosman, R. Event-based face detection
+
+and tracking using the dynamics of eye blinks. Front. Neurosci. 14, 587 (2020).
+
+Nature Machine Intelligence | Volume 8 | June 2026 | 901–912 910
+
+Article https://doi.org/10.1038/s42256-026-01255-3
+
+33\. Payvand, M., Fouda, M. E., Kurdahi, F., Eltawil, A. M. & Neftci, E. O.
+
+On-chip error-triggered learning of multi-layer memristive spiking neural networks. IEEE J. Emerging Sel. Top. Circ. Syst. 10, 522–535 (2020). 34. Wu, Y. et al. Brain-inspired global-local learning incorporated with
+
+neuromorphic computing. Nat. Commun. 13, 65 (2022). 35. Dampfhoffer, M., Mesquida, T., Valentian, A. & Anghel, L.
+
+Backpropagation-based learning techniques for deep spiking neural networks: a survey. IEEE Trans. Neur. Netw. Learn. Syst. 35, 11906–11921 (2023). 36. Zheng, Z. et al. Modeling macroscopic brain dynamics with
+
+brain-inspired computing architecture. Nat. Commun. 16, 9424 (2025). 37. London, M. & Häusser, M. Dendritic computation. Annu. Rev.
+
+Neurosci. 28, 503–532 (2005). 38. Murray, J. D. et al. A hierarchy of intrinsic timescales across
+
+primate cortex. Nat. Neurosci. 17, 1661–1663 (2014). 39. Sartzetaki, C. et al. The human brain as a dynamic mixture of
+
+expert models in video understanding. Preprint at bioRxiv https://doi.org/10.1101/2025.10.27.684803 (2025). 40. Cook, J., Akarca, D., Costa, R. & Achterberg, J. Brain-like
+
+processing pathways form in models with heterogeneous experts. In The 39th Annual Conference on Neural Information Processing Systems (NeurIPS, 2025). 41. Frenkel, C. & Indiveri, G. ReckON: a 28 nm sub-mm2 task-agnostic spiking recurrent neural network processor enabling on-chip learning over second-long timescales. In 2022 IEEE International Solid-State Circuits Conference (ISSCC) Vol. 65 (IEEE, 2022). 42. Mészáros, B., Knight, J.C., Timcheck, J. & Nowotny, T. A complete
+
+pipeline for deploying snns with synaptic delays on loihi 2. Preprint at https://arxiv.org/abs/2510.13757 (2025). 43. Sun, P., Achterberg, J., Su, Z., Goodman, D.F. & Akarca, D.
+
+Exploiting heterogeneous delays for efficient computation in low-bit neural networks. Preprint at https://arxiv.org/ abs/2510.27434 (2025). 44. LeCun, Y., Bottou, L. éon, Bengio, Y. & Haffner, P. Gradient-based
+
+learning applied to document recognition. Proc. IEEE 86, 2278–2324 (2002). 45. Cramer, B., Stradmann, Y., Schemmel, J. & Zenke, F. The
+
+Heidelberg spiking data sets for the systematic evaluation of spiking neural networks. IEEE Trans. Neur. Netw. Learn. Syst. 33, 2744–2757 (2020). 46. Yao, X., Li, F., Mo, Z. & Cheng, J. GLIF: a unified gated leaky
+
+integrate-and-fire neuron for spiking neural networks. In 36th Conference on Neural Information Processing Systems (NeurIPS 2022) https://openreview.net/pdf?id=UmFSx2c4ubT (2022). 47. Sun, P., Wu, J., Zhang, M., Devos, P. & Botteldooren, D. Delayed
+
+memory unit: modeling temporal dependency through delay gate. IEEE Trans. Neur. Netw. Learn. Syst. 36, 10808–10818 (2024). 48. Fan, L. et al. 

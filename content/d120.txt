@@ -1,0 +1,503 @@
+OpenJarvis: Personal AI, On Personal Devices 
+
+Personal AI, On Personal Devices
+
+Jon Saad-Falcon∗1 · Avanika Narayan∗1 · Robby Manihani1 Tanvir Bhathal1 · Herumb Shandilya1 · Hakki Orhun Akengin1 Gabriel Bo1 · Andrew Park1 · Matthew Hart1 · Caia Costello2 Chuan Li2 · Christopher Ré1 · Azalia Mirhoseini1
+
+∗ Equal contribution. 1 Stanford University 2 Lambda Labs
+
+Personal AI stacks, like OpenClaw and Hermes Agent, are becoming central to daily work, yet they route nearly every query (often over sensitive local data) to cloud-hosted frontier models. Replacing frontier models with local models inside existing stacks does not work: swapping Claude Opus 4.6 for Qwen3.5-9B drops accuracy by 25–39 pp across personal AI tasks like PinchBench and GAIA. Existing stacks bundle agentic prompts, tool descriptions, memory configuration, and runtime settings around a specific cloud model. Only the prompts can be tuned, and state-of-the-art prompt optimizers close just 5 pp of the local– cloud gap on their own. This motivates a decomposed personal AI stack: one that exposes individual primitives which can be optimized individually or jointly to close the local–cloud gap. We present OPENJARVIS, an architecture that represents a personal AI system as a typed spec over five primitives: Intelligence, Engine, Agents, Tools & Memory, and Learning. Each primitive is an independently editable field, making the stack end-to-end optimizable and measurable against accuracy, cost, and latency. Towards closing the local–cloud gap without surrendering local-model properties, OPENJARVIS introduces LLM-guided spec search, a local–cloud collaboration in which frontier cloud models propose edits across the spec at search time, only non-regressing edits are accepted, and the resulting spec runs entirely on-device at inference time. With LLM-guided spec search, on-device specs match or exceed cloud accuracy on 4 of 8 benchmarks and land within 3.2 pp of the best cloud baseline on average. They also reduce marginal API cost by ∼800× and end-to-end latency by 4×.
+
+Code: https://github.com/openjarvis/openjarvis Website: https://open-jarvis.github.io/OpenJarvis/
+
+1 Introduction
+
+Personal AI stacks, like OpenClaw \[80\] and Hermes Agent \[60\], are now central to daily writing, research, coding, and scheduling. Yet today’s personal AI is rarely private or local. Most systems route each query to a cloud-hosted frontier model, often including sensitive personal data. This design demands thousands of dollars per year in recurring API and subscription spend \[96, 78\]. It exposes private data to third-party servers, requires network connectivity to function, and leaves users without ownership of the models they depend on. It also consumes orders of magnitude more energy per token than local execution \[75\]. Meanwhile, consumer accelerators \[5, 70, 34\] now run 1B–128B open-weight models with FP8 quantization \[21\], and open-weight families such as Qwen3.5 \[71\] and Gemma4 \[28\] trail frontier cloud models by 6–12 months on personal AI tasks rather than years \[13, 75\]. On-device models nonetheless remain confined to trivial tasks like tone adjustment and text completion \[6\].
+
+Preprint.
+
+Figure 1: Overview of OPENJARVIS. (Left) Five composable primitives (Intelligence, En- gine, Agents, Tools & Memory, Learning) are composed through a declarative spec that can be shared, evaluated, and optimized end-to-end (Section 3.1). (Middle) Joint accuracy- efficiency evaluation across the evaluated local specs (green) and 3 cloud baselines (blue) reveals that on-device configurations approach within 3.2 pp of the best cloud model at roughly 800× lower marginal API cost per query (Section 4.3). (Right) LLM-guided spec search uses frontier cloud models as reflective proposers: the teacher diagnoses failures, proposes edits across the full spec, and a held-out gate accepts only non-regressing improve- ments, closing the remaining local–cloud accuracy gap by 13–32 pp with student training on-device (Section 4.4).
+
+In this work we ask: can the core of a personal AI stack (i.e., model inference, agent execution, memory, and learning) run on-device while remaining competitive with cloud-only stacks? We study this question across eight personal AI benchmarks spanning writing, research, coding, and scheduling, including PinchBench \[40\] and GAIA \[50\] (Section 4.1). As a first attempt, we ask whether one can simply swap the cloud model for a local one inside an existing stack. Replacing Claude Opus 4.6 with Qwen3.5-9B, while keeping the rest of OpenClaw or Hermes Agent fixed, drops accuracy by 25–39 percentage points across PinchBench and GAIA (Section 4.2, Table 1). We identify two reasons for the local-cloud performance gap:
+
+• Substitution breaks monolithic stacks. Agent prompts, tool descriptions, memory configu- ration, and runtime settings are fused into the framework, co-designed for the intended cloud model. Substituting a local model breaks all of these at once (Section 4.2).
+
+• Single-primitive optimization plateaus. Of the bundled components, only prompts can be tuned without source-level changes. The rest are baked into the framework. Applying state-of-the-art prompt optimizers (GEPA \[1\] and DSPy \[39\]) to the swapped-in local model, while holding everything else fixed, closes only 5 pp of the cloud–local gap on their own. Optimizing one primitive at a time cannot deliver the coordinated changes across model, prompts, tools, and runtime that misalignment demands.
+
+Motivated by these limitations, we introduce OPENJARVIS, an architecture that makes per- sonal AI stacks end-to-end optimizable. OPENJARVIS has two core components. First, the spec: a typed configuration object that decomposes the personal AI system as five editable primitives: Intelligence, the language model architecture and its weights; Engine, the infer- ence runtime; Agents, the reasoning loop; Tools & Memory, data integration and persistent storage; and Learning, the optimizer that updates the system from traces (Section 3.1). The spec exposes every component of the stack as a degree of freedom in one optimizable object. Second, LLM-guided spec search: a local–cloud search algorithm that jointly optimizes all four editable primitives of the spec: Intelligence, Engine, Agents, and Tools & Memory. LLM-guided spec search runs entirely on-device at inference time but uses frontier cloud models at search time to improve the local spec as much as possible. This gives us the best of both worlds: cloud-model capability transferred into a spec that runs locally. At each search step, a frontier model reads traces from the current spec and proposes coordinated edits (i.e., rewrite a tool description, adjust a runtime setting) across the four primitives. Each
+
+2
+
+edit is accepted only if it improves performance on a held-out evaluation, and accepted edits become the new spec for the next step. Across eight benchmarks for personal AI, optimized specs match or exceed cloud accuracy on four, land within 3.2 pp of the best cloud baseline on average, and reduce marginal API cost by ∼800× and end-to-end latency by 4× (Section 4.4). LLM-guided spec search closes 13–32 pp of the cloud–local gap at 7–11× lower optimization cost than single-primitive baselines. We perform a detailed analysis of LLM-guided spec search’s search space. Our analysis highlights three axes that govern the local–cloud gap:
+
+(a) Editable surface. How does expanding the move space from prompts alone to all four editable primitives affect gap closure? In Figure 8 and Appendix C.5, we show that expanding the
+
+editable set adds 5.5–16.5 pp. (b) Proposer choice. Does diagnosing failures before proposing edits matter, or would evolu- tionary spec search at the same move space suffice? In Figure 8 and Appendix C.7, we show that the diagnose-and-propose loop in LLM-guided spec search adds 10.0 pp on average over evolutionary spec search at the same four-primitive move space. (c) Search budget. How does optimization cost trade off against gap closure? In Figure 7, we show that LLM-guided spec search matches single-primitive baselines at 7–11× lower optimization cost.
+
+To summarize, our main contributions are as follows:
+
+• Propose OPENJARVIS, an architecture that decomposes a personal AI system into five typed primitives composed into an editable spec, making the stack end-to-end optimizable and measurable on accuracy, cost, and latency (Section 3).
+
+• Propose LLM-guided spec search, a local–cloud collaboration that uses frontier models to propose spec edits at search time and runs the resulting spec entirely on-device at inference time, closing 13–32 pp of the cloud–local gap at 7–11× lower optimization cost than single-primitive baselines (Section 4).
+
+• Conduct an in-depth analysis across eight personal AI benchmarks, showing that on-device specs are Pareto-optimal on marginal API cost and latency with ∼800× lower marginal API cost and 4× lower end-to-end latency, and isolating the contributions of the proposer and the move space to the overall gain (Section 4.3).
+
+2 Related Work
+
+Unifying abstractions have historically accelerated ML progress. Imperative deep-learning frameworks \[67\] and type-based declarative ML toolboxes \[55\] unified model construction, while data systems for monitoring deployed ML products \[72\] and LM pipeline compil- ers \[39\] unified iterative improvement. The personal AI ecosystem is undergoing a similar fragmentation-to-unification transition. Existing tools each formalize a subset of the five primitives (Intelligence, Engine, Agents, Tools & Memory, and Learning) while hardcoding or omitting the rest.
+
+Agents and Tools: personal AI stacks. Existing personal AI stacks formalize Agents and Tools as configurable layers but tie Intelligence, Engine, and Learning to specific cloud models, so substituting a different Intelligence degrades the full pipeline (Section 4.2). This pattern holds across open frameworks such as OpenClaw \[80\], Hermes Agent \[60\], LangChain \[10\], CrewAI \[15\], Google ADK \[23\], OpenAI Symphony \[64\], Qwen-Agent \[2\], and related systems \[68, 19, 57, 35, 84, 93, 51\], whose Agent prompts, Tool descriptions, Memory configuration, and Engine/runtime settings are tied to specific model and engine choices. Closed systems (Apple Intelligence \[6\], Gemini Nano \[26\]) additionally hardcode the Engine to proprietary runtimes and expose no Learning interface.
+
+Engine and Intelligence: local inference tools. Local inference tools formalize Engine and Intelligence as configurable layers but provide no Agents, Tools, or Learning, leaving
+
+3
+
+the upper half of the stack unaddressed. This includes serving runtimes (Ollama \[63\], llama.cpp \[21\], LM Studio \[47\], LocalAI \[56\], gemma.cpp \[22\]), Engine-side performance optimizations such as quantization (GPTQ \[20\], AWQ \[43\]), speculative decoding \[42, 11\], and hardware-aware serving (MLC-LLM \[53\], ExecuTorch \[49\], vLLM \[41\], SGLang \[95\]), and Intelligence-side on-device architectures (MobileLLM \[46\], Gemma 3n \[24\], Liquid Nanos \[45\], Nemotron-Flash \[61\]) co-designed for efficient execution. OPENJARVIS’s Engine abstracts over these backends with built-in energy and cost telemetry, extending learned query routing \[85\] to local-vs-cloud decisions.
+
+Learning: optimization methods. Optimization methods formalize Learning but address one primitive at a time, falling into two families. Weight optimizers update Intelligence: classical knowledge distillation \[30\] (see \[90\] for a survey) trains students to match teacher soft targets, MiniLLM \[29\] and DeepSeek-R1 \[16\] extend this to LLMs, and PEFT methods (LoRA \[31\], QLoRA \[17\], GRPO \[77\]) make on-device weight updates feasible even on microcontrollers \[44\], with cross-platform mobile LoRA now practical \[83, 12\]. Prompt and agent optimizers update Agents (and, in some variants, Tools): DSPy \[39\] and ACE \[94\] compile or evolve agent prompts, and GEPA \[1\] uses LLM-based reflection over trajecto- ries with Pareto-efficient evolutionary machinery to preserve and merge complementary candidates. Inference-time collaboration (Minions \[58\], Advisor Models \[7\]) decomposes tasks across local and cloud Intelligence but does not persistently update any primitive, and OpenClaw-RL \[88\] is the closest prior system to continuous on-device learning, training an RL policy from live user interactions but updating only Intelligence weights in a cloud-hosted loop. Prior work has also observed that combining weight and prompt optimization can outperform either alone \[79\]. LLM-guided spec search (Section 3.3) extends this direction to four editable primitives (Intelligence, Engine, Agents, and Tools & Memory) with Learning as the optimizer slot, making it complementary to single-primitive methods rather than a replacement for them.
+
+Joint evaluation. On the evaluation side, tools exist for individual efficiency dimensions (Zeus \[52\], AI Energy Score \[32\], MLCommons \[54\]) but measure a single axis of a single primitive. Standard agent benchmarks (GAIA \[50\], SWE-bench \[37\], Terminal-Bench \[48\]) report accuracy alone and assume unlimited cloud compute. Because the spec provides a common representation for complete configurations, we are not aware of a prior framework that jointly evaluates accuracy, energy, latency, power, and cost across the full five-primitive composition (Section 4).
+
+Summary. Each prior effort formalizes a subset of the structure: personal AI frameworks address Agents and Tools, local inference tools address Engine and Intelligence, optimization methods address Learning one primitive at a time, and evaluation tools measure one axis of one primitive. No existing framework formalizes the full five-primitive composition or exposes it as a single optimizable object. This gap motivates the spec abstraction and LLM-guided spec search we introduce in Section 3.
+
+3 Methods
+
+We present OPENJARVIS in three parts: the spec abstraction (Section 3.1), joint accuracy- efficiency evaluation (Section 3.2), and LLM-guided spec search (Section 3.3). The core idea is that every local model needs the surrounding agent system reconfigured around it; the spec makes that reconfiguration explicit and optimizable. Section 2 situates these design choices in prior work, and Appendix A provides expanded method details.
+
+3.1 Primitives and the Spec Abstraction
+
+OPENJARVIS decomposes a personal AI stack into five primitives, each with a typed interface and registry (Figure 1, left). Intelligence specifies the language model and generation parameters. Engine specifies the runtime, hardware execution path, batching, quantization, and cache settings. Agents specify the reasoning loop, prompts, and tool-use policy. Tools & Memory specify external interfaces, retrieval, and persistent user state. Learning specifies
+
+4
+
+Figure 2: OpenJarvis architecture. Five composable primitives decouple model selection (Intelligence), inference runtime (Engine), agent logic (Agents), data integration (Tools & Memory), and on-device learning (Learning) into independently swappable layers. A spec (Section 3.1) composes all five into a declarative configuration that can be shared, evaluated, and optimized end-to-end.
+
+the optimizer that updates the spec from traces, including weight-only optimizers such as LoRA \[31\], prompt optimizers such as DSPy \[39\], and LLM-guided spec search (Section 3.3). Implementation details, supported runtimes, connectors, memory systems, and optimizer variants are in Appendix A.1.
+
+Five-primitive architecture. Each primitive is an independent degree of freedom that prior systems optimize in isolation. The decomposition is designed to separate choices that are independently configurable in deployed systems. For example, Intelligence and Engine separate model selection (Qwen3.5-9B vs. Qwen3.5-122B) from runtime selection (vLLM vs. Ollama). Agents and Tools separate the reasoning loop (ReAct vs. CodeAct) from the interfaces it invokes (filesystem, web search, MCP servers). Learning is structurally different from the other four primitives: it is the primitive we use to optimize all the others, making edits to Intelligence weights, Agent prompts/logic, Tools & Memory selection and descriptions, and Engine runtime specifications. This primitive lets the same framework describe systems that share Intelligence and Agent configurations but differ only in Learning policy, such as OpenClaw-RL \[88\]. Section 4.4 tests whether these distinctions between primitives matter for constructing and optimizing local AI.
+
+The spec abstraction. The five primitives are composed through the spec: a typed configu- ration object on which a single optimization algorithm operates. Figure 3 shows the spec as a structured declaration alongside the optimization signature; Figure 9 (Appendix A.1) shows the corresponding TOML serialization. A spec can be versioned, shared, evaluated on standardized benchmarks, and optimized end-to-end (Section 3.3).
+
+3.2 Evaluation Metrics
+
+We evaluate complete specs rather than isolated models. For each spec, an instrumented wrapper records five quantities per query: accuracy, energy, latency, power, and dollar cost. Accuracy is exact match or LLM-judge win rate, depending on the benchmark. Energy is measured through vendor APIs for local hardware and estimated for cloud baselines following prior work \[75\]. Latency is end-to-end wall-clock time, and power is energy divided by latency. Dollar cost is per-token API pricing and tool fees; local model inference is reported as $0 marginal API cost, with hardware and electricity reported separately. Together, the
+
+5
+
+(a) The spec: a typed configuration object
+
+Spec S := {
+
+Intelligence: (model, params, quant), Engine : (backend, batch, kv\_cache), Agent : (loop, prompts, tool\_strategy), Tools : (set, descriptions, memory), Learning : (optimizer, reward, gate) }Each slot is independently swappable; individual edits target a slot; batches can span slots.
+
+(b) A single optimization algorithm operates on the spec
+
+Optimize(S, T, G, ϵ, k, B) → S⋆:
+
+while stagnant \< k and cost \< B:
+
+failures = Teacher.diagnose(traces(S)) edits = Teacher.plan(S, failures) S = accept(S, edits, Gate, ϵ) return S Edits can span editable primitives; the optimizer design space (LoRA, DSPy, GEPA, LLM-guided spec search) is parameterized by which edit types are permitted.
+
+Figure 3: The spec abstraction. (a) A spec is a typed configuration object with five primitives: Intelligence, Engine, Agents, Tools & Memory, and Learning. (b) Optimizers instantiate the same signature by restricting which fields they edit. LoRA edits Intelligence weights; DSPy and GEPA edit Agent prompts; LLM-guided spec search edits Intelligence, Engine, Agents, and Tools & Memory jointly.
+
+spec and wrapper expose Pareto structure that accuracy-only benchmarks and single-axis efficiency tools miss \[50, 37, 48, 52, 32, 54\].
+
+3.3 LLM-guided spec search
+
+LLM-guided spec search optimizes a spec by searching over its primitive fields, where each spec is one complete local AI configuration and changing its fields defines the search space. The Learning primitive specifies how a spec is updated from traces, namely which edits are considered, how edited specs are evaluated, and when optimization stops. In LLM-guided spec search, this loop is a local–cloud collaboration: frontier cloud models, which excel at reading traces and reasoning about coordinated edits across many primitives, propose changes to the spec at search time, while local hardware, which excels at running the resulting configuration with low latency and zero marginal API cost, executes the optimized spec at inference time. A frontier model reads eligible traces, identifies failure patterns, and proposes candidate edits across the editable primitives.
+
+Failure clusters and the gate. The frontier model groups traces sharing a common failure mode into failure clusters, each annotated with student vs. teacher success rates and a natural-language characterization of the skill gap (e.g., “student fails on multi-hop questions requiring calendar lookups because it does not invoke the calendar tool”); see Appendix A.4 for the full clustering protocol. Each candidate edit is evaluated on held-out examples for the task, and accepted only if it improves the targeted failure cluster without causing unacceptable regressions elsewhere. We refer to this held-out validation check as the gate. Intelligence edits change model parameters or training triggers; Engine edits change runtime and serving choices; Agent edits change prompts, reasoning loops, and verification; Tools & Memory edits change Tool availability, Tool descriptions, and Memory configuration.
+
+What runs where. At inference time, the resulting spec runs on-device for model inference and agent execution, and when an Intelligence edit triggers student training, that training also runs locally. Teacher calls provide diagnoses, edit proposals, and labels, not inference-time model calls. Cloud-as-tool use is disabled in the headline local configurations.
+
+Relation to single-primitive optimizers. Most existing optimizers update one primitive at a time, falling into two families. Prompt and agent optimizers such as DSPy \[39\], GEPA \[1\], and ACE \[94\] edit Agents and, in some cases, Tools, while weight optimizers such as SFT, LoRA \[31\], and GRPO \[77\] edit Intelligence. LLM-guided spec search is complementary rather than competing: it operates on the same spec these methods would edit, and a single proposal can change any combination of the four editable primitives at once. The defining property of the spec is that Intelligence, Engine, Agents, and Tools & Memory fields are degrees of freedom in one optimizable object, so a single spec edit can simultaneously rewrite a Tool description and update model weights against the resulting prompt, something neither
+
+6
+
+Algorithm 1. LLM-guided spec search: greedy gated edits across primitives
+
+Require: Spec 1: 2: S while ← Snot 0 S0, teacher T, gate G, regression converged and cost \< B do tolerance ϵ, budget B 3: C ← T.diagnose(traces(S)) 4: e ← T.propose(S, C) ▷ may edit Intelligence, Engine, Agents, and Tools & Memory jointly 5: S′ ← apply(S, e) 6: if GateOK(S′, S, C, ϵ) then 7: S ← S′ ▷ greedy accept 8: end if 9: end while 10: return S GateOK means the target cluster improves and every non-target cluster regresses by at most e.
+
+Algorithm 2. Evolutionary spec search
+
+Require: Initial candidate S0, reflection LM T, evaluator G, budget B 1: 2: Initialize while cost population \< B do P←{S0} 3: S ← sample candidate from Pareto frontier of P 4: e ← T.reflect(S, traces(S)) 5: S′ ← apply(S, e) ▷ reflective mutation 6: 7: Optionally merge S′ with frontier candidate Sj Evaluate candidates and update Pareto frontier P 8: end while 9: return best candidate in P
+
+Algorithm 3. Single-component optimizer
+
+Require: Spec S0, dataset D, edit type τ ∈ {Intelligence, Agent}, budget B 1: 2: S while ← Scost 0 \< B do 3: e ← propose edit of type τ ▷ restricted to one primitive 4: S′ ← apply(S, e) 5: if loss or validation score improves on D then 6: S ← S′ 7: end if 8: end while 9: return S Cannot exploit coupling across primitives.
+
+Figure 4: Three ways to optimize a spec. OPENJARVIS proposes edits to the four editable primitives and keeps an edit only if held-out performance does not regress. Evolutionary spec search maintains and merges a population of candidate specs \[1\]. Single-component baselines edit one primitive at a time.
+
+family of single-primitive optimizers expresses natively. Figure 4 summarizes the three regimes compared in Section 4.4: LLM-guided spec search (Algorithm 1), an evolutionary spec-search baseline (Algorithm 2), and single-component optimization (Algorithm 3); Figure 8 separates the proposer axis from the move-space axis.
+
+Search loop. Each session repeats four steps: diagnose failures, propose edits, execute candidates, and commit only gated improvements. Diagnose clusters traces where the student underperforms. Plan proposes edits over Intelligence, Engine, Agents, and Tools & Memory fields. Execute evaluates each edited spec on a held-out gate built from eligible traces, agentic datasets with known answers \[73, 82\], and standard benchmark splits \[89, 50, 91\]. Repeat commits accepted edits and rolls back rejected ones. The loop stops when gate scores stagnate for k sessions (default k=5) or the budget is exhausted. Full per-phase examples are in Appendix A.4.
+
+Gate score. Let G(S) be the restricted to failure cluster c. held-out gate score of spec S, and let GFor an edit e targeting cluster c, with S′ = c(S) apply(S, be the e), score we accept if and only if:Gc(S′) \> Gc(S) and Gc′(S′) ≥ Gc′(S) − ϵ ∀c′ = c.
+
+The default tolerance is ϵ = 1%. This single rule applies across Intelligence weights, Agent prompts, Tool descriptions, Memory configuration, and Engine/runtime settings.
+
+(Optional) Composite reward for Intelligence edits. If Intelligence edits are requested involving model training, each candidate response y to a query q is scored by a composite reward over accuracy, energy, latency, and cost:
+
+R(q,y) = αRacc(q,y) − β E(q,y) ˆ− γL(q,y) ˆ− δ C(q,y). ˆ(1)
+
+7
+
+The default weights are (α,β,γ,δ) = (0.5,0.1,0.1,0.3). The reward scores responses during GRPO training within an Intelligence edit. The gate evaluates the resulting spec as a whole. Normalization details and robustness checks are in Appendix C.6.
+
+4 Experiments
+
+4.1 Models, Benchmarks, and Hardware
+
+We evaluate OPENJARVIS across 8 benchmarks, 11 local models from 4 families, 3 cloud baselines, and 7 hardware platforms. The suite contains 508 tasks, and agentic benchmarks enforce a 2-hour timeout per task. All results report the mean over 5 independent runs. Scoring uses GPT-5-mini as judge except where benchmarks provide deterministic grading. Appendix B details benchmarks (Appendix B.1), model choices and full accuracy tables (Appendices B.2 and B.3), hardware (Appendix B.4), and protocol (Appendix B.5).
+
+4.2 The Spec Recovers 56–77% of the Drop and Lands Within 3.2 pp of Cloud on Average
+
+The spec abstraction (Section 3.1) restores most of the portability that is lost when local models are dropped into cloud-designed frameworks, and the resulting on-device specs land within 3.2 pp of the best cloud model on average. We establish this with a controlled portability experiment on two production frameworks (Table 1) and a local-vs-cloud accuracy frontier drawn from the full accuracy table in Appendix B.3.
+
+PinchBench GAIA Framework Condition Acc. (%) ∆ vs. (a) Acc. (%) ∆ vs. (a)
+
+OpenClaw \[80\]
+
+(a) Default + cloud model 96.0 Ref. 58.0 Ref. (b) Default + Qwen3.5-9B 62.3 −33.7 19.2 −38.8 (c) OPENJARVIS (with Qwen3.5-9B) 88.4 −7.6 41.5 −16.5
+
+Hermes Agent \[60\]
+
+(a) Default + cloud model 93.5 Ref. 55.1 Ref. (b) Default + Qwen3.5-9B 68.7 −24.8 22.4 −32.7 (c) OPENJARVIS (with Qwen3.5-9B) 87.9 −5.6 40.8 −14.3 Recovery (a)→(b) drop closed by (c) 77% of PB drop 57% of GAIA drop Table 1: Portability triangulation: cloud-designed frameworks collapse when local models are substituted; OPENJARVIS recovers most of the drop. Three conditions per framework: (a) default + intended cloud model, (b) default + Qwen3.5-9B, (c) OPENJARVIS spec with Intelligence fixed at Qwen3.5-9B (only Engine, Agent, and Tool & Memory fields optimized). All ∆ values are reported relative to the default cloud configuration (a), so (b) shows the full local-substitution drop and (c) shows the residual gap to cloud after the spec is retargeted at constant Intelligence. Recovery is the fraction of the (a)→(b) drop closed by (c), isolating the contribution of the spec at constant Intelligence. The cloud model is Claude Opus 4.6 for both frameworks. Results are averaged over 5 independent runs.
+
+OPENJARVIS reduces the local-substitution drop from 25–39 pp to 5.6–16.5 pp. Table 1 isolates portability at fixed Intelligence. Replacing each framework’s intended cloud model with Qwen3.5-9B drops accuracy by 24.8–38.8 pp. With the same local model under an OPENJARVIS spec, the remaining drop relative to the cloud framework is only 5.6–16.5 pp. Equivalently, the spec closes 77% of the PinchBench drop and 56–57% of the GAIA drop. The drop is architectural rather than capability-bound: OpenClaw and Hermes Agent package Agent prompts, Tool descriptions, Memory configuration, Engine/runtime settings, and model-specific output expectations into personal AI stacks tuned to their intended cloud models. The OPENJARVIS spec exposes these assumptions as typed slots. Engine, Agent, and Tool fields can then be retargeted while holding Intelligence fixed. GAIA recovers less because its deep-reasoning demands exceed what a 9B model can deliver, regardless of configuration.
+
+8
+
+Figure 5: Accuracy-efficiency frontier. Local configurations approach the best cloud accuracy within 3.2 pp while reducing marginal API cost by roughly 800× and end-to-end latency by roughly 4× under our benchmark protocol. Energy and hardware-specific breakdowns are in Appendix C.3.
+
+The best local model lands within 3.2 pp of the best cloud model on average and matches or exceeds cloud on 4 of 8 benchmarks. Across the evaluated local specs, the best single on-device spec, Qwen3.5-122B, reaches 80.3% average accuracy, within 3.2 pp of Claude Opus 4.6 at 83.5% (Appendix B.3, Table 5). At the per-benchmark level, the best local model on each benchmark matches or exceeds the best cloud model on 4 of 8 benchmarks: ToolCall-15, PinchBench, LiveCodeBench, and τ-Bench V2. The remaining gaps concentrate on GAIA, τ 2-Bench Telecom, and DeepResearchBench, motivating the search experiments in Section 4.4.
+
+4.3 Local Models Trade 3.2 pp Accuracy for 800× Lower Cost and 4× Lower Latency
+
+Local configurations form the accuracy–cost Pareto frontier: they match cloud accuracy on four of eight benchmarks while reducing marginal API cost by roughly 800× and end-to- end latency by roughly 4×. This matters because heavy users of cloud personal AI spend thousands per year on one assistant, and none of that spend buys ownership, offline access, or price stability. We establish the comparison by treating the spec as the unit of analysis and instrumenting every query (Section 3.2), so local and cloud configurations can be compared on the same axes.
+
+Local configurations define the accuracy and cost frontier. Figure 5 plots average accuracy against dollar cost, latency, and energy per query for the evaluated local specs and 3 cloud baselines. Across cost and latency, the non-dominated configurations are local. Qwen3.5-122B reaches 80.3% average accuracy at roughly a thousandth of a cent per query, versus $0.009 for Claude Opus 4.6 at 83.5%, giving an approximately 800× marginal API-cost advantage for a 3.2 pp accuracy deficit. The cost axis reports API fees only; hardware and electricity are accounted for separately via measured energy and amortization (Appendix C.3). Local configurations also complete the full agentic workloads roughly 4× faster in our protocol, though single-shot prompts can favor cloud serving due to time-to-first- token optimizations. The resulting Pareto structure motivates spec-level model and Engine selection: for a given accuracy target, a spec can select the local configuration that minimizes cost, latency, or energy.
+
+4.4 LLM-guided spec search Shrinks the Cloud–Local Gap by 13–32 pp at 7–11×
+
+Lower Cost
+
+Sections 4.2 and 4.3 show that on-device specs can match cloud on 4 of 8 benchmarks, but gaps remain on reasoning- and research-heavy tasks. We evaluate whether LLM-guided spec
+
+9
+
+Figure 6: LLM-guided spec search improves local specs. Every student–teacher pair improves over the unoptimized spec on all three benchmarks. The strongest search-optimized Qwen3.5-9B student reaches 100.0% on PinchBench, 83.0% on LiveCodeBench, and 91.0% on LiveResearchBench.
+
+search closes this gap on PinchBench, LiveCodeBench, and LiveResearchBench. For each benchmark, we run search with four local target models and three frontier proposer models; Appendix C.4 extends the evaluation to all 8 benchmarks.
+
+LLM-guided spec search improves OpenJarvis students on personal AI benchmarks. Figure 6 shows accuracy before and after search. For Qwen3.5-9B, the best search- optimized spec reaches 100.0% on PinchBench, 83.0% on LiveCodeBench, and 91.0% on LiveResearchBench. Across the eight-benchmark suite, average gains per student model range from 13.1 to 31.5 pp (Appendix C.4, Table 9). These gains reflect joint optimiza- tion over Intelligence, Agent, Tool, Memory, and Engine primitives rather than any single component.
+
+LLM-guided spec search improves accuracy at lower optimization cost. Figure 7 com- pares LLM-guided spec search with prompt-only and weight-only baselines (DSPy/SIMBA, prompt-only GEPA, SFT, LoRA \[39, 1, 31\]) under the same offline protocol. The prompt-only
+
+Figure 7: Accuracy vs. optimization cost. LLM-guided spec search reaches the best accuracy on all three main benchmarks. LoRA is the strongest single-primitive baseline, but LLM- guided spec search is 7.1–10.9× cheaper to optimize. DSPy/SIMBA and prompt-only GEPA produce modest gains over the unoptimized local spec.
+
+10
+
+Figure 8: Proposer and move-space ablations for LLM-guided spec search. Student: Qwen3.5-9B; teacher: Claude Opus 4.6. Left: at fixed four-primitive move space, the LLM proposer outperforms a template-random proposer and evolutionary spec search. Middle: at fixed LLM proposer, expanding from one editable primitive to all four improves both accuracy and latency. Right: merging primitive pairs reduces accuracy and speedup relative to the full four-primitive spec.
+
+baselines add 4.1–5.2 pp on average over the unoptimized local spec, and LoRA is the strongest weight-only baseline across all three panels. LLM-guided spec search adds 1.1– 8.8 pp over LoRA and 5.0–18.8 pp over prompt-only GEPA at 7.1–10.9× lower optimization cost. The cost advantage comes from the acceptance gate: rejected edits do not trigger full training runs, and accepted edits compound across sessions.
+
+Both proposer and move space drive the gain. Figure 8 separates two axes: which proposer suggests edits, and how many primitives the proposer can edit. With all four primitives editable, LLM-guided spec search reaches 83.0–100.0%, compared to 73.0–94.5% for an evolutionary spec-search proposer at the same four-primitive move space (a gap of 5.5–18.0 pp, 10.0 pp on average) and 69.0–92.5% for random sampling from the edit catalog (a gap of 7.5–21.0 pp, 14.0 pp on average). The edit catalog and gate alone therefore do not explain the gain. With the LLM teacher fixed as the proposer, expanding the editable set from one primitive to all four adds 5.5–16.5 pp in accuracy and 2.65–3.45× in latency speedup over the 1-of-4 baseline. Merging primitive pairs that deployed systems treat as independent reverses these gains, dropping accuracy by 2.8–9.7 pp and latency speedup by 1.09–1.95× relative to the full 4-of-4 configuration. Both axes matter: the LLM teacher needs the four-primitive spec to reach 83.0–100.0%, and the four-primitive spec needs the LLM teacher to extract the full gain available at that move space. Appendix C.7 specifies the random and evolutionary spec-search four-primitive baselines.
+
+What the optimizer learns. Accepted edits are distributed across all four editable primitives rather than concentrated on Intelligence weights: weight updates make up only 16–44% of accepted edits across benchmarks, with the remainder spanning Engine, Agent, and Tool fields (Table 10). The dominant primitive within that distribution tracks task structure: Intelligence edits dominate code (44% on LiveCodeBench), Agent edits dominate customer-service and agentic tasks (41–45% on PB, TauB, and TBTel), and Tool edits dominate tool-calling and research (39–47% on TC15, GAIA, DRB, and LRB; Appendix C.5, Figure 10). At the per- failure level, the teacher maps each diagnosis to the corresponding primitive: retrieval failures receive mostly Tool edits, reasoning failures mostly Intelligence edits, control-flow failures mostly Agent edits, and efficiency-bounded failures mostly Engine edits (Figure 11). This explains why no single primitive reaches the joint-search ceiling: the useful intervention depends on the failure mode, and many failures require coordinated changes across multiple primitives.
+
+11
+
+5 Discussion and Conclusion
+
+OPENJARVIS shows that local personal AI requires more than replacing a cloud model with an open-weight model. The surrounding stack must be portable, measurable, and optimizable around the local model. The spec abstraction provides the needed representation: it makes model substitution recoverable, exposes the local–cloud accuracy–efficiency frontier, and gives LLM-guided spec search a target for transferring frontier-model guidance into an on- device system. We close by clarifying what runs on-device, how frontier proposer models are used, and which robustness checks support the main claims.
+
+Cloud at search time, local at inference time. The local–cloud division of labor in LLM- guided spec search is deliberate: frontier cloud models are used at search time, where their capability advantage in reading traces and reasoning about coordinated edits matters most, and local hardware runs the resulting spec at inference time, where its latency, cost, and ownership properties matter most. Capability flows from cloud to local through the optimized spec and stays there: the resulting local spec makes zero cloud calls at inference time, and undistilled local specs already match or beat cloud models on 4 of 8 benchmarks, so frontier proposer models extend local capability rather than being required for local systems to function. When a frontier proposer is used at search time, only eligible traces are transmitted according to the protocol in Appendix A.3, and at 100 queries per day the amortized proposer cost falls below $0.001 per query within six months (Appendix C.2).
+
+Robustness and limitations. The headline gains from LLM-guided spec search (Section 4) survive the four robustness perturbations we test: reward-weight variants, search-seed variance, random-restart gains, and proposer comparison all produce variation smaller than the headline effect (Appendix C.6). Remaining limitations are statistical precision from 5 runs per configuration, possible judge bias from GPT-5-mini, and single-machine evaluation only (Appendix D). Broader impacts and release safeguards are discussed in Appendix E.
+
+Acknowledgements
+
+We thank Kelly Buchanan, Francois Chaubard, Mayee Chen, Vivien Cheng, Catherine Deng, Neel Guha, Simon Guo, Braden Hancock, Junmiao Hu, Hangoo Kang, Andy Konwinski, Her- mann Kumbong, Jacky Kwok, Adrian Lafuente Gamarra, Jerry Liu, Yuzhen Mao, Christopher Rytting, Tarun Suresh, Shayan Talaei, Roberto Torres, and Michael Zhang. We would also like to thank our collaborators at the Stanford Artificial Intelligence Laboratory (SAIL) and Stanford HAI. We gratefully acknowledge support from federal sources: NIH under Nos. U54EB020405 (Mobilize) and R01GM124443 (SimTK); NSF under Nos. CCF2247015 (Hardware-Aware), CCF1763315 (Beyond Sparsity), CCF1563078 (Volume to Velocity), 1937301 (RTML), 1900638 (Open Federated Virtual Assistants), and 2028602 (PPoSS); DARPA under No. HR00112520038 (Fallingwater); US DEVCOM ARL under Nos. W911NF-23-2-0184 (Long-context) and W911NF-21-2-0251 (Interactive Human-AI Teaming); NSTXL un- der No. N00164-23-9-G057-01 (Energy-Efficient AI Hardware); and ONR under Nos. N000142312633 (Deep Signal Processing), N000142212426 (Misinformation Analysis), N000142012480 (Non-Euclidean Geometry), and N000142012275 (Data Programming). We also gratefully acknowledge support from Stanford HAI under Nos. 247183, 215955, and 345077 (Evo); Google DeepMind, Google Research, and Google Cloud; member companies including NXP, Xilinx, LETI-CEA, Intel, IBM, Microsoft, NEC, Toshiba, TSMC, ARM, Hitachi, BASF, Accenture, Ericsson, Qualcomm, Analog Devices, Salesforce, and Total; the Laude In- stitute, Prime Intellect, Anthropic, and the HAI-GCP Cloud Credits for Research program; the Stanford Data Science Initiative (SDSI) and the Stanford Marlowe Computing Platform; the NSF Graduate Research Fellowship Program, the Knights-Hennessy Scholarship, the Stanford Graduate Fellowship, the JP Morgan AI/ML Fellowship, the Stanford EDGE Fellowship, and the GEM Fellowship; members of the Stanford DAWN project (Meta, Google, VMWare); and members of the Stanford SEAMS project (IBM, Felicis).
+
+12
+
+The U.S. Government is authorized to reproduce and distribute reprints for Governmental purposes notwithstanding any copyright notation thereon. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views, policies, or endorsements, either expressed or implied, of NIH, ONR, DARPA, or the U.S. Government.
+
+References
+
+\[1\] Lakshya A Agrawal, Shangyin Tan, Dilara Soylu, Noah Ziems, Rishi Khare, Krista Opsahl- Ong, Arnav Singhvi, Herumb Shandilya, Michael J Ryan, Meng Jiang, Christopher Potts, Koushik Sen, Alexandros G. Dimakis, Ion Stoica, Dan Klein, Matei Zaharia, and Omar Khattab. Gepa: Reflective prompt evolution can outperform reinforcement learning, 2026.
+
+\[2\] Alibaba Cloud. Qwen-Agent. https://github.com/QwenLM/Qwen-Agent, 2025. Agent
+
+framework built on Qwen models with tool use and RAG capabilities.
+
+\[3\] Anthropic. Model context protocol, 2024. Open standard for connecting AI assistants
+
+to external tools and data sources.
+
+\[4\] Anthropic. Claude Opus 4.6: frontier model with extended-thinking and tool-use
+
+capabilities. Anthropic API Documentation, 2026. https://docs.anthropic.com.
+
+\[5\] Apple Inc. Apple M4 chip. https://www.apple.com/newsroom/2024/05/apple-
+
+introduces-m4-chip/, 2024. Accessed: April 2026.
+
+\[6\] Apple Machine Learning Research. Apple intelligence foundation language models.
+
+arXiv preprint arXiv:2407.21075, 2024.
+
+\[7\] Parth Asawa, Alan Zhu, Abby O’Neill, Matei Zaharia, Alexandros G. Dimakis, and Joseph E. Gonzalez. How to train your advisor: Steering black-box LLMs with advisor
+
+models. arXiv preprint arXiv:2510.02453, 2025.
+
+\[8\] Victor Barres, Honghua Dong, Soham Ray, Xujie Si, and Karthik Narasimhan. τ 2- bench: Evaluating conversational agents in a dual-control environment. arXiv preprint arXiv:2506.07982, 2025.
+
+\[9\] BCD International. Inside the 2025–2027 compute crunch: What supply chain volatility really means for you. BCD Video Blog, 2025. Accessed: April 2026.
+
+\[10\] Harrison Chase. LangChain. https://github.com/langchain-ai/langchain, 2022. Accessed: 2026.
+
+\[11\] Charlie Chen, Sebastian Borgeaud, Geoffrey Irving, Jean-Baptiste Lespiau, Laurent Sifre, and John Jumper. Accelerating large language model decoding with speculative
+
+sampling. arXiv preprint arXiv:2302.01318, 2023.
+
+\[12\] Xiaopei Chen, Liang Li, Fei Ji, and Wen Wu. MobileFineTuner: A unified end-to-end framework for fine-tuning LLMs on mobile phones. arXiv preprint arXiv:2512.08211,
+
+2025\.
+
+\[13\] Wei-Lin Chiang, Lianmin Zheng, Ying Sheng, Anastasios Nikolas Angelopoulos, Tianle Li, Dacheng Li, Banghua Zhu, Hao Zhang, Michael Jordan, Joseph E. Gonzalez, and Ion Stoica. Chatbot arena: An open platform for evaluating LLMs by human preference, 2024.
+
+\[14\] Gordon V. Cormack, Charles L. A. Clarke, and Stefan Büttcher. Reciprocal rank fusion outperforms Condorcet and individual rank learning methods. In Proceedings of the 32nd International ACM SIGIR Conference on Research and Development in Information Retrieval, pages 758–759. ACM, 2009.
+
+\[15\] CrewAI, Inc. CrewAI: Framework for orchestrating role-playing, autonomous AI agents. https://github.com/crewAIInc/crewAI, 2024. Accessed: 2026.
+
+13
+
+\[16\] DeepSeek-AI. DeepSeek-R1: Incentivizing reasoning capability in LLMs via reinforce- ment learning. arXiv preprint arXiv:2501.12948, 2025.
+
+\[17\] Tim Dettmers, Artidoro Pagnoni, Ari Holtzman, and Luke Zettlemoyer. QLoRA: Efficient finetuning of quantized language models. In Advances in Neural Information Processing
+
+Systems, volume 36, 2023.
+
+\[18\] Mingxuan Du, Benfeng Xu, Chiwei Zhu, Xiaorui Wang, and Zhendong Mao. Deepre-
+
+search bench: A comprehensive benchmark for deep research agents, 2025.
+
+\[19\] EdgeClaw Contributors. EdgeClaw: Local-cloud router plugin for OpenClaw. https: //github.com/edgeclaw/edgeclaw, 2025. Adds a local-cloud routing layer on top of OpenClaw as a plugin.
+
+\[20\] Elias Frantar, Saleh Ashkboos, Torsten Hoefler, and Dan Alistarh. GPTQ: Accurate post-training quantization for generative pre-trained transformers. arXiv preprint
+
+arXiv:2210.17323, 2023.
+
+\[21\] Georgi Gerganov. llama.cpp. https://github.com/ggml-org/llama.cpp, 2023. C/C++ LLM inference engine with quantization support. 85K+ GitHub stars as of 2025.
+
+\[22\] Google. gemma.cpp. https://github.com/google/gemma.cpp, 2024. Lightweight C++ inference engine for Gemma models.
+
+\[23\] Google. Agent development kit (ADK). https://github.com/google/adk-python, 2025. Python framework for building AI agents with tool use and multi-step reasoning.
+
+\[24\] Google. Gemma 3n. https://ai.google.dev/gemma/docs/gemma-3n, 2025. On- device Gemma variant with per-layer embeddings and elastic inference for phones and laptops.
+
+\[25\] Google. Gemma 4 26B: instruction-tuned open-weight 26B-parameter mixture-of- experts model. Model card, Hugging Face, 2025. https://huggingface.co/google/
+
+gemma-4-26b-it.
+
+\[26\] Google. Gemini nano. https://developer.android.com/ai/gemini-nano, 2026.
+
+Android Developers Documentation, last updated April 2, 2026.
+
+\[27\] Google DeepMind. Gemini 3.1 Pro: frontier multimodal cloud model with extended- context reasoning. Google AI Developer Documentation, 2026. https://ai.google. dev.
+
+\[28\] Google DeepMind. Gemma 4: Byte for byte, the most capable open models. https: //blog.google/innovation-and-ai/technology/developers-tools/gemma-4/,
+
+April 2026. Blog post, April 2, 2026.
+
+\[29\] Yuxian Gu, Li Dong, Furu Wei, and Minlie Huang. MiniLLM: Knowledge distilla- tion of large language models. In The Twelfth International Conference on Learning Representations, 2024.
+
+\[30\] Geoffrey Hinton, Oriol Vinyals, and Jeff Dean. Distilling the knowledge in a neural network. arXiv preprint arXiv:1503.02531, 2015.
+
+\[31\] Edward J. Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, and Weizhu Chen. LoRA: Low-rank adaptation of large language models. In
+
+The Tenth International Conference on Learning Representations, 2022.
+
+\[32\] HuggingFace. AI energy score. https://huggingface.github.io/AIEnergyScore/,
+
+2024\. Standardized energy scoring system for AI models.
+
+\[33\] IBM Research. Granite 4.0 language models. https://github.com/ibm-granite/ granite-4.0-language-models, 2025. Accessed: 2025-10-01.
+
+14
+
+\[34\] Intel Corporation. Intel Core Ultra processors (series 1, meteor lake). https:// www.intel.com/content/www/us/en/products/details/processors/core-ultra.
+
+html, 2023. Accessed: April 2026.
+
+\[35\] IronClaw Contributors. IronClaw. https://github.com/ironclaw/ironclaw, 2025.
+
+Enterprise-focused fork of OpenClaw.
+
+\[36\] Naman Jain, King Han, Alex Gu, Wen-Ding Li, Fanjia Yan, Tianjun Zhang, Sida Wang, Armando Solar-Lezama, Koushik Sen, and Ion Stoica. LiveCodeBench: Holistic and contamination free evaluation of large language models for code. arXiv preprint arXiv:2403.07974, 2024.
+
+\[37\] Carlos E Jimenez, John Yang, Alexander Wettig, Shunyu Yao, Kexin Pei, Ofir Press, and Karthik R Narasimhan. SWE-bench: Can language models resolve real-world Github issues? In The Twelfth International Conference on Learning Representations, 2024.
+
+\[38\] Jeff Johnson, Matthijs Douze, and Hervé Jégou. Billion-scale similarity search with GPUs. IEEE Transactions on Big Data, 7(3):535–547, 2019.
+
+\[39\] Omar Khattab, Arnav Singhvi, Paridhi Maheshwari, Zhiyuan Zhang, Keshav Santhanam, Sri Vardhamanan A, Saiful Haq, Ashutosh Sharma, Thomas Joshi, Hanna Moazam, Heather Miller, Matei Zaharia, and Christopher Potts. DSPy: Compiling declarative lan- guage model calls into self-improving pipelines. In The Twelfth International Conference on Learning Representations, 2024.
+
+\[40\] Kilo Code. PinchBench: Benchmarking LLM models as OpenClaw coding agents. https://github.com/pinchbench/skill, 2025. 23 real-world agent tasks spanning scheduling, email, research, coding, and multi-step workflows. Open-source grading via automated checks and LLM judge.
+
+\[41\] Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying Sheng, Lianmin Zheng, Cody Hao Yu, Joseph E. Gonzalez, Hao Zhang, and Ion Stoica. Efficient memory management for large language model serving with PagedAttention. In Proceedings of the ACM SIGOPS 29th Symposium on Operating Systems Principles, 2023.
+
+\[42\] Yaniv Leviathan, Matan Kalman, and Yossi Matias. Fast inference from transformers via speculative decoding. In International Conference on Machine Learning, 2023.
+
+\[43\] Ji Lin, Jiaming Tang, Haotian Tang, Shang Yang, Wei-Ming Chen, Wei-Chen Wang, Guangxuan Xiao, and Song Han. AWQ: Activation-aware weight quantization for LLM compression and acceleration. In Proceedings of Machine Learning and Systems, volume 6, 2024.
+
+\[44\] Ji Lin, Ligeng Zhu, Wei-Ming Chen, Wei-Chen Wang, Chuang Gan, and Song Han. On-device training under 256KB memory. In Advances in Neural Information Processing Systems, volume 35, 2022.
+
+\[45\] Liquid AI. Liquid nanos: Frontier-grade performance on everyday devices. https:// www.liquid.ai/blog/introducing-liquid-nanos-frontier-grade-performance-
+
+on-everyday-devices, 2025.
+
+\[46\] Zechun Liu, Changsheng Zhao, Forrest Iandola, Chen Lai, Yuandong Tian, Igor Fedorov, Yunyang Xiong, Ernie Chang, Yangyang Shi, Raghuraman Krishnamoorthi, Liangzhen Lai, Vikas Chandra, et al. MobileLLM: Optimizing sub-billion parameter language models for on-device use cases. arXiv preprint arXiv:2402.14905, 2024.
+
+\[47\] LM Studio. LM Studio. https://lmstudio.ai, 2024. Desktop application for running
+
+LLMs locally.
+
+\[48\] Mike A. Merrill, Alexander G. Shaw, Nicholas Carlini, Boxuan Li, Harsh Raj, Ivan Bercovich, Lin Shi, Jeong Yeon Shin, Thomas Walshe, E. Kelly Buchanan, et al. Terminal- bench: Benchmarking agents on hard, realistic tasks in command line interfaces. In The Fourteenth International Conference on Learning Representations, 2026.
+
+15
+
+\[49\] Meta. ExecuTorch: End-to-end solution for enabling on-device inference capabilities. https://github.com/pytorch/executorch, 2024.
+
+\[50\] Grégoire Mialon, Clémentine Fourrier, Craig Swift, Thomas Wolf, Yann LeCun, and Thomas Scialom. GAIA: A benchmark for general AI assistants. In The Twelfth Interna- tional Conference on Learning Representations, 2024.
+
+\[51\] MimicLaw Contributors. MimicLaw. https://github.com/mimiclaw/mimiclaw, 2025.
+
+Persona-focused personal AI framework.
+
+\[52\] ML Energy Initiative. Zeus: ML energy measurement framework. https://ml.energy/ zeus/, 2023. GPU energy measurement toolkit for fine-grained energy profiling of ML workloads.
+
+\[53\] MLC AI. MLC-LLM: Universal LLM deployment engine. https://github.com/mlc-
+
+ai/mlc-llm, 2023.
+
+\[54\] MLCommons. MLCommons inference benchmark. https://github.com/mlcommons/ inference, 2024. Industry-standard inference benchmarking suite covering latency, throughput, and accuracy across hardware platforms.
+
+\[55\] Piero Molino, Yaroslav Dudin, and Sai Sumanth Miryala. Ludwig: a type-based declara-
+
+tive deep learning toolbox, 2019.
+
+\[56\] Ettore Di Giacinto Mudler. LocalAI: Open-source self-hosted alternative to OpenAI API. https://github.com/mudler/LocalAI, 2024.
+
+\[57\] NanoBot Contributors. NanoBot. https://github.com/nanobot-ai/nanobot, 2025. Minimalist personal AI agent in the OpenClaw ecosystem.
+
+\[58\] Avanika Narayan, Dan Biderman, Sabri Eyuboglu, Avner May, Scott Linderman, James Zou, and Christopher Ré. Minions: Cost-efficient collaboration between on-device and cloud language models. arXiv preprint arXiv:2502.15964, 2025.
+
+\[59\] National Institute of Standards and Technology. Artificial intelligence risk manage- ment framework (AI RMF 1.0). Technical Report NIST AI 100-1, U.S. Department of
+
+Commerce, January 2023.
+
+\[60\] Nous Research. Hermes agent: The agent that grows with you. https://github.com/ NousResearch/hermes-agent, 2025. Self-improving agent with FTS5 cross-session recall, Honcho user modeling, and autonomous skill creation. 40K+ GitHub stars as of April 2026.
+
+\[61\] NVIDIA. Nemotron-Flash: Towards latency-optimal hybrid small language models. arXiv preprint arXiv:2511.18890, 2025.
+
+\[62\] NVIDIA. Nemotron-Super-49B-v1. https://huggingface.co/nvidia/Nemotron-
+
+Super-49B-v1, 2025.
+
+\[63\] Ollama, Inc. Ollama. https://github.com/ollama/ollama, 2023. Local LLM serving platform. 162K+ GitHub stars as of March 2026.
+
+\[64\] OpenAI. Symphony: Multi-agent orchestration framework. https://github.com/ openai/symphony, 2025. Multi-agent orchestration framework for coordinating agent
+
+workflows.
+
+\[65\] OpenAI. GPT-5.4: frontier reasoning and multimodal model. OpenAI Platform Docu- mentation, 2026. https://platform.openai.com.
+
+\[66\] OWASP Foundation. OWASP top 10 for large language model applications, 2025. Version 2025. Accessed: April 2026.
+
+16
+
+\[67\] Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas Köpf, Edward Yang, Zachary DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu Fang, Junjie Bai, and Soumith Chintala. PyTorch: An imperative style, high-performance deep learning library. In Advances in Neural Information Processing Systems, volume 32, 2019.
+
+\[68\] PicoClaw Contributors. PicoClaw. https://github.com/picoclaw/picoclaw, 2025. Lightweight variant of the OpenClaw personal AI ecosystem.
+
+\[69\] Konstantin F. Pilz, Yusuf Mahmood, and Lennart Heim. AI’s power requirements under exponential growth: Extrapolating AI data center power demand and assessing its potential impact on U.S. competitiveness. Research Report RR-A3572-1, RAND Corporation, 2025.
+
+\[70\] Qualcomm Technologies. Qualcomm Hexagon neural processing unit. https://www. qualcomm.com/products/technology/processors, 2024. Accessed: April 2026.
+
+\[71\] Qwen Team. Qwen3.5: Towards native multimodal agents, February 2026.
+
+\[72\] Christopher Ré, Feng Niu, Pallavi Gudipati, and Charles Srisuwananukorn. Overton: A
+
+data system for monitoring and improving machine-learned products, 2019.
+
+\[73\] RJT1990. GeneralThoughtArchive: A large-scale dataset of reasoning traces, 2025. 431K reasoning traces with verifier scores. MIT license.
+
+\[74\] Stephen E. Robertson, Steve Walker, Susan Jones, Micheline Hancock-Beaulieu, and Mike Gatford. Okapi at TREC-3. In The Third Text REtrieval Conference (TREC-3). NIST,
+
+1994\.
+
+\[75\] Jon Saad-Falcon, Avanika Narayan, Hakki Orhun Akengin, J. Wes Griffin, Herumb Shandilya, Adrian Gamarra Lafuente, Medhya Goel, Rebecca Joseph, Shlok Natarajan, Etash Kumar Guha, Shang Zhu, Ben Athiwaratkun, John Hennessy, Azalia Mirhoseini, and Christopher Ré. Intelligence per watt: Measuring intelligence efficiency of local ai, 2026.
+
+\[76\] Keshav Santhanam, Omar Khattab, Jon Saad-Falcon, Christopher Potts, and Matei Zaharia. ColBERTv2: Effective and efficient retrieval via lightweight late interaction. In Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, pages 3715–3734. Association for Computational Linguistics, 2022.
+
+\[77\] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, Y. K. Li, Y. Wu, and Daya Guo. DeepSeekMath: Push- ing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300, 2024.
+
+\[78\] Will Sommer. Gartner predicts that by 2030, performing inference on an LLM with 1 trillion parameters will cost GenAI providers over 90% less than in 2025. Gartner Press
+
+Release, 2026. Accessed: April 2026.
+
+\[79\] Dilara Soylu, Christopher Potts, and Omar Khattab. Fine-tuning and prompt optimiza- tion: Two great steps that work better together. In Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing, pages 10696–10710. Association for Computational Linguistics, 2024.
+
+\[80\] Peter Steinberger. OpenClaw: Open-source personal AI assistant. https://github.
+
+com/openclaw/openclaw, 2025. 131K+ GitHub stars as of March 2026. Originally named Clawdbot.
+
+\[81\] stevibe. ToolCall-15: A visual benchmark for comparing LLM tool use. https:// github.com/stevibe/ToolCall-15, 2025. 15 fixed scenarios across 5 categories with deterministic scoring.
+
+17
+
+\[82\] Hongjin Su, Shizhe Diao, Ximing Lu, Mingjie Liu, Jiacheng Xu, Xin Dong, Yonggan Fu, Peter Belcak, Hanrong Ye, Hongxu Yin, Yi Dong, Evelina Bakhturina, Tao Yu, Yejin Choi, Jan Kautz, and Pavlo Molchanov. ToolOrchestra: Elevating intelligence via efficient model and tool orchestration, 2025.
+
+\[83\] Tether Data. An edge-first generalized LLM LoRA fine-tuning framework for heteroge- neous GPUs, 2025. https://huggingface.co/blog/qvac/fabric-llm-finetune.
+
+\[84\] TinyClaw Contributors. TinyClaw. https://github.com/tinyclaw/tinyclaw, 2025.
+
+Resource-constrained variant of OpenClaw.
+
+\[85\] UIUC UILab. LLMRouter. https://github.com/ulab-uiuc/LLMRouter, 2025. Frame- work for routing queries to appropriate LLMs based on query characteristics and model
+
+capabilities.
+
+\[86\] Jiayu Wang, Yifei Ming, Riya Dulepet, Qinglin Chen, Austin Xu, Zixuan Ke, Frederic Sala, Aws Albarghouthi, Caiming Xiong, and Shafiq Joty. LiveResearchBench: A live benchmark for user-centric deep research in the wild. arXiv preprint arXiv:2510.14240, 2025.
+
+\[87\] Xingyao Wang, Yangyi Chen, Lifan Yuan, Yizhe Zhang, Yunzhu Li, Hao Peng, and Heng Ji. Executable code actions elicit better LLM agents. In Proceedings of the 41st International Conference on Machine Learning (ICML), volume 235, pages 50208–50232,
+
+2024\.
+
+\[88\] Yinjie Wang, Xuyang Chen, Xiaolong Jin, Mengdi Wang, and Ling Yang. OpenClaw-RL:
+
+Train any agent simply by talking. arXiv preprint arXiv:2603.10165, 2026.
+
+\[89\] Yubo Wang, Xueguang Ma, Ge Zhang, Yuansheng Ni, Abhranil Chandra, Shiguang Guo, Weiming Ren, Aaran Arulraj, Xuan He, Ziyan Jiang, Tianle Li, Max Ku, Kai Wang, Alex Zhuang, Rongqi Fan, Xiang Yue, and Wenhu Chen. MMLU-Pro: A more robust and challenging multi-task language understanding benchmark. Advances in Neural Information Processing Systems, 37, 2024.
+
+\[90\] Xiaohan Xu, Ming Li, Chongyang Tao, Tao Shen, Reynold Cheng, Jinyang Li, Can Xu, Dacheng Tao, and Tianyi Zhou. A survey on knowledge distillation of large language
+
+models. arXiv preprint arXiv:2402.13116, 2024.
+
+\[91\] Shunyu Yao, Noah Shinn, Pedram Razavi, and Karthik Narasimhan. τ-bench: A benchmark for tool-agent-user interaction in real-world domains. arXiv preprint
+
+arXiv:2406.12045, 2024.
+
+\[92\] Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, and Yuan Cao. ReAct: Synergizing reasoning and acting in language models. In International
+
+Conference on Learning Representations (ICLR), 2023.
+
+\[93\] ZeroClaw Contributors. ZeroClaw. https://github.com/zeroclaw/zeroclaw, 2025.
+
+Zero-configuration variant of OpenClaw.
+
+\[94\] Qizheng Zhang, Changran Hu, Shubhangi Upasani, Boyuan Ma, Fenglu Hong, Vam- sidhar Kamanuru, Jay Rainton, Chen Wu, Mengmeng Ji, Hanchen Li, Urmish Thakker, James Zou, and Kunle Olukotun. Agentic context engineering: Evolving contexts for self-improving language models, 2026.
+
+\[95\] Lianmin Zheng, Liangsheng Yin, Zhiqiang Xie, Chuyue Sun, Jeff Huang, Cody

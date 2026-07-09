@@ -1,0 +1,733 @@
+Convergent transcriptomic and connectomic controllers of information integration and its anaesthetic breakdown across mammalian brains 
+
+nature human behaviour
+
+Article https://doi.org/10.1038/s41562-025-02381-5 Convergent transcriptomic and connectomic controllers of information integration and its anaesthetic breakdown across mammalian brains
+
+Received: 2 February 2025
+
+Andrea I. Luppi 1,2,3,4,27 , Lynn Uhrig5,6,27, Jordy Tasserie5,7,27,
+
+Accepted: 14 November 2025
+
+Pedro A. M. Mediano8, Fernando E. Rosas 3,9,10, S. Parker Singleton 11, Daniel Gutierrez-Barragan12, Silvia Gini 12,13, Pablo Castro 5, Published online: 28 January 2026
+
+Camilo M. Signorelli5,14,15,16, Daniel Golkowski 17, Andreas Ranft 18, Rüdiger Ilg17,19, Denis Jordan 18, Kanako Muta20,21, Junichi Hata20,21, Hideyuki Okano21,22, Zhen-Qi Liu 4, Yohan Yee4,23, Alain Destexhe 24, Rodrigo Cofre 24,25, David K. Menon1, Alessandro Gozzi 11, Bechir Jarraya 5,24,26,28 & Emmanuel A. Stamatakis 1,28
+
+The mammalian brain orchestrates the processing and integration of information to guide behaviour. Here, to characterize mammalian information-processing architecture, we combine functional neuroimaging and anaesthesia in humans, macaques, marmosets and mice. We show that breakdown of information integration is a convergent effect of diverse anaesthetics across mammalian species. As the system disintegrates, brain dynamics become more difficult to control. Both effects are reversed upon re-awakening induced by thalamic deep-brain stimulation in the macaque. Regional breakdown of integrated information coincides with the species-specific spatial topography of PVALB/Pvalb gene expression. To provide mechanistic insight beyond correlation, we develop computational models for humans, macaques and mice that integrate species-specific connectivity and transcriptomic gradients, demonstrating their respective roles for controlling brain dynamics and information integration. We reveal evolutionarily conserved controllers of information integration in the mammalian brain.
+
+To coordinate behaviour in response to a complex environment, the central nervous system of humans and other animals must combine the information provided by diverse sensory signals1,2. Prominent theoreti- cal accounts of neural computation, cognition and even consciousness converge in attributing a fundamental role to integrative processes in the brain3–8. However, understanding how the brain orchestrates the integration of information remains a formidable open challenge and a focus of intense investigation in neuroscience2,9. Addressing this
+
+challenge requires a combination of theoretical advances and suitable experimental approaches.
+
+On the theoretical front, there is growing recognition that a full understanding of neural information processing requires disentan- gling qualitatively different kinds of information that can co-exist in any distributed system, including the brain10–16. In particular, the framework of information decomposition has revealed the existence of synergy: information that is present in the system as a whole but not
+
+Nature Human Behaviour | Volume 10 | April 2026 | 777–802 777
+
+Check for updates
+
+A full list of affiliations appears at the end of the paper. e-mail: andrea.luppi@psych.ox.ac.uk
+
+Article https://doi.org/10.1038/s41562-025-02381-5
+
+in any of its individual components2,14–18. Here we capitalize on these
+
+stimulation target for restoring integration of information, replicating recent theoretical developments to obtain a rigorous quantification of
+
+our in vivo deep-brain stimulation (DBS) results and providing mecha- ‘integrated information’ as the information that is present in the whole
+
+nistic insight about their connectomic origin. Overall, our multimodal, system, over and above the sum of the parts.
+
+multispecies approach reveals evolutionarily conserved local and global On the experimental front, the combination of neuroimaging and
+
+controllers of information integration in the mammalian brain. general anaesthesia provides a powerful avenue to identify neurobio- logical controllers of the brain’s informational architecture19–22. With-
+
+Results out altering brain anatomy, anaesthesia induces a drastic breakdown of
+
+Integrated information from information dynamics information processing in the brain, as indicated by the suppression of
+
+In a system such as the brain, the spontaneous evolution of regional both sensory and motor interactions between organism and environ-
+
+dynamics is not random but is rather partly dependent on its previous ment. Unlike lesions, anaesthesia is fully reversible, making it suitable
+
+state. This means that past states hold information about future states2. for investigating brain function in healthy humans rather than being
+
+This ‘intrinsic’ information (We also note that Shannon’s well-known restricted to patients. Although anaesthetic drugs vary in terms of
+
+definition is not the only way to operationalize information; in particu- microscale molecular targets, the macroscale effects of anaesthesia are
+
+lar, a stronger notion of what it means for information to be ‘intrinsic’ highly conserved across evolution, reliably suppressing behavioural
+
+has been recently formalized, leading to alternative interpretations of responsiveness across a wide variety of species including humans,
+
+integrated information that are beyond the scope of classic information non-human primates and rodents19,21,23. Indeed, the effects of anaes-
+
+theory. See Supplementary Discussion for alternative development thesia on brain dynamics are similar both across species, and between
+
+of integrated information beyond IIT 2.0.) contained in the system’s anaesthesia and patients with disorders of consciousness21,23–32. Thus,
+
+spontaneous dynamics can be characterized using information theory studying brain activity under anaesthesia provides a powerful oppor-
+
+in the absence of any explicit tasks, by means of the time-delayed mutual tunity for translational discovery, by comparing how the same phe-
+
+information (TDMI): mutual information between the past and future nomenon manifests in the brains of humans and in other species that
+
+timeseries of regions X and Y, reflecting the amount of information are more experimentally accessible19,21,23. Here we capitalize on each
+
+flowing from the system’s past to its future. This approach is fully analo- of these advantages.
+
+gous to how the commonly used functional connectivity (statistical The consistency of anaesthesia’s behavioural effects across
+
+correlation between the timeseries of regions X and Y) is used to study species suggests the presence of an evolutionarily conserved archi-
+
+the brain’s ‘intrinsic connectivity networks’. tecture for the integration of information in the mammalian brain,
+
+Crucially, recent advances in the theory of information decom- representing a common target of diverse anaesthetics. Here we seek
+
+position have demonstrated that brain dynamics carry multiple to uncover this shared architecture, by identifying changes in neural
+
+qualitatively different kinds of information, going beyond traditional activity that are consistently induced by different anaesthetics and in
+
+measures of functional connectivity2,17,18,44–46. In particular, two vari- different species, upon anaesthetic-induced breakdown of interac-
+
+ables, such as two brain regions, can carry information about a target tion with the environment. To this end, we systematically compare
+
+in three fundamentally distinct ways (Fig. 2a): (1) if each variable pro- functional MRI (fMRI) activity during wakefulness and anaesthesia
+
+vides the same information as the other, this is redundant informa- across four mammalian species: human (Homo sapiens); rhesus
+
+tion; (2) unique information refers to information that only one of the macaque (Macaca mulatta), a gyrencephalic primate; common
+
+variables carries and the other does not; and (3), information can be marmoset (Callithrix jacchus), a lissencephalic primate; and mouse
+
+carried synergistically, if it is available only when considering both vari- (Mus musculus)29,31,33,34 (Fig. 1a). Our strategy is threefold. First, we ask
+
+ables together but not when considering either of them in isolation15,16 whether anaesthetic-induced breakdown of the capacity to interact
+
+(Fig. 2a). For example, much of human depth perception is conveyed with the environment corresponds to a breakdown of information
+
+synergistically by the eyes, since closing either eye will greatly impair integration in the brain, and whether this effect is shared across spe-
+
+depth perception2. When viewed as the information that the past of cies, similar to the behavioural manifestation of anaesthesia. Second,
+
+the system provides about its future, the time-delayed mutual infor- to establish a bidirectional causal link, we combine the specificity of
+
+mation can be exhaustively decomposed into a formal taxonomy of deep-brain stimulation with fMRI’s coverage of the entire cortex in the
+
+‘information dynamics’: distinct combinations of synergistic, unique macaque30. Leveraging the experimental accessibility of non-human
+
+and redundant information between X and Y (Extended Data Fig. 1)14,16. animals, we show that neural integration of information is restored
+
+For example, if there is unique information in region X in the past upon re-awakening from anaesthesia induced by electrical stimulation
+
+about unique information in region Y at a later point in time, this can of the macaque central thalamus, thereby demonstrating local control
+
+be described as reflecting ‘information transfer’ from X to Y. over global information processing across brain and behaviour.
+
+This taxonomy of information dynamics enables a formal char- Third, we seek to identify shared neurobiological underpinnings
+
+acterization of ‘integrated information’ in distributed systems. The that control neural integration of information across species. Specifi-
+
+key insight is that if the elements of a system form a coherent whole, cally, we focus on (1) the anatomical connectivity between brain regions,
+
+then considering the system as a whole should provide additional which shapes their ability to interact and exchange information35–37; and
+
+information about its future behaviour, beyond the information that (2) the genetic make-up of each region’s cyto- and chemo-architecture,
+
+is already provided by the individual parts about their own future on which anaesthetics act at the microscale to influence local circuit
+
+behaviour. This whole-minus-sum information is the ‘difference that dynamics. To this end, we capitalize on the recent availability of
+
+makes a difference’: information that arises from how the parts of species-specific connectomics38 and transcriptomic databases for
+
+the system interact with each other47. However, an initial attempt to human39, macaque40 and mouse41. To provide insight beyond cor-
+
+quantify this whole-minus-sum information (here termed Φ2008) was relation, we develop in silico computational models that integrate
+
+later found to involve subtracting the information that is persistently species-specific brain activity, structural connectivity and gene
+
+redundant between X and Y (ref. 16). Thus, the lens of information expression42,43. We show that across species, the regional expression
+
+dynamics explained why this apparently intuitive measure produced of the PVALB/Pvalb gene (a cell-type marker for inhibitory interneurons)
+
+such counter-intuitive results, including negative values (which we now is especially suitable for controlling brain dynamics and modulating
+
+know would occur whenever the system is redundancy dominated)48. the integration of information via regionally heterogeneous inhibi-
+
+An effective solution was therefore proposed in the form of the revised tion. In contrast, our model indicates that the structural connectivity
+
+measure of integrated information, ΦR, by simply adding back the of the macaque central thalamus makes it especially suitable as a focal
+
+redundancy term16.
+
+Nature Human Behaviour | Volume 10 | April 2026 | 777–802 778
+
+Article https://doi.org/10.1038/s41562-025-02381-5
+
+afMRI + anaesthesia across mammalian species
+
+b
+
+Integrating species-specific connectomics and transcriptomics
+
+Fig. 1 | Integrating neuroimaging and pharmacology with computational modelling across species. a, Across four mammalian species (human, macaque, mouse and marmoset), we consider fMRI data acquired during wakefulness and under a variety of anaesthetic regimes (sevoflurane, propofol, ketamine, isoflurane, halothane and isoflurane–medetomidine). We also investigate spontaneous recovery of consciousness (in humans) and re-awakening induced by thalamic deep-brain stimulation (DBS) during continuous anaesthetic infusion in the macaque. b, We then use network control theory and biophysical computational modelling to provide mechanistic insights by integrating species-
+
+Here we demonstrate that ΦR is not just a pragmatic solution to the shortcomings of Φ2008: in fact, ΦR represents a conceptually more appropriate measure of whole-minus-sum integrated information. This is because the subtraction of persistent redundancy involved in Φ2008 arises from a naïve way of quantifying the sum of the parts. Specifically, redundant information (which by definition is present in both X and Y) is included both when computing the information in X and when comput- ing the information in Y, and therefore it ends up being double counted in the subtraction from the total information when computing Φ2008. In contrast, ΦR corresponds to the total information minus the ‘proper’ sum of the parts (that is, without mistakenly double counting the persistent redundancy as being independently contributed by both X and Y; see Methods for the mathematical formalism and Extended Data Fig. 1 for a visual illustration). Thus, the framework of information dynamics reveals ΦR as a principled quantification of integrated information (Fig. 2b).
+
+Re-awakening via thalamic DBS
+
+Energy landscape
+
+Network control energy
+
+Activity at
+
+t+1 time t
+
+Species-specific connectome
+
+Breakdown of integrated information is a convergent effect of diverse anaesthetics across mammalian species Equipped with ΦR as a rigorous quantification of integrated infor- mation, we systematically investigate integrated information between each pair of brain regions in humans, macaques, marmo- sets and mice, on the basis of their haemodynamic fMRI timeseries. This approach is fully analogous to pairwise correlation between regional timeseries that is commonly used to quantify ‘functional connecti vity’ but reflecting a more nuanced set of dynamical phe- nomena in the system14,16–18. Specifically, our datasets comprise N = 15 human volunteers undergoing fMRI scanning while awake and during deep anaesthesia with sevoflurane, as well as spontaneous recovery of responsiveness34; N = 5 macaques undergoing repeated scan- ning while awake and during anaesthesia with sevoflurane, propo- fol or ketamine29,49; N = 4 marmoset monkeys each scanned 12 times
+
+Nature Human Behaviour | Volume 10 | April 2026 | 777–802 779
+
+Wakefulness Anaesthesia Recovery
+
+Spontaneous Sevoflurane
+
+awakening
+
+Propofol Sevoflurane Ketamine
+
+Propofol
+
+Halothane Medetomidine + isoflurane
+
+Propofol Sevoflurane Isoflurane
+
+Species-specific gene expression
+
+specific structural connectivity and species-specific gene expression in human, macaque and mouse. Credits for a: human head icon, walking human silhouette and marmoset icon from pixabay.com; macaque and mouse icons adapted from ref. 133, published under a CC-BY licence; macaque icon originally designed by Freepik.com; mouse icon originally designed by CraftStarters.com; brain icons adapted from ref. 38, published under a CC-BY license, and originally from SciDraw.io; MRI icon adapted from ref. 134, published under a CC-BY license; macaque DBS illustration adapted from ref. 30, published under a CC-BY licence.
+
+Local stimulation
+
+Species-specific connectome
+
+Biophysical model
+
+I E
+
+Simulated BOLD
+
+Article https://doi.org/10.1038/s41562-025-02381-5
+
+a
+
+b
+
+c d
+
+0.05
+
+0.04
+
+0.03
+
+0.02
+
+Awake Sevo
+
+Recovery
+
+e
+
+f
+
+)
+
+Fig. 2 | Anaesthesia disintegrates the mammalian brain. a, The total information jointly carried by two variables X and Y (for example, two brain regions) can be exhaustively decomposed into information that is redundantly carried by both variables (blue); or uniquely by each (green and orange); or synergistically by considering the two variables together (red). Various information dynamics phenomena can then take place as the different types of information evolve over time from past to future. b, We can obtain ‘integrated information’ as the sum of all information-dynamic phenomena that reflect interactions between the system’s components16. Equivalently, we can obtain integrated information as the difference between information in the whole system and information in the sum of the system’s parts considered in isolation (that is, any information that remains in the same variable over time). This measure of integrated information, termed ΦR, overcomes the limitations of an influential early proposal (Φ2008) which was shown to double count the redundant information contained in the parts, leading to negative values and other paradoxical results16 (see Methods and Extended Data Fig. 1 for an explanation of this double counting and how this issue is resolved by the use of information decomposition). Intuitively, integrated information will be low if there is little differentiation among elements of the system, such that they are just redundant copies and considering them together provides no additional advantage; or if there is low integration, such that the parts behave independently without influencing each other. Supplementary Figs. 1–3 provide examples of different systems and their integrated information. For each pair of brain regions, we quantify their integrated information by applying information decomposition to
+
+their fMRI timeseries and summing the values of the corresponding information dynamics. A whole-brain value is then obtained by averaging across all pairs of brain regions. c, Human sevoflurane anaesthesia (Sevo) versus wakefulness (two-sided paired-samples t-test, FDR-corrected for multiple comparisons) and versus post-anaesthetic recovery (two-sided paired-samples t-test, FDR- corrected for multiple comparisons); n = 15. d, Mouse wakefulness (n = 10) versus medetomidine–isoflurane (MedIso; n = 14) and halothane (Halo; n = 19) anaesthesia data. P values are from two-sided independent-samples t-test, FDR-corrected for multiple comparisons against awake condition. e, Macaque wakefulness versus anaesthesia with Ppfl, Sevo and Keta. N = 24 runs from 3 animals for awake; 11 runs from 2 animals for sevoflurane; 23 runs from 3 animals for propofol; and 22 runs from 3 animals for ketamine anaesthesia. P values are from linear mixed-effects models (two-sided), FDR-corrected for multiple comparisons against the awake condition (see Methods). Datapoints with the same colour indicate the same animal. f, Marmoset wakefulness versus anaesthesia with isoflurane (Iso), Sevo and Ppfl. N = 48 runs from 4 animals for each condition. P values are from linear mixed-effects models (two-sided), FDR- corrected for multiple comparisons against the awake condition (see Methods). In all boxplots: central line, median; box limits, upper and lower quartiles; whiskers, 1.5× interquartile range. Datapoints with the same colour indicate the same animal. See Source data for full statistical reporting. Credits: brain icon in a from SciDraw.io. Human head icon in c from pixabay.com. Mouse icon in d designed by CraftStarters.com. Macaque icon in e designed by Freepik.com. Marmoset icon in f from pixabay.com.
+
+Nature Human Behaviour | Volume 10 | April 2026 | 777–802 780
+
+Decomposing information in the brain Integrated information from information dynamics
+
+fMRI signals
+
+Information decomposition Integrated information (ΦR) Info ( X )
+
+Synergy
+
+\= (whole information) – Σ (information in the parts)
+
+X
+
+Unique
+
+\=+ + Y
+
+Redundancy Info ( Y
+
+)Macaque anaesthesia 0.15
+
+Monkey 1
+
+0.1
+
+Monkey 2
+
+Monkey 3
+
+0.05Monkey 4
+
+Monkey 5
+
+0Awake
+
+Deep Sevo
+
+Deep Ppfl Keta
+
+Marmoset anaesthesia
+
+0.05
+
+Monkey 1
+
+0.04
+
+Monkey 2
+
+Monkey 3
+
+0.03
+
+Monkey 4
+
+Awake Iso Sevo Ppfl
+
+Mouse Human anaesthesia
+
+anaesthesia
+
+P \< 0.001 vs awake P \< 0.001 vs recovery
+
+P = 0.004 vs awake
+
+P \< 0.001 vs awake P \< 0.001 vs awake
+
+P \< 0.001 vs awake
+
+P \< 0.001 vs awake
+
+P \< 0.001 vs awake
+
+P = 0.006 vs awake
+
+0.04
+
+0.03
+
+0.02
+
+0.01
+
+Awake
+
+MedIso Halo
+
+Article https://doi.org/10.1038/s41562-025-02381-5
+
+during wakefulness or anaesthesia with sevoflurane, propofol or iso- flurane33; and N = 43 mice scanned either during wakefulness or during anaesthesia with halothane or combined medetomidine–isoflurane31. We find that anaesthetic-induced disconnection from the environ- ment significantly reduces the brain’s mean value of integrated infor- mation across all pairs of regions. This result is consistently observed across species and anaesthetics (except for medetomidine–isoflurane in the mouse) (Fig. 2c–f). Thus, anaesthesia consistently reduces the mammalian brain’s capacity to integrate information at the macroscale. However, is integrated information also restored upon awakening from anaesthesia? Indeed, we find that this is the case: integrated information in the human brain increases significantly upon sponta- neous recovery of responsiveness following discontinuation of the anaesthetic (Fig. 2c).
+
+Integration of information is restored upon re-awakening induced by central thalamic DBS In addition to suppressing responsiveness and presumably conscious- ness, each anaesthetic is also likely to induce drug-specific side effects on physiology, such as changes in breathing, heart rate and vascular tone. By identifying changes in neural activity that are consistently induced by diverse drugs in different species, we can narrow down how anaesthetics act on the brain to induce the same behavioural outcome across species (breakdown of interaction with the environment) and exclude side effects that are drug or species specific. The combination of fMRI and dual causal manipulation with anaesthesia and deep-brain stimulation provides a rare opportunity for additional nuance. We can single out aspects of brain function that specifically co-vary with the anaesthetic’s consciousness-suppressing effects, being not only per- turbed by anaesthesia but also restored when DBS induces recovery of behavioural responsiveness.
+
+We take this approach by considering an independent dataset of macaque fMRI acquired during propofol anaesthesia and during restoration of behavioural responsiveness induced by deep-brain stimulation of the central thalamus (Fig. 3a)30. We first use this inde- pendent dataset to replicate our observation that propofol anaesthesia reduces integrated information in the macaque (Fig. 3b). Crucially, we next show that integrated information in the macaque brain is significantly increased compared with propofol anaesthesia, upon in-scanner electrical deep-brain stimulation of the central thalamus (CT) at high (5 V) and even at low (3 V) intensity (Fig. 3b). These results go beyond the mere injection of current: the same stimulation proto- cols were also applied to a control site in the ventrolateral thalamus (VT), eliciting no behavioural effect30. Likewise, there is no statistical evidence of integrated information being affected by high-intensity stimulation of the ventrolateral thalamus, although a smaller but sig- nificant increase occurs for low-intensity stimulation (Fig. 3b). Notably, the greatest restoration of integrated information is observed upon CT stimulation at high intensity, which also has the greatest effect on behavioural arousal. Overall, breakdown of integrated information only occurs when the anaesthetic induces breakdown of interaction with the environment, but not when this effect is countered by central thalamic stimulation. In other words, integrated information co-varies with the consciousness-suppressing effect of anaesthetics, not with their mere presence in the system.
+
+To further interrogate the link between integrated information and the behavioural effect of anaesthesia, we consider the ability of integrated information to track behavioural arousal and its resto- ration by thalamic DBS across all animals and conditions together. Specifically, we use dominance analysis, a multivariate technique that distributes the fit of a statistical model across predictors, such that the contribution of each predictor can be assessed and compared to that of other predictors, reflecting the proportion of the explained variance that can be attributed to each predictor. Here, our model’s target is the behavioural score on the preclinical arousal scale (see abc Thalamic DBS to re-awaken anaesthetized macaques
+
+Ventral thalamus
+
+Central thalamus e rocsl asuorA10 0Awake
+
+Ppfl (no DBS)
+
+Ppfl + CT low
+
+Ppfl + CT high
+
+Ppfl + VT high
+
+Ppfl + VT low
+
+18% 51% 22%
+
+8%
+
+Awake PpfClT lowCT higVhT high VT low
+
+Macaque DBS-induced awakening
+
+0.3
+
+P = 0.003
+
+Monkey 1 Monkey 2 Monkey 3 P \< 0.001 P \< 0.001 Monkey 4 0.2 Monkey 5 0.1
+
+P = 0.002
+
+Variance in behavioural arousal score explained by each predictor
+
+Relative importance from dominance analysis
+
+R2 = 0.57; P \< 0.001 Integration
+
+0.06 Null Empirical -redundancy balance (Φ2008)
+
+Integrated information (ΦR)
+
+Information flow
+
+Causal density 0
+
+0.30 R2
+
+0.60
+
+Fig. 3 | Integrated information is restored upon DBS-induced recovery of consciousness and tracks behavioural arousal better than alternative information-dynamic measures. a, Tasserie and colleagues30 delivered deep-brain stimulation to the centro-median thalamus (CT) or ventrolateral thalamus (VT) during fMRI scanning in N = 2 anaesthetized macaques at either high intensity (5 V) or low intensity (3 V). CT stimulation consistently restored behavioural arousal. Panel adapted from ref. 30, published under a CC-BY licence. b, Integrated information for macaque across wakefulness and propofol anaesthesia with and without deep-brain stimulation of different thalamic sites and intensities. P values are from linear mixed-effects models (two-sided), FDR-corrected for multiple comparisons against propofol anaesthesia without DBS (‘No-DBS’ condition; see Methods). N = 36 runs from 3 animals for awake; 28 runs from 2 animals for anaesthesia (DBS-off); 31 runs from 2 animals for low-amplitude centro-median thalamic DBS; 25 runs from 2 animals for high-amplitude centro-median thalamic DBS; 18 runs from 1 animal for low-amplitude ventrolateral thalamic DBS; 18 runs from 1 animal for high-amplitude ventrolateral thalamic DBS. Datapoints with the same colour indicate the same animal. Boxplots: central line, median; box limits, upper and lower quartiles; whiskers, 1.5× interquartile range. See Source data for full statistical reporting. c, Dominance analysis determines the relative contribution of each independent variable to the overall fit (adjusted R2) of a multiple linear regression model54, partitioning the total variance explained in the target (here, behavioural arousal score) accounted for by each predictor. Here, our predictors are the integrated information (ΦR) from ref. 16; the measure of integration-redundancy balance (Φ2008) from ref. 47; causal density50,131; and net information flow (see Methods for details of each). Regression target is the behavioural arousal score from each animal in the DBS macaque dataset29,30. Percentage of relative importance is represented as a pie chart, revealing that integrated information is the predictor with highest relative importance, accounting for 51% of the total variance explained. We establish the statistical significance of the multiple linear regression model accounting for arousal score as a function of our fMRI information-dynamic measures model using a non-parametric permutation test (one-sided), by comparing the empirical variance explained against a null distribution of R2 obtained from repeating the multiple regression with randomly reassigned arousal scores. The empirical variance explained is significantly greater than chance (R2 = 0.57; P \< 0.001).
+
+Nature Human Behaviour | Volume 10 | April 2026 | 777–802 781
+
+Article https://doi.org/10.1038/s41562-025-02381-5
+
+Methods and Supplementary Table 1), which ranges from 0 (complete unresponsiveness and lack of arousal) to 11 (fully awake and alert). In addition to integrated information, we also consider prominent information-dynamic quantities that can be obtained from infor mation decomposition. Specifically, we consider (1) the original (that is, uncor- rected) proposed measure of integrated information, Φ2008, which was put forward as a measure of conscious level in the brain47,48,50. As shown in Extended Data Fig. 1 (see also Methods), Φ2008 can be more properly understood as quantifying the balance between integrated information (ΦR) and the persistent redundancy in the system. We also consider (2) causal density, another measure that seeks to quantify the ‘relevant complexity’ in a system in terms of overall (statistical) causal inter activity between its elements, and was likewise proposed as a candidate measure of conscious level in the brain50. Finally, we consider the overall net flow of information, which quantifies the prevalence of imbalanced information transfer in the system. Measures of infor- mation transfer such as transfer entropy can exhibit changes across anaesthesia and wakefulness, including due to thalamic stimulation51. In addition, presence of a net flow of information indicates an asym- metry in the system, and therefore information flow as defined here is mathematically related to the notion of ‘temporal irreversibility’, another measure of brain organization that is often reduced in the unresponsive (and presumably unconscious) brain52,53.
+
+Using dominance analysis54 to disentangle the relative importance of each predictor, we show that integrated information (ΦR) emerges as the predictor with highest relative importance for tracking behav- ioural arousal in the macaque DBS dataset, alone accounting for \>50% of the total variance explained (Fig. 3c). This result is also repli- cated when considering both macaque datasets together (DBS and multi-anaesthesia), which used the same scale for measuring behav- ioural arousal and are therefore comparable (Supplementary Fig. 4). Altogether, even though each of the other three candidates has been associated with consciousness on either theoretical or empirical grounds, we find that integrated information is the measure of neural information dynamics that most closely tracks the behavioural effects of anaesthesia.
+
+Compromised controllability of brain dynamics in the disintegrated mammalian brain How can we understand the anaesthetic-induced reduction in inte- grated information from the brain’s past to its future? Mechanistically, the transition from past to future states of brain activity unfolds over the network of physical connections between regions: the structural connectome35–37. We therefore turn to ‘network control theory’, which provides a framework to understand how the network architecture of
+
+a system shapes its ability to transition between different activation states: here, patterns of regional fMRI signal55–58. Specifically, we can use linear control theory to determine the controllability of brain dynamics in terms of the ‘control energy’ that would be required to achieve a tran- sition from one activation pattern to another (Fig. 4a). When it is easy to steer the system between different functional configurations, the resulting ‘energy landscape’ will be relatively flat. In contrast, a steeper landscape indicates that transitions are more effortful, corresponding to less controllable dynamics (Fig. 4a). This approach was recently used to reveal pharmacologically induced facilitation of brain state transitions59,60. Thus, we adopt this framework to ask: does anaesthesia induce systematic changes in the controllability of brain dynamics, that could explain why we observe a drop in integrated information?
+
+To address this question, we capitalize on the availability of species-specific anatomical connectomes: (1) human consensus structural connectome from diffusion-weighted MRI tractography; (2) macaque structural connectivity combining diffusion-weighted MRI tractography and CoCoMac tract tracing61; (3) mouse structural connectome from the Allen Institute’s tract-tracing data62; and (4) marmoset structural connectome from in vivo diffusion-weighted MRI tractography63 (see Methods for details). We use these species-specific connectomes to quantify the control energy (operationalized as the squared input signal, summed across brain regions and integrated across time) required to transition between each pair of successive fMRI activation states64 during wakefulness and during anaesthesia.
+
+Across species and across anaesthetics, we show that the con- trol energy required to transition between successive timepoints of brain activity is significantly increased under anaesthesia (except for halothane in the mouse) (Fig. 4b–f). This corresponds to the brain exhibiting a steeper ‘energy landscape’ and less controllable dynam- ics under anaesthesia. These results from fMRI are consistent with recent modelling of electrodynamics based on the human connectome, which indicated that anaesthesia should induce a steepening of the energy landscape65,66.
+
+Crucially, we can again demonstrate that this effect is not a mere by-product of the presence of anaesthetic in the bloodstream but is rather related to anaesthetic-induced suppression of responsiveness to the environment: the average transition energy is lowered again upon awakening from anaesthesia, whether due to discontinuation of the anaesthetic (human data, Fig. 4b), or induced by electrical stimula- tion of the central thalamus in the macaque (Fig. 4e). However, we note that this effect was to some extent also observed with low-intensity stimulation of the VT, which did not induce a corresponding restora- tion of behavioural arousal30 (we return to this point in the Discus- sion). Across human, both macaque datasets and marmoset, we also
+
+Fig. 4 | Anaesthesia and thalamic DBS exert opposite effects on the controllability of brain dynamics. a, Network control theory quantifies the energy (magnitude of input across time) required to transition between brain states, here defined as successive fMRI signal timepoints. Higher transition energy means that transitions are more difficult, on average, and dynamics are less controllable. b, Human sevoflurane data (n = 15), including recovery. P values are from two-sided paired-samples t-test, FDR-corrected for multiple comparisons against the awake condition, and against the recovery condition. Boxplots: central line, median; box limits, upper and lower quartiles; whiskers, 1.5× interquartile range. c, Mouse wakefulness (n = 10) versus medetomidine- isoflurane (MedIso; n = 14) and halothane (Halo; n = 19) anaesthesia data. P values are from two-sided independent-samples t-test, FDR-corrected for multiple comparisons against the awake condition. d, Macaque wakefulness versus anaesthesia with propofol (Ppfl), sevoflurane (Sevo) and ketamine (Keta). N = 24 runs from 3 animals for awake; 11 runs from 2 animals for Sevoflurane; 23 runs from 3 animals for Propofol; 22 runs from 3 animals for ketamine anaesthesia. P values are from linear mixed-effects models (two-sided), FDR-corrected for multiple comparisons against awake condition (see Methods). Datapoints with the same colour indicate the same animal. e, Macaque DBS data. CT, centro- median thalamus; VT ventrolateral thalamus. P values are from linear
+
+mixed-effects models (two-sided), FDR-corrected for multiple comparisons against propofol anaesthesia with no DBS (see Methods). N = 36 runs from 3 animals for awake; 28 runs from 2 animals for anaesthesia (DBS-off); 31 runs from 2 animals for low-amplitude centro-median thalamic DBS; 25 runs from 2 animals for high-amplitude centro-median thalamic DBS; 18 runs from 1 animal for low-amplitude ventrolateral thalamic DBS; 18 runs from 1 animal for high- amplitude ventrolateral thalamic DBS. Datapoints with the same colour indicate the same animal. f, Marmoset wakefulness versus anaesthesia with propofol (Ppfl), sevoflurane (Sevo) and isoflurane (Iso). N = 48 runs from 4 animals for each condition. P values are from linear mixed-effects models (two-sided), FDR- corrected for multiple comparisons against the awake condition (see Methods). In all boxplots: central line, median; box limits, upper and lower quartiles; whiskers, 1.5× interquartile range. Datapoints with the same colour indicate the same animal. See Source data for full statistical reporting. g, Pearson correlation (two-sided) between transition energy and integrated information across all datapoints within each dataset. Shading indicates 95% confidence intervals (CIs). Credits: human head icon (b,g) from pixabay.com; mouse icon (c,g) designed by CraftStarters.com; macaque icon (d,g) designed by Freepik.com; DBS icon (e,g) adapted from ref. 30, published under a CC-BY licence; marmoset icon (f,g) from pixabay.com.
+
+Nature Human Behaviour | Volume 10 | April 2026 | 777–802 782
+
+Article https://doi.org/10.1038/s41562-025-02381-5
+
+Nature Human Behaviour | Volume 10 | April 2026 | 777–802 783
+
+abdef Landscape of network control energy
+
+Easy transitions
+
+Activity at time t
+
+×1011
+
+Marmoset
+
+1.1 1.05
+
+P = 0.002 vs Awake
+
+n oitisnarT\] .u.a\[y grene109r = 0.21; P = 0.184 Awake
+
+P = 0.023 vs Awake ×105
+
+n oitisnarT\] .u.a\[y greneP \< 0.001 vs Awake
+
+×105n oitisnarT\] .u.a\[y greneAwake×106
+
+n oitisnarTSevo
+
+Recovery
+
+Awake
+
+MedIso
+
+Halo
+
+9
+
+87P \< 0.001 vs Awake
+
+6Sevo deep
+
+Ppfl deep Keta
+
+P \< 0.001 8vs No DBS
+
+765\] .u.a\[y greneP \< 0.001 vs No DBS
+
+P \< 0.001 vs Awake
+
+Awake Iso
+
+Sevo
+
+Ppfl
+
+P \< 0.001 vs No DBS
+
+Ppfl (no DBS)
+
+DBS CT low
+
+DBS CT high
+
+DBS VT high
+
+DBS VT low
+
+1.4
+
+P \< 0.001 vs Awake
+
+1.3
+
+1.2
+
+P \< 0.001 vs Awake
+
+Difficult transitions Transition energy
+
+t+1
+
+Species-specific connectome
+
+energy
+
+Transition
+
+t+1
+
+P = 0.003 vs Awake
+
+P = 0.013 vs Recovery
+
+Human Mouse
+
+Macaque
+
+Macaque DBS
+
+Activity at time t
+
+c g
+
+Correlate measures
+
+11.2
+
+11.0
+
+10.8 ygrenen oitisnarT10.6
+
+Integrated information
+
+10.4
+
+ygrenen oitisnarTIntegrated information
+
+ygrenen oitisnarTIntegrated information
+
+ygrenen oitisnarTIntegrated information
+
+ygrenen oitisnarTIntegrated information
+
+×105
+
+Monkey 1
+
+Monkey 2
+
+Monkey 3
+
+Monkey 4
+
+Monkey 5
+
+Monkey 1
+
+Monkey 2
+
+Monkey 3
+
+Monkey 4
+
+Monkey 5
+
+Monkey 1
+
+Monkey 2
+
+Monkey 3
+
+Monkey 4
+
+r = –0.71; P \< 0.001
+
+r = –0.67; P \< 0.001
+
+r = –0.77; P \< 0.001
+
+r = –0.31; P \< 0.001
+
+Article https://doi.org/10.1038/s41562-025-02381-5
+
+find a significant negative correlation between individuals’ transition energy and the integrated information in their fMRI signals (Fig. 4g). In other words, the brain’s capacity to integrate information is sys- tematically diminished when brain dynamics are less controllable, whereupon the organism’s ability to interact with the environment is also compromised.
+
+Transcriptomic underpinnings of regional changes in integrated information The analyses carried out up to this point considered integrated infor- mation at the global level, by averaging this quantity across all brain regions in the parcellation. However, to obtain further insight about the neurobiological origin of this overall reduction, we can also inter- rogate changes in integrated information at the regional level. We use the Network-Based Statistic (NBS)67 to identify pairs of regions that are significantly affected by anaesthesia, compared with either baseline wakefulness or recovery. In each species, the NBS reveals widespread significant changes in integrated information (ΦR), with the major- ity being reductions (that is, anaesthetic-induced dis-integration), overwhelmingly so in the case of human and macaque where the anaesthetic regimen is deepest (Supplementary Fig. 5). We also find that in each species, the majority of significant cortical changes occur between pairs of regions belonging to different functional systems (Supplementary Fig. 6), highlighting their distributed nature, in line with growing consensus that ‘anaesthesia and consciousness are network-level processes’21.
+
+We then obtain the mean value of each region’s significant changes in integrated information with the rest of the cortex, result- ing in species-specific cortical maps of anaesthetic-induced changes in integrated information (Fig. 5). We see that anaesthetic-induced changes in integrated information are widely distributed across the brain, but not uniformly so, instead displaying prominent patterns of regional variation. Specifically, we find that across species, the highest prevalence of significant reductions in integrated informa- tion involves unimodal visual and somatomotor cortices (Fig. 5). We emphasize that this finding does not contradict the importance of the default mode network (DMN) and association cortex in supporting consciousness21, because changes in integrated information are not confined to unimodal cortices: across species, our NBS analysis also consistently finds significant reductions in integrated information in the association cortex (including anterior and posterior midline corti- cal regions of the human brain belonging to the DMN; Fig. 5). Likewise, the present results do not contradict early fMRI studies that showed relative preservation of functional connectivity in primary sensory net- works under anaesthesia34,68,69, because these studies used traditional
+
+functional connectivity (that is, correlation) which reflects primarily redundant information2,17,46 and is therefore fundamentally different from the measure of integrated information used in the present study. Indeed, the brain-wide but unimodal-dominated spatial topography of dis-integration (reduced ΦR) observed in the present study is highly consistent with recent findings using another measure intended to quantify the balance of integration and segregation in the brain, termed integration–segregation difference (ISD)32. Jiang and colleagues32 also found distributed dis-integration throughout the human brain under anaesthesia, but with the most prominent effects in unimodal regions, similar to our own findings with reduced ΦR (ref. 32). Thus, measures that are sensitive to the balance of integration and segregation (ΦR, ISD), rather than simple correlation, appear to converge on a consistent topography of anaesthesia.
+
+The question arises: what is the neurobiological underpinning for such a consistent spatial topography? Brain regions exhibit variable cytoarchitecture and chemo-architecture, which is going to shape their susceptibility to the influence of anaesthetic compounds. Ultimately, these microarchitectural properties are shaped by each region’s unique profile of gene expression. Therefore, to identify potential neurobiological underpinnings of regional changes in integrated information, we capitalize on the availability of human and mouse transcriptomic databases from the Allen Institute for Brain Science, which provide gene expression measures across brain regions from microarray probes (human)39 and in situ hybridization (mouse)41. We complement these human and mouse databases with a third database of gene expression in the macaque cortex from stereo-seq, recently released by the Brain Science Data Center of the Chinese Academy of Sciences40.
+
+We start by pursuing a data-driven approach. Specifically, we con- sider a list of evolutionarily conserved brain-related genes pertaining to neurotransmitter receptors and cell-type markers70. These human genes have orthologues in both mouse and macaque, making them comparable across species. From the genes in this list, a total of 81 genes are available and pass our quality control criteria in each of the three species (human, macaque and mouse) (Supplementary Tables 2 and 3). To obtain consistent patterns across species, we focus on cortical gene expression, for which data are available in all three species. After obtaining species-specific spatial correlations between regional loss of integrated information and each gene’s expression pattern, we use these correlations to rank genes across species to identify the most consistent pattern.
+
+Our data-driven approach indicates that the gene with the most consistent spatial association with anaesthetic-induced reductions in integrated information is PVALB/Pvalb (Fig. 5a). This is noteworthy
+
+Fig. 5 | Regional loss of integrated information under anaesthesia correlates with regional PVALB/Pvalb gene expression across species. a, PVALB/Pvalb is the gene whose spatial association with regional loss of integrated information is the most consistent across species. Spatial correlations are used to compare the 81 genes within each species, ranking them from most negative to most positive. To aggregate across species, we then average the three species’ ranks. Since both positive and negative correlations are of interest, we z-score the ranks’ magnitude such that genes whose correlation is the most extremely ranked (in either direction) will have a higher value, indicated by a darker colour. b, Regionally defined PVALB gene expression data for the human brain are obtained from the Allen Institute for Brain Science (AIBS) transcriptomics database39. Across cortical regions, we observe a negative spatial correlation (Spearman’s rho, two-sided; significant against a spatial autocorrelation-preserving null distribution) between the cortical distribution of PVALB gene expression and the mean NBS-derived significant reduction in integrated information from comparing anaesthesia against baseline and recovery. Shading indicates 95% CI. c, Regionally defined PVALB gene expression data for the macaque brain are provided by the Brain Science Data Center of the Chinese Academy of Sciences40 and translated to the macaque Regional Mapping atlas by ref. 70. Across cortical regions, we observe a negative spatial correlation (Spearman’s rho, two-sided;
+
+significant against a spatial autocorrelation-preserving null distribution) between the cortical distribution of PVALB gene expression and the mean NBS-derived significant reduction in integrated information from comparing anaesthesia against baseline and recovery induced by CT deep-brain stimulation. Shading indicates 95% CI. d, Regionally defined Pvalb gene expression data for the mouse brain are obtained from the AIBS transcriptomics database41. Across cortical regions where integrated information is reduced under anaesthesia, we observe a negative spatial correlation (Spearman’s rho, two-sided; significant against a spatial autocorrelation-preserving null distribution) between the cortical distribution of Pvalb gene expression and the mean NBS-derived significant reduction in integrated information from comparing anaesthesia against baseline. Across regions where integrated information is increased under anaesthesia, we observe a positive spatial correlation (Spearman’s rho, two- sided; significant against a spatial autocorrelation-preserving null distribution) between the cortical distribution of Pvalb gene expression and the mean NBS-derived significant increase in integrated information from comparing anaesthesia against baseline. See Supplementary Fig. 7 for corresponding results with SST/Sst gene expression, another cell-type marker for a different class of inhibitory interneurons. Shading indicates 95% CI. Credits: silhouettes and brain icons from SciDraw.io.
+
+Nature Human Behaviour | Volume 10 | April 2026 | 777–802 784
+
+Article https://doi.org/10.1038/s41562-025-02381-5
+
+because PVALB (Pvalb in the mouse) is a marker gene that is expressed by inhibitory interneurons, which are targeted by many anaesthetics71 and control the onset and duration of cortical ‘down’ states72,73. We therefore focus more closely on PVALB/Pvalb. We show that in each of human, macaque and mouse datasets, regional anaesthetic-induced reductions in integrated information are negatively correlated with the regional density of PVALB/Pvalb expression (Fig. 5b–d). In other words, the more a region reduces its integrated information under
+
+anaesthesia, the more it expresses PVALB/Pvalb. We further use Moran spectral randomization to implement species-specific null models and confirm that the association between regional loss of integrated information and regional PVALB/Pvalb gene expression is statistically significant beyond what would be expected from random maps with preserved spatial autocorrelation74.
+
+Specifically, in humans we observe a significant negative correlation (rho(98) = −0.40, P = 0.01, CI = \[−0.55, −0.22\]) between
+
+Nature Human Behaviour | Volume 10 | April 2026 | 777–802 785
+
+∆ aIntegrated information vs genes across species
+
+2
+
+10bHuman
+
+Anaesthesia \> Awake, Recovery
+
+cMacaque
+
+d
+
+Mouse
+
+n oisserpxerho = –0.40; P \< 0.01 1.0
+
+0.8 PVALB
+
+0.6
+
+0.4
+
+0.2
+
+0 1
+
+–20 5 PVALB expression (microarray)
+
+0 –20 –15 –10 –5 0 ×10rho = –0.61; P \< 0.001
+
+0.2
+
+0–0.06 –0.04 –0.02 0
+
+–0.06 0
+
+∆ Integrated information \[bits\]
+
+0 1
+
+–0.02 0.015
+
+rho = 0.48 P \< 0.001
+
+–3 5
+
+×10–3
+
+–0.02 –0.01 0 0.01
+
+∆ Integrated information \[bits\] ∆ Integrated information \[bits\]
+
+1.0Anaesthesia \> Awake, CT-DBS
+
+0.8
+
+0.6
+
+PVALB
+
+0.4
+
+0 1 PVALB expression
+
+∆ Integrated information \[bits\]
+
+(stereo-seq)
+
+1.0rho = –0.28
+
+P = 0.008 0.8
+
+Anaesthesia \> Awake
+
+0.6
+
+Pvalb
+
+0.4
+
+Pvalb expression
+
+0.2
+
+(in situ hybridization)
+
+0∆ Integrated information \[bits\]
+
+∆ Integrated information \[bits\]
+
+Article https://doi.org/10.1038/s41562-025-02381-5
+
+the cortical distribution of PVALB expression and the distribution of anaesthetic-induced loss of integrated information (Fig. 5b). For comparison, a significant positive correlation is observed for the marker gene for the other main class of inhibitory interneurons, SST (rho(98) = 0.27, P = 0.045, CI = \[0.09, 0.45\]; Supplementary Fig. 7a). For the macaque, we also find a significant negative correlation between loss of cortical integrated information and cortical expression of PVALB (rho(80) = −0.61, P \< 0.001, CI = \[−0.74, −0.47\]; Fig. 5c). However, no corresponding significant correlation is observed with the distribu- tion of macaque SST expression from stereo-seq (rho(80) = −0.01, P = 0.477, CI = \[−0.21, 0.22\]; Supplementary Fig. 7b). Notably, the restoration of integrated information induced by CT-DBS (both compared against anaesthesia without stimulation, and against stimulation of the control site, VT) mirrors the spatial topography of anaesthetic-induced dis-integration, and correlates with PVALB expression (Extended Data Fig. 2): the more integrated informa- tion drops under anaesthesia, the more it is restored by DBS of the centro-median thalamus. Similar to the anaesthetic-induced loss of integrated information, its regionally heterogeneous restoration also closely follows the regional expression of PVALB (Extended Data Fig. 2). In other words, CT-DBS counteracts the integration-suppressing effects of anaesthesia in a way that is regionally specific as a function of PVALB expression.
+
+Finally, the correlation between anaesthetic-induced cortical changes in integrated information and Pvalb cortical gene expression in the mouse follows two opposite patterns: we observe increases in regional integrated information, as well as decreases. Across corti- cal regions where integrated information is reduced under anaes- thesia, we observe a significant negative correlation with cortical Pvalb (rho(24) = −0.28, P = 0.008, CI = \[−0.60, 0.13\]), similar to that in humans and macaques. Conversely, a significant positive corre- lation with Pvalb becomes apparent for regions whose integrated information is increased under anaesthesia (rho(44) = 0.48, P \< 0.001; CI = \[0.22, 0.68\]; Fig. 5d). As with the macaque, no significant correla- tions (for either increases or decreases in integrated information) are observed with Sst gene expression in the mouse after accounting for spatial autocorrelation (Supplementary Fig. 7c). Thus, in the mouse, the direction of the relationship between integrated information and Pvalb cortical gene expression depends on whether integrated information is increased or decreased: in both cases, more extreme changes occur for regions with higher Pvalb gene expression. Many differences exist between our primate and murine datasets, includ- ing acquisition parameters and the anaesthetics used; it is known that anaesthetics can differ in their effects on cerebral blood flow and fMRI signals21,75. However, perhaps the most likely cause for the presence of local increases in integrated information in our mouse dataset, alongside the observed reductions, is the use of a lighter anaesthetic regimen in the mouse compared with the deep anaesthe- sia of our human and macaque datasets. Unsurprisingly, anaesthesia exerts dose-dependent effects on brain activity and functional con- nectivity across species76. This interpretation of a role of anaesthetic depth on integrated information is further supported by our analyses with different depths of anaesthesia in the human data, showing greater loss of integrated information at greater doses of anaesthesia (Supplementary Fig. 8). Future work with mice under deeper anaes- thesia will be required to provide a definitive answer to this ques- tion. Nevertheless, there is a consistent finding in all three species: in addition to the global reduction in integrated information, we consistently observe a genetic underpinning for anaesthetic-induced loss of integrated information, whereby regions that exhibit reduced integrated information under anaesthesia do so in proportion to their PVALB/Pvalb gene expression.
+
+We also repeat our analysis across subcortical regions for which gene expression data are available in both human and mouse39,41. Although we find reduced integrated information for most human
+
+subcortical regions and also several mouse subcortical regions, in neither case do we find a significant correlation with PVALB/Pvalb gene expression (Supplementary Fig. 9), suggesting that this relationship between integrated information and PVALB/Pvalb, although consistent across species, may be a primarily cortical phenomenon. Inspired by recent work in humans77, we further investigate the specific role of the thalamus using the differential mRNA expression of PVALB and CALB1 to differentiate between thalamic nuclei rich in core versus matrix cells77,78. We ask whether a spatial correlation exists between transcrip- tomically defined core–matrix architecture and anaesthetic-induced changes in integrated information. Indeed, we find that loss of inte- grated information is stronger for human thalamic nuclei rich in matrix cells (Supplementary Fig. 10). This prominent role of the matrix thala- mus aligns with the human functional connectivity results of ref. 77, but also with other reports about the importance of the matrix thalamus for anaesthesia from the human and non-human primate literature30,66,79–82, including our own present result, that deep-brain stimulation of the macaque central thalamus reverses the loss of integrated information induced by anaesthesia (Fig. 3).
+
+However, this human result is not observed in our mouse data. We perform the mouse analysis through two complementary strate- gies. First, we use the same approach as for the human data, using the relative proportion of Calb1 to Pvalb mRNA expression from the Allen Mouse Brain Atlas database (Supplementary Fig. 11). Second, since mRNA is not always a good proxy for the corresponding protein in the brain70,83, we use immunohistochemistry data about the density of parvalbumin (the protein coded by Pvalb) and calbindin (the protein coded by Calb1) in different nuclei of the mouse thalamus, as provided by ref. 84. After ranking regions on the basis of the relative abundance of these proteins, we perform the same correlation between regional core–matrix prevalence and regional change in integrated informa- tion (Supplementary Fig. 12). Despite using independent datasets and modalities to define mouse thalamic architecture, both analyses converge in showing similar, non-significant correlations. On one hand, this may be due to the relatively lighter anaesthesia used in our mouse datasets (with several nuclei failing to show significant NBS-corrected changes in integrated information), compared with the deep anaesthesia of our human dataset. Future work with deeper levels of anaesthesia will be required to enable formal comparison between the two species. On the other hand, we note that thalamic cellular architecture also differs between rodents and primates. In mice, interneurons represent only 6% of thalamic neurons and are largely restricted to the visual thalamus, whereas in primates, thalamic interneurons are more prevalent (\~30% of the total thalamic neuronal population) and can be found throughout the entire thalamus85.
+
+A transcriptomic gradient mediates increased control cost of brain dynamics under anaesthesia Is there also a link between PVALB/Pvalb gene expression and the observed increases in transition energy under anaesthesia? Network control theory requires a specification of a set of ‘control points’ where energy is injected into the system to induce the desired transition. For our initial quantification of transition energy, we used a uniform con- trol strategy, whereby each brain region is given equal control. Next, we adopt a heterogeneous control strategy instead, to ask whether the increase in transition energy that we observed under anaesthesia may be driven by regional differences in PVALB/Pvalb gene expression. Given the inhibitory role of parvalbumin-positive interneurons, the main type of cell that express the PVALB/Pvalb gene, we model region- ally heterogeneous inhibition as a reduction in the amount of control energy that each region can inject into the system, proportional to that region’s PVALB/Pvalb expression. This approach is analogous to a recent approach that modelled the effect of engaging the excitatory 5HT2A receptor as increasing the regional amount of control energy, in proportion to each region’s receptor expression60 (Fig. 6a).
+
+Nature Human Behaviour | Volume 10 | April 2026 | 777–802 786
+
+Article https://doi.org/10.1038/s41562-025-02381-5
+
+b c d e
+
+PVALB
+
+Activity at t
+
+Fig. 6 | Modelling PVALB/Pvalb-mediated increase in the control cost of brain dynamics. a, We model regionally heterogeneous inhibition as a reduction in the amount of control energy that each region can inject into the system, proportional to that region’s PVALB/Pvalb expression. b–e, In each dataset, we compare the increase in control cost obtained with PVALB/Pvalb expression, against the control cost obtained from species-specific surrogate spatial
+
+In other words, we seek to determine whether the specific regional distribution of PVALB/Pvalb gene expression in the mammalian cortex could correspond to especially suitable control points for inducing an increase in transition energy (that is, reduced controllability), which might then be targeted by anaesthesia. We recalculate the transition energy between each pair of successive BOLD signal patterns for the awake condition of each dataset, this time downweighting the energy injected into every region in proportion to its amount of PVALB/Pvalb gene expression (which is sigmoid normalized and thus lies between 0 and 1 in each sp

@@ -1,0 +1,1003 @@
+NeuralBench: A Unifying Framework to Benchmark NeuroAI Models
+
+Hubert Banville1, Stéphane d’Ascoli1, Simon Dahan1, Jérémy Rapin1, Marlène Careil1, Yohann Benchetrit1, Jarod Lévy1,4, Saarang Panchavati1, Antoine Ratouchniak1, Mingfang (Lucy) Zhang2,3, Elisa Cascardi1, Katelyn Begany1, Teon Brooks1, Jean-Rémi King1
+
+1Brain & AI team, Meta FAIR, 2École Normale Supérieure, Université PSL, CNRS, 3Hospital Foundation Adolphe de Rothschild, 4MIND, Inria
+
+Deep learning and large public datasets have recently catalyzed the proliferation of AI models for processing brain recordings. However, systematically evaluating these models remains a challenge: not only do the preprocessing pipelines, training and finetuning approaches largely vary across studies, but their downstream evaluation is often limited to small sets of tasks and/or datasets. Here, we present NeuralBench: a unified framework for benchmarking AI models of brain activity. We accompany this framework with NeuralBench-EEG v1.0 – a large EEG benchmark that includes 36 electroencephalography (EEG) tasks and 14 deep learning architectures, and is evaluated on 94 datasets accessed through a standardized interface. This first EEG-focused release already highlights two main findings. First, current foundation models only marginally outperform task-specific models. Second, a large set of tasks (e.g. cognitive decoding, clinical predictions) remain highly challenging, even for the best models. Critically, NeuralBench is designed for the integration of new tasks, datasets, models, and neuroimaging modalities, as illustrated by preliminary extensions to MEG and fMRI datasets and models. Through this white paper, we invite the community to expand this open-source framework and work together toward a unified benchmarking standard for neuroimaging models.
+
+Correspondence: hubertjb@meta.com, jeanremi@meta.com Code: https://github.com/facebookresearch/neuroai/tree/main/neuralbench-repo
+
+NeuralFetch
+
+Dataset definitions
+
+NeuralSet
+
+NeuralBench
+
+Data loading & extraction
+
+Benchmark orchestration
+
+NeuralBench-EEG v1.0 14
+
+models
+
+NeuralTrain
+
+Models & training
+
+36 tasks
+
+94 datasets
+
+9,478 subjects
+
+13,603 hours
+
+1 benchmark
+
+Figure 1 NeuralBench is a benchmarking framework for the evaluation of brain models, based on the NeuralFetch, NeuralSet and NeuralTrain libraries, and providing a fully configurable and flexible interface. Second row. Contents of the first release, NeuralBench-EEG v1.0.
+
+1 Introduction
+
+The rise of AI models in neuroimaging. Historically focused on targeted, small-scale, and private studies (Poldrack, 2011; Michel and Murray, 2012; Baillet, 2017), the analysis of brain activity is now rapidly shifting toward large-scale public datasets (Van Essen et al., 2013; Harati et al., 2014; Taylor et al., 2017; Pinho et al., 2018; Sun et al., 2025; d’Ascoli et al., 2026). On top of boosting statistical power and stimulating reproducible research (Button et al., 2013; Poldrack et al., 2017; d’Ascoli et al., 2026), the proliferation of open datasets has catalyzed the use of AI to process brain recordings. Specifically, the self-supervised learning methods
+
+1
+
+A Downstream tasks B Brain models
+
+Cognitive Image Sentence Speech Typing Video Word
+
+BCI c-VEP
+
+8
+
+Motor imagery18 Mental Motor imagery
+
+execution3
+
+P300SSVEP
+
+24 8
+
+Responses Evoked
+
+Audiovisual ERN
+
+3 MMN N170 N2pc
+
+N400 2 LRP
+
+Classification Clinical Clinical
+
+event Dementia Depression Parkinson Pathology Schizophr. Seizure
+
+Regression
+
+Internal
+
+State Emotion Mental
+
+arith. 2 Workload3
+
+Retrieval
+
+Phenotyping Age Psycho-
+
+pathology Sex
+
+Sleep Misc
+
+arousal Sleep
+
+Sleep stage Artifact Reaction
+
+time
+
+Classification Regression Retrieval
+
+C Data diversity D Data quantity
+
+5 10 15 20 25 30 35 40
+
+\# downstream tasks
+
+Figure 2 Detailed overview. A. NeuralBench-EEG v1.0 currently includes 36 decoding downstream tasks on 94 different datasets, covering 8 different categories such as cognitive decoding, brain-computer interfacing (BCI), evoked responses and clinical tasks. B. Three types of models are compared: task-specific from-scratch deep learning architectures, pretrained foundation models and handcrafted features-based baselines. C-D. NeuralBench-EEG v1.0 currently contains more than three times the number of tasks of previous EEG downstream task benchmarks, and more than twice as many individual subjects, making it the largest such open-source benchmark yet.
+
+developed for language, speech and images (Devlin et al., 2019; Baevski et al., 2020; Oquab et al., 2024) are now adapted for the development of brain foundation models (Yang et al., 2025; Zhou et al., 2025). These models start to transfer to downstream tasks spanning electroencephalography (EEG) (Jiang et al., 2024; Kostas et al., 2021; Yang et al., 2023; Wang et al., 2024; Döner et al., 2025; El Ouahidi et al., 2025), functional magnetic resonance imaging (fMRI) (Kim et al., 2023; Dong et al., 2024; Caro et al., 2023), intracranial EEG (Wang et al., 2023; Yuan et al., 2024), structural MRI (Tak et al., 2026), electrophysiology (Azabou et al., 2023), and calcium imaging (Wang et al., 2025a).
+
+Current benchmarking challenges. Despite these advances, the evaluation landscape is fragmented. For EEG, the Mother of All BCI Benchmarks (MOABB)1 (Jayaram and Barachant, 2018; Aristimunha et al., 2025) provides an extensive benchmark for brain-computer interfacing (148 datasets). However, it focuses on a narrow set of 5 downstream tasks (e.g., left versus right motor imagery) and primarily targets handcrafted features-based approaches, such as Riemannian geometry pipelines for trial classification (Barachant et al., 2011; Yger et al., 2016). Building on this, Borra et al. (2024) adapted the benchmark for deep learning, focusing specifically on a subset of nine BCI dataset from the MOABB and three well-established architectures. In parallel, benchmarks tailored to EEG foundation models have emerged, e.g. , EEG-Bench (Kastrati et al., 2025), EEG-FM-Bench (Xiong et al., 2025), and AdaBrain-Bench (Wu et al., 2025). However, these efforts too are limited to a restricted set of downstream evaluations (Figure 2). This fragmentation is even more
+
+1https://moabb.neurotechx.com/
+
+2
+
+Brain pretraining data
+
+160
+
+10000
+
+s tesatad100 140
+
+120 m aertsnwod\# 8000
+
+s tcejbus\# 6000 80
+
+604000
+
+402000 20Benchmark
+
+Benchmark 0Model paper
+
+0
+
+Model paper
+
+0 2000 4000 6000 8000 10000 12000 14000
+
+\# hours of EEG data
+
+EEG
+
+cov + proj
+
+Logistic/Ridge regression
+
+Handcrafted features
+
+Task-specific
+
+\~1.5K 4.2M params trained from scratch
+
+Foundation
+
+linear \~3.2M 157.1M params pretrained, fine-tuned
+
+Objective
+
+pronounced in other brain recording modalities. For intracranial EEG (iEEG), Karpowicz et al. (2024) introduced FALCON, a few-shot evaluation benchmark for invasive BCI tasks, but is limited to 5 evaluation datasets. Elsewhere, foundation models for fMRI, MEG, and other modalities are still evaluated on handpicked datasets without a unified, systematic benchmark. Overall, there is currently no comprehensive framework for standardizing and efficiently evaluating brain foundation models across neuroimaging modalities.
+
+Contribution. Here, we introduce NeuralBench, a community-driven benchmarking framework for evaluating foundation models on brain activity recordings. NeuralBench is designed to be:
+
+1\. Comprehensive. As many relevant downstream tasks as possible should be included, for as many relevant brain imaging devices as possible. This helps properly support claims of models being truly foundational and provides a more nuanced assessment of the strengths and weaknesses of different models.
+
+2\. Rigorously validated. Publicly available datasets often require careful curation and tailored onboarding efforts so their contents can be used properly. Similarly, the framing of learning tasks requires special care to avoid common pitfalls (e.g. leakage, overfitting, etc.) and to be maximally informative. This also applies to foundation models – each one is trained using a specific preprocessing pipeline that needs to be replicated to allow fair evaluation.
+
+3\. Standardized. By providing a unified point-of-entry for diverse brain imaging devices (EEG, iEEG, MEG, fMRI, fNIRS, etc.), NeuralBench makes it easy to build and evaluate multimodal pipelines, bringing us closer to integrated brain modeling.
+
+4\. Flexible. NeuralBench is configurable at all levels of the neuroimaging modeling pipeline (data source, preprocessing, architecture, optimization, metrics, etc.), offering a compact and flexible interface for running and evaluating brain models.
+
+The first release of NeuralBench, NeuralBench-EEG v1.0, supports 36 tasks evaluated on 94 EEG datasets (with some tasks spanning multiple datasets), accessed through a standardized interface. This effort, which capitalizes on the careful curation of public datasets, provides unique support for cognitive decoding tasks (i.e., image, sentence, speech, typing, video and word decoding), which, apart from image decoding, have been omitted in previous benchmarks. In addition, we demonstrate the versatility of this framework and seed its expansion towards other brain imaging modalities by including a couple of illustrative MEG and fMRI tasks and models.
+
+Goal and overview. In the following sections, we present a technical overview of NeuralBench, followed by initial results on NeuralBench-EEG v1.0 which highlight two main findings: current EEG foundation models only marginally outperform task-specific baselines, and many complex tasks (e.g. , cognitive decoding, clinical prediction) remain challenging even for foundation models. We then show how NeuralBench seamlessly extends to MEG and fMRI modalities.
+
+Toward a Community-Driven Standard. Recognizing that a unified standard is only as strong as the community behind it, we provide the NeuralBench codebase2 as a starting point for global collaboration. We invite researchers across tasks and modalities to co-author its evolution and join us in defining the future of brain model evaluation.
+
+2 Methods
+
+In this section, we give a technical overview of NeuralBench, including its general architecture, a description of supported downstream tasks, model architectures, adaptation strategies, and evaluation protocols. We provide a high-level summary here and refer the reader to the package documentation for additional technical details.
+
+2https://github.com/facebookresearch/neuroai/tree/main/neuralbench-repo
+
+3
+
+2.1 Benchmark architecture
+
+NeuralBench is built on top of three main Python packages, which provide an interface with the data, processing and modeling tools that already exist in the neuroscience software ecosystem. Specifically, public neuroimaging datasets are accessed through NeuralFetch, which fetches curated datasets from public repositories like OpenNeuro3, DANDI4, and NEMAR5. Then, neural data is prepared and made available as PyTorch-ready dataloaders with NeuralSet– a package designed to efficiently leverage existing packages like MNE-Python (Gramfort et al., 2013)6 and nilearn (Abraham et al., 2014)7 for applying classic neuroimaging preprocessing pipelines, as well as HuggingFace8 for extracting AI model embeddings (e.g. on word, speech and image modalities). Finally, NeuralTrain provides modular training code with PyTorch-Lightning9, Pydantic10 and exca (Rapin and King, 2024)11(see Figure 2D).
+
+Once installed, NeuralBench is run with a command-line interface (CLI). For example, the following can be used to run the audiovisual stimulus classification task on the MNE-Python sample dataset (Gramfort et al., 2013):
+
+1\. Install NeuralBench
+
+$ pip install neuralbench $ neuralbench --help \# Trigger ,→
+
+interactive path configuration 2. Run the audiovisual stimulus task on EEG
+
+$ neuralbench eeg audiovisual\_stimulus --download \# Download data $ neuralbench eeg audiovisual\_stimulus --prepare \# Prepare cache $ neuralbench eeg audiovisual\_stimulus \# Run the task
+
+On top of allowing quick sanity-checking of the codebase, this small dataset (\<300 examples) is an interesting case study for very-low-data regime downstream tasks.
+
+Task configuration Tasks are configured through lightweight YAML files, which describe data sources, train/validation/test splits, neural data preprocessing (filtering, scaling, windowing, etc.), target processing if any (e.g. extracting dense representations of rich stimuli), trainer configuration (number of epochs, learning rate, etc.), and metrics.
+
+Example YAML configuration for audiovisual stimulus classification on EEG.
+
+data:
+
+study:
+
+source.name: Mne2013SampleEeg split:
+
+name: SklearnSplit valid\_split\_ratio: 0.2 test\_split\_ratio: 0.2 stratify\_by: description neuro.baseline: \[0.0, 0.2\] target:
+
+name: LabelEncoder event\_types: Stimulus event\_field: description return\_one\_hot: true trigger\_event\_type: Stimulus start: -0.2 duration: 1.0 loss.name: CrossEntropyLoss metrics: BalancedAcc
+
+Model configuration Similarly, deep learning architectures are defined through YAML files that configure NeuralTrain models. Thanks to its configurable pydantic layer, NeuralTrain can transparently access models from other libraries such as BrainDecode12 (Schirrmeister et al., 2017; Aristimunha et al., 2026).
+
+3https://openneuro.org/ 4https://dandiarchive.org/ 5https://nemar.org/ 6https://mne.tools/ 7https://nilearn.github.io/ 8https://huggingface.co/ 9https://lightning.ai 10https://pydantic.dev/ 11https://github.com/facebookresearch/exca 12https://braindecode.org/
+
+4
+
+2.2 Task and dataset selection
+
+A primary objective of NeuralBench is to provide a wide coverage of downstream tasks. Focusing on EEG for this first release, we selected a set of 36 representative downstream tasks, covering 8 categories: cognitive decoding, brain-computer interfacing (BCI), evoked responses, clinical, internal state, sleep, phenotyping and miscellaneous (see Figure 2A). Note that each task does not necessarily fall neatly into one of these categories, e.g. the P300 classification task could also fall under the Evoked responses category, however since it is usually collected as part of a P300 speller protocol we file it under BCI. Similarly, the psychopathology classification task could go under the Clinical category, but we opt to keep it under the same Phenotyping category as other tasks based on Shirazi et al. (2024). Nevertheless, we keep this operational organization to facilitate interpretation.
+
+Several inclusion criteria were considered. First, whenever possible, openly accessible datasets, rather than datasets requiring additional manual steps, were prioritized. Second, as several EEG datasets are approaching saturation (e.g. binary pathology detection on the TUAB dataset (Lopez et al., 2015)), we devoted special efforts to include challenging tasks on which performance is likely to be significantly improvable. To this end, we include multiple cognitive decoding tasks, where the goal is to recover a dense representation of the stimulus presented to participants, e.g. speech, images, words and videos (Défossez et al., 2022; Benchetrit et al., 2024; d’Ascoli et al., 2025). Finally, we re-framed common EEG classification tasks, i.e., clinical event classification on the TUEV dataset (Harati et al., 2015) and artifact classification on the TUAR dataset (Hamid et al., 2020), as multilabel classification tasks to take into account that that some events can overlap.
+
+Note on pretraining data overlap. Existing EEG foundation models are trained on custom corpora curated by the model authors. As there is a limited set of publicly available EEG datasets, some of these models saw (part of) the downstream datasets during pretraining. We flag these instances (e.g. with hashed bars in Figure 4), rather than discard them, as we did not notice a clear trend suggesting pretraining “leakage” improves downstream performance on the same data.
+
+Finally, while we prioritized breadth over depth in our selection of datasets (i.e., most tasks rely on a single core dataset), we also leveraged readily available datasets through MOABB13 (Aristimunha et al., 2025) to offer multiple comparison points on a few tasks, such as motor imagery and P300 decoding. This gives rise to two benchmark variants: NeuralBench-EEG-Core v1.0, which focuses on a single dataset per task, and NeuralBench-EEG-Full v1.0, which has up to 24 datasets per task and therefore enables the study of within-task variability.
+
+In total, NeuralBench-EEG v1.0 covers 36 tasks, 94 datasets, 9,478 subjects and 13,603 hours (see Table 1). Of note, no data is contained in the released package; datasets are accessed through the standardized interface provided by NeuralSet and NeuralFetch (King et al., 2026). Also, all datasets sources already provide de-identified data; as a result, the benchmark only processes de-identified subject IDs. More details on datasets and downstream tasks can be found in Appendix A and in the benchmark documentation14.
+
+2.3 Model architecture selection
+
+We selected commonly used EEG architectures and foundation models. First, we included 8 task-specific neural network architectures (Table S2), i.e., models that are trained from scratch on downstream tasks, typically with lower parameter counts. These include ShallowFBCSPNet and Deep4Net (Schirrmeister et al., 2017), EEGNet (Lawhern et al., 2018), BDTCN (Gemein et al., 2020), ATCNet (Altaheri et al., 2022), EEGConformer (Song et al., 2022), SimpleConvTimeAgg (El Ouahidi et al., 2023) and CTNet (Zhao et al., 2024).
+
+Second, we selected 6 EEG foundation models (Table S4), i.e., larger models that have been pretrained on unlabelled data, and that are typically finetuned on downstream tasks. These are BENDR (Kostas et al., 2021), LaBraM (Jiang et al., 2024), BIOT (Yang et al., 2023), CBraMod (Wang et al., 2025b), LUNA (Döner et al., 2025) and REVE (El Ouahidi et al., 2025).
+
+13https://moabb.neurotechx.com/ 14https://github.com/facebookresearch/neuroai/tree/main/neuralbench-repo
+
+5
+
+Table 1 Tasks and datasets in NeuralBench-EEG v1.0. For each task, we indicate the Core dataset name, the machine learning objective (reg: regression, clf : classification, retr: retrieval), the number of unique EEG channels, the number of unique subjects, the dimensionality of the target (i.e., the number of outputs), and the number of additional datasets in the Full variant, if any.
+
+Task Core dataset Obj. \#Ch. \#Subj. \#Hours \#Out. +Datasets
+
+Age Shirazi2024 reg 129 2,858 95.3 1 Artifact Hamid2020 clf 26 213 300.2 5 Audiovisual stimulus MneSample2013 clf 60 1 0.1 4 Clinical event Harati2015 clf 21 370 20.1 6 C-VEP Thielen2021 clf 8 30 50.0 20 7 Dementia diagnosis Miltiadous2023 clf 19 88 19.5 3 Depression diagnosis Mumtaz2018 clf 19 64 20.4 2 Emotion Chen2023 clf 32 123 28.7 9 Error-related negativity Kappenman2021Ern clf 30 40 4.4 2 2 Image Gifford2022 retr 63 10 230.7 1,536 Mental arithmetic Zyma2019 clf 20 35 2.3 2 1 Mental imagery Scherer2015 clf 30 9 3.9 5 Mental workload Hinss2023 clf 63 29 21.4 3 2 Mismatch negativity Kappenman2021Mmn clf 30 40 11.1 2 Motor execution Srisrisawang2024 clf 60 20 16.0 16 2 Motor imagery Stieger2021 clf 60 62 141.5 4 17 N170 Kappenman2021N170 clf 30 40 3.6 2 N2pc Kappenman2021N2pc clf 30 40 3.6 2 1 N400 Kappenman2021N400 clf 30 40 1.3 2 P300 Schreuder2010 clf 60 21 70.5 2 23 Parkinsons diagnosis Singh2021 clf 60 129 54.9 2 Pathology Lopez2017 clf 21 2,329 971.7 2 Psychopathology Shirazi2024 reg 129 2,820 94.0 1 Reaction time Shirazi2024 reg 129 1,945 70.8 1 Lateralized readiness poten- tial
+
+Kappenman2021Lrp clf 30 40 4.4 2
+
+Schizophrenia diagnosis Albrecht2019 clf 62 77 34.6 2 Seizure Dan2023 clf 24 23 982.9 2 Sentence Hollenstein2018 retr 128 12 21.5 768 Sex Shirazi2024 clf 129 2,858 95.3 2 Sleep arousal Ghassemi2018 clf 6 994 7,662.3 2 Sleep stage Kemp2000 clf 2 78 1,635.2 5 Speech Brennan2019 retr 60 33 58.5 4,096 Typing Levy2025 clf 61 20 40.7 29 Video Liu2024 retr 62 20 16.3 1,408 Steady-state visually evoked potential
+
+Wang2017 clf 64 34 9.1 40 6
+
+Word Nieuwland2018 retr 74 222 441.4 1,024
+
+6
+
+Third, we included representative handcrafted features-based models using sklearn-like pipelines to provide a non-deep learning comparison point (see Table S3). These pipelines all rely on symmetric positive definite (SPD) matrix representations of the input EEG which are fed to ‘shallow‘ predictors (logistic or Ridge regression).
+
+Finally, we include chance-level and “dummy” baselines to offer a proper performance floor to which models can be compared. Chance-level performance corresponds to the performance obtained by an untrained, randomly initialized model. “Dummy” performance corresponds to the performance obtained by a model that predicts either the average target for regression and retrieval tasks, the most frequent class for binary and multiclass classification tasks, or samples class-wise labels based on training set statistics for multilabel classification tasks. The dummy models are always fitted on the same training and validation sets as the other models.
+
+2.4 Downstream strategy protocol
+
+The original publications presenting the EEG foundation models listed above use different adaptation recipes, i.e., for optimization (batch size, optimizer, learning rate, scheduler, etc.), aggregation (\[CLS\] token, average patch token, etc.) and projection head design (linear layer, MLP, etc.). Here, to focus the comparison on model architecture and pretraining methodology, we adopt a shared training recipe.
+
+Each foundation model is finetuned end-to-end, using a linear projection head which receives the average-pooled output tokens and outputs a single vector matching the target dimension. Training uses AdamW (Loshchilov and Hutter, 2017) with a learning rate of 10−4, weight decay of 0.05, and cosine-annealing (10% warmup), for up to 50 epochs with early stopping on the corresponding validation metric (patience=10). The sole exception to this unified recipe is BENDR (Kostas et al., 2021), for which we lower the learning rate to 10−5 and apply gradient clipping at 0.5 to obtain stable learning curves. Therefore, model-specific techniques from the original papers — such as layer-wise learning rate decay, two-stage probing, or LoRA (Hu et al., 2022) — are intentionally omitted and the comparison of downstream adaptation strategies is kept for future iterations of NeuralBench. Finally, task-specific architectures are trained from scratch using randomly initialized weights, using the same optimization recipe as the foundation models.
+
+2.5 Preprocessing
+
+We take particular care to follow the preprocessing pipelines described in the original EEG foundation model papers, as pretrained checkpoints expect specific input statistics which require identical preprocessing. For task-specific architectures, we use a single preprocessing configuration inspired by previous EEG decoding work (Défossez et al., 2022; Benchetrit et al., 2024): resampling to 120 Hz, bandpass filtering between 0.1 and 75 Hz, notch filters at 50 and 60 Hz as well as their harmonics, channel-wise robust scaling at the recording level, followed by clamping at 20. Nevertheless, it will be important, in future iterations, to systematically evaluate the impact of preprocessing strategies on downstream evaluation.
+
+2.6 Data Splitting
+
+The generalization capacity of a model can be highly dependent on the task. Consequently, to split datasets into training, validation and testing sets, we use different strategies for each task: (1) predefined splits when provided by the authors, (2) “leave-concept-out” for cognitive decoding tasks, (3) cross-subject splits, with optional stratification for clinical tasks, or (4) random splits when very few examples are available. We train (or finetune) each model on each task three times, using a single train/valid/test partition but three different random seeds for the initialization of the (non-pretrained) model weights. See Appendix C for more details.
+
+2.7 Training and evaluation metrics
+
+The training, finetuning and evaluation of the models must vary depending on the task objective. In binary and multiclass classification tasks, we use cross-entropy with optional weighing to mitigate class imbalance. In multilabel classification tasks, we instead use binary cross-entropy per target. Regression tasks rely on the mean squared error (MSE) loss. Finally, we also implemented retrieval tasks, where a model must recover which candidate target out of a given retrieval set actually corresponds to the input (e.g. which image out of
+
+7
+
+a set of multiple images seen by a participant, based on an input EEG window). Retrieval is a particularly well-posed problem for cognitive tasks, as the content of an image, text or video is neither categorical, nor necessarily perfectly specified in a pretrained embedding. Retrieval ultimately allows future models and approaches to be compared with one another, with little assumption on how to represent the target. For retrieval, we here rely on the CLIP loss (Radford et al., 2021), using the configuration of Défossez et al. (2022), i.e., with the brain-to-target term only and a fixed temperature parameter τ = 1:
+
+LCLIP(θ) = − B
+
+1XBi=1
+
+log PBj=1 exp(s(ˆzexp(s(ˆzi,zi,zi)/τ) j)/τ) (1)
+
+where B is the batch size, s is the cosine similarity, and zi and ˆzi are the target dense embedding (e.g. DINOv2 (Oquab et al., 2024) for image retrieval) and corresponding prediction for batch element i.
+
+2.8 Model comparison
+
+To help summarize the comparison across models, we opted to report a single representative metric per task type: i.e., balanced accuracy for binary and multiclass classification, F1-score for multilabel classification, Pearson correlation for regression, and top-5 accuracy for retrieval15. See Appendix D for more details. We further report normalized scores ˜s to facilitate cross-task comparisons and emphasize task difficulty:
+
+˜s = sperfect s − s− dummy
+
+sdummy (2)
+
+where sdummy is the performance obtained by the dummy model on a specific dataset, and sperfect is the metric-specific theoretical highest performance obtainable (e.g. 100% balanced accuracy for classification tasks). Of note, due to the inherent noise in brain activity recordings, this perfect score cannot be attained in practice. With this formulation, a value of 0 indicates dummy-level performance and a value of 1 indicates perfect performance.
+
+Finally, global model rankings consists of the per-task rank of each model, averaged over all tasks. On NeuralBench-EEG-Full v1.0, we additionally use all available datasets to compute this ranking, i.e., we average ranks across datasets of the same task first.
+
+2.9 Computational considerations
+
+NeuralBench-EEG-Full v1.0 requires running 4,947 experiments. (14 models + chance, dummy & handcrafted features baselines, 97 tasks-datasets, 3 seeds each). By default, each job uses a single GPU with at least 32 GB VRAM and 64 GB of CPU RAM, though measured peak GPU usage averages only ∼1.3 GB (max ∼30.3 GB). The full EEG benchmark requires ∼11 TB of disk space (∼3.2 TB for the raw data, 7.8 TB of preprocessed cache, and 333 GB for logged results). Training times vary widely, with a median of 2.7 minutes but mean of 21.7 minutes per experiment, with the longest run taking 18.2 hours. This yields an estimated total serial runtime of ∼73 days (1,751 GPU-hours). The benchmark runs on Python \>= 3.12 with PyTorch 2.6 (Paszke et al., 2019) and Pytorch-Lightning (Falcon and The PyTorch Lightning team, 2019).
+
+3 Results
+
+3.1 NeuralBench-EEG v1.0: Evaluating EEG foundation models on 36 diverse downstream
+
+tasks
+
+We summarize per-model performance in Figure 3, where we order the models based on their average per- task rank. While the highest scoring models are foundation models, i.e., REVE (El Ouahidi et al., 2025), LaBraM (Jiang et al., 2024) and LUNA (Döner et al., 2025), some task-specific architectures trained from
+
+15We evaluate top-5 accuracy on the entire test set, using within-subject aggregation of repeated predictions, if available.
+
+8
+
+Mean rank norm. REVE LaBraM LUNA CTNet CBraMod SimpleConvTimeAgg
+
+ShallowFBCSPNet
+
+Deep4Net EEGConformer
+
+EEGNet BENDR
+
+ATCNet
+
+BIOT BDTCN REVE (69.2M; 2025)
+
+0.20
+
+LaBraM (5.8M; 2024)
+
+0.21
+
+LUNA (40.4M; 2025)
+
+0.30
+
+CTNet (150K; 2024)
+
+0.32
+
+CBraMod (4.9M; 2025)
+
+0.33
+
+SimpleConvTimeAgg (4.2M; 2023)
+
+0.35
+
+ShallowFBCSPNet (36K; 2017)
+
+0.43
+
+Deep4Net (146K; 2017)
+
+0.43
+
+EEGConformer (277K; 2022)
+
+0.45
+
+EEGNet (1K; 2018)
+
+0.47
+
+BENDR (157.1M; 2021)
+
+0.57
+
+ATCNet (29K; 2022)
+
+0.59
+
+Handcrafted
+
+0.60
+
+BIOT (3.2M; 2023)
+
+0.64
+
+BDTCN (27K; 2020)
+
+0.73
+
+Dummy
+
+0.92
+
+Chance
+
+0.94
+
+Foundation BENDR BIOT LaBraM CBraMod LUNA REVE
+
+Task-specific ShallowFBCSPNet Deep4Net EEGNet BDTCN EEGConformer ATCNet SimpleConvTimeAgg CTNet
+
+Baselines Chance Dummy Handcrafted
+
+0.00 0.25 0.50 0.75 1.00
+
+Normalized rank (lower is better)
+
+Figure 3 Model ranking on NeuralBench-EEG-Core v1.0. Each box corresponds to the rank distribution of one model across downstream tasks. Models are ordered by their mean normalized rank, displayed on the right hand side of the boxes. The number of trainable parameters (excluding the last linear projection layer) and the year of original publication are shown in parentheses next to each model name. Recent foundation models outrank most smaller task-specific models, suggesting large self-supervised pretraining can benefit downstream performance on a varied set of downstream tasks.
+
+scratch also perform well, e.g. CTNet (Zhao et al., 2024), SimpleConvTimeAgg (Défossez et al., 2022) and Deep4Net (Schirrmeister et al., 2017), despite significantly lower parameter counts (e.g. 150K parameters for CTNet vs. 69.2M for REVE). This is in line with Kastrati et al. (2025) and Wu et al. (2025) which reported similar results. Of note, BENDR (Kostas et al., 2021) and BIOT (Yang et al., 2023) did not perform as well overall despite their pretraining, which might in part be explained by the necessary addition of a channel adapter linear layer to match the expected channel montage seen during pretraining, and, for BIOT, to the use of a linear projection head rather than a large MLP head like in the original publication.
+
+3.2 Future-proofing evaluation through task diversity and difficulty
+
+Detailed performance results for each downstream task and model are presented in Figure 4 and Figure 5. The results suggest that performance over a few common EEG tasks is close to saturation, e.g. SSVEP classification, pathology, seizure detection, sleep stage classification and phenotyping tasks, i.e., age regression and sex classification.
+
+In contrast, the cognitive decoding tasks are particularly challenging. These tasks, introduced in NeuralBench (e.g. speech, sentence, video, word and image decoding), consist of decoding dense representations of the stimulus or condition from the brain activity.Foundation models particularly stand out on these compared to task-specific models, e.g. REVE leads on the sentence, speech and video decoding tasks.
+
+Models perform significantly worse on NeuralBench’s rarer paradigms, including mental imagery, sleep arousal, and psychopathology decoding, highlighting the difficulty of these specific decoding tasks. Moreover, standard benchmark tasks, i.e., motor imagery, P300 and N2pc classification, become particularly challenging when framed as cross-subject tasks, often yielding performance close to dummy level. Given the substantial margin between current results and performance ceiling, these tasks represent ideal benchmarks for future- proofing the evaluation of the next generation of EEG models.
+
+9
+
+Mean norm. rank ↑
+
+Top-5 75 50250Image
+
+Sentence
+
+Speech accuracy (per-subject) Top-5 accuracy (per-subject) Top-5 accuracy (per-subject) 106 44522within-subject · n=831K 0within-subject · n=26K 0within-subject · n=70K 0Typing
+
+Video
+
+Word Best
+
+Balanced accuracy Top-5 accuracy (per-subject) Top-5 accuracy (per-subject) (0) 204210Worst
+
+(1)
+
+within-subject · n=147K 0within-subject · n=29K 0within-subject · n=530K
+
+Best (0)
+
+Worst (1)
+
+Mean norm. rank ↑
+
+75 50250Mental imagery Balanced accuracy 0 within-subject · n=3.5K
+
+40P300 70 Balanced accuracy 60500 cross-subject · n=254K
+
+80 6040100 SSVEP Balanced accuracy cross-subject · n=8.2K
+
+Best (0)
+
+Worst (1)
+
+c-VEP
+
+Motor execution
+
+Motor imagery Balanced accuracy Balanced accuracy Balanced accuracy 60
+
+30
+
+60
+
+20404050 202010cross-subject · n=45K 0cross-subject · n=19K 0cross-subject · n=127K 0Mean norm.
+
+rank ↑
+
+60 40200Audiovisual
+
+ERN
+
+MMN
+
+N170
+
+N2pc
+
+N400
+
+LRP Balanced accuracy Balanced accuracy Balanced accuracy 80 Balanced accuracy Balanced accuracy Balanced accuracy Balanced accuracy 6040random · n=288
+
+0 cross-subject · n=16K
+
+0 cross-subject · n=40K
+
+0 cross-subject · n=13K
+
+0 cross-subject · n=13K
+
+0 cross-subject · n=4.8K
+
+0 cross-subject · n=16K
+
+Dementia Best (0) 50 Balanced accuracy 4030Worst
+
+(1)
+
+0 cross-subject · n=14K
+
+60
+
+80
+
+60
+
+60
+
+5050506040404040Mean norm.
+
+rank ↑
+
+0.0
+
+Clinical event
+
+Depression
+
+Parkinson's
+
+Pathology
+
+Schizophrenia
+
+Seizure F1 score (macro) Balanced accuracy Balanced accuracy Balanced accuracy Balanced accuracy Balanced accuracy cross-subject · n=24K
+
+0 cross-subject · n=15K
+
+0 cross-subject · n=40K
+
+0
+
+0 cross-subject · n=25K
+
+0
+
+Best (0)
+
+Worst (1)
+
+0.6
+
+80
+
+80
+
+80
+
+80 0.4
+
+60606060 600.2 4040404040cross-subject · n=700K
+
+cross-subject · n=708K
+
+Mean norm. rank ↑
+
+30
+
+70 20601050400Mental arith. Balanced accuracy 0 cross-subject
+
+80 6040Workload Balanced accuracy cross-subject · n=15K
+
+Best (0)
+
+Worst (1)
+
+Emotion Balanced accuracy 60
+
+4020cross-subject · n=21K 0Baselines
+
+Chance Dummy Handcrafted
+
+Foundation models BENDR BIOT LaBraM Mean norm. rank ↑
+
+Age
+
+Psychopathology
+
+Sex Pearson R Pearson R Balanced accuracy Seen during
+
+CBraMod
+
+0.15
+
+pretraining
+
+LUNA
+
+0.6
+
+REVE 0.10
+
+Task-specific models 0.4
+
+0.2
+
+0.05
+
+ShallowFBCSPNet Deep4Net
+
+0.0
+
+cross-subject · n=171K 0.00
+
+cross-subject · n=169K
+
+0
+
+cross-subject · n=171K
+
+EEGNet BDTCN Mean norm.
+
+Best
+
+rank ↑
+
+Sleep arousal
+
+Sleep stage
+
+Artifact
+
+Reaction time Balanced accuracy Balanced accuracy F1 score (macro) Pearson R (0)
+
+60
+
+EEGConformer ATCNet 60
+
+0.4
+
+0.4
+
+SimpleConvTimeAgg 5040CTNet
+
+200.2
+
+0.2
+
+Worst (1)
+
+400 cross-subject · n=1.8M
+
+0cross-subject · n=196K 0.0
+
+cross-subject · n=360K 0.0
+
+cross-subject · n=127K
+
+Figure 4 Performance obtained by the different task-specific (blue) and foundation (orange) models on the 36 downstream tasks in NeuralBench-EEG-Core v1.0. Rows correspond to specific downstream task categories; the first subplot of each row summarizes the model ranking over the corresponding task category row. Each bar corresponds to one model, with error bars representing standard error of the mean (SEM) across seeds. Hashed bars indicate models that were pretrained on the downstream dataset, meaning the reported performance could be overinflated since test subjects or examples may have been seen by the model. Dummy-level performance is evaluated for each task by predicting the majority class (classification) or the average target (regression and retrieval) computed on the training set. Handcrafted baselines uses sklearn pipelines which ingest covariance-like features to provide a non-deep learning baseline (see Table S3). Finally, the splitting strategy (cross-subject, within-subject or random) and the total number of examples across splits are listed under each subplot.
+
+10
+
+Evoked Responses
+
+DCelmineiScnacthl ia
+
+eizvoepnPht
+
+arerkniina
+
+sPoanth's
+
+oloSgDeyiezpurree
+
+ssion
+
+Internal CognitiveBCI
+
+StateMental imMaogteorr yMPe3xoe0tco0
+
+ur Sleep aroSulseael
+
+p stage tiimon
+
+ageryc-VESPSVEP
+
+MMNN40A0uNd2ipoc
+
+visualN170 LRP ERN
+
+Clinical
+
+EMmeonttiaol n
+
+aWritohr.
+
+kload
+
+Sleep
+
+PhenotypingMisc
+
+Psychopathology Age Sex
+
+ARretiafacctit
+
+on time
+
+Best foundation model Mean over foundation models
+
+Perfect
+
+Dummy
+
+1.0
+
+0.8
+
+0.6
+
+0.4
+
+0.2
+
+0.0
+
+TypingSpeechVideo
+
+SentenceWordImage
+
+Best task-specific model Mean over task-specific models
+
+Foundation model wins Task-specific model wins
+
+Figure 5 Normalized performance ˜s across downstream tasks, for the best and “average” foundation model (orange) and best and “average” task-specific models (blue). A value of 0.0 corresponds to dummy-level performance, while a value of 1.0 represents perfect (idealized) performance. Horizontal bars on the x-axis indicate which model category yield the highest performance overall for a given task. While foundation models often outperform task-specific models, this is not the case across all tasks, e.g. in evoked responses and clinical downstream tasks. Cognitive decoding tasks introduced in NeuralBench-EEG v1.0 are particularly challenging, which position them well for evaluating future iterations of EEG foundation models.
+
+3.3 From NeuralBench-Core to NeuralBench-Full: Leveraging multi-study tasks for evaluating
+
+cross-dataset variability
+
+The results above focused on NeuralBench-EEG-Core v1.0, a version of the benchmark where each task is summarized by a single representative “core” dataset. We also introduce NeuralBench-EEG-Full v1.0, an extended version of the benchmark in which downstream tasks may include additional datasets on top of their core dataset, which we leverage in two ways.
+
+First, we compare models as above, but this time using dataset-averaged ranks whenever multiple datasets are available for a task, yielding a more robust ordering of models. The “Core” and “Full” rankings are compared in Figure 6A. A Kendall’s τ of 0.926 (p \< 0.001) between the two rankings suggests the “Core” ranking is a good proxy for the “Full” one. However, we notice that a few models swap positions in the ranking, e.g. CTNet overtakes the LUNA foundation model as third best in the “Full” ranking. This shows the gap between task-specific and foundation models is narrow enough that expanding dataset coverage is sufficient to change global ranking.
+
+Second, we evaluate within-task variability by inspecting ranking changes in NeuralBench-EEG-Full v1.0’s multi-dataset tasks (Figure 6B). REVE and LaBraM are the most stable foundation models, with the former experiencing the least rank variability of all models. On the task dimension, we notice strong variability on motor imagery and SSVEP in particular. For instance, on SSVEP, performance on the core dataset (Wang et al., 2017) and on Lee et al. (2019) is mostly dominated by foundation models (LaBraM and REVE), task-specific models outperform all other models on Oikonomou et al. (2016) version A, and the handcrafted features-based baseline outperforms all or most other models on Kalunga et al. (2016) and Oikonomou et al. (2016) versions B and C (see Supplementary Figure S2 for details). This strong variability suggests that multi-study comparisons are necessary to fully characterize the behavior of brain models.
+
+Moving forward, the availability of multiple datasets per task will allow testing generalization and invariance properties of foundation models over varying recording hardware, lab environments and subject populations. It also opens the door to multi-dataset finetuning and evaluation, e.g. in which models are finetuned on a
+
+11
+
+AB
+
+Figure 6 Analysing multi-dataset performance on NeuralBench-EEG-Full v1.0. A. Difference in model ranking between the Core and Full variants of NeuralBench-EEG v1.0. Models whose global rank improve or degrade when using the full version of the benchmark are indicated by green or black lines, respectively. The ranking is not affected much by the addition of multiple datasets per task, which suggests Core datasets are overall representative. B. Within-task model ranking variability. We report the standard deviation of each model’s ranks across the different datasets of a task (for tasks with 5 datasets or more). Higher values indicate a model’s performance relative to the other models vary substantially, meaning the model is not stable when evaluated across multiple datasets of the same domain. Tasks like motor imagery and SSVEP, and foundation models like CBraMod and LUNA, are the most unstable.
+
+12
+
+Climbed Dropped Same
+
+ATCNet
+
+ShallowFBCCSTNPNet et
+
+BDTCN
+
+SimpleConEvETGimCeoAngfog
+
+rDmeeer
+
+p4NetEEGNet
+
+REVE
+
+LaBraM
+
+BENDR
+
+BIOT
+
+CBraMod
+
+LUNA
+
+Chance
+
+Dummy
+
+HandcrafteMdean
+
+P300 (N=24)
+
+c-VEP (N=8)
+
+Motor imagery (N=18)
+
+SSVEP (N=7)
+
+Mean
+
+REVE LaBraM
+
+LUNA CTNetCBraMSoimdpleSChoanllovTwDimFeBeeCApS4gEPNg NEeGet t CoEnEfoGrNmeeBtr
+
+ENDRATCNeHtandcrBaIOfteT d
+
+BDTCN
+
+DummCyhance NeuralBench-EEG-Core v1.0 (1 dataset/task)
+
+NeuralBench-EEG-Full v1.0 (All datasets)
+
+4 5 6 7 8 9 10 11 12 13 14 15 16 17
+
+Mean rank
+
+Task-specific Foundation Baseline
+
+1.7 1.9 2.5 2.0 3.1 1.8 2.4 2.9 3.0 2.6 2.9 1.6 3.1 2.6 2.9 1.1 3.7 2.5
+
+0.9 2.4 2.0 2.7 2.6 3.4 3.3 2.9 3.2 1.7 2.8 1.7 3.7 4.1 2.6 1.3 4.4 2.7
+
+3.4 4.3 2.8 4.1 4.4 2.8 3.7 4.6 1.7 3.8 4.0 4.7 4.4 4.4 3.3 2.1 5.5 3.8
+
+3.4 2.5 4.4 3.6 3.1 6.0 4.8 4.3 3.8 4.1 2.5 6.0 3.0 3.7 3.5 2.0 3.4 3.8
+
+2.4 2.8 2.9 3.1 3.3 3.5 3.6 3.7 2.9 3.0 3.0 3.5 3.6 3.7 3.1 1.6 4.3 3.2
+
+0.9 3.5 6.0 Rank std (↓)
+
+MEG fMRI
+
+Baselines Chance Dummy Handcrafted
+
+Image
+
+Typing
+
+Image Top-5 accuracy (per-subject) Balanced accuracy Top-5 accuracy (per-subject) 80806010 604054020200within-subject · n=99K 0within-subject · n=193K 0within-subject
+
+EEG task-specific models ShallowFBCSPNet Deep4Net EEGNet BDTCN EEGConformer ATCNet SimpleConvTimeAgg CTNet
+
+EEG foundation models BENDR BIOT LaBraM CBraMod LUNA REVE
+
+fMRI task-specific models FmriLinear FmriMlp
+
+Figure 7 Performance obtained on MEG and fMRI downstream tasks. Each bar corresponds to one model, with error bars representing standard error of the mean (SEM) across seeds. See Figure 4 for more details. This first benchmark release focuses on EEG, however, as a unified framework, NeuralBench is ready to support other brain imaging modalities as well.
+
+subset of task datasets, and evaluated on the remaining held out datasets.
+
+3.4 Extending NeuralBench to more modalities: MEG and fMRI
+
+The focus of this first NeuralBench release is EEG. However, the benchmark infrastructure already provides support for other neuroimaging modalities, which we demonstrate by including results on two MEG and one fMRI downstream tasks (see Figure 7).
+
+For MEG, given the similarities between the two types of data (da Silva, 2013) and the common reuse of EEG architectures on MEG (Banville et al., 2025), we evaluate the same task-specific and foundation models as for EEG. Expectedly, some architectures yield high performance on MEG, such as SimpleConvTimeAgg which was already shown to perform well on image decoding on the same dataset (Benchetrit et al., 2024). More strikingly, some EEG foundation models, despite being pretrained on EEG data exclusively, perform well on MEG, with REVE outperforming all other models on typing decoding. Finally, on fMRI, we present results on a similar image decoding task as in EEG and MEG, but focused on two task-specific architectures that rely on linear and convolutional layer primitives. These results exhibit the flexibility of NeuralBench, which is ready to be extended to other modalities as well, such as iEEG, functional near-infrared spectroscopy (fNIRS), and other neural signal types such as electromyography (EMG).
+
+Overall, in this section, we highlighted NeuralBench’s comprehensive downstream task coverage, its versatility, allowing easy between- and within-task performance comparisons, and its extendability to more neuroimaging devices.
+
+4 Discussion
+
+EEG foundation vs. task-specific models. We introduce NeuralBench, a unifying framework to benchmark NeuroAI models, and release NeuralBench-EEG v1.0, a first comprehensive benchmark evaluating existing task-specific and foundation models of EEG signals. Our results already reveal that current EEG foundation models only marginally outperform specialized models. While self-supervised pretraining yields generalizable representations, downstream performance gains remain limited. This modest advantage may stem from the use of finetuning as a downstream strategy: in data-rich scenarios, specialized models likely possess sufficient capacity to close the performance gap with foundation models. Future evaluations should thus also incorporate evaluations in few-shot and low-data regimes (e.g. 5% of training data).
+
+13
+
+EEG task expansions. NeuralBench-EEG v1.0 significantly expands the diversity of downstream evaluations by introducing and integrating a large set of cognitive, phenotyping, clinical and BCI “tasks”. Across most of these tasks, performance remains modest, which leaves room for improvement in next generations of EEG foundation models. In the future, we recommend maintaining a diverse set of tasks – some easy, others difficult – to validate the ability of models to extract valuable information from noisy brain signals, while ensuring that benchmarking is representative of downstream neuroscience and clinical applications.
+
+Unique optimization strategies. Rather than pursuing model-specific optimization, we utilize a standardized training recipe to evaluate each architecture’s “out-of-the-box” utility. This decision reflects a core requirement for NeuroAI foundation models: they must be easily adaptable and stable under standard configurations to be practically useful for the broader research community.
+
+Unique splitting strategy. We used specific splitting strategies to maintain a manageable computational footprint while ensuring diverse task coverage. Although this choice limits the assessment of performance variability (as compared to a cross-validated approach), it establishes a broad baseline for evaluating foundation models. We invite the community to help incorporate stochastic partitioning in future releases to facilitate deeper statistical validation.
+
+Unique finetuning strategy. NeuralBench currently relies on end-to-end finetuning, which may not capture the full potential of foundation models. Alternative strategies, such as linear probing, parameter-efficient finetuning (Hu et al., 2022; Lester et al., 2021) and varied token aggregation methods may further improve performance and differentiate models from one another. These dimensions should thus be studied in greater detail in future iterations of the benchmark.
+
+Beyond EEG. While this first release focuses on EEG – given its prominence in the brain foundation model literature (Yang et al., 2025) – NeuralBench’s infrastructure based on the NeuralSet ecosystem (King et al., 2026) is highly flexible. We demonstrate this with preliminary MEG and fMRI tasks, paving the way for a truly multimodal benchmark, and strikingly, already showing promising transfer from EEG to MEG. However, extending to new modalities requires significant data curation and introduces device-specific challenges, such as high auto-correlation in fMRI that complicates train/test splits (Poldrack, 2006).
+
+Beyond decoding. The current benchmark is restricted to the evaluation of models which receive brain activity as input, and predict a target label or embedding, i.e., decoding models. However, encoding models (Naselaris et al., 2011), which predict brain activity from stimuli, are also actively developed|d’Ascoli et al. (2026). Integrating encoding, forecasting, and denoising tasks presents unique challenges, e.g. standardizing stimuli representations and evaluation metrics, but can be readily accommodated within the NeuralBench framework.
+
+Open call for community contribution. Building a universal benchmark for brain activity is a vast undertaking, unlikely to be achieved by a single team. We therefore open-source the NeuralBench codebase16 and invite the community to contribute new datasets, tasks, models, and neuroimaging modalities.
+
+Towards a unified modeling of brain activity. Ultimately, brain foundation models have the potential to revolutionize brain-computer interfacing, neurology, and neuroscience. Moving toward the integrated processing of multimodal brain data requires rigorous, reproducible, and comprehensive evaluation. We hope NeuralBench serves as a foundational tool to seed and support this community-wide effort.
+
+Acknowledgments
+
+We thank Alexandre Gramfort, Thomas Moreau, Arnaud Delorme, Bruno Aristimunha and Pierre Guetschel for their feedback on benchmarking best practices and the NeuroAI open-source ecosystem. We thank the maintainers and contributors of the open-source software packages on which NeuralBench is built. Finally, we thank the authors and participants of the datasets used in this research for their fundamental contribution to the advancement of open NeuroAI models.
+
+16https://github.com/facebookresearch/neuroai/tree/main/neuralbench-repo
+
+14
+
+References
+
+Alexandre Abraham, Fabian Pedregosa, Michael Eickenberg, Philippe Gervais, Andreas Mueller, Jean Kossaifi, Alexandre Gramfort, Bertrand Thirion, and Gaël Varoquaux. Machine learning for neuroimaging with scikit-learn. Frontiers in neuroinformatics, 8:14, 2014.
+
+Laura Acqualagna and Benjamin Blankertz. Gaze-independent BCI-spelling using rapid serial visual presentation (RSVP). Clinical Neurophysiology, 124(5):901–908, May 2013. ISSN 1388-2457. doi: 10.1016/j.clinph.2012.12.050. http://dx.doi.org/10.1016/j.clinph.2012.12.050.
+
+Matthew A. Albrecht, James A. Waltz, James F. Cavanagh, Michael J. Frank, and James M. Gold. Increased Conflict-Induced slowing, but no differences in Conflict-Induced positive or negative prediction error learning in patients with schizophrenia. Neuropsychologia, 123:131–140, February 2019. ISSN 1873-3514. doi: 10.1016/j. neuropsychologia.2018.04.031.
+
+Emily J Allen, Ghislain St-Yves, Yihan Wu, Jesse L Breedlove, Jacob S Prince, Logan T Dowdle, Matthias Nau, Brad Caron, Franco Pestilli, Ian Charest, et al. A massive 7T fMRI dataset to bridge cognitive neuroscience and artificial intelligence. Nature neuroscience, 25(1):116–126, 2022.
+
+Hamdi Altaheri, Ghulam Muhammad, and Mansour Alsulaiman. Physics-informed attention temporal convolutional network for eeg-based motor imagery classification. IEEE Transactions on Industrial Informatics, 2022. doi: 10.1109/TII.2022.3197419.
+
+Pietro Aricò, Fabio Aloise, Francesca Schettini, Serenella Salinari, Donatella Mattia, and Febo Cincotti. Influence of P300 latency jitter on event related potential-based brain–computer interface performance. Journal of Neural Engineering, 11(3):035008, 2014. doi: 10.1088/1741-2560/11/3/035008.
+
+Bruno Aristimunha, Igor Carrara, Pierre Guetschel, Sara Sedlar, Pedro Rodrigues, Jan Sosulski, Divyesh Narayanan, Erik Bjareholt, Quentin Barthelemy, Robin Tibor Schirrmeister, Reinmar Kobler, Emmanuel Kalunga, Ludovic Darmet, Cattan Gregoire, Ali Abdul Hussain, Ramiro Gatti, Vladislav Goncharenko, Anton Andreev, Jordy Thielen, Thomas Moreau, Yannick Roy, Vinay Jayaram, Alexandre Barachant, and Sylvain Chevallier. Mother of all BCI benchmarks, 2025. https://github.com/NeuroTechX/moabb.
+
+Bruno Aristimunha, Pierre Guetschel, Martin Wimpff, Lukas Gemein, Cedric Rommel, Hubert Banville, Maciej Sliwowski, Daniel Wilson, Simon Brandt, Théo Gnassounou, Joseph Paillard, Aman Srivastava, Bruna Junqueira Lopes, Sara Sedlar, Thomas Moreau, Sylvain Chevallier, Alexandre Gramfort, and Robin Tibor Schirrmeister. Braindecode: toolbox for decoding raw electrophysiological brain data with deep learning models, 2026. https: //github.com/braindecode/braindecode.
+
+Mehdi Azabou, Vinam Arora, Venkataramana Ganesh, Ximeng Mao, Santosh Nachimuthu, Michael Mendelson, Blake Richards, Matthew Perich, Guillaume Lajoie, and Eva Dyer. A unified, scalable framework for neural population decoding. Advances in Neural Information Processing Systems, 36:44937–44956, 2023.
+
+Alexei Baevski, Yuhao Zhou, Abdelrahman Mohamed, and Michael Auli. wav2vec 2.0: A framework for self-supervised
+
+learning of speech representations. Advances in neural information processing systems, 33:12449–12460, 2020.
+
+Sylvain Baillet. Magnetoencephalography for brain electrophysiology and imaging. Nature neuroscience, 20(3):327–339,
+
+2017\.
+
+Hubert Banville, Yohann Benchetrit, Stéphane d’Ascoli, Jérémy Rapin, and Jean-Rémi King. Scaling laws for decoding
+
+images from brain activity. arXiv preprint arXiv:2501.15322, 2025.
+
+Alexandre Barachant. Robust control of an effector by an asynchronous EEG brain-machine interface. Theses,
+
+Universite de Grenoble, March 2012. https://theses.hal.science/tel-01196752.
+
+Alexandre Barachant and Marco Congedo. A plug\&play P300 BCI using information geometry. arXiv preprint
+
+arXiv:1409.0107, 2014.
+
+Alexandre Barachant, Stéphane Bonnet, Marco Congedo, and Christian Jutten. Multiclass brain–computer interface
+
+classification by Riemannian geometry. IEEE Transactions on Biomedical Engineering, 59(4):920–928, 2011.
+
+Yohann Benchetrit, Hubert Banville, and Jean-Rémi King. Brain decoding: toward real-time reconstruction of visual
+
+perception. In ICLR 2024, 2024.
+
+Davide Borra, Francesco Paissan, and Mirco Ravanelli. SpeechBrain-MOABB: An open-source python library for
+
+benchmarking deep neural networks applied to EEG signals. Computers in Biology and Medicine, 182:109097, 2024.
+
+15
+
+Jonathan R Brennan and John T Hale. Hierarchical structure guides rapid linguistic predictions during naturalistic
+
+listening. PloS one, 14(1):e0207741, 2019.
+
+Katherine S Button, John PA Ioannidis, Claire Mokrysz, Brian A Nosek, Jonathan Flint, Emma SJ Robinson, and Marcus R Munafò. Power failure: why small sample size undermines the reliability of neuroscience. Nature reviews neuroscience, 14(5):365–376, 2013.
+
+Kalou Cabrera Castillos, Simon Ladouce, Ludovic Darmet, and Frédéric Dehais. Burst c-VEP based BCI: Optimizing stimulus design for enhanced classification with minimal calibration data and improved user experience. NeuroImage, 284:120446, December 2023. ISSN 1053-8119. doi: 10.1016/j.neuroimage.2023.120446. http://dx.doi.org/10.1016/j. neuroimage.2023.120446.
+
+Josue Ortega Caro, Antonio H de O Fonseca, Christopher Averill, Syed A Rizvi, Matteo Rosati, James L Cross, Prateek Mittal, Emanuele Zappala, Daniel Levine, Rahul M Dhodapkar, et al. BrainLM: A foundation model for brain activity recordings. BioRxiv, pages 2023–09, 2023.
+
+Grégoire Cattan, Anton Andreev, Pedro L. C. Rodrigues, and Marco Congedo. Dataset of an EEG-based BCI
+
+experiment in virtual reality and on a personal computer, 2019. https://zenodo.org/record/2605204.
+
+Ricardo Chavarriaga and José del R. Millan. Learning from EEG Error-Related potentials in noninvasive Brain- Computer interfaces. IEEE Transactions on Neural Systems and Rehabilitation Engineering, 18(4):381–388, August 2010. ISSN 1558-0210. doi: 10.1109/tnsre.2010.2053387. http://dx.doi.org/10.1109/TNSRE.2010.2053387.
+
+Jingjing Chen, Xiaobin Wang, Chen Huang, Xin Hu, Xinke Shen, and Dan Zhang. A large finer-grained affective
+
+computing EEG dataset. Scientific Data, 10(1), October 2023. ISSN 2052-4463. doi: 10.1038/s41597-023-02650-w. http://dx.doi.org/10.1038/s41597-023-02650-w.
+
+Hohyun Cho, Minkyu Ahn, Sangtae Ahn, Moonyoung Kwon, and Chan Jun, Sung. Supporting data for "EEG datasets
+
+for motor imagery brain computer interface", 2017. http://gigadb.org/dataset/100295.
+
+Fernando Lopes da Silva. EEG and MEG: relevance to neuroscience. Neuron, 80(5):1112–1128, 2013.
+
+Jonathan Dan and Ali Shoeb. BIDS CHB-MIT scalp EEG database, December 2023. https://doi.org/10.5281/zenodo.
+
+10259996\.
+
+Stéphane d’Ascoli, Jérémy Rapin, Yohann Benchetrit, Teon Brookes, Katelyn Begany, Joséphine Raugel, Hubert Banville, and Jean-Rémi King. A foundation model of vision, audi- tion, and language for in-silico neuroscience. https://ai.meta.com/research/publications/ a-foundation-model-of-vision-audition-and-language-for-in-silico-neuroscience/, 2026.
+
+Alexandre Défossez, Charlotte Caucheteux, Jérémy Rapin, Ori Kabeli, and Jean-Rémi King. Decoding speech from
+
+non-invasive brain recordings. arXiv preprint arXiv:2208.12266, 2022.
+
+Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. BERT: Pre-training of deep bidirectional transformers for language understanding. In Proceedings of the 2019 conference of the North American chapter of the association for computational linguistics: human language technologies, volume 1 (long and short papers), pages 4171–4186, 2019.
+
+Berkay Döner, Thorir Mar Ingolfsson, Luca Benini, and Yawei Li. LUNA: Efficient and topology-agnostic foundation model for EEG signal analysis. In The Thirty-Ninth Annual Conference on Neural Information Processing Systems (NeurIPS), 2025. https://openreview.net/forum?id=uazfjnFL0G.
+
+Zijian Dong, Ruilin Li, Yilei Wu, Thuan T Nguyen, Joanna S Chong, Fang Ji, Nathanael R Tong, Christopher L Chen, and Juan H Zhou. Brain-JEPA: Brain dynamics foundation model with gradient positioning and spatiotemporal masking. Advances in Neural Information Processing Systems, 37:86048–86073, 2024.
+
+G. Dornhege, B. Blankertz, G. Curio, and K.-R. Muller. Boosting bit rates in noninvasive EEG single-trial classifications by feature combination and multiclass paradigms. IEEE Transactions on Biomedical Engineering, 51(6):993–1002, June 2004. ISSN 1558-2531. doi: 10.1109/tbme.2004.827088. http://dx.doi.org/10.1109/TBME.2004.827088.
+
+Pauline Dreyer, Aline Roc, Léa Pillette, Sébastien Rimbert, and Fabien Lotte. A large EEG database with users’ profile information for motor imagery brain-computer interface research. Scientific Data, 10(1), September 2023. ISSN 2052-4463. doi: 10.1038/s41597-023-02445-z. http://dx.doi.org/10.1038/s41597-023-02445-z.
+
+Stéphane d’Ascoli, Corentin Bel, Jérémy Rapin, Hubert Banville, Yohann Benchetrit, Christophe Pallier, and Jean-Rémi King. Towards decoding individual words from non-invasive brain recordings. Nature Communications, 16(1):10521, 2025.
+
+16
+
+Yassine El Ouahidi, Vincent Gripon, Bastien Pasdeloup, Ghaith Bouallegue, Nicolas Farrugia, and Giulia Lioi. A strong and simple deep learning baseline for bci motor imagery decoding. arXiv preprint arXiv:2309.07159, 2023. https://arxiv.org/abs/2309.07159.
+
+Yassine El Ouahidi, Jonathan Lys, Philipp Thölke, Nicolas Farrugia, Bastien Pasdeloup, Vincent Gripon, Karim Jerbi, and Giulia Lioi. REVE: A foundation model for EEG – adapting to any setup with large-scale pretraining on 25,000 subjects. In The Thirty-Ninth Annual Conference on Neural Information Processing Systems (NeurIPS), 2025. https://openreview.net/forum?id=ZeFMtRBy4Z.
+
+William Falcon and The PyTorch Lightning team. PyTorch Lightning, March 2019. https://github.com/Lightning-AI/
+
+lightning.
+
+Josef Faller, Carmen Vidaurre, Teodoro Solis-Escalante, Christa Neuper, and Reinhold Scherer. Autocalibration and recurrent adaptation: Towards a plug and play online ERD-BCI. IEEE Transactions on Neural Systems and Rehabilitation Engineering, 20(3):313–319, May 2012. ISSN 1558-0210. doi: 10.1109/tnsre.2012.2189584. http://dx.doi.org/10.1109/tnsre.2012.2189584.
+
+Lukas A. W. Gemein, Robin T. Schirrmeister, Patryk Chrabaszcz, Daniel Wilson, Joschka Boedecker, Andreas Schulze-Bonhage, Frank Hutter, and Tonio Ball. Machine-learning-based diagnostics of EEG pathology. NeuroImage, 220:117021, 2020.
+
+Mohammad M Ghassemi, Benjamin E Moody, Li-wei H Lehman, Christopher Song, Qiao Li, Haoqi Sun, Roger G Mark, M Brandon Westover, and Gari D Clifford. You Snooze, You Win: The PhysioNet/Computing in Cardiology Challenge 2018. Computing in cardiology, 45:10.22489/cinc.2018.049, September 2018. ISSN 2325-8861. doi: 10.22489/cinc.2018.049.
+
+Alessandro T. Gifford, Kshitij Dwivedi, Gemma Roig, and Radoslaw M. Cichy. A large and rich EEG dataset for modeling human visual object recognition. Neuroimage, 264:119754, December 2022a. ISSN 1053-8119. doi: 10.1016/j.neuroimage.2022.119754. https://pmc.ncbi.nlm.nih.gov/articles/PMC9771828/.
+
+Alessandro T Gifford, Kshitij Dwivedi, Gemma Roig, and Radoslaw M Cichy. A large and rich EEG dataset for
+
+modeling human visual obje

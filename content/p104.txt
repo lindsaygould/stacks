@@ -1,0 +1,2269 @@
+Deep learning with convolutional neural networks for EEG decoding and visualization 
+
+|  |
+| :-: |
+| [**Page 1**]() |
+
+**Deep Learning With Convolutional Neural**
+
+**Networks for EEG Decoding and Visualization**
+
+**Robin Tibor Schirrmeister[ ,](http://orcid.org/0000-0002-5518-7445)**1,2\* **Jost Tobias Springenberg,**2,3
+
+**Lukas Dominique Josef Fiederer[ ,](http://orcid.org/0000-0003-1803-9694)**1,2,4 **Martin Glasstetter,**1,2
+
+**Katharina Eggensperger,**2,5 **Michael Tangermann,**2,6 **Frank Hutter,**2,5
+
+**Wolfram Burgard,**2,7 **and Tonio Ball** 1,2
+
+1Translational Neurotechnology Lab, Epilepsy Center, Medical Center – University of Frei-
+
+burg, Engelberger Str. 21, Freiburg 79106, Germany
+
+2BrainLinks-BrainTools Cluster of Excellence, University of Freiburg, Georges-K€ohler-Allee
+
+79, Freiburg 79110, Germany
+
+3Machine Learning Lab, Computer Science Dept, University of Freiburg, Georges-K€ohler-Allee
+
+79, Freiburg 79110, Germany
+
+4Neurobiology and Biophysics, Faculty of Biology, University of Freiburg, Hansastr. 9a,
+
+Freiburg 79104, Germany
+
+5Machine Learning for Automated Algorithm Design Lab, Computer Science Dept, University
+
+of Freiburg, Georges-K€ohler-Allee 52, Freiburg im Breisgau 79110, Germany
+
+6Brain State Decoding Lab, Computer Science Dept, University of Freiburg, Albertstr. 23,
+
+Freiburg 79104, Germany
+
+7Autonomous Intelligent Systems Lab, Computer Science Dept, University of Freiburg,
+
+Georges-K€ohler-Allee 79, Freiburg 79110, Germany
+
+r
+
+r
+
+Abstract: Deep learning with convolutional neural networks (deep ConvNets) has revolutionized com-
+
+puter vision through end-to-end learning, that is, learning from the raw data. There is increasing inter-
+
+est in using deep ConvNets for end-to-end EEG analysis, but a better understanding of how to design
+
+and train ConvNets for end-to-end EEG decoding and how to visualize the informative EEG features
+
+the ConvNets learn is still needed. Here, we studied deep ConvNets with a range of different architec-
+
+tures, designed for decoding imagined or executed tasks from raw EEG. Our results show that recent
+
+advances from the machine learning field, including batch normalization and exponential linear units,
+
+together with a cropped training strategy, boosted the deep ConvNets decoding performance, reaching
+
+at least as good performance as the widely used filter bank common spatial patterns (FBCSP) algo-
+
+rithm (mean decoding accuracies 82.1% FBCSP, 84.0% deep ConvNets). While FBCSP is designed to
+
+use spectral power modulations, the features used by ConvNets are not fixed a priori. Our novel meth-
+
+ods for visualizing the learned features demonstrated that ConvNets indeed learned to use spectral
+
+power modulations in the alpha, beta, and high gamma frequencies, and proved useful for spatially
+
+Additional Supporting Information may be found in the online
+
+version of this article.
+
+Contract grant sponsor: BrainLinks-BrainTools Cluster of Excel-
+
+lence (DFG); Contract grant number: EXC1086; Contract grant
+
+sponsor: Federal Ministry of Education and Research (BMBF);
+
+Contract grant number: Motor-BIC 13GW0053D
+
+\*Correspondence to: Robin Tibor Schirrmeister; Translational
+
+Neurotechnology
+
+Lab, Epilepsy
+
+Center, Medical Center,
+
+University of Freiburg, Engelberger Str. 21, 79106 Freiburg, Ger-
+
+many. E-mail: robin.schirrmeister@uniklinik-freiburg.de
+
+Received for publication 22 February 2017; Revised 31 May 2017;
+
+Accepted 5 July 2017.
+
+DOI: 10.1002/hbm.23730
+
+Published online 7 August 2017 in Wiley Online Library
+
+(wileyonlinelibrary.com).
+
+r **H**uman **B**rain **M**apping 38:5391–5420 (2017) r
+
+VC 2017 **T**he **A**uthors **H**uman **B**rain **M**apping **P**ublished by **W**iley **P**eriodicals, **I**nc.
+
+This is an open access article under the terms of the[ Creative Commons Attribution ](http://creativecommons.org/licenses/by/4.0/)License, which permits use, distribution and
+
+reproduction in any medium, provided the original work is properly cited.
+
+-----
+
+|  |
+| :-: |
+| [**Page 2**]() |
+
+mapping the learned features by revealing the topography of the causal contributions of features in
+
+different frequency bands to the decoding decision. Our study thus shows how to design and train
+
+ConvNets to decode task-related information from the raw EEG without handcrafted features and
+
+highlights the potential of deep ConvNets combined with advanced visualization techniques for EEG-
+
+based brain mapping. Hum Brain Mapp 38:5391–5420, 2017.
+
+VC
+
+2017 **T**he **A**uthors **H**uman **B**rain **M**apping **P**ub-
+
+lished by **W**iley **P**eriodicals, **I**nc.
+
+Key words: electroencephalography; EEG analysis; machine learning; end-to-end learning;
+
+brain–machine interface; brain–computer interface; model interpretability; brain mapping
+
+r
+
+r
+
+**INTRODUCTION**
+
+Machine-learning techniques allow extracting informa-
+
+tion from electroencephalographic (EEG) recordings of
+
+brain activity, and therefore play a crucial role in several
+
+important EEG-based research and application areas. For
+
+example, machine-learning techniques are a central com-
+
+ponent of many EEG-based brain-computer interface (BCI)
+
+systems for clinical applications. Such systems already
+
+allowed, for example, persons with severe paralysis to
+
+communicate \[Nijboer et al., 2008\], to draw pictures
+
+\[M€unßinger et al., 2010\], and to control telepresence robots
+
+\[Tonin et al., 2011\]. Such systems may also facilitate stroke
+
+rehabilitation \[Ramos-Murguialday et al., 2013\] and may
+
+be used in the treatment of epilepsy \[Gadhoumi et al.,
+
+2016\] (for more examples of potential clinical applications,
+
+see Moghimi et al. \[2013\]). Furthermore, machine-learning
+
+techniques for the analysis of brain signals, including the
+
+EEG, are increasingly recognized as novel tools for neuro-
+
+scientific inquiry \[Das et al., 2010; Knops et al., 2009;
+
+Kurth-Nelson et al., 2016; Stansbury et al., 2013\].
+
+However, despite many examples of impressive pro-
+
+gress, there is still room for considerable improvement
+
+with respect to several important aspects of information
+
+extraction from the EEG, including its accuracy, interpret-
+
+ability, and usability for online applications. Therefore,
+
+there is a continued interest in transferring innovations
+
+from the area of machine learning to the fields of EEG
+
+decoding and BCI. A recent, prominent example of such
+
+an advance in machine learning is the application of con-
+
+volutional neural networks (ConvNets), particularly in
+
+computer vision tasks. Thus, first studies have started to
+
+investigate the potential of ConvNets for brain-signal
+
+decoding \[Antoniades et al., 2016; Bashivan et al., 2016;
+
+Cecotti and Graser, 2011; Hajinoroozi et al., 2016; Lawhern
+
+et al., 2016; Liang et al., 2016; Manor et al., 2016; Manor
+
+and Geva, 2015; Page et al., 2016; Ren and Wu, 2014;
+
+Sakhavi et al., 2015; Shamwell et al., 2016; Stober, 2016;
+
+Stober et al., 2014; Sun et al., 2016; Tabar and Halici, 2017;
+
+Tang et al., 2017; Thodoroff et al., 2016; Wang et al., 2013\]
+
+(see Supporting Information, Section A.1 for more details
+
+on these studies). Still, several important methodological
+
+questions on EEG analysis with ConvNets remain, as
+
+detailed below and addressed in this study.
+
+ConvNets are artificial neural networks that can learn
+
+local patterns in data by using convolutions as their key
+
+component (also see the section “Convolutional Neural
+
+Networks”). ConvNets vary in the number of convolu-
+
+tional layers, ranging from shallow architectures with just
+
+one convolutional layer such as in a successful speech rec-
+
+ognition ConvNet \[Abdel-Hamid et al., 2014\] over deep
+
+ConvNets with multiple consecutive convolutional layers
+
+\[Krizhevsky et al., 2012\] to very deep architectures with
+
+more than 1000 layers as in the case of the recently devel-
+
+oped residual networks \[He et al., 2015\]. Deep ConvNets
+
+can first extract local, low-level features from the raw
+
+input and then increasingly more global and high level
+
+features in deeper layers. For example, deep ConvNets can
+
+learn to detect increasingly complex visual features (e.g.,
+
+edges, simple shapes, complete objects) from raw images.
+
+Over the past years, deep ConvNets have become highly
+
+successful in many application areas, such as in computer
+
+vision and speech recognition, often outperforming previ-
+
+ous state-of-the-art methods (we refer to LeCun et al.
+
+\[2015\] and Schmidhuber \[2015\] for recent reviews). For
+
+example, deep ConvNets reduced the error rates on the
+
+ImageNet image-recognition challenge, where 1.2 million
+
+images must be classified into 1000 different classes, from
+
+above 26% to below 4% within 4 years \[He et al., 2015;
+
+Krizhevsky et al., 2012\]. ConvNets also reduced error rates
+
+in recognizing speech, for example, from English news
+
+broadcasts \[Sainath et al., 2015a,2015c; Sercu et al., 2016\];
+
+however, in this field, hybrid models combining ConvNets
+
+with other machine-learning components, notably recur-
+
+rent networks, and deep neural networks without convolu-
+
+tions are also competitive \[Li and Wu, 2015; Sainath et al.,
+
+2015b; Sak et al., 2015\]. Deep ConvNets also contributed to
+
+the spectacular success of AlphaGo, an artificial intelli-
+
+gence that beat the world champion in the game of Go
+
+\[Silver et al., 2016\].
+
+ConvNets have both advantages and disadvantages
+
+compared to other machine learning models. Advantages
+
+of ConvNets include that they are well suited for end-to-
+
+end learning, that is, learning from the raw data without
+
+any a priori feature selection, that they scale well to large
+
+datasets, and that they can exploit hierarchical structure in
+
+natural signals. Disadvantages of ConvNets include that
+
+they may output false predictions with high confidence
+
+r **S**chirrmeister et al. r
+
+r 5392 r
+
+10970193, 2017, 11, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/hbm.23730, Wiley Online Library on \[06/07/2026\]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+-----
+
+|  |
+| :-: |
+| [**Page 3**]() |
+
+\[Nguyen et al., 2015; Szegedy et al., 2014\] may require a
+
+large amount of training data, may take longer to train
+
+than simpler models, and involve a large number of
+
+hyperparameters such as the number of layers or the type
+
+of activation functions. Deep ConvNets are also notori-
+
+ously difficult to interpret. In the light of these advantages
+
+and disadvantages, in this study, we focused on how Con-
+
+vNets of different architectures can be designed and
+
+trained for end-to-end learning of EEG recorded in human
+
+subjects, and how they can be made more interpretable
+
+via suitable visualization techniques.
+
+The EEG signal has characteristics that make it different
+
+from inputs that ConvNets have been most successful on,
+
+namely images. In contrast to two-dimensional static
+
+images, the EEG signal is a dynamic time series from elec-
+
+trode measurements obtained on the three-dimensional
+
+scalp surface. Also, the EEG signal has a comparatively
+
+low signal-to-noise ratio, that is, sources that have no task-
+
+relevant information often affect the EEG signal more
+
+strongly than the task-relevant sources. These properties
+
+could make learning features in an end-to-end fashion fun-
+
+damentally more difficult for EEG signals than for images.
+
+Thus, the existing ConvNets architectures from the field of
+
+computer vision need to be adapted for EEG input and
+
+the resulting decoding accuracies rigorously evaluated
+
+against more traditional feature extraction methods. For
+
+that purpose, a well-defined baseline is crucial, that is, a
+
+comparison against an implementation of a standard EEG
+
+decoding method validated on published results for that
+
+method. In light of this, in this study, we addressed two
+
+key questions:
+
+What is the impact of ConvNet design choices (e.g., the
+
+overall network architecture or other design choices
+
+such as the type of nonlinearity used) on the decoding
+
+accuracies?
+
+What is the impact of ConvNet training strategies (e.g.,
+
+training on entire trials or crops within trials) on the
+
+decoding accuracies?
+
+To address these questions, we created three ConvNets
+
+with different architectures, with the number of convolu-
+
+tional layers ranging from 2 layers in a “shallow” Con-
+
+vNet over a 5-layer deep ConvNet up to a 31-layer
+
+residual network (ResNet). Additionally, we also created a
+
+hybrid ConvNet from the deep and shallow ConvNets. As
+
+described in detail in the methods section, these architec-
+
+tures were inspired both from existing “non-ConvNet”
+
+EEG decoding methods, which we embedded in a Con-
+
+vNet, and from previously published successful ConvNet
+
+solutions in the image processing domain (e.g., the ResNet
+
+architecture recently won several image recognition com-
+
+petitions \[He et al., 2015\]). All architectures were adapted
+
+to the specific requirements imposed by the analysis of
+
+multi-channel EEG data. To address whether these Con-
+
+vNets can reach competitive decoding accuracies, we
+
+performed a statistical comparison of their decoding accu-
+
+racies to those achieved with decoding based on filter
+
+bank common spatial patterns (FBCSP) \[Ang et al., 2008;
+
+Chin et al., 2009\], a method that is widely used in EEG
+
+decoding and has won several EEG decoding competitions
+
+such as BCI competition IV datasets 2a and 2b. We ana-
+
+lyzed the offline decoding performance on four suitable
+
+EEG decoding datasets (see the section “Datasets and Pre-
+
+processing” for details). In all cases, we used only minimal
+
+preprocessing to conduct a fair end-to-end comparison of
+
+ConvNets and FBCSP.
+
+In addition to the role of the overall network architec-
+
+ture, we systematically evaluated a range of important
+
+design choices. We focused on alternatives resulting from
+
+recent advances in machine-learning research on deep
+
+ConvNets. Thus, we evaluated potential performance
+
+improvements by using dropout as a novel regularization
+
+strategy \[Srivastava et al., 2014\], intermediate normaliza-
+
+tion by batch normalization \[Ioffe and Szegedy, 2015\] or
+
+exponential linear units as a recently proposed activation
+
+function \[Clevert et al., 2016\]. A comparable analysis of
+
+the role of deep ConvNet design choices in EEG decoding
+
+is currently lacking.
+
+In addition to the global architecture and specific design
+
+choices which together define the “structure” of ConvNets,
+
+another important topic that we address is how a given
+
+ConvNet should be trained on the data. As with architec-
+
+ture and design, there are several different methodological
+
+options and choices with respect to the training process,
+
+such as the optimization algorithm (e.g., Adam \[Kingma
+
+and Ba, 2014\], Adagrad \[Duchi et al., 2011\], etc.), or the
+
+sampling of the training data. Here, we focused on the lat-
+
+ter question of sampling the training data as there is usu-
+
+ally, compared to current computer vision tasks with
+
+millions of samples, relatively little data available for EEG
+
+decoding. Therefore, we evaluated two sampling strate-
+
+gies, both for the deep and shallow ConvNets: training on
+
+whole trials or on multiple crops of the trial, that is, on
+
+windows shifted through the trials. Using multiple crops
+
+holds promise as it increases the amount of training exam-
+
+ples, which has been crucial to the success of deep Con-
+
+vNets. Using multiple crops has become standard
+
+procedure for ConvNets for image recognition \[He et al.,
+
+2015; Howard, 2013; Szegedy et al., 2015\], but the useful-
+
+ness of cropped training has not yet been examined in
+
+EEG decoding.
+
+In addition to the problem of achieving good decoding
+
+accuracies, a growing corpus of research tackles the prob-
+
+lem of understanding what ConvNets learn (see Yeager
+
+\[2016\] for a recent overview). This direction of research
+
+may be especially relevant for neuroscientists interested in
+
+using ConvNets—insofar as they want to understand what
+
+features in the brain signal discriminate the investigated
+
+classes. Here we present two novel methods for feature
+
+visualization that we used to gain insights into our Con-
+
+vNet learned from the neuronal data.
+
+r **C**onvolutional **N**eural **N**etworks in **EEG A**nalysis r
+
+r 5393 r
+
+10970193, 2017, 11, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/hbm.23730, Wiley Online Library on \[06/07/2026\]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+-----
+
+|  |
+| :-: |
+| [**Page 4**]() |
+
+We concentrated on EEG band power features as a tar-
+
+get for visualizations. Based on a large body of literature
+
+on movement-related spectral power modulations \[Cha-
+
+trian et al., 1959; Pfurtscheller and Aranibar, 1977, 1978;
+
+Pfurtscheller and Berghold, 1989; Pfurtscheller et al., 1994;
+
+Toro et al., 1994\], we had clear expectations which band
+
+power features should be discriminative for the different
+
+classes. The motivation for developing our visualization
+
+methods was threefold:
+
+1\. Verify that the ConvNets are using actual brain
+
+signals
+
+2\. Gain insights into the ConvNet behavior, e.g., what
+
+EEG features the ConvNet uses to decode the signal
+
+3\. Potentially make steps toward using ConvNets for
+
+brain mapping.
+
+Our first method can be used to show how much infor-
+
+mation about a specific feature is retained in the ConvNet
+
+in different layers; however, it does not evaluate whether
+
+the feature causally affects the ConvNet outputs. There-
+
+fore, we designed our second method to directly investi-
+
+gate causal effects of the feature values on the ConvNet
+
+outputs. With both visualization methods, it is possible to
+
+derive topographic scalp maps that either show how much
+
+information about the band power in different frequency
+
+bands is retained in the outputs of the trained ConvNet or
+
+how much they causally affect the outputs of the trained
+
+ConvNet.
+
+Addressing the questions raised above, in summary the
+
+main contributions of this study are as follows:
+
+We show for the first time that within-subject end-to-
+
+end-trained deep ConvNets can reach accuracies at
+
+least in the same range as FBCSP for decoding task-
+
+related information from EEG.
+
+We evaluate a large number of ConvNet design
+
+choices on an EEG decoding task, and we show that
+
+recently developed methods from the field of deep
+
+learning such as batch normalization and exponential
+
+linear units are crucial for reaching high decoding
+
+accuracies.
+
+We show that cropped training can increase the decod-
+
+ing accuracy of deep ConvNets and describe a compu-
+
+tationally efficient training strategy to train ConvNets
+
+on a larger number of input crops per EEG trial.
+
+We develop and apply novel visualizations that
+
+highly suggest that the deep ConvNets learn to use
+
+the band power in frequency bands relevant for motor
+
+decoding (alpha, beta, and gamma) with meaningful
+
+spatial distributions.
+
+Thus, in summary, the methods and findings described
+
+in this study are a first step and preliminary approxima-
+
+tion to a comprehensive investigation of the role of deep
+
+ConvNet design
+
+choices, training
+
+strategies and
+
+visualization techniques for EEG decoding and pave the
+
+way for a more widespread application both in clinical
+
+applications and neuroscientific research.
+
+**METHODS**
+
+We first provide basic definitions with respect to brain-
+
+signal decoding as a supervised classification problem
+
+used in the remaining Methods section. This is followed
+
+by the principles of both filter bank common spatial pat-
+
+terns (FBCSP), the established baseline decoding method
+
+referred to throughout this study, and of convolutional
+
+neural networks (ConvNets). Next, we describe the Con-
+
+vNets developed for this study in detail, including the
+
+design choices we evaluated. Afterward, the training of the
+
+ConvNets, including two training strategies, is described.
+
+Then we present two novel visualizations of trained Con-
+
+vNets in the section “Visualization”. Datasets, preprocess-
+
+ing descriptions and statistical evaluation methods follow
+
+in the sections “Datasets and Preprocessing” and
+
+“Statistics.” Details about software and hardware can be
+
+found in Supporting Information, Sections 2.8 and A.8.
+
+The code used in this study is available under [https://](https://github.com/robintibor/braindecode/)
+
+[github.com/robintibor/braindecode/.](https://github.com/robintibor/braindecode/)
+
+**Definitions and Notation**
+
+This section more formally defines how brain-signal
+
+decoding can be viewed as a supervised classification
+
+problem and includes the notation used to describe the
+
+methods.
+
+Input and labels
+
+We assume that we are given one EEG dataset per sub-
+
+ject i. Each dataset is separated into labeled trials (time-
+
+segments of the original recording that each belong to one
+
+of several classes). Concretely, we are given datasets
+
+Di5fðX1, y1Þ, ... , ðXNi , yNi Þg, where Ni
+
+denotes the total
+
+number of recorded trials for subject i. The input matrix
+
+Xj 2 RE&#3;T of trial j, 1 &#4; j &#4; Ni contains the preprocessed
+
+signals of E-recorded electrodes and T-discretized time
+
+steps recorded per trial.
+
+The corresponding class label of trial j is denoted by yj.
+
+It takes values from a set of K class labels L that, in our
+
+case, correspond to the imagined or executed movements
+
+performed in each trial, for example, 8yj : yj 2 L5fl15
+
+‘‘Hand ðLeftÞ’’, l25‘‘Hand ðRightÞ’’, l35‘‘Feet’’, l45‘‘Rest’’g.
+
+Decoder
+
+The decoder f is trained on these existing trials such that
+
+it is able to assign the correct label to new unseen trials.
+
+Concretely, we aim to train the decoder to assign the label
+
+yj to trial Xj using the output of a parametric classifier
+
+fðXj; uÞ : RE&#3;T \! L with parameters h.
+
+r **S**chirrmeister et al. r
+
+r 5394 r
+
+10970193, 2017, 11, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/hbm.23730, Wiley Online Library on \[06/07/2026\]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+-----
+
+|  |
+| :-: |
+| [**Page 5**]() |
+
+For the rest of this article, we assume that the classifier
+
+fðXj; uÞ is represented by a standard machine-learning
+
+pipeline decomposed into two parts: a first part that
+
+extracts a (vector-valued) feature representation /ðXj; u/Þ
+
+with parameters u/—which could either be set manually
+
+(for hand designed features), or learned from the data;
+
+and a second part consisting of a classifier g with parame-
+
+ters hg
+
+that is trained using these features, that is,
+
+fðXj; uÞ5gð/ðXj; u/Þ, ugÞ.
+
+As described in detail in the following sections, it is
+
+important to note that FBCSP and ConvNets differ in how
+
+they implement this framework: in short, FBCSP has sepa-
+
+rated feature extraction and classifier stages, while Con-
+
+vNets learn both stages jointly.
+
+**Filter Bank Common Spatial Patterns (FBCSP)**
+
+FBCSP \[Ang et al., 2008; Chin et al., 2009\] is a widely
+
+used method to decode oscillatory EEG data, for example,
+
+with respect to movement-related information, that is, the
+
+decoding problem we focus on in this study. FBCSP was
+
+the best-performing method for the BCI competition IV
+
+dataset 2a, which we use in this study (see the section
+
+“Datasets and Preprocessing” for a short dataset descrip-
+
+tion). FBCSP also won other similar EEG decoding com-
+
+petitions \[Tangermann et al., 2012\]. Therefore, we consider
+
+FBCSP an adequate benchmark algorithm for the evalua-
+
+tion of the performance of ConvNets in this study.
+
+In the following, we explain the computational steps of
+
+FBCSP. We will refer to these steps when explaining our
+
+shallow ConvNet architecture (see the section “Shallow
+
+ConvNet for raw EEG signals”), as it is inspired by these
+
+steps.
+
+In a supervised manner, FBCSP computes spatial filters
+
+(linear combinations of EEG channels) that enhance class-
+
+discriminative band power features contained in the EEG.
+
+FBCSP extracts and uses these features /ðXj; u/Þ (which
+
+correspond to the feature representation part in the section
+
+“Decoder”) to decode the label of a trial in several steps
+
+(we will refer back to these steps when we explain the
+
+shallow ConvNet):
+
+1\. Bandpass filtering: Different bandpass filters are
+
+applied to separate the raw EEG signal into different
+
+frequency bands.
+
+2\. Epoching: The continuous EEG signal is cut into tri-
+
+als as explained in the section “Input and labels.”
+
+3\. CSP computation: Per frequency band, the common
+
+spatial patterns (CSP) algorithm is applied to extract
+
+spatial filters. CSP aims to extract spatial filters that
+
+make the trials discriminable by the power of the
+
+spatially filtered trial signal (see Koles et al. \[1990\],
+
+Ramoser et al. \[2000\], and Blankertz et al. \[2008\] for
+
+more details on the computation). The spatial filters
+
+correspond to the learned parameters u/ in FBCSP.
+
+4\. Spatial filtering: The spatial filters computed in Step
+
+2 are applied to the EEG signal.
+
+5\. Feature construction: Feature vectors /ðXj; u/Þ are
+
+constructed from the filtered signals: Specifically, fea-
+
+ture vectors are the log-variance of the spatially fil-
+
+tered trial signal for each frequency band and for
+
+each spatial filter.
+
+6\. Classification: A classifier is trained to predict per-
+
+trial labels based on the feature vectors.
+
+For details on our FBCSP implementation, see Supporting
+
+Information, Section A.2.
+
+**Convolutional Neural Networks**
+
+In the following sections, we first explain the basic ideas
+
+of ConvNets. We then describe architectural choices for
+
+ConvNets on EEG, including how to represent the EEG
+
+input for a ConvNet, the three different ConvNet architec-
+
+tures used in this study and several specific design choices
+
+that we evaluated for these architectures. Finally, we
+
+describe how to train the ConvNets, including the descrip-
+
+tion of a trial-wise and a cropped training strategy for our
+
+EEG data.
+
+Basics
+
+Generally, ConvNets combine two ideas useful for many
+
+learning tasks on natural signals, such as images and
+
+audio signals. These signals often have an inherent hierar-
+
+chical structure (e.g., images typically consist of edges that
+
+together form simple shapes which again form larger,
+
+more complex shapes and so on). ConvNets can learn local
+
+non-linear features (through convolutions and nonlinear-
+
+ities) and represent higher-level features as compositions
+
+of lower level features (through multiple layers of process-
+
+ing). In addition, many ConvNets use pooling layers which
+
+create a coarser intermediate feature representation and can
+
+make the ConvNet more translation invariant. For further
+
+details, see LeCun et al. \[2015\], Goodfellow et al. \[2016\],
+
+and Schmidhuber \[2015\].
+
+**ConvNet Architectures and Design Choices**
+
+Input representation
+
+The first important decision for applying ConvNets to
+
+EEG decoding is how to represent the input Xj 2 RE&#3;T.
+
+One possibility would be to represent the EEG as a time
+
+series of topographically organized images, that is, of the
+
+voltage distributions across the (flattened) scalp surface
+
+(this has been done for ConvNets that get power spectra
+
+as input \[Bashivan et al., 2016\]). However, EEG signals are
+
+assumed to approximate a linear superposition of spatially
+
+global voltage patterns caused by multiple dipolar current
+
+sources in the brain \[Nunez and Srinivasan, 2006\]. Unmix-
+
+ing of these global patterns using a number of spatial
+
+r **C**onvolutional **N**eural **N**etworks in **EEG A**nalysis r
+
+r 5395 r
+
+10970193, 2017, 11, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/hbm.23730, Wiley Online Library on \[06/07/2026\]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+-----
+
+|  |
+| :-: |
+| [**Page 6**]() |
+
+filters is therefore typically applied to the whole set of rel-
+
+evant electrodes as a basic step in many successful exam-
+
+ples of EEG decoding \[Ang et al., 2008; Blankertz et al.,
+
+2008; Rivet et al., 2009\].
+
+In this view, all relevant EEG modulations are global in
+
+nature, due to the physical origin of the noninvasive EEG
+
+and hence there would be no obvious hierarchical compo-
+
+sitionality of local and global EEG modulations in space. In
+
+contrast, there is an abundance of evidence that the EEG is
+
+organized across multiple time scales, such as in nested
+
+oscillations \[Canolty et al., 2006; Monto et al., 2008; Schack
+
+et al., 2002; Vanhatalo et al., 2004\] involving both local and
+
+global modulations in time. In light of this, we designed
+
+ConvNets in a way that they can learn spatially global
+
+unmixing filters in the entrance layers, and temporal hier-
+
+archies of local and global modulations in the deeper
+
+architectures. To this end, we represent the input as a 2D-
+
+array with the number of time steps as the width and the
+
+number of electrodes as the height. This approach also sig-
+
+nificantly reduced the input dimensionality compared
+
+with the “EEG-as-an-image” approach.
+
+Deep ConvNet for raw EEG signals
+
+To tackle the task of EEG decoding, we designed a deep
+
+ConvNet architecture inspired by successful architectures
+
+in computer vision, as for example described in Krizhev-
+
+sky et al. \[2012\]. The requirements for this architecture are
+
+as follows: We want a model that is able to extract a wide
+
+range of features and is not restricted to specific feature
+
+types \[Hertel et al., 2015\]. We were interested in such a
+
+generic architecture for two reasons: (1) we aimed to
+
+uncover whether such a generic ConvNet designed only
+
+with minor expert knowledge can reach competitive accu-
+
+racies, and, (2) to lend support to the idea that standard
+
+ConvNets can be used as a general-purpose tool for brain-
+
+signal decoding tasks. As an aside, keeping the architec-
+
+ture generic also increases the chances that ConvNets for
+
+brain decoding can directly profit from future methodolog-
+
+ical advances in deep learning.
+
+Our deep ConvNet had four convolution-max-pooling
+
+blocks, with a special first block designed to handle EEG
+
+input (see below), followed by three standard convolution-
+
+max-pooling blocks and a dense softmax classification
+
+layer (Fig. 1).
+
+The first convolutional block was split into two layers in
+
+order to better handle the large number of input channels—
+
+one input channel per electrode compared to three input
+
+channels (one per color) in rgb-images. In the first layer,
+
+each filter performs a convolution over time, and in the sec-
+
+ond layer, each filter performs a spatial filtering with
+
+weights for all possible pairs of electrodes with filters of the
+
+preceding temporal convolution. Note that as there is no
+
+activation function in between the two layers, they could in
+
+principle be combined into one layer. Using two layers
+
+however implicitly regularizes the overall convolution by
+
+forcing a separation of the linear transformation into a
+
+combination of a temporal convolution and a spatial filter.
+
+This splitted convolution was evaluated against a single-
+
+step convolution in our experiments (see the section
+
+“Design choices for deep and shallow ConvNet”).
+
+We used exponential linear units (ELUs, f(x) 5 x for
+
+x \> 0 and fðxÞ5ex21 for x \< 50 \[Clevert et al., 2016\]) as
+
+activation functions (we also evaluated Rectified Linear
+
+Units (ReLUs, fðxÞ5maxðx, 0Þ), as a less recently proposed
+
+alternative, see the section “Design choices for deep and
+
+shallow ConvNet”).
+
+Shallow ConvNet for raw EEG signals
+
+We also designed a more shallow architecture referred
+
+to as shallow ConvNet, inspired by the FBCSP pipeline
+
+(Fig. 2), specifically tailored to decode band power fea-
+
+tures. The transformations performed by the shallow
+
+ConvNet are similar to the transformations of FBCSP (see
+
+the section “Filter Bank Common Spatial Patterns
+
+(FBCSP)”). Concretely, the first two layers of the shallow
+
+ConvNet perform a temporal convolution and a spatial
+
+filter, as in the deep ConvNet. These steps are analogous
+
+to the bandpass and CSP spatial filter steps in FBCSP. In
+
+contrast to the deep ConvNet, the temporal convolution
+
+of the shallow ConvNet had a larger kernel size (25 vs
+
+10), allowing a larger range of transformations in this
+
+layer (smaller kernel sizes for the shallow ConvNet led to
+
+lower accuracies in preliminary experiments on the train-
+
+ing set). After the temporal convolution and the spatial
+
+filter of the shallow ConvNet, a squaring nonlinearity, a
+
+mean pooling layer and a logarithmic activation function
+
+followed; together these steps are analogous to the trial
+
+log-variance computation in FBCSP (we note that these
+
+steps were not used in the deep ConvNet). In contrast to
+
+FBCSP, the shallow ConvNet embeds all the computa-
+
+tional steps in a single network, and thus all steps can be
+
+optimized jointly (see the section “ConvNet Training”).
+
+Also, due to having several pooling regions within one
+
+trial, the shallow ConvNet can learn a temporal structure
+
+of the band power changes within the trial, which was
+
+shown to help classification in prior work \[Sakhavi et al.,
+
+2015\].
+
+Design choices for deep and shallow ConvNet
+
+For both architectures described above, we evaluated
+
+several design choices. We evaluated architectural choices
+
+which we expect to have a potentially large impact on the
+
+decoding accuracies and/or from which we hoped to gain
+
+insights into the behavior of the ConvNets. Thus, for the
+
+deep ConvNet, we compared the design aspects listed in
+
+Table I.
+
+In the following, we give additional details for some of
+
+these aspects. Batch normalization standardizes intermedi-
+
+ate outputs of the network to zero mean and unit variance
+
+for a batch of training examples \[Ioffe and Szegedy, 2015\].
+
+This is meant to facilitate the optimization by keeping the
+
+r **S**chirrmeister et al. r
+
+r 5396 r
+
+10970193, 2017, 11, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/hbm.23730, Wiley Online Library on \[06/07/2026\]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+-----
+
+|  |
+| :-: |
+| [**Page 7**]() |
+
+inputs of layers closer to a normal distribution during
+
+training. We applied batch normalization, as recom-
+
+mended in the original paper \[Ioffe and Szegedy, 2015\], to
+
+the output of convolutional layers before the nonlinearity.
+
+Dropout randomly sets some inputs for a layer to zero in
+
+each training update. It is meant to prevent co-adaption of
+
+different units and can be seen as analogous to training an
+
+ensemble of networks. We drop out the inputs to all con-
+
+volutional layers after the first with a probability of 0.5.
+
+Finally, our new tied loss function is designed to further
+
+regularize our cropped training (see the section “Cropped
+
+training” for an explanation).
+
+We evaluated the same design aspects for the shallow
+
+ConvNet, except for the following differences:
+
+**Figure 1.**
+
+Deep ConvNet architecture. EEG input (at the top) is progres-
+
+sively transformed toward the bottom, until the final classifier
+
+output. Black cuboids: inputs/feature maps; brown cuboids: con-
+
+volution/pooling kernels. The corresponding sizes are indicated
+
+in black and brown, respectively. Sizes are for the cropped
+
+training version, see the section “Architecture differences.” Each
+
+spatial filter has weights for all possible pairs of electrodes with
+
+filters of the preceding temporal convolution. Note that in these
+
+schematics, proportions of maps and kernels are only approxi-
+
+mate. \[Color figure can be viewed at [wileyonlinelibrary.com](http://wileyonlinelibrary.com)\]
+
+r **C**onvolutional **N**eural **N**etworks in **EEG A**nalysis r
+
+r 5397 r
+
+10970193, 2017, 11, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/hbm.23730, Wiley Online Library on \[06/07/2026\]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+-----
+
+|  |
+| :-: |
+| [**Page 8**]() |
+
+The baseline methods for the activation function and
+
+pooling mode were chosen as “squaring nonlinearity”
+
+and “mean pooling,” motivation is given in the sec-
+
+tion “Shallow ConvNet for raw EEG signals.”
+
+We did not include factorized temporal convolutions
+
+into the comparison, as the longer kernel lengths of
+
+the shallow ConvNet make these convolutions less
+
+similar to other successful ConvNets anyways.
+
+We additionally compared the logarithmic nonlinear-
+
+ity after the pooling layer with a square root nonline-
+
+arity to check if the logarithmic activation inspired by
+
+FBCSP is better than traditional L2-pooling.
+
+Hybrid ConvNet
+
+Besides the individual design choices for the deep and
+
+shallow ConvNet, a natural question to ask is whether
+
+both ConvNets can be combined into a single ConvNet.
+
+Such a hybrid ConvNet could profit from the more specific
+
+feature extraction of the shallow ConvNet and from the
+
+more generic feature extraction of the deep ConvNet.
+
+Therefore, we also created a hybrid ConvNet by fusing
+
+both networks after the final layer. Concretely, we
+
+replaced the four-filter softmax classification layers of both
+
+ConvNets by 60- and 40-filter ELU layers for the deep and
+
+shallow ConvNet respectively. The resulting 100 feature
+
+maps were concatenated and used as the input to a new
+
+softmax classification layer. We retrained the whole hybrid
+
+ConvNet from scratch and did not use any pretrained
+
+deep or shallow ConvNet parameters.
+
+**Figure 2.**
+
+Shallow ConvNet architecture. Conventions as in Figure 1.
+
+\[Color figure can be viewed at [wileyonlinelibrary.com](http://wileyonlinelibrary.com)\]
+
+**TABLE I. Evaluated design choices**
+
+Design aspect
+
+Our choice
+
+Variants
+
+Motivation
+
+Activation functions
+
+Pooling mode
+
+ELU
+
+Max
+
+Square, ReLU
+
+Mean
+
+We expected these choices to be sensi-
+
+tive to the type of feature (e.g., signal
+
+phase or power), as squaring and
+
+mean pooling results in mean power
+
+(given a zero-mean signal). Different
+
+features may play different roles in
+
+the low-frequency components vs the
+
+higher frequencies (see the section
+
+“Datasets and Preprocessing”).
+
+Regularization and
+
+intermediate
+
+normalization
+
+Dropout 1 batch normalization 1
+
+a new tied loss function
+
+(explanations see text)
+
+Only batch normalization,
+
+only dropout, neither
+
+of both, nor tied loss
+
+We wanted to investigate whether
+
+recent deep learning advances
+
+improve accuracies and check how
+
+much regularization is required.
+
+Factorized temporal
+
+convolutions
+
+One 10 3 1 convolution per
+
+convolutional layer
+
+Two 6 3 1 convolutions
+
+per convolutional layer
+
+Factorized convolutions are used by
+
+other successful ConvNets \[Szegedy
+
+et al., 2015\]
+
+Splitted vs one-step
+
+convolution
+
+Splitted convolution in first layer
+
+(see the section “Deep ConvNet
+
+for raw EEG signals”)
+
+One-step convolution in
+
+first layer
+
+Factorizing convolution into spatial and
+
+temporal parts may improve accura-
+
+cies for the large number of EEG
+
+input channels (compared with three
+
+rgb color channels of regular image
+
+datasets).
+
+Design choices we evaluated for our convolutional networks. “Our choice” is the choice we used when evaluating ConvNets in the
+
+remainder of this article, for example, versus FBCSP. Note that these design choices have not been evaluated in prior work, see Sup-
+
+porting Information, Section A.1.
+
+r **S**chirrmeister et al. r
+
+r 5398 r
+
+10970193, 2017, 11, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/hbm.23730, Wiley Online Library on \[06/07/2026\]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+-----
+
+|  |
+| :-: |
+| [**Page 9**]() |
+
+Residual ConvNet for raw EEG signals
+
+In addition to the shallow and deep ConvNets, we eval-
+
+uated another network architecture: Residual networks
+
+(ResNets), a ConvNet architecture that recently won several
+
+benchmarks in the computer vision field \[He et al., 2015\].
+
+ResNets typically have a very large number of layers and
+
+we wanted to investigate whether similar networks with
+
+more layers also result in good performance in EEG decod-
+
+ing. ResNets add the input of a convolutional layer to the
+
+output of the same layer, to the effect that the convolutional
+
+layer only has to learn to output a residual that changes the
+
+previous layers output (hence the name residual network).
+
+This allows ResNets to be successfully trained with a much
+
+larger number of layers than traditional convolutional net-
+
+works \[He et al., 2015\]. Our residual blocks are the same as
+
+described in the original paper (Fig. 3).
+
+Our ResNet used exponential linear unit activation func-
+
+tions \[Clevert et al., 2016\] throughout the network (same
+
+as the deep ConvNet) and also starts with a splitted tem-
+
+poral and spatial convolution (same as the deep and shal-
+
+low ConvNets), followed by 14 residual blocks, mean
+
+pooling and a final softmax dense classification layer (for
+
+further details, see Supporting Information, Section A.3).
+
+**ConvNet Training**
+
+In this section, we first give a definition of how Con-
+
+vNets are trained in general. Second, we describe two
+
+ways of extracting training inputs and training labels from
+
+the EEG data, which result in a trialwise and a cropped
+
+training strategy.
+
+Definition
+
+To train a ConvNet, all parameters (all weights and
+
+biases) of the ConvNet are trained jointly. Formally, in our
+
+supervised classification setting, the ConvNet computes a
+
+function from input data to one real number per class,
+
+fðXj; uÞ : RE&#3;T \! RK, where h are the parameters of the
+
+function, E the number of electrodes, T the number of
+
+timesteps, and K the number of possible output labels. To
+
+use ConvNets for classification, the output is typically
+
+transformed to conditional probabilities of a label lk
+
+given the input Xj
+
+using the softmax function:
+
+pðlkjfðXj; uÞÞ5
+
+expðfkðXj;uÞÞ
+
+PK
+
+m51 expðfmðXj;uÞÞ
+
+. In our case, as we train per
+
+subject, the softmax output gives us a subject-specific condi-
+
+tional distribution over the K classes. Now we can train the
+
+entire ConvNet to assign high probabilities to the correct
+
+labels by minimizing the sum of the per-example losses:
+
+u5arg min
+
+u
+
+XN
+
+j51
+
+loss yj, p lkjfkðXj; uÞ
+
+,
+
+(1)
+
+where
+
+loss yj, p lkjfkðXj; uÞ
+
+5
+
+XK
+
+k51
+
+2log p lkjfkðXj; uÞ
+
+dðyj5lkÞ
+
+(2)
+
+is the negative log likelihood of the labels. As is common
+
+for training ConvNets, the parameters are optimized via
+
+mini-batch stochastic gradient descent using analytical gra-
+
+dients computed via backpropagation (see LeCun et al.
+
+\[2015\] for an explanation in the context of ConvNets and
+
+the section “Optimization and early stopping” in this arti-
+
+cle for details on the optimizer used in this study).
+
+This ConvNet training description is connected to our
+
+general EEG decoding definitions from the section
+
+“Definitions and Notation” as follows. The function that
+
+the ConvNet computes can be viewed as consisting of a
+
+feature extraction function and a classifier function: The
+
+feature extraction function /ðXj; u/Þ with parameters u/ is
+
+computed by all layers up to the penultimate layer. The
+
+classification function g /ðXj; u/Þ, ug
+
+with parameters hg,
+
+which uses the output of the feature extraction function as
+
+input, is computed by the final classification layer. In this
+
+view, one key advantage of ConvNets becomes clear: With
+
+the joint optimization of both functions, a ConvNet learns
+
+both, a descriptive feature representation for the task and a
+
+discriminative classifier. This is especially useful with large
+
+datasets, where it is more likely that the ConvNet learns to
+
+extract useful features and does not just overfit to noise pat-
+
+terns. For EEG data, learning features can be especially valu-
+
+able as there may be unknown discriminative features or at
+
+least discriminative features that are not used by more tradi-
+
+tional feature extraction methods such as FBCSP.
+
+Input and labels
+
+In this study, we evaluated two ways of defining the
+
+input examples and target labels that the ConvNet is
+
+trained on. First, a trial-wise strategy that uses whole trials
+
+as input and per-trial labels as targets. Second, a cropped
+
+training strategy that uses crops, that is, sliding time win-
+
+dows within the trial as input and per-crop labels as tar-
+
+gets (where the label of a crop is identical to the label of
+
+the trial the crop was extracted from).
+
+Trial-wise training
+
+The standard trial-wise training strategy uses the whole
+
+duration of the trial and is therefore similar to how FBCSP
+
+**Figure 3.**
+
+Residual block. Residual block used in the ResNet architecture
+
+and as described in original paper (He et al. \[2015\]; see Fig. 2)
+
+with identity shortcut option A, except using ELU instead of
+
+ReLU nonlinearities. See the section “Residual ConvNet for raw
+
+EEG signals” for explanation.
+
+r **C**onvolutional **N**eural **N**etworks in **EEG A**nalysis r
+
+r 5399 r
+
+10970193, 2017, 11, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/hbm.23730, Wiley Online Library on \[06/07/2026\]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+-----
+
+|  |
+| :-: |
+| [**Page 10**]() |
+
+is trained. For each trial, the trial signal is used as input
+
+and the corresponding trial label as target to train the Con-
+
+vNet. We evaluated using trial epochs starting either at
+
+500 ms before, directly at, or 500 ms after trial start cue,
+
+both for FBCSP and the ConvNets; 500 ms before trial start
+
+led to the best accuracies for the ConvNets, 500 ms after
+
+trial start to the best accuracies for FBCSP. Therefore, these
+
+settings (500 ms before for ConvNets, 500 ms after for
+
+FBCSP) were used in this study. This led to 288 training
+
+examples per subject for BCI competition IV dataset 2a
+
+and about 880 training examples per subject on the High-
+
+Gamma Dataset after their respective train-test split.
+
+Cropped training
+
+The cropped training strategy uses crops, that is, sliding
+
+input windows within the trial, which leads to many more
+
+training examples for the network than the trial-wise train-
+
+ing strategy. We adapted this strategy from convolutional
+
+neural networks for object recognition in images, where
+
+using multiple crops of the input image is a standard pro-
+
+cedure to increase decoding accuracy (see, e.g., He et al.
+
+\[2015\] and Szegedy et al. \[2015\]).
+
+In our study, we used crops of about 2 s as the input.
+
+We adopt a cropping approach, which leads to the largest
+
+possible number of crops by creating one crop per sample
+
+(by sample, we mean a timestep in our EEG trial time
+
+series). More formally, given an original trial Xj 2 RE&#3;T
+
+with E electrodes and T timesteps, we create a set of crops
+
+with
+
+crop
+
+size
+
+T0
+
+as timeslices of the trial:
+
+Cj5fX
+
+j
+
+1..E,t..t1T0 jt 2 1..T2T0g. All of these T2T0 crops are
+
+new training data examples for our decoder and will get
+
+the same label yj as the original trial.
+
+This aggressive cropping has the aim to force the Con-
+
+vNet into using features that are present in all crops of the
+
+trial, as the ConvNet can no longer use the differences
+
+between crops and the global temporal structure of the fea-
+
+tures in the complete trial. We collected crops starting from
+
+0.5 s before trial start (first crop from 0.5 s before to 1.5 s
+
+after trial start), with the last crop ending 4 s after the trial
+
+start (which coincides with the trial end, so the last crop
+
+starts 2 s before the trial and continues to the trial end).
+
+Overall, this resulted in 625 crops and therefore 625 label
+
+predictions per trial. The mean of these 625 predictions is
+
+used as the final prediction for the trial during the test
+
+phase. During training, we compute a loss for each predic-
+
+tion. Therefore, cropped training increases our training set
+
+size by a factor of 625, albeit with highly correlated training
+
+examples. As our crops are smaller than the trials, the Con-
+
+vNet input size is also smaller (from about 1000 input sam-
+
+ples to about 500 input samples for the 250 Hz sampling
+
+rate), while all other hyperparameters stay the same.
+
+To reduce the computational load from the increased
+
+training set size, we decoded a group of neighboring crops
+
+together and reused intermediate convolution outputs. This
+
+idea has been used in the same way to speed up ConvNets
+
+that make predictions for each pixel in an image \[Giusti
+
+et al., 2013; Nasse et al., 2009; Sermanet et al., 2014; Shel-
+
+hamer et al., 2016\]. In a nutshell, this method works by pro-
+
+viding the ConvNet with an input that contains several
+
+crops and computing the predictions for all crops in a single
+
+forward pass (see Fig. 4 for an explanation). This cropped
+
+training method leads to a new hyperparameter: the number
+
+of crops that are processed at the same time. The larger this
+
+number of crops, the larger the speedup one can get (upper
+
+bounded by the size of one crop, see Giusti et al. \[2013\] for a
+
+more detailed speedup analysis on images), at the cost of
+
+increased memory consumption. A larger number of crops
+
+that are processed at the same time during training also
+
+implies parameter updates from gradients computed on a
+
+larger number of crops from the same trial during mini-
+
+batch stochastic gradient descent, with the risk of less stable
+
+training. However, we did not observe substantial accuracy
+
+decreases when enlarging the number of simultaneously
+
+processed crops (this stability was also observed for images
+
+\[Shelhamer et al., 2016\]) and in the final implementation, we
+
+processed about 500 crops in one pass, which corresponds
+
+to passing the ConvNet an input of about 1000 samples,
+
+twice the 500 samples of one crop. Note that this method
+
+only results in exactly the same predictions as the na€ıve
+
+method when using valid convolutions (i.e., no padding).
+
+For padded convolutions (which we use in the residual net-
+
+work described in the section “Residual ConvNet for raw
+
+EEG signals”), the method no longer results in the same pre-
+
+dictions, so it cannot be used to speed up predictions for
+
+individual samples anymore. However, it can still be used if
+
+one is only interested in the average prediction for a trial as
+
+we are in this study.
+
+To further regularize ConvNets trained with cropped
+
+training, we designed a new objective function, which
+
+penalizes discrepancies between predictions of neighbor-
+
+ing crops. In this tied sample loss function, we added the
+
+cross-entropy of two neighboring predictions to the usual
+
+loss of of negative log likelihood of the labels. So, denoting
+
+the prediction pðlkjfkðX
+
+j
+
+t..t1T0; uÞÞ for crop X
+
+j
+
+t..t1T0 from time
+
+step t to t1T0 by pf,kðX
+
+j
+
+t..t1T0Þ, the loss now also depends
+
+on the prediction for the next crop pf,kðXj
+
+t11..t1T011Þ and
+
+changes from Eq. (2) to
+
+loss yj, pf,kðX
+
+j
+
+t..t1T0Þ
+
+5
+
+XK
+
+k51
+
+2log pf,kðX
+
+j
+
+t..t1T0Þ
+
+dðyj5lkÞ
+
+1
+
+XK
+
+k51
+
+2log pf,kðX
+
+j
+
+t..t1T0Þ
+
+pf,kðX
+
+j
+
+t11..t1T011Þ
+
+(3)
+
+This is meant to make the ConvNet focus on features
+
+which are stable for several neighboring input crops.
+
+Architecture differences
+
+The ConvNet architectures are identical for trial-wise
+
+training and cropped training, except for the final classifi-
+
+cation layer. It has a larger weight size in the temporal
+
+dimension for the trial-wise training than for the cropped
+
+r **S**chirrmeister et al. r
+
+r 5400 r
+
+10970193, 2017, 11, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/hbm.23730, Wiley Online Library on \[06/07/2026\]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+-----
+
+|  |
+| :-: |
+| [**Page 11**]() |
+
+training to process the larger temporal input length (final
+
+temporal weight length 9 vs 2 for the deep ConvNet and
+
+69 vs 30 for the shallow ConvNet).
+
+Optimization and early stopping
+
+As optimization method, we used Adam \[Kingma and
+
+Ba, 2014\] together with a specific early stopping method,
+
+as this consistently yielded good accuracy in preliminary
+
+experiments on the training set. For details on Adam and
+
+our early stopping strategy, see Supporting Information,
+
+Section A.4.
+
+**Visualization**
+
+Correlating input features and unit outputs: Network
+
+correlation maps
+
+As described in the Introduction, currently there is a
+
+great interest in understanding how ConvNets learn to
+
+solve different tasks. To this end, methods to visualize
+
+functional aspects of ConvNets can be helpful and the
+
+development of such methods is an active area of research.
+
+Here, we wanted to delineate what brain-signal features
+
+the ConvNets used and in which layers they extracted
+
+these features. The most obvious restriction on possible
+
+**Figure 4.**
+
+Multiple-crop prediction used for cropped training. In this toy
+
+example, a trial with the sample values 1,2,3,4,5,6,7 is cut into
+
+three crops of length 5 and these crops are passed through a
+
+convolutional network with two convolutional layers and one
+
+dense layer. The convolutional layers both have kernel size 2,
+
+and the second one additionally uses a stride of 2. Filters for
+
+both layers and the final dense layer have values 1,1. Red indi-
+
+cates intermediate outputs that were computed multiple times
+
+in the na€ıve implementation. Note that both implementations
+
+result in the same final outputs. (a) Na€ıve implementation by
+
+first splitting the trial into crops and passing the crops through
+
+the ConvNet independently. (b) Optimized implementation,
+
+computing the outputs for each crop in a single forward pass.
+
+Strides in the original ConvNet are handled by separating inter-
+
+mediate results that correspond to different stride offsets, see
+
+the split stride offsets step. NaNs are only needed to pad all
+
+intermediate outputs to the same size and are removed in the
+
+end. The split stride step can simply be repeated in case of fur-
+
+ther layers with stride. We interleave the outputs only after the
+
+final predictions, also in the case of ConvNets with more layers.
+
+\[Color figure can be viewed at [wileyonlinelibrary.com](http://wileyonlinelibrary.com)\]
+
+r **C**onvolutional **N**eural **N**etworks in **EEG A**nalysis r
+
+r 5401 r
+
+10970193, 2017, 11, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/hbm.23730, Wiley Online Library on \[06/07/2026\]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+-----
+
+|  |
+| :-: |
+| [**Page 12**]() |
+
+features is that units in individual layers of the ConvNet can
+
+only extract features from samples that they have “seen,”
+
+that is, from their so-called receptive field (Fig. 5). A way to
+
+further narrow down the possibly used features is to use
+
+domain-specific prior knowledge and to investigate whether
+
+known class-discriminative features are learned by the Con-
+
+vNet. Then it is possible to compute a feature value for all
+
+receptive fields of all individual units for each of these class-
+
+discriminative features and to measure how much this fea-
+
+ture affects the unit output, for example, by computing the
+
+correlation between feature values and unit outputs.
+
+In this spirit, we propose input-feature unit-output cor-
+
+relation maps as a method to visualize how networks
+
+learn spectral amplitude features. It is known that the
+
+amplitudes, for example of the alpha, beta and gamma
+
+bands, provide class-discriminative information for motor
+
+tasks \[Ball et al., 2008; Pfurtscheller, 1981; Pfurtscheller
+
+and Aranibar, 1979\]. Therefore, we used the mean enve-
+
+lope values for several frequency bands as feature values.
+
+We correlated these values inside a receptive field of a
+
+unit, as a measure of its total spectral amplitude, with the
+
+corresponding unit outputs to gain insight into how much
+
+these amplitude features are used by the ConvNet. Posi-
+
+tive or negative correlations that systematically deviate
+
+from those found in an untrained net imply that the Con-
+
+vNet learned to create representations that contain more
+
+information about these features than before training.
+
+A limitation of this approach is that it does not distin-
+
+guish between correlation and causation (i.e., whether the
+
+change in envelope caused the change in the unit output,
+
+or whether another feature, itself correlated to the unit
+
+output, caused the change). Therefore, we propose a sec-
+
+ond visualization method, where we perturbed the ampli-
+
+tude of existing inputs and observed the change in
+
+predictions of the ConvNets. This complements the first
+
+visualization and we refer to this method as input-
+
+perturbation network-prediction correlation map. By using
+
+artificial perturbations of the data, they provide insights in
+
+whether changes in specific feature amplitudes cause the
+
+network to change its outputs. Details on the computation
+
+of both NCM methods are described in the following.
+
+Input-feature unit-output correlation maps
+
+The input-feature unit-output correlation maps visualize
+
+the frequency-resolved correlation between unit outputs of
+
+the convolutional filters of the ConvNets and the power of
+
+all the samples in the receptive field of these units (Fig. 6).
+
+To achieve this, we performed the following steps:
+
+1\. For each frequency band of interest, the signal was
+
+bandpass-filtered to that frequency band and the
+
+envelope was computed.
+
+2\. For each frequency band of interest, the squared
+
+mean envelope for each receptive field of a given
+
+layer was computed. We did this by computing a
+
+moving window average of the squared envelope
+
+with the moving window size the same as the recep-
+
+tive field size (this was the input feature for which
+
+we then evaluated how much it affected the unit
+
+output).
+
+3\. Unit outputs of the given layer on the original signal
+
+were computed.
+
+4\. Linear correlations between the squared mean enve-
+
+lope values for all the frequency bands and the unit
+
+outputs for each convolutional filter were computed.
+
+These correlations should reflect whether a filter
+
+might compute an approximation of the squared
+
+mean envelope of all the samples in its receptive
+
+field.
+
+As we compute correlations after concatenating all sam-
+
+ples of all trials, these correlations reflect both within-trial
+
+and between-trial effects. The proposed method could, how-
+
+ever, be straightforwardly extended to disentangle these
+
+two sources. We computed the correlations for a filter bank
+
+ranging from 0 to 119 Hz. An example result for a single
+
+electrode and a single subject is shown in Figure 7.
+
+To compute a single scalp plot for a frequency band, we
+
+computed the mean of the absolute correlations over all
+
+units for each convolutional filter and each electrode for
+
+that frequency band. To disentangle effects which are
+
+caused by the training of the network from those caused
+
+by the architecture, we computed the scalp plot for a
+
+trained and an untrained model. The scalp plot for a
+
+**Figure 5.**
+
+ConvNet Receptive Fields Schema. Showing the outputs, inputs,
+
+and receptive fields of one unit per layer. Colors indicate differ-
+
+ent units. Filled rectangles are individual units, and solid lines
+
+indicate their direct input from the layer before. Dashed lines
+
+indicate the corresponding receptive field in all previou

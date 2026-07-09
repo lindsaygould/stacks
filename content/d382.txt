@@ -1,0 +1,993 @@
+Computational whole-body-exposome models for global precision brain health 
+
+Perspective https://doi.org/10.1038/s41467-025-67448-3 Computational whole-body-exposome models for global precision brain health
+
+Received: 9 May 2025
+
+Agustín Ibáñez 1,2,3,4,5 , Claudia Duran-Aniotz1, Joaquín Migeot1,2,
+
+Accepted: 14 November 2025
+
+Sandra Báez 1,6, Sol Fittipaldi 1,2,7, Carlos Coronel-Oliveros1,2, Harris A. Eyre8,9,10,11, Chinedu Udeh-Momoh9,12,13, Henrik Zetterberg 14,15,16,17, Suvarna Alladi18, Carmen Sandi 19, Ian H. Robertson2,20, Sanne Franzen 21, Temitope Farombi2,22, Janitza L. Montalvo Ortiz 23, Sudha Seshadri 24, Felipe Court25,26,27,28, Pedro Valdes-Sosa 29,30, Jiayuan Xu 31,32, Chunshui Yu31,32, Lea Grinberg9,33,34,35,36, Brian Lawlor2, Perminder S. Sachdev37, Kristine Yaffe34,35, Vladimir Hachinski38, Karl Friston 39, Enzo Tagliazucchi1,40 & Hernando Santamaría-García 9,41,42
+
+The worldwide rise of neurological and psychiatric conditions poses major challenges. However, current global research remains fragmented, dominated by limited cohorts and poorly integrated datasets that disconnect whole-body health, exposome, and brain health. Theories rarely unify brain measures with extracerebral factors or capture heterogeneity in individual trajectories. We introduce multimodal diversity, a non-linear, non-simplistic causal and eco- logical construct integrating data representation, whole-body and exposomic factors, and computational modeling to address this situated, embedded, and embodied complexity. This heuristic metamodel integrates global, multilevel data into personalized predictions fostering population inclusion, multimodal integration, diagnostic precision, and equitable, context-sensitive advances in brain health.
+
+The global prevalence of neurological, neurodevelopmental, neurode- generative, and psychiatric disorders has risen significantly1–3. Epide- miological, social, and economic estimates suggest that these diseases pose significant burdens and financial costs, impacting human health and societal welfare1,4. Together, they heighten the risk of comorbidity, chronic systemic diseases and mortality3. Brain disorders remain among the top ten leading causes of disability worldwide5,6. Neurolo- gical conditions were the most prevalent of the leading causes of dis- ability in 2021, accounting for 443 million disability-adjusted life years (DALYs)1,5,6. The number of people living with dementia is projected to rise from 57.4 million in 2019 to 152.8 million by 2050, with the highest increase anticipated in low- and middle-income countries7. DALYs due to Alzheimer’s disease (AD) and Alzheimer’s disease and related dementias (ADRD) worldwide increased from 9.66 million to 25.28 million between 1990 and 20191. Psychiatric conditions accounted for 125.3 million DALYs4 in 2019. Between 1990 and 2019, DALYs rates for
+
+psychiatric conditions in adults increased from 803.8 to 833.2 per 100,0008. These stark estimates have spurred international calls to advance brain health through enhanced research, public health initia- tives, policy development, targeted interventions, and improved treatments. The scientific fields require more diverse, complex, multi- level, accurate, global, robust, and multimodal approaches7,9–13.
+
+Multimodal diversity in brain health12 (Box 1, Fig. 1) refers here to a multilevel construct that combines three dimensions (Table 1): (i) data representation, encompassing heterogeneous sources ranging from omics to neuroimaging, behavioral, and clinical indicators; (ii) multi- level integration of brain and extracerebral influences, including whole- body health metrics (e.g., cardiometabolic status, immune function, gut microbiome, interoception) and environmental factors (physical and social determinants or exposome); and (iii) computational archi- tectures, capable of handling the intrinsic multimodal complexity, heterogeneity, and probabilistic trajectories inherent to such diverse
+
+Check for updates
+
+A full list of affiliations appears at the end of the paper. e-mail: agustin.ibanez@gbhi.org; hernando.santamaria@gbhi.org
+
+Nature Communications | (2025) 16:11078 1
+
+Perspective https://doi.org/10.1038/s41467-025-67448-3
+
+BOX 1 Multimodal Diversity
+
+Multimodal diversity refers to different layers of precision brain health,
+
+cognitive assessments) alongside whole-body health indicators (e.g., encompassing data representation, multiple modality integration, and
+
+cardiovascular and metabolic markers, omics, interoception) and computational approaches. In socio-political terms, diversity often
+
+exposome factors (cumulative physical and social exposures across highlights inclusion across demographic groups (e.g., race, ethnicity,
+
+the lifespan). Merging brain data with systemic health and environ- sex), but here the term extends to heterogeneity in data and methods
+
+mental context allows researchers to capture complex interactions across multiple domains12.
+
+between neural processes, bodily conditions, and external
+
+Data representation: Refers to the inclusion of data from global
+
+influences.
+
+populations (especially those historically underrepresented) in brain
+
+Computational metamodels: Addressing multimodal diversity health research. It entails collecting and analyzing information from
+
+requires advanced computational structures. These are metamodels diverse regions and cultures, rather than focusing only on high-income
+
+designed to synthesize and integrate heterogeneous data. Such a majority cohorts. This approach is crucial not just for ethical repre-
+
+framework should incorporate heterogeneity-robust methods to sentation but for scientific validity: including underrepresented groups
+
+accommodate diverse data distributions, ensuring models remain reveals unique genetic, environmental, and social factors influencing
+
+generalizable across populations. It emphasizes extracerebral model- brain health that may be missed in homogeneous samples. Embracing
+
+ing and integration, meaning algorithms jointly model brain metrics data diversity helps move beyond one-size-fits-all models and enhan-
+
+alongside extracerebral factors (e.g., environmental exposures, whole- ces global understanding of brain disorders, enabling more effective
+
+body health measures). Additionally, individual trajectories are and equitable interventions.
+
+accounted for by longitudinal and dynamic modeling, capturing how a
+
+Multimodal data integration: It involves combining multiple dimen- sions of health-related data to capture the full context of brain health. This includes traditional brain health metrics (e.g., brain imaging and
+
+person’s brain health changes over time under various influences. Together, these strategies form an metamodel encoding multimodal diversity.
+
+data. Unlike traditional approaches that consider single modalities or
+
+and broader scientific infrastructures. A core barrier is the limited levels of analysis, multimodal diversity emphasizes synergistic mod-
+
+funding and consequent lack of substantial multimodal data in global eling that integrates biological, systemic, and environmental measures
+
+settings. Current research approaches often fail to represent diverse to generate more accurate, and individualized predictions12–16. This
+
+populations and incorporate various data types32,33, leading to simpli- definition transcends traditional notions of diversity (often confined to
+
+fied predictions34,35 and restricted applicability11,36. By constraining the gender, ethnicity, race, or minority status) by focusing on complex
+
+focus to single data types29,37 and excluding environmental-biology model interactions that exhibit significant variation across individuals
+
+interactions, approaches can neglect important factors that impact and populations due to stochastic and probabilistic dynamics (i.e., the
+
+brain health38–41. random but structured processes driving heterogeneous outcomes
+
+First, limited representation of diverse populations17,18,22,23 leads to a across the lifespan16).
+
+lack of generalizability24, decreasing the effectiveness of diagnosis and Theoretically and methodologically, this concept emphasizes
+
+treatments12,24,25. Genome-wide association studies (GWAS) and poly- synergistic computational modeling and integration of multimodal
+
+genic risk studies are predominantly based on European descent data10,12–16 in neurology and psychiatry11,17–24. There are urgent calls to
+
+populations, biasing the identification of risk factors36,42–46 and hin- address methodological barriers, global collaboration, and improved
+
+dering tailored prediction models and treatments29,37. Ancestry diver- computational models10,15,17,25–31. However, challenges related to
+
+sity affects the understanding of disease prevalence, genetic and underrepresentation, the reliance on single-level approaches in global
+
+biological mechanisms, and brain phenotypes47. Reduced population settings (e.g., those limited to a single data type such as genetic var-
+
+diversity limits specificity48–51, neglecting complex biological iants, or neuroimaging), and the need for theoretical frameworks that
+
+mechanisms52 and diminishing clinical insights50, risk identification53,54, integrate biological, behavioral, and environmental layers must be
+
+cognitive evaluations53,55, and neuroimaging characterization56. These addressed jointly12.
+
+gaps have a negative impact on accurate diagnosis, biomarker devel- This perspective begins by highlighting how the limited funding,
+
+opment, and successful clinical trials36,49,57,58. insufficient samples representation, inadequate global data sharing,
+
+Multiple factors contribute to increased data variability in and the absence of unified theoretical frameworks undermines
+
+underrepresented populations from Latin America, Africa, Middle East advancements in brain health. While our framework is focused mainly
+
+and Asia. These populations often exhibit more significant genetic on brain health, we use AD/ADRD as an illustrative case, while also
+
+admixture51,59 than in the U.S. or European populations. Greater mul- highlighting applications to psychiatric and neurodevelopmental dis-
+
+timodal heterogeneity is also evident, particularly in whole-body and orders. We propose a heuristic framework that emphasizes integrating
+
+environmental data12,60. Populations in the Global South frequently global and multimodal data and theoretical models to tackle the core
+
+experience higher burdens of cardiometabolic conditions61 and show challenges for computational modeling. We discuss the core ethical,
+
+stronger biological embedding of structural inequalities. Most pre- social, and technical barriers of this initiative. Finally, we outline a
+
+dictive models are trained on large U.S. and European datasets. These future agenda and recommendations to enhance computational
+
+problems are observed across Global South populations and mino- models, deep phenotyping, neuroecological links, transdisciplinary
+
+rities within countries such as the US62,63. When applied to under- collaboration, and inclusive brain health research.
+
+represented populations with different data distributions, these models often exhibit poor generalizability and higher misclassification Why brain multimodal health
+
+diversity is essential for precision rates34,56,62.
+
+Second, most research in brain health concentrates on isolated Our perspective focuses on some of the main challenges of precision in
+
+genetic and brain data13,49,64, neglecting the influence of whole-body brain health driven by funding constraints, methodological hurdles,
+
+health and multi-omics60,65. Approaches usually focus on single-level
+
+Nature Communications | (2025) 16:11078 2
+
+Perspective https://doi.org/10.1038/s41467-025-67448-3
+
+a. Data diversity
+
+b. Modeling diversity
+
+Macro
+
+SES
+
+Social interaction
+
+Gesnodceiar al nidd
+
+entites
+
+Green spaces
+
+Nanoplastics
+
+Air apnod lluhteioan
+
+twaves
+
+Model theorization and personalization
+
+Data diversity modelling
+
+Clinical
+
+Cognition
+
+Functionality
+
+Behavior
+
+Exposome
+
+Extracerebral influences
+
+s epyta tadn eewteBTranscript.
+
+Proteomics
+
+Metabolics
+
+Cardiomet. H BCC
+
+Low dimensional manifolds
+
+Heterogeneity & individual trajectories
+
+Microarchit.
+
+Neurotransm.
+
+Regions
+
+Glonbeatl
+
+works
+
+Whole-body health
+
+Genetic mut.
+
+Genetic risks
+
+Methylation
+
+Soceipail
+
+genomics
+
+MBM
+
+Tailored metamodels
+
+Genetics-epigenetics
+
+Micro
+
+Macro Within data types
+
+Fig. 1 | Multimodal diversity framework. The figure illustrates the dimensions of
+
+The fifth level includes exposome factors, such as social determinants (e.g., multimodal diversity, showcasing data diversity (a) and its integration into perso-
+
+socioeconomic status, social interactions, and social identities) and physical nalized models through advanced modeling approaches (b). a depicts data diver-
+
+exposures (e.g., green spaces, nanoplastics, air pollution, and heatwaves). sity with the hierarchical data layers contributing to brain health determinants,
+
+b outlines the diversity in modeling approaches required to effectively integrate spanning micro- to macro-levels between and within data types. The first level
+
+multimodal data diversity into brain health research. It emphasizes data diversity, focuses on genetic and epigenetic factors, including genetic risks, mutations, DNA
+
+the generation of low-dimensional brain representations, the incorporation of methylation, and social epigenomics. The second level represents multimodal
+
+extracerebral influences such as whole-body health and exposome data, and the brain models (MBM), encompassing brain microarchitecture, neurotransmission,
+
+need to account for heterogeneity and individual trajectories. This framework structures, functions, and global networks. The third level integrates whole-body
+
+highlights the potential of multimodal diversity to advance precision medicine by biology, combining multi-omics data such as transcriptomics, proteomics, meta-
+
+addressing complex brain health determinants and personalizing interventions. bolomics, and microbiomics with systemic health indicators like cardiometabolic
+
+SES socioeconomic status. health. The fourth level incorporates behavioral, cognitive, and clinical data (BCC).
+
+explanations, such as genetics36,42–46 while overlooking biology-
+
+integration69,70. How to systematically model extracerebral factors is environment interactions14,15,64 or vice versa. Although some models
+
+poorly understood, limiting predictive accuracy69. Models that rely on (see below) emphasize how the body serves as a dynamic interface
+
+averages frequently miss critical individual differences, leading to linking the environment and the brain, most existing research remains
+
+inaccurate predictions, especially in diverse populations34. A meta- predominantly theoretical. The exposome13 refers to the totality of
+
+model may enables a comprehensive understanding of brain health by exposures an individual experiences throughout their lifetime
+
+integrating biology-environment interactions, and population encompassing physical (e.g., pollutants, heat waves) and social influ-
+
+heterogeneity15,71, informing global health policies and advancing ences (socioeconomic status, political stress, loneliness, poverty, and
+
+precision medicine72,73. cultural factors). The exposome has only recently begun to be applied
+
+Third, computational modeling often fails to integrate global data to brain health9,13,58 with few examples combining it with genetics,
+
+and account for heterogeneity, thereby hampering the development whole-body health, and brain function10,66,67. These brain-body-
+
+of tailored diagnostic tools and treatments34,35. The under- environment interactions require new conceptual models9,68 for data
+
+representation of non-White and diverse populations in global
+
+Nature Communications | (2025) 16:11078 3
+
+Perspective https://doi.org/10.1038/s41467-025-67448-3
+
+Table 1 | Challenges and potential solutions for multimodal diversity in precision brain health
+
+Domain Challenges and limitations Potential solutions 1. Data representation - Underrepresentation of global and minority populations in
+
+\- Expand and integrate datasets to include diverse datasets.
+
+ancestries, socioeconomic backgrounds, and environ- - Bias toward US/European ancestry in genetics, imaging, and
+
+mental contexts. clinical cohorts.
+
+\- Promote equity-driven data collection strategies, parti- - Reduced generalizability of predictive models due to narrow
+
+cularly in the Global South. population samples.
+
+\- Implement deep phenotyping across different popula- tions to capture heterogeneity and unique risk/protec- tive factors.
+
+2\. Multimodal integration of extra-
+
+\- Brain health research overly focused on brain-specific mea-
+
+\- Systematic integration of multimodal data, combining cerebral measures
+
+sures, neglecting systemic, exposome, and whole-body inter-
+
+brain, body, and exposome metrics. actions.
+
+\- Leverage organ clocks, multi-omics, and exposome - Limited frameworks for modeling biology- environment inter-
+
+profiling to capture systemic and environmental impacts actions.
+
+on brain health. - Sparse integration of omics, cardiovascular, metabolic, and
+
+\- Adopt ecological and One Health perspectives to link environmental data in brain health models.
+
+social, environmental, and biological domains in brain health.
+
+3\. Computational and theoretical
+
+\- Existing models mainly based on low-dimensional, single-
+
+\- Develop multimodal metamodels combining: structures supporting diversity
+
+domain data.
+
+(i) spatiotemporal dimensionality reduction to generate - Poor adaptability to heterogeneity and individual variability.
+
+low-dimensional latent representations of brain-body- - Lack of temporal integration between brain dynamics, extra-
+
+exposome dynamics; cerebral influences, and environmental exposures in pre-
+
+(ii) biophysical whole-brain generative models to integrate dictive modeling.
+
+multimodal biological measures; (iii) embodied models linking extracerebral (organ, expo-
+
+some) states to brain dynamics; and (iv) Digital twins and probabilistic frameworks to model heterogeneous individual trajectories across the lifespan.
+
+datasets compromises the generalizability, fairness, and clinical utility
+
+representation39,87,88. Bridging these gaps demands global collaboration of artificial intelligence (AI) and machine learning models56,74,75. Models
+
+to build inclusive, multilevel, lifespan-oriented cohorts. Key priorities trained on demographically skewed data risk misclassification, poor
+
+include lifespan enrollment89–92 and the development of biorepositories prediction, and reinforcement of systemic inequities. Equitable mod-
+
+to reduce disparities in genomic and biomarker data74,93–96. eling requires transparent reporting (clear documentation of data
+
+Funding agencies supporting large-scale initiatives have started to sources, methods, and limitations), interdisciplinary validation (cross-
+
+promote increased data diversity and multimodal integration and field review and replication of findings), and stakeholder engagement
+
+comparisons across global datasets are now more feasible. Examples (involving community and policy representatives)76. Key needs include
+
+include the NIH All of Us program (with 77% of participants having assessing data heterogeneity, incorporating multimodal inputs (i.e.,
+
+underrepresented backgrounds), UK Biobank; the Innovative Medi- systemic biology and exposomic layers9,28,77) and applying individua-
+
+cines Initiative (IMI) – European Union; the Precision Medicine Initia- lized probabilistic modeling to capture complex risk trajectories73.
+
+tive (PMI, NIH, USA); the NIH - Brain Research Through Advancing These strategies are essential for advancing truly equitable, globally
+
+Innovative Neurotechnologies (BRAIN) Initiative (USA); the NIH - relevant brain health research. A structured metamodel -a computa-
+
+Research Domain Criteria (RDoC) Initiative (USA), the NIH ECHO pro- tional framework designed to handle data heterogeneity, integrate
+
+gram, as well as programs in the Global South10,26–29,31,62,97–103. Initiatives multimodal sources, and model individual trajectories and extra-
+
+such as H3Africa104, FINGER105, BrainLat96,106 and ReDLat107 demonstrate cerebral influences-, is crucial for advancing brain health research29.
+
+that ethically governed, context-sensitive infrastructures are feasible in the Global South, though broader implementation is needed. These Multimodal diversity frameworks in data programs evidence feasible, collaborative pathways supporting large- and models
+
+scale inclusion across populations. Sustained progress will require We present the building blocks of a heuristic framework incorporating
+
+coordinated international efforts, culturally grounded design, regional synergistic computational architectures10–16,53,77–83 and personalized
+
+leadership, and structural reforms (federated data sharing, open- models72,73,84. We first summarize emerging evidence on multimodal
+
+access platforms, and long-term ethical governance) to ensure equity diversity. Then, we explore how integrating computational approaches
+
+and generate actionable insights for global brain health. can provide promising pathways for improved theorization and prediction.
+
+Genetic diversity and scientific discovery The number of well-powered, large-scale genetic studies using GWAS Emerging evidence in brain health and disease
+
+and polygenic risk scores worldwide, particularly in the Global South, Evolving evidence and calls from the World Health Organization (WHO),
+
+for psychiatric (i.e., schizophrenia108, bipolar109 or depression110), and the Alzheimer’s Association, and the National Institute on Aging high-
+
+neurological conditions (i.e., Parkinson’s disease111 and stroke112) is light the importance of incorporating population diversity, loneliness,
+
+small but growing. Over 40 new genetic risk variants not previously social determinants of health, and complex biological, neuropatholo-
+
+reported in European populations have been identified. These findings gical, and exposomic measures in brain health research36. Research
+
+can potentially generate discriminative models across different requires addressing infrastructural, methodological, and funding bar-
+
+ancestries. Distinct linkage disequilibrium and haplotype patterns in riers that hinder the development of diverse, biologically and con-
+
+Global South populations sharpen fine-mapping and causal inference. textually informed datasets. Despite advances from initiatives like UK
+
+Polygenic risk scores (PRS) trained mainly on European datasets Biobank85 and FINNGEN86, these datasets face challenges regarding
+
+underscore the need for ancestry-aware discovery and validation113. population heterogeneity, rich ancestries, and global
+
+Local-ancestry–aware methods such as Tractor enable robust GWAS in
+
+Nature Communications | (2025) 16:11078 4
+
+Perspective https://doi.org/10.1038/s41467-025-67448-3
+
+admixed populations, producing ancestry-specific effect estimates
+
+AD/ADRD and recent schizophrenia GWAS across African, Latino, and East Asian
+
+The AT(N) (A=amyloid-beta, T=tau, and N=neurodegeneration) fra- cohorts confirm their value114. Large, multi-ancestry cohorts such as
+
+mework reflects AD brain changes but most likely is insufficient for NeuroGAP-Psychosis in Africa and the Latin American Genomics
+
+accurate diagnosis in global settings47,148–150. Combining this frame- Consortium are examples of this effort115,116. Asian GWAS have also
+
+work with multi-omics and neuroimaging can enhance identified new pleiotropic loci for depression and schizophrenia (e.g.,
+
+predictions145,151, clinical characterization152 and the discovery of treat- 1q25.2)117, while large East Asian–European meta-analyses revealed 53
+
+ment targets152. RNA sequencing and proteomic screening evidence novel schizophrenia loci through trans-ancestry fine-mapping118. Rare
+
+upregulation of transcription- and chromatin-related genes, including CNV variants for major psychiatric disorders119 and specific genetic
+
+histone acetyltransferases for H3K27ac and H3K9ac153. One study154 footprints associated with stroke120 have also been reported in Chinese
+
+identified 137 proteins with distinct trajectories in causative models of populations.
+
+AD, including many that changed before traditional AD biomarkers. GWAS have identified AD-susceptible genes involved in amyloid pla- AD/ADRD
+
+que and neurofibrillary tangle formation, cholesterol metabolism, Specific mutations not previously reported in Europe and the US,
+
+endocytosis, and the innate immune system155. AD/ADRD loci impact include the PSEN1 E280A mutation (the Paisa mutation), found in
+
+immune mechanisms in AD155. Among other multi-omics markers136,137, Medellin, Colombia, and responsible for the largest early-onset AD
+
+metabolomics has revealed brain insulin dysfunction. Transcriptomics population in the world. The high prevalence of the PSEN1 E280A
+
+reveal a significant impact of ancestry, particularly affecting immune mutation in the Colombian population stems from a founder event,
+
+pathways156. Postmortem brain multi-omics data and in vivo samples with ancestral origins predominantly traced to Spanish lineage121–123.
+
+are very limited. Biophysical and semi-empirical modeling can help to APOE effects on AD/ADRD vary by haplotype and local ancestry in the
+
+incorporate these scarce data via prios36,157,158. Other more accessible Global South. Protective variants such as APOE ε3 Christchurch124 and
+
+modalities (i.e., plasma proteomics, cell transcriptomics) offer pro- RELN125, identified in LAC, renew genetics-informed trial prospects51. In
+
+mising non-invasive proxies for brain health41,159,160 and multi-modal African-ancestry cohorts, meta-analyses identified MPDZ and 11 addi-
+
+integration41,159,161. Brain-blood correspondence in animal models69,162 tional AD-risk loci126 and showed attenuated APOE ε4 risk compared
+
+can also validate peripheral multi-omics biomarkers. with Europeans43. APOE ε2 is generally more protective in Europeans
+
+Epigenomics also evidence the impact of diversity163–165. Ancestral than in other ancestries, while the ε2/ε3 genotype confers \~8-fold
+
+epigenetic profiles demonstrate differential DNA methylation sig- higher AD risk in African Americans yet reduced risk in Europeans127.
+
+natures in imprinted gene regulatory zones within the inflammasome These findings stress the need for diverse cohorts to expand discovery
+
+(e.g., NLRP1 and MEST/MESTIT1) across individuals with AD166. Early and enable ancestry-informed therapies.
+
+developmental alterations in DNA methylation may contribute to ancestry risk166. Differences in DNA methylation age acceleration (e.g., Whole-body health
+
+epigenetic clocks) have been linked to immune system aging and Whole-body health offers a systemic framework to elucidate how
+
+inflammation, influenced by environmental and lifestyle factors167. physiological networks across the cardiometabolic, inflammatory, and
+
+Organ clocks (the biological age measures and mechanisms within immune domains mediate the brain’s adaptation to environmental
+
+specific organs that regulate their function) utilize transcriptome, demands11–13,60,64,128–133. This approach allows to embed exposomic
+
+epigenome, and proteome to integrate the physiological rhythms and perturbations within multi-organ and multi-omics architectures to
+
+aging processes of heart, liver, kidneys, gut, and brain168. The combi- provide a mechanistic bridge linking external exposures to neurobio-
+
+nation of genomics, particularly polygenic risk scores, with organ logical trajectories of resilience and disease13,16. Multi-omics has
+
+clocks represents a powerful strategy for predicting mortality indices, emerged as a promising path in psychiatry65 and neurology41,65,134,135.
+
+disease pathology, resiliency, and healthy aging16,169. Whole-body Combining omics with clinical, neuropathological, and neuroimaging
+
+health, including cardiometabolic factors are critical predictors of data improves greater prediction accuracy41,65,136,137. Inflammation
+
+brain health and disorders60,61. Gut microbiome health is sensitive to processes have become relevant in psychiatry, neurology138, and
+
+exposome influences and is a crucial predictor of brain health66. Car- neurodegeneration129,134,136,139. Pro-inflammatory cytokines, including
+
+diovascular, metabolic, and gut microbiome are key predictors of mediators such as Interleukin-1β (IL-1β), IL-6, and the nucleotide-
+
+behavior and clinical outcomes60,170. binding and oligomerization domain like receptor (NLR) family, are
+
+Despite these advances, several fields of omics remain immature critical for synaptic dysfunction and allostatic load in brain
+
+and underdeveloped. Whole-body modeling frameworks that inte- disorders140. Corticosteroids and sex hormones (testosterone and
+
+grate longitudinal multi-omics at the individual level are still in their estradiol) play crucial roles in modulating neurodevelopment, brain
+
+infancy, particularly in underrepresented populations. The gut-brain structure, and function141; and their dysfunction is associated with
+
+axis, although promising, lacks standardized protocols and causal multiple conditions141.
+
+models in human studies. Postmortem brain multi-omics data, Proteome-wide analyses of brain tissue and peripheral fluids have
+
+essential for validation, are scarce and geographically skewed, lim- identified proteins and pathways linked to conditions such as schizo-
+
+iting global generalizability. Conversely, promising advances are phrenia and other mental disorders142. Integrating proteomic QTLs,
+
+emerging from the integration of epigenetic clocks, peripheral omics transcriptomic QTLs, and GWAS signals enables prioritization of can-
+
+(e.g., plasma proteomics), and organ-specific biological age didate genes beyond what genomics alone can achieve142. Proteome-
+
+measures. wide association studies, Mendelian randomization, and imaging phenotypes have linked proteins such as EGFR and TMEM106B to both
+
+Biology–environment interactions brain structure and risk for schizophrenia or neurodevelopmental
+
+Understanding biology-environment interactions58,171 requires multi- disorders143. Transcriptomics–MRI integration further shows how gene
+
+modal frameworks70 capturing the biological embedding of macro- expression aligns with structural and functional changes in mental
+
+social factors (e.g., country-level inequality) on biology and brain illness144, while multimodal fusion uncovers hidden pathophysiological
+
+health. The One-Health approach emphasizes the interconnectedness links145. Spatial multi-omics and mass spectrometry-based neuropro-
+
+of human, animal, and environmental health and is critical for preci- teomics has provided detailed maps of protein-level changes (post-
+
+sion brain health13. Water and air pollution, plastics and nanoplastics, translational modifications and protein–protein interactions) which
+
+climate change, and heat waves are essential to the physical are central to the pathogenesis of diseases146,147.
+
+exposome9,13. Social inequality, loneliness, political polarization, and
+
+Nature Communications | (2025) 16:11078 5
+
+Perspective https://doi.org/10.1038/s41467-025-67448-3
+
+injustice are social exposomes9,48 highlighting the need to examine
+
+surrogate outcomes (validated substitutes for clinical endpoints), macro- and individual-level determinants9,13,48,54,172,173.
+
+proxies provide pragmatic but non-causal markers. Although much of Environmental exposures strongly influence brain biology and
+
+the evidence is not causal, progress in the field is already evident1–5. A increase the risk of psychiatric and neurological disorders. Long-term
+
+hierarchy of exposome factors5–7 can situate biological mechanisms air pollution, particularly PM2.5 and NOₓ174 have also been linked to
+
+alongside broader social, economic, and environmental factors. A new structural and functional brain alterations, as well as to depression and
+
+generation of methods is actively tackling this challenge8, including other mental disorders, through mechanisms involving inflammation,
+
+the NIH Gateway Exposome Coordinating Center, and the predictive oxidative stress, and genetic susceptibility175,176. Socioeconomic factors
+
+exposome databases9 are bringing multiple innovations. High- such as lower family income, parental education, and neighborhood
+
+resolution exposure assessment10, and evaluations of exposure-wide disadvantage predict reduced cortical surface area and a greater risk of
+
+association studies (ExWAS) can improve specificity and neurodevelopmental conditions48,177–180. Furthermore, early adversities
+
+granularity1,10–13. Compared to traditional self-report instruments, have been consistently associated with structural and functional brain
+
+which are prone to recall and response bias, these emerging changes and with the development of psychiatric disorders181,182.
+
+biomarker-based tools offer greater accuracy, temporal resolution, External exposomes dysregulate internal biological processes13.
+
+and translational value. Life adversity, unhealthy lifestyles, and loneliness are associated with impaired hypothalamic-pituitary-adrenal (HPA) axis activity, reducing
+
+Modeling and theorization glucocorticoid sensitivity, triggering insulin resistance, and causing
+
+Different computational and theoretical architectures are required to endothelial dysfunction183. These adversities are linked to inflamma-
+
+assess the flexibility and complexity needed to incorporate multi- tion, elevated peripheral inflammatory cytokines184–187, and impacts on
+
+modal diversity (Box 2). Specific examples include dynamic causal the microbiome, ultimately increasing the risk of non-communicable
+
+modeling199, Bayesian architectures200, active inference models201, and diseases, neuropsychiatric and neurological conditions184,186,187. The
+
+biophysical modeling78. These methods have proven effective in inte- prediction of clinical outcomes increases when biological variables are
+
+grating multimodal data while being generative, recursive, and con- integrated with exposomes10,29,79,80. Different factors, including socio-
+
+tinuously updated as new information becomes available15. Data- economic status, environmental factors, perceived discrimination, and
+
+driven generative approaches enable the development of single- country-level inequality levels10,67,79,80,173,188 influence neuroendocrine,
+
+subject and personalized translational models65,71,84. This framework brain-gut microbiome66, and neurocognitive markers10. Social deter-
+
+does not support the idea of extensive, universal, or one-size-fits-all minants of health48 predict healthy aging better than sex and age in
+
+models of brain health. Instead, it advocates for tailored models in diverse populations53,188,189.
+
+which the relevance of predictors and outcomes varies according to Social epigenomics163,190,191 combines exposomes and epigenetics.
+
+population-specific data, contextual variables, and multimodal varia- Social determinants of health, discrimination, exclusion, and socio-
+
+tion. The metamodel framework requires tailored procedures that can economic adversities influence DNA methylation191. Epigenome-wide
+
+be instantiated using different techniques (Tables 2 and 3). We pro- association studies (EWAS) of socioeconomic status and social mobi-
+
+pose four main avenues to develop future computational lity have implicated genes involved in inflammation, immune function,
+
+architectures. stress response, metabolic processes, and neural development. Bio- logical age is influenced by ancestry, lifestyles, and social
+
+Low-dimensional integration of multilevel brain measures factors190,192,193. Hispanic populations have lower intrinsic epigenetic
+
+Multimodal diversity can be mapped to low-level biological mechan- age acceleration, indicating slower cellular aging (i.e., the Hispanic
+
+isms using methods from artificial intelligence202 and dynamic systems paradox, with slower aging processes despite having increased risk
+
+modeling15. On the one hand, non-linear deep learning dimensionality factors)167,194. Effects of social disparities on epigenetics can also be
+
+reduction techniques enable the generation of highly informative low- mitigated by lifestyle changes in some ethnic groups. Methylomics and
+
+dimensional latent representations of brain spatiotemporal dynamics. transcriptomics analyses from the human postmortem brain and stu-
+
+Non-linear low-dimensionality reduction approaches can more accu- dies on genetic variation reveal a significant impact of genetic ances-
+
+rately characterize different conditions than the traditional statistical try, particularly affecting genes involved in immune response
+
+approaches relying on assumptions of linearity and stationarity82,83,203. pathways156.
+
+Machine learning can be complemented by theory-driven dynamical system measures, such as metastability (the brain’s ability to transition AD/ADRD
+
+between globally integrated and segregated states204), irreversibility Different exposomes impact the brain structure-functioning48,171,
+
+(linked to brain complexity, entropy and flexible brain transitions205), health53,189, and disease10. Ancestry and social exposome influence
+
+and criticality (a metric of proximity to a dynamic regime in-between biomarkers for AD/ADRD195. Hispanic populations have increased
+
+order and chaos), which have proven effective in capturing and con- adverse physical and social exposomes and higher AD biomarkers
+
+veying the structural and functional complexity of the brain across AT(N) such as Aβ40 and reduced neurofilament plasma levels com-
+
+levels in brain disorders205. pared to non-Hispanic White populations in the US196. Cardiometabolic
+
+Generative biophysical whole-brain models help to investigate diseases, unequally distributed worldwide and influenced by the
+
+mechanisms underlying data-driven characterizations15. These models internal and social exposomes, modulate AT(N) biomarkers195. Socio-
+
+integrate multiple heterogeneous data sources, encompassing brain economic factors affect the relationship between brain markers and
+
+structure and function, connectomics, neurochemistry, synaptic pro- ancestry195. Cerebrospinal fluid Aβ42/40 levels are negatively correlated
+
+cesses, or cytoarchitecture206. Moreover, those models can track brain with total tau and p-tau181 in Caucasians, but the correlation is weaker
+
+circuitry integrity and function at multiple spatial and temporal scales in non-Hispanic Black individuals51. CSF Aβ42/40, total tau, and p-tau181
+
+combining fMRI, electroencephalography (EEG), magnetoencephalo- demonstrate weaker correlations with cognitive measures in Black
+
+graphy (MEG), or PET, enhancing model predictive power and multi- than White participants197. Effects of ancestry and social disparity in
+
+level consistency206. AD/ADRD have also been reported in organ194,198, circadian198, and brain clocks10.
+
+Embodied and generative models for extracerebral influences The dependence on proxies is an important limitation, as these
+
+Combining different organ clocks with computational architectures are indirect indicators used when direct measures are unavailable.
+
+helps to characterize brain health and disorders168,169,198. Accelerated Unlike endophenotypes (biologically grounded intermediate traits) or
+
+aging in particular organs, such as the heart, is linked to increased risks
+
+Nature Communications | (2025) 16:11078 6
+
+Perspective https://doi.org/10.1038/s41467-025-67448-3
+
+BOX 2 Main computational concepts
+
+We provide some of the most relevant concepts incorporated in
+
+Perturbational approach in modeling: Generative models can computational metamodeling.
+
+undergo systematic perturbations that are challenging to implement
+
+Low-dimensional data representations: Machine learning techniques identify lower-dimensional spaces (manifolds) in high-dimensional data structures289. Mapping data into these manifolds yields low- dimensional latent representations preserving essential features, pat- terns, or relationships. Manifolds can be identifiable linear spaces
+
+experimentally. Mapping how neural systems react to these pertur- bations provides insights into their functionality and stability82. Simu- lated perturbations can also rehearse personalized treatments by incorporating data on different neurotransmitter systems to assess pharmacological interventions.
+
+using principal component analysis, but more complex methods like
+
+Individualized trajectory modeling: Probabilistic methods can model t-distributed stochastic neighbor embedding detect non-linear mani-
+
+and predict the evolution of individual trajectories over time. Bayesian fold structures in high-dimensional spaces. Latent representations
+
+inference iteratively combines new observations with prior knowledge, typically reduce dimensionality but also preserve essential
+
+allowing adaptive learning about hidden states or parameters. Mar- properties15. They maintain the metric structure of the original data,
+
+kovian modeling predicts the system’s future based on its current support generative capacity (mapping latent points back to realistic
+
+state, as seen in Markov chains and hidden Markov models. data), and allow continuous trajectories aligned with intrinsic or extrinsic variables (e.g., age, exposomic profiles). These features pro- vide a basis for validating that the representation retains relevant biological and exposome signals.
+
+Dynamic causal modeling (DCM): This approach assesses causal interactions in response to experimental manipulations from brain activity recordings. The method fits differential equations with varying levels of biological detail to time series at regions of interest to Generative statistical models: These models learn the mapping from
+
+determine the strength and directionality of interactions. Bayesian low-dimensional latent representations to the original space, allowing
+
+model comparison assesses models according to the evidence pro- the production of information with meaningful statistical properties.
+
+vided by the generative dynamical system. Applied to brain data, models like deep generative autoencoders and generative adversarial networks can synthesize new observations without additional experiments.
+
+Active inference: This framework explains how agents—biological or artificial—interact with their environment by minimizing “free energy,” a measure of prediction error201. This approach unifies perception, Whole-brain modeling: Whole-brain activity data can be generated
+
+action, and learning within a single probabilistic model. Active infer- using a bottom-up approach based on simulating local dynamics of
+
+ence models incorporate allostatic interoception, where the brain brain regions coupled by the structural connectome. These dynamics
+
+anticipates and regulates bodily states and related cognitive represent biophysical properties of neural populations, enabling
+
+processes128 to respond to environmental demands in health and inference of multi-scale biological mechanisms290 underlying
+
+disease129–131. observed data. Alternatively, phenomenological models aim to reproduce dynamic behaviors (e.g., oscillatory versus non-oscillatory patterns)207.
+
+of brain disorders168. For AD, such risk is independent of the blood-
+
+Examples are found in the BigBrain project209, integrating tissue based biomarkers168. The global effects of such extracerebral influences
+
+models and neuroanatomical individual data across scales and pro- can be modeled as descriptors of the global state of the system (order
+
+viding microstructural maps enriched with cellular and molecular parameters), capturing and summarizing the nature of dynamic
+
+levels merged with fMRI connectivity models, as well as simulations of interactions within the brain15. Order parameters can include whole-
+
+diverse brain disorders. Other initiatives provide personalized body signals, such as autonomic responses, or exposome factors, thus
+
+transcriptomic210, proteomic211, and neurochemical maps212 to enrich addressing biology-environmental interactions15,.
+
+biophysical generative models. From a data-driven approach, the effect of extracerebral influ-
+
+Perturbational approaches can be used for personalized ences on the brain can be determined using low-dimensional latent
+
+medicine15, where the effect of changing variables (perturbations) on representations of spatiotemporal neural dynamics207. A concrete
+
+the observed phenotype can be systematically mapped213. This example are variational autoencoders, generative models combining
+
+approach can also be used as a data augmentation technique to deep learning with probabilistic inference, to track low-dimensional
+
+enhance deep learning frameworks, generating synthetic data that latent representations of multilevel brain states in health and
+
+incorporates the characteristics of underrepresented groups, disease82,203. This approach could be extended to incorporate inte-
+
+improving sensitivity and generalizability214. Another way to increase grated representations of the brain, bodily states, and exposome,
+
+personalization is by Bayesian models, which provide a probabilistic providing a set of variables simultaneously encoding multiple
+
+framework that continuously updates predictions as individual data dimensions15. These representations can be studied in response to
+
+becomes available. This adaptability is essential for personalized brain changes in extracerebral factors, including dietary inputs, physical
+
+health assessments that have facing scarce and heterogeneous data, activity, stress exposure, and other exposomes9,82.
+
+enabling the integration of individual-specific data into models ori- ginally built from large population datasets. Incorporating heterogeneity and individual trajectories
+
+Personalized models and individual trajectories can be com- Individual and personalized analyses are critical for global healht208.
+
+plementary. Personalized models integrate prior information (genetic, This requires single-subject data and estimates of how individual’s
+
+clinical, or environmental data) to tailor predictions to individuals. biology interacts with heterogeneous environmental factors. In bio-
+
+These models can employ supervised learning and probabilistic fra- physical generative models, country-level heterogeneities can be stu-
+
+meworks that adapt group-level findings to individual profiles215. In died as modulators of parameters linked to neural activity,
+
+contrast, models of individual trajectories focus on within-person metabolism, structural atrophy, and pathological proteins82,206,208.
+
+changes over time, capturing temporal dynamics like disease
+
+Nature Communications | (2025) 16:11078 7
+
+Perspective https://doi.org/10.1038/s41467-025-67448-3
+
+Table 2 | Guidance on data modalities
+
+Data Modality Typical measurement methods Example datasets Prototypical computational approaches Genetics Genome-wide association studies (GWAS) via
+
+UK Biobank; 1000 Genomes Project Polygenic risk score modeling (aggregating SNP genotyping arrays; whole-genome or
+
+risk variants); gene network and pathway exome sequencing (next-generation
+
+analysis for variant interpretation; Bayesian sequencing)
+
+integrative models combining genetic pro- files with other modalities (for personalized prediction)
+
+Epigenetics DNA methylation profiling (Illumina methylation
+
+Epigenetic clocks to estimate biological arrays) with epigenome-wide association stu-
+
+aging (methylation-based age); EWAS linking dies (EWAS); chromatin accessibility assays
+
+environmental factors (e.g., stress, SES) to (ATAC-seq); histone modification mapping
+
+gene regulation changes; integrative multi- (ChIP-seq)
+
+omics models combining epigenomic, genomic, and neuroimaging data for disease prediction.
+
+Omics High-throughput proteomics (mass spectro-
+
+metry, multiplex immunoassays); metabolomics profiling (LC–MS, NMR spectroscopy); tran- scriptomics (RNA sequencing, gene expression microarrays)
+
+Nature Communications | (2025) 16:11078 8
+
+NIH Roadmap Epigenomics Project; Psy- chENCODE Consortium (brain epigenomics)
+
+Dimensionality reduction and factor analysis (e.g., PCA, structural Bayesian factor analysis) to integrate high-dimensional omics; network and pathway analysis to identify affected biological pathways; generative models (e.g., variational autoencoders) and machine learning for multi-omic data fusion
+
+Whole-Body Health
+
+ADNI (multimodal biomarkers in Alzheimer’s); GTEx (tissue transcriptomes); AMP-AD (multi- omic Alzheimer’s cohorts)
+
+Systemic health (vitals, BMI, blood pressure,
+
+Framingham Heart Study; UK Biobank Multi-factor risk scores combining health metabolic panels); wearable sensor tracking of
+
+biomarkers to predict brain outcomes; multi- physiology (heart rate, sleep, physical activity);
+
+system network models linking organ health gut microbiome sequencing (16S rRNA profiles)
+
+metrics to brain aging; generative extra- cerebral models incorporating whole-body signals into brain simulations (treating body indices as inputs to brain models); multi- organ aging clocks (integrating genomic and proteomic markers of heart, liver, etc.) to predict neurological disease risk
+
+Brain Health Multimodal imaging (f/MRI; vascular imaging)
+
+and PET for brain structure/function and mole- cular imaging; EEG/MEG electrophysiology for neural activity dynamics; standardized cognitive test batteries (memory, executive function, cognitive screening exams)
+
+Connectome and network analysis (graph- theoretical metrics of brain connectivity); biophysical whole-brain network models (simulate neural dynamics across regions, integrating multimodal neural data); dynamic causal modeling (Bayesian causal inference of directed brain connectivity); hidden Mar- kov models for brain state transitions or cognitive decline trajectories; deep learning for multimodal brain data integration (e.g., combining f/MRI, M/EEG, and clinical features)
+
+Exposome Surveys and questionnaires capturing lifetime exposures (e.g., education, diet, stress, socio- economic status); environmental monitoring and geospatial data (air pollution levels, climate metrics, neighborhood characteristics); socio- economic and psychosocial indices (income, social networks, inequality)
+
+ABCD Study (pediatric imaging & cognitive data); EuroLad EEG consortium; ReDLat Consortium
+
+CHIMGEN (Chinese imaging genetics cohort
+
+Exposome-wide association studies (scan- with cross-ethnic and cross-geographic data);
+
+ning multiple exposures for links to health ReDLat (Latin American dementia cohort with
+
+outcomes, analogous to GWAS); geospatial socio-environmental diversity); HELIX project
+
+and multilevel models mapping environ- (early-life exposome in birth cohorts): UK Bio-
+
+mental factors to brain aging or pathology; bank (linked lifestyle and environmental data)
+
+causal inference frameworks (e.g., Bayesian networks, structural equation modeling) to disentangle correlated exposures; multi- modal integration of exposome with biology (combining SES, lifestyle, and environmental data with genetics and neuroimaging for personalized risk prediction)
+
+progression or treatment response. Techniques such as Bayesian
+
+evolution of these models, allowing real-time simulation of indivi- updating, hidden Markov models, and state-space modeling are
+
+dualized biological systems. The combination of multimodal data commonly used to estimate these temporal trajectories216,217. Com-
+
+spanning organ-level dynamics, omics, and exposomic inputs can help bining both strategies enables more accurate, dynamic, and context-
+
+AI-driven digital twins to provide personalized aging clocks of health sensitive assessments, advancing individualized approaches through-
+
+and disease. out the lifespan.
+
+Health and disease are inherently variable and not suited to one-
+
+A metamodeling heuristic framework size-fits-all approaches218. Normative modeling generates population-
+
+Current theoretical explanations do not systematically address the based reference trajectories, quantifies individual deviations, enabling
+
+challenges posed by integrating brain measures with extracerebral detection of atypical patterns in healthy and clinical populations219–222.
+
+information into individual trajectories15,34. New computational stra- Normative modeling uses continuous trait modeling (e.g., brain age
+
+tegies can help to incorporate multimodal diversity in psychiatry224 deviation), thresholding to define clinical significance, and hybrid
+
+and neurology185,225. The combination of multimodal data, brain- models222. Hierarchical Bayesian methods and data integration have
+
+extracerebral integration, and personalized approaches provides enhanced their biological relevance222,223. Lifespan-informed designs
+
+bona fide examples, handling population heterogeneity, multilevel demonstrate how these models improve representativeness and
+
+metrics, and neuroecological links10 with emerging mechanistic insight220,221. Medical digital twins132 represent a natural
+
+applications77,78,81,82,208,214.
+
+Perspective https://doi.org/10.1038/s41467-025-67448-3
+
+Nature Communications | (2025) 16:11078 9
+
+Perspective https://doi.org/10.1038/s41467-025-67448-3
+
+Future models must effectively integrate diverse data sources
+
+bipolar disorder—missed in European-only studies116,240. Studies from while accounting for individual differences and the specific needs of
+
+the Middle East have uncovered multiple novel gene–phenotype diverse populations. While current methods show promise, they
+
+associations in psychiatric disorders. In autism spectrum disorder require significant enhancements to better capture non-linear inter-
+
+(ASD), numerous novel candidates include GLT8D1, HTATSF1, OR6C65, actions and individual variability15. Achieving this will require inte-
+
+ITIH6, and DDX26B in Saudi families241, DPP4, TRHR, and MLF1 in grating advanced tools, such as synthetic data generation and
+
+Lebanese families242, and TRPC4 and SCFD2 in Qatari cohorts243. Copy probabilistic modeling. Additionally, balancing simplification and
+
+number studies in Lebanon further implicated PTDSS1 and AREG as precision is crucial in future developments to avoid oversimplifying
+
+novel ASD susceptibility loci244. In schizophrenia, Israeli trio and complex interactions while ensuring practical and actionable
+
+founder-population studies revealed a burden of rare damaging de outcomes.
+
+novo mutations245, while Iranian families carrying AGO1 truncating There is an overreliance on causal models and explanations of
+
+variants showed a spectrum from autism to schizophrenia246. For brain health, especially in neuroscience research226. Causality,
+
+bipolar disorder, Turkish multiplex families yielded novel variants in although bolstered by powerful technologies, is fundamentally
+
+TMTC1 and STARD9247. These findings underscore how Middle Eastern limited15. Studying isolated neural components or perturbing circuits
+
+cohorts are expanding the catalog of rare and novel genetic con- offers causal claims about necessity and sufficiency but fails to reveal
+
+tributors to psychiatric disease. the embedded principles that govern behavior, largely due to ecolo-
+
+Environmental, cultural, and social determinants shape psychia- gical constraints, brain degeneracy, multiple realizability, and the lack
+
+tric conditions14,15,64,177,178. Global exposomic variation, combined with of a direct mapping between structure and function. Pure causal
+
+individual and societal-level risks, has been linked to general models often fall into the mereological fallacy (attributing organismal
+
+psychopathology248–250. In schizophrenia and bipolar disorder, factors or environmental functions to parts like neurons or isolated factors),
+
+such as urbanization, gross domestic product per capita, employment, overlooking brain health as ecological phenomenon. They lack the
+
+and air pollution influence clinical expression251, underscoring the capacity to explain why and how health and disease emerge beyond
+
+need for context-sensitive diagnosis and treatment250. Computational mechanical causation. Brain health must move beyond pure causal
+
+psychiatry has improved classification and prediction by integrating manipulation towards a pluralistic approach that prioritizes precise
+
+neuroimaging, genetics, behavior, and environmental data252–254. neurosyndemics as a foundational step15. Understanding this embed-
+
+Investigating dimensional biological and exposome pathways in psy- ded and situated nature through complexity science can help uncover
+
+chiatry and neurology14,64,255 is critical to advance the field. There is a emergent properties triggered by exotype-endotype interactions9.
+
+high prevalence of neurodegenerative conditions among patients with Synergistic explanatory frameworks13,172,227–229 better capture the com-
+
+anxiety, depression, schizophrenia, bipolar disorder, personality dis- plexity of brain health through integration across levels, enhancing
+
+orders, and stress-related conditions256, with overlapping genetic both explanatory power and translational relevance. Bona fide exam-
+
+causes257, shared omics mechanisms256, and social risks5. Addressing ples of such integrative models include brain and organ aging
+
+these shared multifactorial interactions255 requires adopting trans- clocks168,169,230, allostatic load131,231–235, and the biological embedding of
+
+diagnostic, dimensional, and integrative approaches. adversity236–238.
+
+Emerging models guided by the BePRECISE consortium20, emphasize integrating diverse datasets and transparent methodologies Dimensional approaches for psychiatry and to ensure inclusivity, reproducibility, and actionable outcomes for neurology
+
+psychiatry and neurology. These approaches align with the principles Although our perspective is mainly focused on brain health, multi-
+
+proposed here, incorporating genetic, biological, and exposome data modal diversity in research supports a neurological and psychiatric
+
+to refine predictive models and improve clinical interventions.. In psy- dimensionality. The core heuristics apply equally to psychiatric dis-
+
+chiatry, deep phenotyping following BePRECISE guidelines combines orders. Neuropsychiatric genomics continues to be underrepresented
+
+neuroimaging, genetic markers, and environmental exposures to in populations with high genetic admixture, distinct environmental
+
+enable the identification of depression subtypes associated with spe- exposures, and healthcare disparities, limiting equity in precision
+
+cific treatment responses47. These dimensional frameworks can help psychiatry239,240. GWAS including African and Latino participants have
+
+advance the fields of psychiatry and neurology and lay the groundwork identified novel variants for depression, schizophrenia, anxiety, and
+
+for inclusive tackling of the real-world complexity of health and disease.
+
+BOX 3 The prototypical case of Alzheimer’s disease and related disorders
+
+The Alzheimer’s Association has recently defined AD as a biological
+
+clinical-cognitive-behavioral profiles15 suggest that a one-size-fits-all entity: people who have biomarker evidence of amyloid-β and tau
+
+strategy may not be effective148. Proteomics studies indicate that proteins in the brain or peripheral fluids according to these criteria
+
+proteins’ trajectories changed before traditional amyloid-β and tau have AD, regardless of their clinical or cognitive condition. This defi-
+
+biomarkers154. Novel research using a more synergetic framework with nition reflects a long-standing goal in neurology to find a static, single,
+
+genomics, proteomics, and neuroimaging shows promise for disease universal, and straightforward biomarker and treatment approach for
+
+prediction and diagnosis139,225. Non-linear interactions between ADRD, captured 

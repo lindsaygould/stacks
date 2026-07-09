@@ -1,0 +1,731 @@
+Brain complexity in motion: Multiscale entropy analysis on mobile EEG data to assess motor performance 
+
+Available online 8 February 2026 0361-9230/© 2026 The Author(s). Published by Elsevier Inc. This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/ ).
+
+Research report Brain complexity in motion: Multiscale entropy analysis on mobile EEG data to assess motor performance
+
+Daghan Piskin a,\*
+
+a Department Sports & Health, Exercise Science & Neuroscience Unit, Paderborn University, Paderborn, Germany b Department of Diagnostics and Intervention, Umeå University, Umeå, Sweden c Department of Movement Therapy and Movement-Oriented Prevention and Rehabilitation, German Sports University, Cologne, Germany
+
+A R T I C L E I N F O
+
+Keywords: Multiscale entropy Mobile electroencephalography Brain complexity Movement Motor performance
+
+A B S T R A C T
+
+Multiscale entropy (MSE) as a measure of brain complexity provides substantial insights into the adaptability of the brain. However, it is often applied to resting-state electroencephalography (EEG) or in static tasks. The current study assessed the reliability, validity and classification accuracy of MSE computed on mobile EEG data for linking brain complexity to motor performance within a kicking task. Eleven novice participants underwent repeated measurements to assess test-retest reliability, while the data from 15 novices and 15 football players were used to evaluate known-groups validity, convergent validity and classification accuracy. EEG data were recorded using 65 active electrodes and MSE estimates were computed for 64 time scales on preprocessed data. Results showed poor to excellent reliability for MSE estimates, exhibiting channel- and scale-specific variations, with reliability generally higher at fine-to-mid scales. Experts exhibited significantly lower entropy at coarse scales in left frontal and at fine scales in centroparietal regions compared to novices. Negative correlations were found between entropy estimates and kicking accuracy. Receiver operating characteristic curves of entropy es- timates and their principal components demonstrated moderate to good classification accuracy between expertise levels. These findings suggest MSE as a promising metric for investigating brain complexity in move- ment contexts, revealing distinct patterns of complexity associated with motor performance. Future research across diverse tasks and populations is crucial to further elucidate this relationship and explore the applied potential of MSE.
+
+1\. Introduction
+
+The human brain is a complex and highly dynamic system, constantly processing, integrating, and adapting information in response to both internal states and external stimuli (Tononi et al., 1994; McIn- tosh and Kovacevic, 2008). This complexity refers to the richness and variability of neural activity, which emerges from intricate interactions occurring across neural networks. Such complexity provides a valuable window into the brain’s information processing capacity (Sporns et al., 2000a; 2000b). Beyond rhythmic oscillations commonly observed in neural activity, the brain's intrinsic complexity also manifests in tem- poral irregularities within neural signals, which can be detected through electroencephalography (EEG) recordings. These irregular patterns are supposed to carry critical information about the brain's underlying dy- namics, reflecting how neural processes integrate across multiple
+
+temporal and spatial scales. Traditional linear EEG metrics, however, oversee this complexity by assuming stationarity and linear relation- ships within neural signals. As a result, these approaches may not fully capture the brain's dynamic and non-linear nature, which is recognized as essential for healthy, efficient, and flexible functioning (Breakspear, 2017; Wang et al., 2020).
+
+Multiscale entropy (MSE) analysis has emerged as a powerful nonlinear tool to analyze irregularities in EEG time series and to assess the complexity of the brain (Costa et al., 2002; Keshmiri, 2020). Unlike conventional entropy measures, which evaluate randomness of a signal at a single time scale, MSE considers the structure of neural signals over multiple time scales, capturing both fast and slow dynamics to provide deeper insights into local and distributed neural communication (McIntosh et al., 2014). The application of MSE on EEG signals has demonstrated that increased or decreased brain complexity at specific
+
+\* Correspondence to: Department of Sport & Health, Exercise Science & Neuroscience Unit, Universit¨at Paderborn, Warburger Straße 100, Paderborn 33098, Germany.
+
+E-mail address: daghan.piskin@upb.de (D. Piskin).
+
+Brain Research Bulletin 236 (2026) 111769
+
+https://doi.org/10.1016/j.brainresbull.2026.111769 Received 6 June 2025; Received in revised form 1 December 2025; Accepted 6 February 2026
+
+, Gjergji Cobani b
+
+Contents lists available at ScienceDirect
+
+Brain Research Bulletin
+
+journal homepage: www.elsevier.com/locate/brainresbull
+
+, Daniel Büchel a,c, Tim Lehmann a, Jochen Baumeister a
+
+D. Piskin et al. Brain Research Bulletin 236 (2026) 111769
+
+2 time scales can be distinctive for various conditions, including neuro-
+
+2\. Methods logical pathologies (Chenxi et al., 2016; Hwang et al., 2024; Mizuno et al., 2010;), cognitive states such as fatigue and vigilance (Al-Shargie
+
+2.1. Participants et al., 2021; Liu et al., 2023), physical activity levels of elderlies (Wang et al., 2014) and sport-specific cognitive skills of athletes (Wang et al.,
+
+The sample sizes used in the present study were determined based on 2020). Compared with other nonlinear metrics such as fractal dimension
+
+two previously published studies employing the same task and partici- or Lyapunov exponents, the scale-resolved approach in MSE is particu-
+
+pant groups (Piskin et al., 2024a, 2024b). In these studies, the identical larly relevant for expertise-related motor tasks, where fast processes and
+
+EEG datasets with the same participants demonstrated substantial slower integrative dynamics jointly shape performance (Cavanagh and
+
+test-retest reliability for the cortical dynamics associated with the Frank, 2014; Kilavik et al., 2013; Wang et al., 2020). Despite its exten-
+
+kicking task (Piskin et al., 2024a), as well as significant group differ- sive application on EEG signals, MSE has been predominantly used in
+
+ences between novices and experts (Piskin et al., 2024b). These findings resting-state or static conditions, leaving its potential in
+
+support that the current sample sizes provide sufficient statistical movement-related contexts largely unexplored.
+
+sensitivity for the analysis of test-retest reliability of cortical dynamics Given that human movement is an emergent behavior shaped by
+
+and group differences observed in these dynamics. continuous interactions between the nervous system, body, and envi-
+
+The data of 11 healthy novice participants (3 females, 8 males; mean ronment, the brain’s complexity may provide crucial insights into motor
+
+age: 27.42 ± 3.68 years) were considered for the reliability analysis. The control and adaptability (Sporns et al., 2000a). For example, in sports,
+
+inclusion criteria matched those of the novice group described below. athletes need to process external sensory information, such as the ma-
+
+For the validity analysis, 15 healthy novice participants (7 female / 8 neuvers of other players, the trajectory of the ball and spatial posi-
+
+male; mean age: 26.87 ± 3.54 years) and 15 healthy amateur football tioning, to produce congruent and effective motor actions. Effective
+
+players (6 female / 9 male; mean age: 22.40 ± 3.62 years) were movement execution requires the integration of sensory information,
+
+recruited. Novice participants met the following inclusion criteria: (i) motor planning, action, and real-time feedback processing, all of which
+
+aged between 18 and 35 years, (ii) right-dominant in the lower ex- contribute to the overall complexity of neural activity (Lungarella and
+
+tremity as determined by the Lateral Preference Inventory (Coren and Sporns, 2006; Yarrow et al., 2009). An optimal level of complexity -
+
+Porac, 1978), (iii) no current or previous participation in football situated at a critical edge between randomness and regularity - is sug-
+
+(Baumeister et al., 2008; Silva et al., 2022), (iv) no regular involvement gested to reflect an efficient balance between neural flexibility and
+
+in any sport requiring running, cutting, or pivoting within the last year stability (Cocchi et al., 2017). While excessively high complexity might
+
+(Wang et al., 2024), and (v) no neurological diseases, previous ortho- indicate neural noise reducing the efficiency of sound sensory-motor
+
+pedic injuries, or use of psychotropic medication. The Marx Activity integration, excessively low complexity might reflect loss of adaptive
+
+Scale (Marx et al., 2001) and an additional questionnaire confirmed that capacity and reduced responsiveness to environmental changes (Cocchi
+
+their physical activity was limited to recreational levels. For football et al., 2017; O'Byrne and Jerbi, 2022). Still, complexity in neural signals
+
+players, the inclusion criteria were: (i) aged between 18 and 35 years, should not be considered strictly linear, where higher complexity always
+
+(ii) right-dominant in the lower extremity (Coren and Porac, 1978), (iii) corresponds to better adaptability, rather, its significance is
+
+actively playing football for at least 10 years, (iv) training at least twice context-dependent. Skilled athletes, for instance, may exhibit lower
+
+per week and playing one game per week, and (v) free from neurological cortical complexity in stable conditions and familiar motor tasks due to
+
+diseases, previous orthopedic injuries, and psychotropic medication use. optimized neural efficiency, whereby repetitive practice and expertise
+
+Participation in sports and activity levels were assessed using custom allow their neural processes to require fewer resources and less redun-
+
+questionnaires and the Marx Activity Scale (Marx et al., 2001). In both dant computation to achieve the same outcome (Hung et al., 2008). On
+
+studies, participants had normal or corrected vision during the experi- the other hand, a higher complexity level in dynamic conditions may
+
+ments. Prior to participation, they gave written informed consent after indicate a more adaptive and flexible neural system, capable of effi-
+
+being fully informed about the study's purpose and procedures. The ciently integrating sensory inputs, predicting upcoming actions, and
+
+study adhered to the Declaration of Helsinki and received approval from responding to external perturbations accurately (Faisal et al., 2008). The
+
+the local ethics committee. ability of MSE to quantify these complex, multi-scale processes may propose it as a promising metric for understanding the
+
+2.2. Experimental procedures context-dependent reciprocal dynamics between cortical complexity and motor performance.
+
+The present study utilized a short-distance kicking task previously Despite these insights, EEG recordings with motor tasks inherently
+
+employed in the aforementioned studies (Piskin et al., 2024a, 2024b). introduce methodological challenges, including movement artifacts and
+
+Participants performed the task in a standardized laboratory setting signal variations, with the need for tailored preprocessing steps (Cohen,
+
+while wearing laced sneakers. The objective of the task was to kick a 2015; Gorjan et al., 2022). Applying MSE to such data necessitates a
+
+FIFA size five ball using the inside of the right foot toward a designated rigorous consideration of preprocessing steps, such as using optimal
+
+target, represented by the frontal surface of a rectangular wooden block band-pass filtering parameters, artifact rejection techniques and sam-
+
+(10 × 15 cm). To maintain consistency across trials, the initial position pling rates, all of which have been shown to influence entropy estimates
+
+of the participants was standardized. They were instructed to place their significantly (Kosciessa et al., 2020; Puglia et al., 2022). While some
+
+left foot next to, and their right foot behind the ball. The optimal dis- perspectives argue for minimal preprocessing to preserve raw signal
+
+tance between the left foot and the ball was determined individually characteristics (Okazaki et al., 2015), mobile EEG demands effective
+
+during familiarization trials and marked on the floor to ensure a stan- artifact mitigation strategies to ensure reliable entropy estimates. Given
+
+dard position throughout the experiment. Participants were instructed these methodological challenges and the presented context, the current
+
+to execute the kicks with a focus on accuracy while maintaining a nat- study aims to evaluate a) the test-retest reliability of MSE estimates on
+
+ural kicking pattern. No verbal feedback or additional instructions were mobile EEG data recorded during a soccer kicking task and b) the val-
+
+provided during the trials to avoid interfering with their performance. idity and classification accuracy of MSE, particularly in revealing in-
+
+Each participant completed six blocks of 15 trials, resulting in a total of teractions between cortical complexity and motor performance. The
+
+90 kicks. The number of on-target and missed kicks was recorded to acknowledged reliability, validity and classification performance of
+
+determine the accuracy rate for each participant, which was subse- MSE can highlight its potential as a tool for tracking complexity in motor
+
+quently used to examine the relationship between accuracy performance performance contexts.
+
+and cortical complexity.
+
+For the reliability analysis, measurements were repeated with a one-
+
+D. Piskin et al. Brain Research Bulletin 236 (2026) 111769
+
+week interval to assess the consistency of MSE estimates over time. In
+
+across sessions and participants, 80 clean epochs were randomly contrast, measurements were conducted only once for the validity
+
+selected using the POP\_SELECT function in EEGLAB, which corre- analysis to compare cortical complexity between the two groups and
+
+sponded to the minimum number of retained epochs across datasets their relation to accuracy performance.
+
+after rejection. For each subject, the selected epochs were concatenated, and entropy estimates were computed on the residuals of the resulting 2.3. EEG recording and preprocessing
+
+signal, obtained by subtracting the intra-individual average across trials. This approach has produced reliable entropy estimates for discontinuous Cortical activity was continuously recorded using 65 active Ag/AgCl
+
+EEG data previously (Grandy et al., 2016; Puglia et al., 2022). electrodes (actiCap, Brain Products, Germany) positioned according to
+
+Considering kick-related activity detectable in 0–2500 ms upon kick the international 10–20 system. The AFz and FCz electrodes served as
+
+onset as shown by previous studies (Piskin et al., 2024a, 2024b), the the ground and reference, respectively (Pivik et al., 1993). EEG signals
+
+analysis focused on this time frame. Ultimately, this procedure resulted were wirelessly transmitted and digitized at a sampling rate of 500 Hz
+
+in a total number of 51200 (80 ×640) data points per channel. Time via a mobile amplifier (LiveAmp, Brain Products, Germany). Addition-
+
+series were generated across 64 time scales through a coarse-graining ally, a 3D accelerometer (Brain Products, Germany) was affixed poste-
+
+procedure defined as: riorly to the lateral malleolus to capture synchronized acceleration data of the kicking foot.
+
+EEG preprocessing was conducted offline using the EEGLAB toolbox
+
+yTj = 1/T + ∑jT
+
+xi,1 ≤ yj ≤ N/T i=(j− 1)T+1(version 2021.1.2b, Delorme and Makeig, 2004) for MATLAB (version R2020b, The MathWorks, USA). Due to the lack of tested pipelines for
+
+where T corresponds to the time scale, yj denotes the constructed time MSE analysis in mobile EEG settings, this study implemented the pre-
+
+series after coarse-graining, xi is a data point within that series, and N processing pipeline from our previous research that yielded reliable
+
+shows the length of the original time series (Costa et al., 2002). The results for the previously described EEG correlates of the same task
+
+selection of 64 time scales is intended to capture relevant frequency (Piskin et al., 2024a, 2024b).
+
+dynamics associated with kick-related cortical activity. Coarse-graining Sinusoidal line noise was eliminated using the Cleanline plugin
+
+acts as a form of filtering at time scales, indicated by high and low fre- (Mullen, 2012), followed by band-pass filtering between 3 and 30 Hz
+
+quencies in Fourier transformations. Given that the first scale aligns with using a finite impulse response filter. Noisy channels were automatically
+
+the sampling rate (256 Hz), higher scales progressively capture lower detected and removed based on a combination of kurtosis, probability,
+
+frequencies (Puglia et al., 2022; von Stein and Sarnthein, 2000). The and spectral properties, with a z-score threshold of 5
+
+number of scales was set to 64 to also ensure the inclusion of lower (nNOVICEreliability1 = 0.36 ± 0.67, nNOVICEreliability2 =
+
+frequencies, as these have previously been linked to kicking-related 0.45 ± 0.82, nNOVICE = 0.27 ± 0.59, nEXPERT = 0.67 ± 1.59, Nic-
+
+processes (Piskin et al., 2024a, 2024b). This allowed for a comprehen- olas-Alonso et al., 2015). Spherical spline interpolation was applied to
+
+sive entropy assessment across a broad frequency spectrum while maintain channel consistency across datasets. The data were subse-
+
+maintaining sufficient resolution in the frequency domain. Sample en- quently re-referenced to the common average and downsampled to
+
+tropy was then estimated for each channel as: 256 Hz.
+
+Epoching was performed based on kick onset detection, determined through a linear computational cost approach (Killick et al., 2012). The acceleration signal of the kicking foot along the x-axis was rectified and
+
+3
+
+SE(m, N,r) = lnAB = ln
+
+smoothed using a Gaussian-weighted moving average filter with a window length of 1000 data points (Mendi et al., 2013). Kick onsets were identified as abrupt deviations in the mean signal using the ischange function in MATLAB. The signal was then epoched for a time window of − 500–2500 ms relative to kick onset with baseline correction applied from − 500–0 ms. Epochs exceeding + /-75 µV in any of the channels were rejected.
+
+An adaptive mixture independent component analysis (Palmer et al., 2011) was applied to further clean the data, by decomposing the EEG signal into maximally independent components (ICs). Source localiza- tion of ICs was performed using the DIPFIT plugin (Oostenveld and Oostendorp, 2002), with a standardized four-shell spherical head model (BESA, Germany). Brain-related ICs were identified based on spatial localization, residual variance (\<15 %), and classification of the ICLabel plugin (Pion-Tonachini et al., 2019) with at least 90 % brain activity. Non-brain components, including those linked to muscle activity, eye movements, and line noise, were subsequently removed. Comparable artifact-removal strategies including independent component analysis and ICLabel classification have successfully implemented in mobile EEG studies to mitigate movement- and muscle-related contamination during motor tasks (Gebel et al., 2020; Klug et al., 2022; Piskin et al., 2024a, 2024b; Protzak and Gramann, 2021).
+
+2.4. Computation of multiscale entropy estimates on preprocessed EEG dataA modified MSE analysis was applied to the preprocessed EEG data using a custom algorithm, following the methodology for sparse EEG data established by Grandy et al. (2016). To standardize data length
+
+N− ∑m i=1 nmi ∑N− i=1 m
+
+nm+1 i
+
+with the following parameters: m = embedding dimension, N = total number of data points, r = similarity criterion, and n = number of vectors close to a template vector i with a dimension of m (Costa et al., 2002). The embedding dimension was set to m = 2 (Grandy et al., 2016), and the similarity criterion was dynamically adjusted for each scale as r = 0.50 × SD to prevent bias toward lower entropy values at coarser scales (Kosciessa et al., 2020; Puglia et al., 2022). A 64 × 64 entropy matrix (scales × channels) was computed for each participant and used in further analysis.
+
+To evaluate whether group differences in MSE could be explained by differences in the amplitude variance of the input EEG signal, MSE was recomputed after normalizing the residual EEG time series to zero mean and unit variance prior to coarse-graining. This linear transformation preserves the temporal structure relevant for entropy estimation while eliminating between-subject differences in signal magnitude (Costa et al., 2005; Miskovic et al., 2019). MSE was then estimated using the identical pipeline applied in the primary analysis.
+
+2.5. Statistical approaches for reliability, validity, and classification accuracy
+
+2.5.1. Test-retest reliability analysis of multiscale entropy estimates
+
+The test–retest reliability of entropy values was assessed using intraclass correlation coefficients (ICC), computed with the ICC function in MATLAB (Salarian, 2023). ICC estimates and their 95 % confidence intervals (CI) were derived from a two-way mixed effects model, based on single measurements and absolute agreement (McGraw and Wong, 1996). ICC values were interpreted as: 0.5–0.75 indicating moderate
+
+D. Piskin et al. Brain Research Bulletin 236 (2026) 111769
+
+4 reliability, 0.75–0.9 good reliability, and \> 0.9 excellent reliability (Koo
+
+differences were captured. Since entropy values varied with scale, and Li, 2016). A reliability map was generated to visualize the spatial
+
+z-score standardization (zscore function in MATLAB) was performed to and temporal reliability distribution with EEG channels on the x-axis
+
+ensure comparability across time scales and eliminate potential and scales on the y-axis. Each value in the entropy matrices was mapped
+
+scale-related bias in the data. PC scores and coefficients were computed to its corresponding ICC estimate, providing an overview of reliability
+
+using the pca function in MATLAB. AUC values were also calculated for variations across EEG channels and time scales.
+
+each PC score, following the same procedure as for entropy values. The PC with the maximum AUC was identified as the component best 2.5.2. Known-groups and convergent validity of multiscale entropy
+
+capturing cohort-specific variance. Finally, for this PC, the 10 highest estimates
+
+coefficients were examined to determine the dominant time scales Two complementary approaches were used to assess the known-
+
+contributing to its variance and to assess whether these scales aligned groups and convergent validity of entropy estimates in differentiating
+
+with those where significant group differences were observed. between expertise levels. First, group differences in sample entropy were examined using independent t-tests at each channel x scale combination
+
+3\. Results (Davidson, 2014). To control for multiple comparisons across the en- tropy matrix, p-values were adjusted using the Benjamini–Hochberg
+
+3.1. Accuracy performance false discovery rate (FDR) procedure (Benjamini and Hochberg, 1995). To evaluate whether group differences in MSE could be attributed to
+
+In the novice group, the accuracy rate did not significantly differ differences in the variance of the input EEG signals, or to variance in the
+
+between Session I (M = 63.94, SD = 12.04) and Session II (M = 66.19, entropy estimates themselves, two variance analyses were conducted.
+
+SD = 12.45). An ICC value of 0.56 (95 % CI = − 0.002–0.86) indicated For each participant and channel, the residual EEG time series used for
+
+moderate reliability. entropy estimation were concatenated (Grandy et al., 2016; Puglia et al.,
+
+The comparison of groups revealed that the accuracy rate was 2022), and the variance of the resulting signal vector was computed.
+
+significantly higher in experts (84.74 ± 8.60) compared to novices Group differences in this residual variance were assessed using inde-
+
+(62.87 ± 12.08; t(28) = − 5.71, p \< 0.01). pendent t-tests. In addition, scale-wise variances of the entropy esti- mates were also calculated to account for their potential contribution to
+
+3.2. Test-retest reliability of multiscale entropy estimates the group differences. These entropy variances were likewise compared using independent t-tests.
+
+ICC values ranged from poor to excellent reliability, exhibiting Second, a correlational analysis was conducted to examine the
+
+channel- and scale-specific variability. Notably, higher reliability esti- relationship between brain complexity and accuracy performance.
+
+mates were observed at lower time scales with decreasing estimates Pearson’s correlation coefficient was computed between entropy values
+
+towards higher time scales. The representative reliability map is pro- at scales showing significant group differences and the accuracy rate.
+
+vided in Fig. 1. This approach aimed to determine whether higher or lower entropy values were associated with enhanced accuracy, providing further
+
+3.3. Differences in entropy estimates between expertise levels and their insight into the functional relevance of MSE measures (Masson et al.,
+
+correlation with accuracy 2003). Statistical significance was set at an alpha value of 0.05 in all analyses.
+
+Novices exhibited overall higher entropy estimates, yielding signif- icant differences in seven channels located in the left frontal and cen- 2.5.3. Computation of receiver operating characteristic (ROC) curves on
+
+troparietal regions (Fig. 2). In frontal channels (Fp1, AF3, F1, F3, FC3), entropy estimates and their principal components
+
+significant differences were found at mid and coarse scales (Fig. 3), In addition to examining group differences, a sensitivity analysis was
+
+whereas in centroparietal channels (CP1 and CP3), entropy estimates conducted to assess the classification robustness of MSE estimates using
+
+were significantly higher at fine scales (Fig. 4). Visual inspection of EEG ROC curves (Linden, 2006). This procedure was implemented to confirm
+
+time series demonstrated that z-score normalization attenuated overall that the observed effects were not driven by specific parametric as-
+
+amplitude while preserving temporal structure. Example traces are sumptions, potential outliers, or variations in the computed estimates
+
+provided in Supplementary Material S1. Entropy curves computed from (Hajian-Tilaki, 2013). ROC curves were first computed for the time
+
+these normalized residuals replicated those derived from the original scales where significant group differences were observed to evaluate the
+
+data, with the same group differences across channels and scales, and discriminative capacity of entropy values. The corresponding area under
+
+are presented both for the original and normalized data in Supplemen- the curve (AUC) values were obtained using the perfcurve function in
+
+tary Material S2. No group differences were found in the variances of MATLAB, which evaluates classification performance based on true
+
+residuals and entropy estimates. positive and false positive rates (Fawcett, 2004; Zweig and Campbell,
+
+Furthermore, Pearson's correlation analysis revealed significant 1993). In the current analysis, the true class labels were assigned as 0 for
+
+negative correlations between entropy values and accuracy rate for the novices and 1 for experts. Based on conventional thresholds, AUC values
+
+channels AF3, F1, F3, FC3 and CP3 in a subset of scales where significant between 0.5 and 0.6 were interpreted as indicating weak, values be-
+
+differences between groups were observed (Table 1, Fig. 5). tween 0.6 and 0.8 suggesting moderate, and values above 0.8 reflecting good classification accuracy (Guo et al., 2013; Koç et al., 2007; Thorsen
+
+3.4. Classification performance of entropy estimates in differentiating et al., 2013). This initial step assessed whether entropy values alone
+
+expertise levels were capable of distinguishing novices from experts.
+
+Next, principal component analysis (PCA) was applied to the entropy
+
+The AUC analysis revealed that entropy estimates of channels and estimates of channels that showed significant group differences to
+
+scales with significant group differences exhibited weak to moderate reduce the dimensionality of the multiscale data while preserving
+
+classification accuracy. The application of PCA on standardized entropy essential information. This approach accounted for variations across
+
+estimates resulted in 29 PCs, providing a more comprehensive assess- time scales and helped identify the most informative patterns in the
+
+ment of entropy variations across multiple scales. PCs with the entropy values (Jolliffe, 2002; Sun and Niu, 2019). By transforming the
+
+maximum AUC values demonstrated moderate to good classification data into principal components (PC), PCA minimized potential bias
+
+accuracy. For the channels F1, F3, FC3, CP1 and CP3 the scales with the introduced by random noise or irrelevant variance across scales,
+
+highest coefficients contributing to these PCs overlapped with those ensuring that the primary sources of variation relevant to cohort
+
+where significant differences were observed (Table 1). The scale-wise
+
+D. Piskin et al. Brain Research Bulletin 236 (2026) 111769
+
+Fig. 1. Test–retest reliability map of multiscale entropy (MSE) estimates across EEG channels (x-axis) and temporal scales (y-axis). The heatmap illustrates intraclass correlation coefficients (ICC), with yellow indicating higher reliability and blue indicating lower reliability. This spatiotemporal reliability map provides an overview of the consistency of cortical complexity across two sessions during the kicking task.
+
+coefficients of the computed PCs are provided in the Supplementary Material S3.
+
+4\. Discussion
+
+The current study assessed the reliability, known-groups and convergent validity, and classification performance of MSE analysis to explore its potential in characterizing brain complexity during move- ment, specifically in distinguishing enhanced performance during a soccer kicking task. The results demonstrated that MSE estimates can capture consistent complexity patterns with channel- and scale-specific variations. Validity was supported by significant differences in entropy values between novices and experts, particularly in frontal and cen- troparietal regions, and by significant negative correlations between entropy estimates and kicking accuracy. The classification performance of MSE to expertise levels was assessed through AUC values of ROC curves for both entropy estimates and their PCs. The PCs with the highest classification accuracy predominantly reflected the same time scales where group differences were most pronounced, suggesting that MSE has the potential to differentiate between expertise levels with substantial performance.
+
+4.1. Test-retest reliability of entropy estimates as a task-related complexity measure
+
+MSE estimates demonstrated a spectrum of test-retest reliability values across channels and time scales, with a general trend towards lower estimates at coarser time scales. Understanding the sources of this variability is crucial for interpreting the longitudinal stability of entropy estimates. These factors contributing to this variability might be broadly categorized into those related with individual neural variability and those inherent to MSE analysis.
+
+Neurophysiologically, neural consistency in movement-related brain dynamics is often region-specific, with task-relevant regions showing higher consistency due to their recurrent involvement in motor execu- tion, while other regions may exhibit greater variability due to
+
+5
+
+individual learning effects or fluctuating engagement across sessions (Domingos et al., 2023; Espenhahn et al., 2017; Malcolm et al., 2019; Piskin et al., 2024a). As the reliability analysis was conducted on the data of novice participants, the estimates may have been influenced by neural adaptation to the task across sessions. Despite insignificant dif- ferences across sessions, the moderate reliability found for pass accuracy could also support this, potentially reflecting a habituation effect. Motor learning involves dynamic changes in cortical activity as individuals refine their movement execution, leading to increased neural variability in regions undergoing substantial neuroplastic modifications (Berchicci et al., 2017; Bütefisch et al., 2000; Orban de Xivry and Lef\`evre, 2015). Channels showing lower reliability estimates may correspond to brain regions involved in adaptation and learning, where participants initially relied on diverse movement strategies before gradually converging on more consistent patterns over time (Aliakbaryhosseinabadi et al., 2021; Titone et al., 2022; Wu et al., 2014; Wenger et al., 2017). Conversely, brain regions consistently engaged in the task likely yielded more stable entropy estimates, reflecting functionally consistent neural processes across sessions. Furthermore, the current findings also showed that the reliability of MSE estimates is inherently scale-specific. For instance, the reliability estimates of centroparietal channels were higher at finer scales, suggesting a consistent pattern of faster, local processing in this region (Gu et al., 2022). This implies that the stability of entropy esti- mates for a particular brain region could vary depending on the congruence between the scale analyzed and the intrinsic operational timescale of that region during the task.
+
+From a methodological perspective, a key factor inherent to MSE analysis is the coarse-graining process, which systematically alters signal frequency composition with increasing scale by acting as a low- pass filter, attenuating high-frequency components and narrowing bandwidth (Donoghue et al., 2020; Kosciessa et al., 2020). For complex EEG signals arising from multiscale neural interactions (Ib´a˜nez-Molina et al., 2020; Linkenkaer-Hansen et al., 2001), this can lead to loss of multiscale information, potentially reducing entropy estimates and their consistency (Costa et al., 2002; Courtiol et al., 2016; Kaur et al., 2019). At higher scales, increased signal smoothing can make entropy estimates
+
+D. Piskin et al. Brain Research Bulletin 236 (2026) 111769
+
+Fig. 2. Topography of significant differences observed between the groups for entropy estimates. Experts demonstrated lower complexity in left frontal and cen- troparietal regions.
+
+more susceptible to minor fluctuations or low-frequency noise (Daud and Sudirman, 2022), although some channels might still capture task-relevant low-frequency patterns (Tseng and Lo, 2020). Critically, the progressive reduction of data points at coarser scales inherently in- creases statistical uncertainty, contributing significantly to greater variability in entropy estimates (Costa et al., 2005; Gow et al., 2015; Kaur et al., 2019).
+
+In summary, the observed test-retest reliability of MSE estimates may be shaped by an interplay between neurophysiological factors such as learning-induced neural adaptations, and methodological aspects like the scale-dependent nature of MSE and the coarse-graining process. Despite channel and scale-specific fluctuations in reliability, the ca- pacity of MSE to capture consistent patterns of task-related complexity supports its potential use in longitudinal studies tracking changes over time.
+
+4.2. The validity of entropy estimates in revealing dynamics between cortical complexity and motor performance
+
+The present study demonstrated that MSE estimates differentiated between expertise levels, capturing significant differences at specific channels and time scales. The diverging complexity profiles at fine and coarse scales suggest that expertise may be associated with alterations in task-related brain complexity, reflecting functional adaptations in neu- ral processes engaged during movement execution (Bays and Wolpert, 2007; Berchicci et al., 2017; Piskin et al., 2024b). Although statistically significant effects were limited to a small number of scales, the
+
+6
+
+consistent lower entropy values across portions of the entropy curves, together with the spatial clustering of channels showing differences, support that this pattern is unlikely to be random and is broadly consistent with existing literature showing that skilled motor perfor- mance is accompanied by reduced neural noise and computational redundancy in sensorimotor processes (Bays and Wolpert, 2007; Cocchi et al., 2017; Costa et al., 2005; Del Percio et al., 2009; Hristovski et al., 2011; Hung et al., 2008; Lutzenberger et al., 1995).
+
+Further elaborating on these findings, the differences in complexity between experts and novices were confined to specific channels and time scales rather than appearing across the entire entropy curve. The observed differences were primarily located in left frontal and left centroparietal regions, which aligns with their established roles in goal- directed movements of the lower limb such as kicking (Palucci Vieira et al., 2022; Piskin et al., 2024a, 2024b). Centroparietal regions, encompassing sensorimotor and posterior parietal areas, contribute to sensory feedback integration and precise motor actions (Witham et al., 2010; Tan et al., 2014). In these regions, group differences emerged at multiple fine scales, which capture fast, local neural interactions detectable at high frequencies and related to motor preparation, execution, and sensorimotor modulation (Kosciessa et al., 2020; McIn- tosh et al., 2014; Engel and Fries, 2010; Kilavik et al., 2013). Although the number of significant scales was limited, the presence of clustered fine-scale effects in the contralateral hemisphere may indicate more stable, specialized and efficient sensorimotor processes in experts during kicking, characterized by reduced neural noise and enhanced modu- larity (Gallen and D'Esposito, 2019; Hung et al., 2008; Del Percio et al.,
+
+D. Piskin et al. Brain Research Bulletin 236 (2026) 111769
+
+Fig. 3. Entropy curves of frontal channels for novices and expert players. Expert players demonstrated overall lower entropy estimates with occasional significant differences at middle and coarse scales.
+
+2009).
+
+In contrast, group differences in frontal regions were observed mainly at middle to coarse ranges and typically at isolated scales. While these effects were modest, they coincided with a broader, non- significant trend towards lower complexity in experts across wider scale ranges (Costa et al., 2005). Such a pattern at middle and coarse scales may suggest the reduced contribution of the frontal cortex to long-range, large-scale neural integration represented by slow dynamics (Courtiol et al., 2016; Vakorin et al., 2011). The frontal cortex, including dorsolateral prefrontal and supplementary motor areas, plays a key role
+
+7
+
+in action preparation, decision-making, and movement adaptation (Pascual-Leone et al., 1995; Tanji, 2001). These functions often involve low-frequency dynamics (Cavanagh and Frank, 2014; Ofner et al., 2017), which are captured at coarse scales in MSE analysis. Thus, although less pervasive than the fine-scale centroparietal effects, the frontal findings may similarly reflect expertise-related refinement in higher-order processes supporting improved kicking performance (Costa et al., 2005).
+
+Importantly, the gradual progression from coarse-scale differences at frontal sites to fine-scale differences at centroparietal sites is consistent
+
+D. Piskin et al. Brain Research Bulletin 236 (2026) 111769
+
+Fig. 4. Entropy estimates of centroparietal channels for novices and experts. Expert players demonstrated overall lower entropy estimates with clustered significant differences at fine scales.
+
+Table 1 Channels and scales with significant group differences, the correlation between their entropy estimates and accuracy rate, and area under the curve (AUC) values derived from raw entropy estimates and their principal components (PC). Scales are highlighted in bold if they exhibited both significant group differences and the highest PC coefficients.
+
+Channel Scales with
+
+Correlation
+
+AUC Maximum
+
+First 10 scales significant
+
+with
+
+AUC across
+
+contributing differences
+
+accuracy rate
+
+PCs
+
+to PCs with (Pearson’s r,
+
+(dimension)
+
+highest significance
+
+coefficients in level)
+
+descending order
+
+Fp1 25 - 0.70 0.76 (23) 29, 52, 36, 47, 15, 44, 53, 45, 42, 19 AF3 34 r = -0.36,
+
+0.68 0.76 (12) 48, 58, 64, 44, p = 0.02
+
+45, 31, 27, 30, 55, 15 F1 53 r = -0.43,
+
+p = 0.02
+
+8 0.65 0.75 (24) 53, 34, 52, 14, 26, 56, 44, 27, 21, 15 F3 27 - 0.67 0.73 (13) 58, 59, 55,
+
+34 r = -0.42,
+
+0.60
+
+57, 26, 34, p = 0.02
+
+19, 38, 1, 20 53 - 0.57 57 - 0.65 58 - 0.63 59 r = -0.40,
+
+p = 0.04
+
+0.62
+
+FC3 39 r = -0.43,
+
+p = 0.02
+
+0.68 0.80 (19) 22, 27, 64, 57, 39, 51, 38, 62, 45, 5 CP1 6 - 0.76 0.72 (2) 3, 4, 6, 5, 7, 2,
+
+7 - 0.76 11, 8, 9, 10 8 - 0.75 10 - 0.78 CP3 1 - 0.74 0.74 (2) 3, 7, 2, 11, 10,
+
+3 - 0.74 6, 4, 8, 9, 5 4 - 0.75 5 - 0.77 6 -0.37
+
+(p = 0.04)
+
+0.76
+
+7 -0.40
+
+(p = 0.03)
+
+0.77
+
+8 -0.39
+
+(p = 0.04)
+
+0.78
+
+with the spatial gradients expected under volume conduction and highlights that MSE is sensitive to region- and scale-specific complexity dynamics rather than producing arbitrary scale effects (Michel and
+
+Brunet, 2019; Nunez and Srinivasan, 2006). Although the overall complexity profiles remain largely consistent across channels with novices showing higher entropy throughout, the ranges at which group differences become most pronounced vary systematically across regions, reflecting the distinct temporal characteristics of frontal and sensori- motor cortical processes.
+
+A further finding supporting these interpretations was the negative correlation between MSE-derived entropy estimates and kicking accu- racy. Although the correlations were small, they followed a consistent direction across channels and scales that also differentiated experts from novices, indicating that the degree of brain complexity may be func- tionally related to performance. In this context, lower complexity may reflect more stable and refined cortical processing with reduced task- irrelevant neural variability, thereby contributing to enhanced accu- racy. This interpretation is consistent with the findings of Hung et al. (2008), who similarly reported reduced neural complexity in expert shooters and an inverse relationship between accuracy and complexity. While neural variability is essential for adaptability, excessive or un- structured complexity can hinder precise motor output in highly con- strained or repetitive tasks (Faisal et al., 2008; Hung et al., 2008). Taken together, the scale-dependent and region-specific patterns of group differences, along with their modest correlations with accuracy, suggest that the entropy profile associated with motor expertise may reflect a nuanced reorganization of task-related brain complexity. Nevertheless, interpretations of particularly frontal effects should remain cautious, as entropy estimates at higher scales may be more susceptible to noise and reduced signal stability, as also suggested by the reliability estimates.
+
+4.3. The classification performance of entropy estimates to differentiate expertise levels
+
+To further evaluate the discriminatory power of entropy for differ- entiating expertise levels, ROC curve analysis was applied to individual entropy values and their PCs for channels and scales exhibiting signifi- cant group differences. The results yielded predominantly moderate to good classification accuracy, suggesting that MSE may have the poten- tial to distinguish between expert and novice performers. While the identified differences at coarse frontal and fine centroparietal scales point to distinctive complexity profiles, the AUC values provide a direct measure of discriminatory power, reflecting the degree to which the spatiotemporal distributions of entropy values diverge between groups. Channels in frontal and centroparietal regions that showed both higher classification performance and significant group differences may correspond to cortical sites whose complexity characteristics are more consistently shaped by expertise (Del Percio et al., 2009; Berchicci et al.,
+
+D. Piskin et al. Brain Research Bulletin 236 (2026) 111769
+
+Fig. 5. Scatter plots for entropy estimates and kicking accuracy. Entropy estimates were negatively correlated with kicking accuracy suggesting lower complexity as a predictor for enhanced kicking accuracy.
+
+2017). Moreover, because MSE captures neural dynamics across multi- ple temporal resolutions, some scales may inherently be more sensitive than others in classifying expertise-related complexity patterns (Wang et al., 2020). At the same time, channels with higher within-group variability may reach significance at single scales without necessarily providing strong standalone classification performance, highlighting the
+
+9
+
+importance of considering both effect size and variability when inter- preting ROC results.
+
+To address these considerations and integrate information across multiple scales while reducing dimensionality, PCA-based classification was also conducted in the current study. Notably, the highest AUC values did not always correspond to the first PCs. Although first-order
+
+D. Piskin et al. Brain Research Bulletin 236 (2026) 111769
+
+10 PCs account for the largest share of variance and reflect global patterns
+
+motor task (Piskin et al., 2024a), the present study used a single pair of in the data, they do not necessarily encode the features most relevant for
+
+high- and low-pass filter cutoff frequencies. Filtering parameters are distinguishing levels of expertise. Higher-order PCs can instead capture
+
+known to influence entropy estimates by altering the underlying fre- subtle but task-relevant differences between groups or conditions
+
+quency composition of the signal (Puglia et al., 2022). Given the po- (Daffertshofer et al., 2004; Jolliffe and Cadima, 2016; Parra et al., 2005),
+
+tential artifacts inherent to mobile EEG recordings, particularly those which is consistent with the present findings showing that certain
+
+arising from physiological sources or movement-related noise, future higher-order PCs exhibited superior classification performance. Impor-
+
+studies should systematically test how different cutoff frequencies affect tantly, most PCs with the highest AUC values had their largest co-
+
+entropy measures. Filtering can also remove interactions occurring near efficients at scales where significant group differences emerged,
+
+cutoff frequencies, particularly affecting the finest and coarsest scales reinforcing that entropy characteristics at specific scales constitute key
+
+(Kosciessa et al., 2020; Puglia et al., 2022). Scales corresponding to discriminative features. Although higher-order PCs improved classifi-
+
+frequencies outside the filtered range may contain irrelevant or distorted cation accuracy by isolating subtle distinctions, their contributions were
+
+information. In the context of the present findings, the 3–30 Hz filter interpreted with caution to avoid overfitting and to consider implica-
+
+may have contributed to the lower entropy observed at the finest scales, tions for generalizability.
+
+where high-frequency (\>30 Hz) components are attenuated, and to the Collectively, the present study provides the first assessment of the
+
+stabilization of coarse-scale estimates through the removal of slow drifts reliability, validity, and classification accuracy of MSE derived from
+
+(\<3 Hz). Consequently, scale-specific differences identified in frontal mobile EEG in a dynamic sports context. The findings demonstrate
+
+and centroparietal regions should be interpreted considering the substantial test-retest reliability and support the validity of MSE as a
+
+reduced frequency content at the extremes of the filtered bandwidth. measure sensitive to motor performance and having a potential to
+
+Additionally, analyses targeting specific frequency bands (Azami et al., differentiate expertise levels in sports by characterizing distinct patterns
+
+2017\) should consider the maximum frequency reliably captured by the of brain complexity. Beyond their theoretical relevance, these findings
+
+number of available data points at each temporal scale (Gow et al., 2015; may also have practical applications. Entropy-based complexity profiles
+
+Puglia et al., 2022). Careful selection of appropriate scales is therefore could serve as sensitive markers of motor proficiency, providing a
+
+essential for meaningful interpretation of MSE results. foundation for paradigms in training and performance assessment.
+
+Relatedly, the coarse-graining procedure inherent to MSE analysis Moreover, given the demonstrated longitudinal consistency of entropy
+
+acts similar to a low-pass filter, progressively attenuating higher- estimates, MSE may offer a promising avenue for monitoring complexity
+
+frequency components at coarser scales. This introduces a bias toward changes over time, for example following targeted training or rehabili-
+
+emphasizing slower brain dynamics while diminishing interactions be- tation interventions. Future work across diverse tasks, populations, and
+
+tween fast and slow neural processes at higher scales. Future research longitudinal designs is essential for clarifying the relationship between
+
+may benefit from modified MSE variants that apply adaptive filtering cortical complexity and motor performance and for establishing the
+
+strategies designed to preserve relevant frequency content throughout applied potential of MSE in training and recovery contexts.
+
+successive coarse-graining steps (Kosciessa et al., 2020).
+
+Finally, it is important to recognize that EEG signals represent 4.4. Methodological limitations and recommendations for future
+
+summed electrical potentials from underlying neural populations. Due implementation of MSE analysis in mobile settings
+
+to volume conduction, activity from a single neural source can be detected by multiple electrodes, particularly those in close proximity The methodological limitations of the present study should be
+
+(Nunez and Srinivasan, 2006). As a result, apparent entropy differences acknowledged when interpreting the findings and considering future
+
+in adjacent channels may in part reflect shared influence from common implementations of MSE analysis on mobile EEG data. A first consider-
+
+neural sources rather than fully independent local processes. ation concerns the characteristics of the experimental task, which may
+
+In summary, addressing these methodological considerations will influence the interpretation of complexity. The current paradigm
+
+enhance the interpretability and robustness of future MSE analyses involved a predictable motor task focused on accuracy, providing an
+
+conducted using mobile EEG systems. appropriate context for observing how lower complexity in experts might relate to reduced neural noise and refined sensorimotor processes.
+
+5\. Conclusion However, the functional interpretation of neural complexity is known to depend on task context (Ib´a˜nez-Molina et al., 2018; Liang et al., 2014).
+
+The present study aimed to evaluate the reliability and validity of For instance, in tasks requiring high adaptability or processing of un-
+
+MSE derived from mobile EEG data recorded during a short-distance predictable stimuli, increased complexity may be advantageous (Liang
+
+kicking task to assess its potential use in mobile contexts. Reliability et al., 2014). Future studies should therefore investigate how neural
+
+estimates were overall substantial, although scale- and channel-specific complexity, as measured by MSE, varies across tasks with systematically
+
+variations were observed. Significant differences in entropy values be- different cognitive-motor demands and degrees of environmental
+
+tween experts and novices, along with a significant entropy-accuracy predictability.
+
+correlation, supported both known-groups and convergent validity of Task characteristics may also explain why significant group differ-
+
+MSE. Experts exhibited overall lower complexity, notably at coarse ences appeared at single scales in frontal channels, even when broader
+
+frontal and fine centroparietal scales, suggesting that refined neural trends indicated lower complexity among experts across a wider range
+
+processing contributes to performance in stable contexts. Furthermore, of scales. These characteristics could likewise have influenced the
+
+MSE demonstrated acceptable classification accuracy to differentiate magnitude of the observed effects and correlations. Rather than
+
+expertise levels. Collectively, these findings propose MSE as a potential comparing entropy values scale-wise, future research could employ
+
+metric for investigating brain complexity within movement contexts. statistical approaches that consider the entire curve. When integrating
+
+Future research across diverse tasks and populations is needed to further multiple scales into a single complexity index (e.g., AUC), researchers
+
+clarify the relationship between brain complexity and movement. must carefully account for opposing trends across different scale ranges (McIntosh et al., 2014; Mizuno et al., 2010). Such opposing trends could
+
+CRediT authorship contribution statement cancel each other out when aggregated into a single metric, thereby masking meaningful group differences at specific scale ranges.
+
+Gjergji Cobani: Writing – review & editing, Investigation, Data Another consideration relates to EEG preprocessing procedures and
+
+curation. Daghan Piskin: Writing – original draft, Methodology, the inherent nature of EEG signals. Following preprocessing steps pre-
+
+Investigation, Formal analysis, Data curation, Conceptualization. Tim viously validated for reliable linear EEG dynamics during the same
+
+Lehmann: Writing – review & editing, Formal analysis. Daniel Büchel:
+
+D. Piskin et al. Brain Research Bulletin 236 (2026) 111769
+
+Writing – review & editing. Jochen Baumeister: Writing – review & editing, Supervision, Project administration.
+
+Ethics
+
+The ethics committee of Paderborn University approved the con- duction of the study in line with the Declaration of Helsinki. All par- ticipants were informed about the purpose and procedures of the study and gave written consent prior to participation.
+
+Funding
+
+The current study did not receive any financial funding.
+
+Declaration of Competing Interest
+
+The authors declare that they have no competing interests.
+
+Acknowledgements
+
+The current study was conducted in the laboratory of the Exercise Science and Neuroscience Unit at Paderborn University. We thank all our participants for their voluntary contribution, which made the cur- rent study possible.
+
+Appendix A. Supporting information
+
+Supplementary data associated with this article can be found in the online version at doi:10.1016/j.brainresbull.2026.111769.
+
+References
+
+Aliakbaryhosseinabadi, S., Lontis, R., Farina, D., Mrachacz-Kersting, N., 2021. Effect of
+
+motor learning with different complexities on EEG spectral distribution and performance improvement. Biomed. Signal Process. Control 66, 102447. https://doi. org/10.1016/j.bspc.2021.102447. Al-Shargie, F., Tariq, U., Babiloni, F., Al-Nashash, H., 2021. Cognitive vigilance
+
+enhancement using audio stimulation of pure tone at 250 Hz. IEEE Access 9, 22955–22970. https://doi.org/10.1109/ACCESS.2021.3054785. Azami, H., Ab´asolo, D., Simons, S., Escudero, J., 2017. Univariate and multivariate
+
+generalized multiscale entropy to characterise EEG Signals in Alzheimer’s Disease. Entropy 19 (1), 31. https://doi.org/10.3390/e19010031. Baumeister, J., Reinecke, K., Liesen, H., Weiss, M., 2008. Cortical activity of skilled
+
+performance in a complex sports related motor task. Eur. J. Appl. Physiol. 104 (4), 625–631. https://doi.org/10.1007/s00421-008-0811-x. Bays, P.M., Wolpert, D.M., 2007. Computational principles of sensorimotor control that
+
+minimize uncertainty and variability. J. Physiol. 578 (Pt 2), 387–396. https://doi. org/10.1113/jphysiol.2006.120121. Benjamini, Y., Hochberg, Y., 1995. Controlling the false discovery rate: a practical and powerful approach to multiple testing. J. R. Stat. Soc. Ser. B Stat. Methodol. 57 (1), 289–300. https://doi.org/10.1111/j.2517-6161.1995.tb02031.x. Berchicci, M., Quinzi, F., Dainese, A., Di Russo, F., 2017. Time-source of neural plasticity
+
+in complex bimanual coordinative tasks: Juggling. Behav. Brain Res. 328, 87–94. https://doi.org/10.1016/j.bbr.2017.04.011. Breakspear, M., 2017. Dynamic models of large-scale brain activity. Nat. Neurosci. 20
+
+(3), 340–352. https://doi.org/10.1038/nn.4497. Bütefisch, C.M., Davis, B.C., Wise, S.P., Sawaki, L., Kopylev, L., Classen, J., Cohen, L.G.,
+
+2000\. Mechanisms of use-dependent plasticity in the human motor cortex. Proc. Natl. Acad. Sci. 97 (7), 3661–3665. https://doi.org/10.1073/pnas.97.7.3661. Cavanagh, J.F., Frank, M.J., 2014. Frontal theta as a mechanism for cognitive control.
+
+Trends Cogn. Sci. 18 (8), 414–421. https://doi.org/10.1016/j.tics.2014.04.012. Chenxi, L., Chen, Y., Li, Y. \[Youjun\], Wang, J., Liu, T., 2016. Complexity analysis of brain
+
+activity in attention-deficit/hyperactivity disorder: a multiscale entropy analysis. Brain Res. Bull. 124, 12–20. https://doi.org/10.1016/j.brainresbull.2016.03.007. Cocchi, L., Gollo, L.L., Zalesky, A., Breakspear, M., 2017. Criticality in the brain: a
+
+synthesis of neurobiology, models and cognition. Prog. Neurobiol. 158, 132–152. https://doi.org/10.1016/j.pneurobio.2017.07.002. Cohen, M.X., 2015. Comparison of different spatial transformations applied to EEG data:
+
+a case study of error processing. Int. J. Psychophysiol. Off. J. Int. Organ. Psychophysiol. 97 (3), 245–257. https://doi.org/10.1016/j.ijpsycho.2014.09.013. Coren, S., Porac, C., 1978. The validity and reliability of self-report items for the
+
+measurement of lateral preference. Br. J. Psychol. 69 (2), 207–211. https://doi.org/ 10.1111/j.2044-8295.1978.tb01649.x. Costa, M., Goldberger, A.L., Peng, C.-K., 2002. Multiscale entropy analysis of complex
+
+physiologic time series. Phys. Rev. Lett. 89 (6), 68102. https://doi.org/10.1103/ PhysRevLett.89.068102.
+
+11
+
+Costa, M., Goldberger, A.L., Peng, C.-K., 2005. Multiscale entropy analysis of biological
+
+signals. Phys. Rev. 71 (2 Pt 1), 21906. https://doi.org/10.1103/ PhysRevE.71.021906. E, Statistical, Nonlinear, and Soft Matter Physics. Courtiol, J., Perdikis, D., Petkoski, S., Müller, V., Huys, R., Sleimen-Malkoun, R., Jirsa, V. K., 2016. The multiscale entropy: guidelines for use and interpretation in brain signal analysis. J. Neurosci. Methods 273, 175–190. https://doi.org/10.1016/j. jneumeth.2016.09.004. Daffertshofer, A., Lamoth, C.J.C., Meijer, O.G., Beek, P.J., 2004. Pca in studying
+
+coordination and variability: a tutorial. Clin. Biomech. 19 (4), 415–428. https://doi. org/10.1016/j.clinbiomech.2004.01.005. Daud, S.N.S.S., Sudirman, R., 2022. Wavelet based filters for artifact elimination in
+
+electroencephalography signal: a review. Ann. Biomed. Eng. 50 (10), 1271–1291. https://doi.org/10.1007/s10439-022-03053-5. Davidson, M. (2014) Known-Groups Validity. In (pp. 3481–3482). https://doi.org/10.1
+
+007/978-94-007-0753-5\_1581. Del Percio, C., Babiloni, C., Marzano, N., Iacoboni, M., Infarinato, F., Vecchio, F.,
+
+Lizio, R., Aschieri, P., Fiore, A., Tor\`an, G., 2009. "Neural efficiency" of athletes' brain for upright standing: a high-resolution EEG study. Brain Res. Bull. 79 (3-4), 193–200. https://doi.org/10.1016/j.brainresbull.2009.02.001. Delorme, A., Makeig, S., 2004. Eeglab: an open source toolbox for analysis of sing

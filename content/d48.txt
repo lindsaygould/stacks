@@ -1,0 +1,547 @@
+Scientific Reports Article in Press
+
+Aggregating XAI-based explanations to identify spectral–spatial patterns in CNN-based resting- state EEG classification
+
+Received: 27 April 2026 Accepted: 22 June 2026
+
+https://doi.org/10.1038/s41598-026-59478-8
+
+Izabela Rejer, Izabela Gago & Vaidotas Marozas
+
+Cite this article Marozas V. explanations patterns in classification. org/10.1038/s41598-026-59478-8
+
+© The Author(s) 2026. Open Access This article is licensed under a Creative Commons Attribution 4.0 International License, which permits use, sharing, adaptation, distribution and reproduction in any medium or format, as long as you give appropriate credit to the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if changes were made. The images or other third party material in this article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the material. If material is not included in the article’s Creative Commons licence and your intended use is not permitted by statutory regulation or exceeds the permitted use, you will need to obtain permission directly from the copyright holder. To view a copy of this licence, visit http://creativecommons.org/licenses/by/4.0/.
+
+Aggregating CNN-based to Sci as: identify Rep Rejer (2026). resting-state XAI-based
+
+I., spectral–spatial Gago https://doi. I. A& EEG RTWe findings. note apply. Review IIf are this Cthere providing reports paper Before Lmay E is will be final publishing an errors publish Iunedited publication, N present with under version Pthe which the Ra final Transparent manuscript of Eaffect this article.
+
+Smanuscript the S
+
+will Peer content, undergo Review to and give model further all early legal then access editing. disclaimers
+
+Peer
+
+to Please its
+
+ARTICLE ACCEPTED MANUSCRIPT
+
+IN PRESS
+
+Aggregating XAI-Based Explanations to Identify Spectral–Spatial Patterns in CNN-Based Resting-State EEG Classification
+
+Izabela Rejer1, Izabela Gago1,\*, and Vaidotas Marozas2
+
+1West Pomeranian University of Technology in Szczecin, Zołnierska ˙49, 71-210 Szczecin, Poland 2Kaunas University of Technology, K. Donelaiˇcio g. 73, LT-44249 Kaunas, Lithuania \*izabela.gago@zut.edu.pl
+
+ABSTRACT
+
+Convolutional neural networks (CNNs) achieve high performance in electroencephalographic (EEG) classification tasks; how- ever, their decision-making mechanisms remain difficult to interpret. Explainable artificial intelligence (XAI) methods are typically applied to provide insight into individual model decisions, yet such explanations do not reveal the overall structure of the patterns learned by the network. In this study, we hypothesize that, in EEG analysis, XAI can serve a deeper role: when appropriately applied, it can expose the general patterns learned by a trained CNN, thereby transforming it from a purely insights Local maps. related resting-state case (SHAP) predictive neuroscientific accuracy). the on averaged disease, tations cross-subject neuroscientific unseen averagedLIME study. Interpretable In alone. potentials are and while trial-based input model The test consolidated Four Grad-CAM setting, patterns hypotheses. also hypotheses.
+
+These data, best-performing representations, into neural averaging. patterns Model-agnostic highlighting EEG a taking and findings from framework are architectures into strongly paradigms, were This subject-independent employed resting-state cross-subject In Ademonstrate localized model shift stable the this capable supported Explanations, Rresulting is study, such are as is across enabled Tspatial–spectral subsequently EEG complementary compared, of Iaggregation patterns. we that revealing by Csaliency cross-validation and by examine independent which classification structured Lstructured may To with E candidate maps aggregates analyzed reinforces implement reveal whether structures explanation spectral Iaggregation aggregation SHAP reproduced N folds, of candidate using discriminative Alzheimer’s this consistent CNN sample-level this that robust explanations. Ptechniques. strategy averagedLIME, strategy, yielding were Rof of established discriminative to CNN local Epatterns perturbation disease less remains structures explanations we the Sexplanations, explanations When Quantitative apparent employ most S
+
+across EEG and while effective structures interpreted parameter that robust cognitively slowing averagedLIME, in SHapley samples into may the through enables analyses performance in global averaged that form a patterns in selection, Additive analogously temporally normal conjunction which can extraction class-level the demonstrated an motivate basis EEG in instance-level controls exPlanations (95.81% reproducible extension Alzheimer’s unaligned
+
+represen- for of to saliency with stable future
+
+event-
+
+future as that test
+
+the of
+
+a
+
+Keywords: Explainable Artificial Intelligence (XAI), averagedLIME, Alzheimer’s Disease, Convolutional Neural Networks (CNN), Electroencephalography (EEG), Resting-State EEG, Model Interpretability, Feature Attribution, Spectral CNN
+
+Introduction
+
+In recent years, convolutional neural networks (CNNs) have demonstrated strong performance in the analysis of electroen- cephalographic (EEG) data \[1\], automatically extracting complex spatial and spectral features relevant to cognitive and patho- logical conditions. Despite their high effectiveness, CNNs are typically treated as black-box classifiers, whose internal repre- sentations remain difficult to interpret. Explainable artificial intelligence (XAI) methods are therefore increasingly employed to provide insight into the decision-making mechanisms of these models.
+
+In EEG research, XAI is most often used as a post-hoc validation tool, verifying whether a trained network focuses on phys- iologically plausible regions during classification \[2, 3\]. In this work, we pursue a different objective. We investigate whether stable cross-subject patterns can be extracted from CNN explanations through structured aggregation of local attribution maps. Rather than inspecting individual explanations, we construct class-level saliency maps that summarize the spectral–spatial patterns learned by the network across multiple samples. In this setting, XAI serves not only as a validation mechanism but also as a framework for identifying candidate discriminative patterns encoded in the learned model representations.
+
+The key methodological component enabling this transformation is averagedLIME, introduced in our previous work \[4\].
+
+ACCEPTED ARTICLE MANUSCRIPT
+
+IN PRESS
+
+AveragedLIME extends the standard Local Interpretable Model-agnostic Explanations (LIME) framework by aggregating local saliency maps across all samples belonging to a given class. In trial-based EEG paradigms with temporally aligned epochs, such aggregation acts analogously to event-related potential (ERP) averaging: consistent discriminative patterns are reinforced, whereas sample-specific noise is attenuated. Importantly, such aggregation is generally not meaningful in classical computer vision tasks, where averaging saliency maps across heterogeneous images would obscure rather than reveal relevant structures. In EEG, however, consistent spatial organization across subjects allows global class-level patterns to emerge.
+
+In our earlier study, this strategy was validated in stimulus-locked paradigms with temporally aligned trials. Here, we investigate a more demanding scenario, asking whether stable global patterns can still be extracted in the absence of temporal alignment. To address this question, we apply our approach to resting-state EEG in the context of subject-independent classi- fication of Alzheimer’s disease (AD) patients and cognitively normal controls (CN). In contrast to stimulus-locked paradigms, resting-state data lack temporal synchronization, and discriminative information is primarily expressed through distributed spectral organization rather than time-locked responses. This makes resting-state EEG a particularly challenging context for stabilizing and interpreting CNN-derived patterns.
+
+At the same time, Alzheimer’s disease provides a well-established neurophysiological reference for interpretation. Resting- state EEG alterations in AD are commonly described as global slowing, reflected in increased delta and theta power and reduced alpha and beta activity, particularly over frontal and parieto-occipital regions \[5, 6\]. These effects are often sum- marized using measures such as the theta/alpha ratio or shifts in peak alpha frequency toward lower values \[7, 8, 9\]. While these canonical findings offer a reference point, the precise spatial–spectral organization of discriminative information remains incompletely characterized, particularly at the level of specific electrode–frequency interactions.
+
+The experimental evaluation was conducted on a cohort of 63 subjects (35 AD, 28 CN) from the dataset A dataset of EEG recordings from: Alzheimer’s disease, Frontotemporal dementia and Healthy subjects \[10\]. To ensure subject-independent (SHAP) generalization some-subjects-out neural hand-crafted frequency achieved subsequently interpreted spatial revealing across not the discriminative The population only architectures regions temporal best-performing and canonical the more representations, in highest Grad-CAM features, analyzed conjunction patterns consistent and level. localized regions. scheme. patterns minimize trained accuracy In (ii) using whose this spatial–spectral techniques with spectral These a with and of on temporal To sense, averagedLIME bias, and established aggregation EEG (iv) different Aestablish the results CNN most the the subjects averaged Rslowing were CNN CNN compact stable Tindicate model EEG structures, a electrophysiological additionally may reliable trained Ito were but functions input representations: generalization Cgenerate (test reveal EEGNet also that divided Lon classification data, including accuracy: more systematic E raw stable not employed global the architecture. into merely channel specific Iresulting performance.
+
+cross-subject asymmetric spatial–spectral N findings (i) seven 95.81%; aggregation model to a as × spatial–spectral traditional verify a Ptime non-overlapping global Among predictive in prior Rbalanced AD, beta signals, structures the Eclass-level of to saliency reductions such artificial the consistency local interpretability Sclassifier, evaluated (iii) precision relationships as that S
+
+explanations posterior maps. a groups neural saliency spectral and would of but architectures, and SHapley symmetric the network and also alpha analysis, be that maps CNN recall identified enabled difficult evaluated as became attenuation, Additive a highlighted trained (ANN) across source theta we the identification to patterns. compared visible enhancements using spectral identify on exPlanations operating classes) of while channel candidate spectral– a only When leave-
+
+CNN
+
+from four
+
+also was on
+
+of at ×
+
+individual explanations alone.
+
+The contributions of this study are fourfold. First, we demonstrate that structured aggregation of local XAI explanations enables the extraction of stable class-level patterns from CNN models trained on resting-state EEG in the context of AD classification. Second, we provide a comparative evaluation of neural architectures for AD classification, identifying spectral representation as particularly effective for capturing disease-related resting-state alterations. Third, we perform a comprehen- sive validation of the averagedLIME explanation framework, evaluating its stability across cross-validation folds, robustness to perturbation parameters selection, generalization to unseen test data, agreement with alternative explanation methods, and perturbation-based faithfulness. Finally, we show that, when interpreted in conjunction with averaged input representations, aggregated CNN explanations highlight spectral–spatial regions consistent with established electrophysiological findings in AD while also revealing more specific spatial–spectral discriminative structures that are not readily apparent from individual explanations.
+
+Related Work
+
+The use of CNNs for the detection of AD based on EEG signals has been the subject of increasing interest in recent years. Nu- merous studies have investigated the effectiveness of deep learning approaches in distinguishing AD patients from cognitively healthy individuals, with particular focus on signal preprocessing strategies and CNN architecture design.
+
+One of the the first examples is the work by Morabito et al. \[11\], who developed and evaluated a CNN-based classifica- tion system designed to distinguish between CN, mild cognitive impairment (MCI), and AD using EEG recordings from 19/
+
+ACCEPTED ARTICLE MANUSCRIPT
+
+IN PRESS
+
+channels. In their study, the EEG signals were band-pass filtered between 0.1 and 30 Hz prior to feature extraction and model training. Next, 12 statistical features were extracted from each channel: the average, standard deviation, and skewness of the energy distribution for the entire signal and for three frequency bands. The resulting feature vector, composed of 228 features (19 channels x 12 parameters), was fed into a CNN. The network architecture consisted of three blocks. The first included a single convolutional layer with 19 filters of 12 elements (one per channel), followed by sigmoid, and max-pooling. The second block was an autoencoder that compressed the 19 outputs of the convolutional layer into 10 latent features. The final block was a three-layer classifier with 10, 7, and 2 neurons, respectively. The study involved 142 participants (63 AD, 56 MCI, 23 CN) and reached an accuracy of 82% for the three-class classification and 85% for the binary classification of AD vs. CN. Ieracitano et al. \[12\] further addressed this problem using a CNN trained on 19-channel EEG data from 189 balanced AD, MCI, and CN participants. Their preprocessing pipeline included band-pass filtering between 0.5 and 32 Hz, downsampling from 1024 to 256 Hz, segmentation into non-overlapping 5-s epochs (1280 samples × 19 channels), and computation of the power spectral density (PSD) using a 1280-point FFT, yielding 159 features within the 0.5–32 Hz range. The resulting 19×159 PSD matrices were normalized, converted to grayscale images, and used as inputs to two CNN models (CNN1 and CNN2). CNN1 consisted of a single convolutional layer (16 filters, 3×3), followed by ReLU activation and max-pooling (3×3, stride 2), a single fully connected layer with 300 neurons, and an output softmax layer. CNN2 extended this architecture with an additional convolutional layer (32 filters, 3×3) and a second max-pooling layer (2×2, stride 2). The CNN1 architecture yielded superior performance, achieving 83.33% accuracy in the three-class classification task and 92.95% in the binary classification of AD vs. CN.
+
+Huggins et al. \[13\] addressed the same three-class classification task by adapting the AlexNet architecture for EEG analysis. Their study used EEG data from 141 participants (52 AD, 37 MCI, 52 HA). Before being fed into the network, the — These The signals notch resulting units of achieved of and classification and recordings 0.5–48 for size filters Another the 4 adapted each distinguishing filtering filters, composite Hz. 5×5 underwent second time–frequency a decreased and three-class from Each in example AlexNet respectively. block the at a serving 100 final EEG images 21 second, band-pass consists progressively between and is participants softmax classification architecture channel as the were 42 representations the 384 study Each Hz, of filtering the final was layer. then filters two Aby and same layer (49 with softmax represented consisted resized Raccuracy fully Xia The segmentation AD, of (1–60 three was et network Tsize were connected convolutional al. 37 layer. and followed Iclasses. Hz), of 3×3 of \[14\], MCI, Carranged by converted five 98.9%.
+
+depth. ICA To 16 in Lwho into 14 layers, convolutional the The Fourier-based evaluate by E (Independent CN), proposed layers into epochs. third batch CNN The into with Ia acquired the and network single employed N normalization 224 architecture the Next, proposed a fourth, layers novel frequency-domain × Component first topography-consistent 224 Pfrom comprised CWT CNN 96 followed Rfollowed and × architecture, featured 19 3 filters Eand was pseudo-images 256 architecture EEG Analysis)-based Sthe computed four filters of by by a electrodes size S
+
+pyramidal features. Leaky a two convolutional Leaky the of 11×11 fully — authors image size ReLU for used Deep ReLU These and design, 3×3 connected each in artifact reflecting as used band-pass activation the Pyramid in were activation input EEG layers first the in a removal, dataset which then layers to fifth. channel, layer, the CNN with the function. filtered concatenated and scalp the The DL comprised with 256 additional
+
+(DPCNN)
+
+24, dropout, number and layout. model.
+
+within model 16, filters 4096
+
+The the
+
+8,
+
+across the 19 channels, resulting in a one-dimensional feature vector of length 304 (19 × 16 features). The model achieved a three-class classification accuracy of 97.10%.
+
+Yet another example is the work by Kachare et al. \[15\], who proposed a lightweight CNN architecture named LCADNet for AD detection. Their CNN model included two convolutional layers (with 20 and 10 kernels of size 3×3, respectively), one max-pooling layer (2x21) placed between the convolutional layers, a flattening layer, two fully connected layers (with 50 and 80 units, respectively), and a softmax output layer with two units. Prior to being fed into the network, the EEG signals were filtered using a bandpass filter (0.5–100 Hz) and segmented into 5-seconds epochs of size 16x1280 (16 EEG channels x 1280 time points; sampling rate: 256 Hz). The dataset included recordings from 23 participants (12 diagnosed with AD and 11 CN). The authors report classification accuracy of 98.5% in the cross-validation scheme and the mean accuracy of 93.26% when trained and tested on independent datasets.
+
+To provide a more comprehensive view of the existing literature, Table 1 compiles both the studies discussed above and additional works addressing EEG-based AD recognition. The table is organized into two consecutive sections. The first section includes CNN-based studies, together with works that benchmark CNN architectures against alternative machine-learning and deep-learning methods. The second section complements this perspective by presenting studies that rely exclusively on non- CNN deep learning or classical machine-learning techniques.
+
+Across the studies summarized in Table 1, both CNN-based approaches and alternative deep-learning or classical machine- learning methods frequently report very high classification accuracies, often exceeding 95% (e.g., \[14\], \[25\], \[16\]) and reach- ing up to 98.9% \[13\]. However, most of these top-performing results is based on cross-validation performed within a single dataset rather than on independent test cohorts. Such evaluation schemes — used, for example, in \[13\], \[14\], \[16\], or \[20\]/
+
+Table 1. Related papers on EEG-Based AD recognition; ASR - Artifact Subspace Reconstruction, BD – Box Dimension, BPF – Band-pass Filtering, CWT – Continuous Wavelet Transform, DWT – Discrete Wavelet Transform, EPNN – Enhanced Probabilistic Neural Network, FT – Fourier Transform, HE – Hurst Exponent, HFD – Higuchi’s Fractal Dimension, KFD – Katz Fractal Dimension, kNN – k-Nearest Neighbors, LDA – Linear Discriminant Analysis, LightGBM - Light Gradient-Boosting Machine, LPF – Low-pass Filtering, LPSD – Lomb-Scargle periodogram PSD, MA rejection – Manual Artefact Rejection, MLP – Multi-Layer Perceptron, MSPCA – Multiscale Principal Component Analysis, NF – Notch Filtering, RBP - Relative Band Power, RF - Random Forest, SVM – Support Vector Machine, TD-PSD – Time-Dependent PSD, WPSD – Welch’s PSD.
+
+ARTICLE ACCEPTED MANUSCRIPT
+
+IN PRESS
+
+19 BPF (0.1-30 Hz) 12 statistical features per
+
+channel
+
+ANN 57 AD, 7 MCI,
+
+102 CN
+
+A21 RT(50 BPF Hz)
+
+I(0.5-60 CLHz), E NF
+
+IN PRESS
+
+band power in 5 frequency
+
+93.74% (mild AD vs. moderate bands; TBR; sample, Shannon,
+
+AD vs. severe AD vs. MCI vs. dispersion and multiscale
+
+CN)
+
+\[20\]
+
+entropy LSTM, SVM 51 AD, 35 CN 20 LPF, Wavelet-ICA 400 features: mean, median,
+
+LPSD, WPSD for 5 frequency bands and each channel
+
+\[21\]
+
+EPNN 37 AD, 37 MCI 19 BPF (0.5-32 Hz), NF
+
+(50 Hz), MA rejection
+
+90.28% (for all channels and rythms)
+
+90.3% (AD vs. MCI) \[22\]
+
+SVM, kNN 50 AD, 50 CN 8 LPF, MA rejection, ICA, wavelet-based denoising Classifiers Subjects Ch. Preprocessing Features / Input images Accuracy Ref. CNN 63 AD, 56 MCI,
+
+23 CN
+
+BD, HFD, KFD, HE features calculated for each channel and each frequency band power-based, wavelet-based,
+
+96% (AD vs CN) \[23\] and complexity-based features
+
+SVM 15 AD, 9 MCI, 17
+
+19 BPF (0.5-30 Hz), NF,
+
+RP, sample entropy, and
+
+95.12% for AD, 97.56% for
+
+\[24\] CN
+
+MA rejection
+
+permutation entropy on 5-level
+
+MCI, 92.68% for CN DWT RF, SVM, kNN,
+
+36 AD, 23 FTD,
+
+19 BPF (0.5-45 Hz), ASR,
+
+5 RBP features per channel 77.01% (AD vs. CN, with RF) \[10\] MLP,
+
+29 CN
+
+ICA LightGBM
+
+85% (AD vs. CN) \[11\]
+
+CNN1, CNN2 63 AD, 63 MCI,
+
+63 CN
+
+19 BPF (0.5-32 Hz) 159 PSD features per channel 92.95% (AD vs. CN) \[12\]
+
+AlexNet 52 AD, 37 MCI,
+
+52 CN
+
+21 BPF (1-60 H z), ICA,
+
+NF (21 and 42 Hz)
+
+21 CWT scalograms combined to a single image according to the scalp topography
+
+98.9% (AD vs. MCI vs. CN) \[13\]
+
+DPCNN 49 AD, 37 MCI,
+
+14 CN
+
+19 BPF (0.5-48 Hz) 16 FT coefficients per channel 97.10% (AD vs. MCI vs. CN) \[14\]
+
+LCADNet, VGG, ResNet, and others
+
+12 AD, 11 CN 16 BPF (0.5-100 Hz), NF
+
+(60 Hz)
+
+\- 93.26% (AD vs. CN) \[15\]
+
+CNN Ensemble Set1: 24 AD, 24
+
+CN, Set2: 80 AD, 12 CN
+
+19 BPF (0.5-45 Hz), MA
+
+rejection, decomposition into 5 frequency bands
+
+\- 97.90% (AD vs. CN) \[16\]
+
+CNN, EEGNet, MLP, and others
+
+36 AD, 23 FTD, 29 CN
+
+19 BPF (0.5-40 Hz), ASR,
+
+ICA
+
+1185 FT coefficients per channel
+
+79.45% (AD vs. CN) \[17\]
+
+ResNet, SVM, kNN, and others
+
+24 AD, 24 CN 19 MSPCA 13 statistical features per each
+
+of the 4 DWT components obtained for each channel
+
+97.83% (AD vs. CN) \[18\]
+
+CNN, kNN, SVM, LDA
+
+64 AD, 64 MCI, 64 CN
+
+19 - 7 TD-PSD features 82.30% (AD vs. MCI vs. CN) \[19\]
+
+/
+
+ACCEPTED ARTICLE MANUSCRIPT
+
+IN PRESS
+
+— may allow information from the training folds to influence the test folds. As a consequence, the reported accuracies may overestimate the true generalization capability of the models \[17\]. These results therefore provide useful within-dataset bench- marks but should be interpreted with caution when assessing broader clinical applicability.
+
+The increasing number of studies applying CNN-based models to EEG-based AD recognition has highlighted the need for greater model interpretability to strengthen confidence in these approaches. Yet, despite this growing demand, XAI techniques remain used only sporadically in this field, leaving model interpretability an underexplored problem.
+
+One of the few studies addressing this issue is the work by Sidulova et al. \[26\], which aimed to develop an automated EEG classification system for the early detection of AD and MCI, as well as to provide both quantitative and visual explanations of the diagnostic decisions made by the model. The study utilized EEG recordings from 440 participants, including 284 with AD, 56 with MCI, and 100 CN. The classification was performed using CNNs trained on two-dimensional topographic maps (head- plot spectrograms) representing mean power values computed from 19 EEG channels within one of five standard frequency bands. Each spectrogram had a resolution of 488×435 pixels, and a separate CNN model was trained for each frequency band. To enhance predictive performance, an ensemble approach was implemented by averaging the outputs of the five CNNs corresponding to different frequency bands. The CNN ensemble achieved a validation accuracy of 96%, evaluated using a 10-fold cross-validation strategy. To interpret the model’s decisions, the LIME method was applied to 40 randomly selected topographic maps, with 400 perturbations generated for each map. The regions highlighted by LIME were predominantly located over the temporal and frontal lobes, as well as the motor cortex—areas. However, the analysis did not reveal any clear or consistent correspondence between the spatial patterns identified and the predicted diagnostic outcomes.
+
+Another example is the study by Lopes et al. \[27\], who proposed a CNN-based framework combined with gradient-derived saliency maps to identify EEG biomarkers of AD. Their dataset included 54 individuals — 20 cognitively normal participants, 19 AD2; was valuable was modulation separate convolutional respectively. computing averaged patches theta contributions bining with Another segmented also ranges CN Temporal mild included spectrogram diagnostic observed. over vs. the spectrograms contribution (\<5 AD After AD; observed layers all gradient via Hz), Convolutional both (AD1), training CN thresholding training, information. The followed was as vs. previously at of well most in and higher AD1; generated, (1 samples the this for Hz as 15 by relevant output ANetwork AD1 each in and field resolution) frequencies with three known The the (separately Rk-means the vs. power-modulation is category moderate-to-severe beta fully importance features the TCNN AD2; (TCN) regions and work Iconnected derived than clustering input CCN for with gamma originated and of previously and each vs. Lof had from Khan respect LSTM new cross-range E AD2), layers. bands, task) a and spectrogram AD dimension eyes-closed et biomarkers. from for Ito the reported.
+
+al. yielding to The (AD2). N which the the obtain most \[28\], the modulation, CNN last automatic temporal, of from Pare discriminative accuracies who The resting-state dense the 45x45x20. Significant was Rusually CNN the average proposed trained discrimination layer. Etraining parietal, such of was discarded SThe 20-channel 90.5%, final areas The on regions as a trained S
+
+novel set, network five beta–m–alpha and map individual were 87.3%, saliency due diagnostic of ("patches") occipital on deep of AD, EEG. detected to architecture 45×45 dimension artifacts learning 91.4%, saliency frontotemporal maps Since regions, tasks and pseudo-image were in 92.5%, were but the gamma–m–alpha, architecture 45x45. for (CN consisted maps identified. with here delta each generated vs. and were dementia The provided
+
+occipital and AD1 channel 93.0%, power-
+
+of com- then map The two
+
+low vs.
+
+by
+
+(FTD), and CN. The dataset consisted of 19-channel resting-state EEG recordings (eyes closed) collected from 88 participants (36 with AD, 23 with FTD, and 29 CN). As input, the authors used a feature matrix built from six RBP features computed for each EEG channel across six frequency bands (delta, theta, alpha, zaeta, beta, gamma), which were subsequently averaged across channels. The model achieved an average accuracy of 99.7% for the binary discrimination tasks, while the three-class classification reached 80.34%. To improve interpretability, SHAP was applied to estimate the relative importance of each frequency band in the model’s predictions. For identifying healthy participants, the zaeta band (6-24 Hz) exhibited the highest relevance, followed by beta (24-30 Hz) and theta (4-8 Hz), whereas alpha (8-16 Hz), gamma (30-45 Hz), and delta (0.5-4 Hz) contributed minimally. For AD classification, beta emerged as the most influential band, with zaeta and theta also playing notable roles. A comparable pattern was observed for the FTD class, where beta again had the strongest impact and zaeta ranked second. As the analysis relied on power values averaged across all EEG channels, the resulting explanations reflected only global feature importance and did not reveal how specific electrodes or spatially organized neurophysiological patterns contributed to the model’s decisions.
+
+Collectively, these studies demonstrate that XAI techniques can provide valuable insight into CNN-based EEG classifi- cation. However, the resulting explanations remain focused primarily on individual predictions or on aggregated relevance estimates derived from predefined features. Methods such as LIME, SHAP, Grad-CAM, and saliency-based approaches are most commonly applied to explain individual model decisions, whereas broader analyses typically summarize relevance val- ues at the level of channels, frequency bands, or handcrafted features rather than preserving the full spatial–spectral structure learned by the network \[29, 30, 31\].
+
+More generally, the XAI literature has proposed a variety of global explanation approaches aimed at characterizing model/
+
+ACCEPTED ARTICLE MANUSCRIPT
+
+IN PRESS
+
+Frontotemporal behavior extraction, based little full primary Materials Alzheimer In includes n = this 36), spectral–spatial attention data, study, frontotemporal motivation resting-state at and the where Dataset we and has accumulation dataset Dementia utilized been model of Methods
+
+structure EEG and the level. devoted dementia data behavior present and recordings, Data of These of from Healthy Alocal to EEG Partitioning (FTD; study. approaches the can Rinclude explanations representations acquired publicly be Subjects Tn = summarized Imethods 23), Ccapable available with from and \[32, Leyes based cognitively (with E Routine 33, of through dataset identifying closed, 34\]. on some Ifeature-importance N EEG Such a A normal from exceptions, fixed Dataset \[10\], approaches Pcross-subject participants set controls Rhosted of of Ee.g., Scalp interpretable have (CN; Son aggregation, \[27\]). explanation diagnosed EEG the S proven n OpenNeuro = Addressing Recordings 29). variables. effective with global patterns Alzheimer’s repository. this of for surrogate In while Alzheimer’s tabular gap contrast, constitutes preserving disease models, The and relatively Disease, feature-
+
+dataset (AD; rule
+
+the the
+
+The EEG recordings available within this dataset were acquired from 19 scalp electrodes, placed according to the inter- national 10–20 system \[35\] (sampling rate 500Hz). Preprocessing was performed in EEGLAB and included Butterworth band-pass filtering (0.5–45Hz), re-referencing to A1–A2, artifact correction with Artifact Subspace Reconstruction (ASR), and Independent Component Analysis (RunICA algorithm) for automatic removal of ocular and muscular artifacts. In addi- tion, the dataset provides Mini-Mental State Examination (MMSE) scores for all participants, offering a standardized measure of cognitive function. Further details on participant demographics and preprocessing procedures are reported in \[10\]. The detailed description of the dataset is provided in Table 2.
+
+For the purposes of this study, only the AD and CN cohorts were considered, as the primary objective was to identify EEG patterns that distinguish between AD and CN participants. To enable fair validation of subsequent classification models, we further excluded two participants — one from the AD group (sub003) and one from the CN group (sub060). Exclusion was based on the shortest effective recording length, which varied substantially across participants due to preprocessing procedures (including artifact removal). After this adjustment, the dataset comprised 35 AD and 28 CN participants, which enabled partitioning into seven balanced subsets, each comprising nine participants (4 CN and 5 AD).
+
+Prior to trial generation, all EEG recordings were band-pass filtered to the 4–30 Hz range. Although delta-band activity (0.5–4 Hz) is frequently reported in Alzheimer’s disease EEG studies, preliminary experiments performed during development of the analysis pipeline revealed that inclusion of this frequency range resulted in strong dominance of low-frequency power within the generated spectral representations, despite logarithmic compression of the power spectral density estimates. Conse- quently, higher-frequency structures became substantially less prominent and the resulting representations were dominated by the delta band. To obtain a more balanced representation of the EEG spectrum and facilitate analysis of patterns distributed/
+
+Characteristic Description
+
+Dataset A Dataset of Scalp EEG Recordings of Alzheimer’s Disease, Frontotem-
+
+poral Dementia and Healthy Subjects from Routine EEG Subjects Total: 88 (AD: 36, FTD: 23, CN: 29) Recording condition Eyes-closed resting-state EEG EEG system Nihon Kohden 2100 EEG channels Fp1, Fp2, F7, F3, Fz, F4, F8, T3, C3, Cz, C4, T4, T5, P3, Pz, P4, T6,
+
+O1, O2 Electrode placement International 10–20 system Sampling frequency 500 Hz Average recording duration AD: 13.5 min FTD: 12 min, CN: 13.8 min Available clinical scores MMSE Preprocessing Butterworth band-pass filter (0.5–45 Hz)
+
+A1–A2 re-reference Artifact Subspace Reconstruction (ASR) ICA (RunICA) + ICLabel artifact removal
+
+Table 2. Dataset characteristics.
+
+ACCEPTED ARTICLE MANUSCRIPT
+
+IN PRESS
+
+across multiple frequency bands, the frequency range was restricted to 4–30 Hz. This choice should not be interpreted as ev- idence that delta activity is irrelevant for Alzheimer’s disease classification, but rather as a methodological decision intended to prevent dominance of a single frequency range within the analyzed representations.
+
+To ensure consistency and equal contribution of data from all participants, recordings were truncated to the shortest available duration across subjects, resulting in a standardized 554-second segment for each participant. These segments were then divided into two types of trials: (i) 30-second trials with 20-second overlap and (ii) 10-second trials without overlap. In the first case, 52 trials were obtained per participant, each represented as a tensor of size 1×19×15000 (one signal component, 19 EEG channels, and 15,000 time points). In the second case, 55 trials were generated per participant, each represented as a tensor of size 1×19× 5000. This dual segmentation strategy was motivated by empirical observations that time-domain models tended to perform better on shorter trials, whereas frequency-domain approaches benefited from longer segments.
+
+Image Representations and Network Architectures Four modeling approaches were examined, differing in both the neural network architecture and the form of the input EEG representation. The first two models operated directly on the raw time-series signals (timeCNN and EEGNet), the third utilized spectral representation derived from the frequency domain (fftCNN), and the last relied on time–frequency features extracted from the raw signals (ANN).
+
+Each approach is briefly outlined below, together with the final set of architectural parameters employed. Additionally, the whole experimental pipeline is presented in Fig. 1. Model parameters were optimized using a grid-search procedure, with either a three- or five-level grid, depending on the number of tunable hyperparameters in each architecture. This strategy ensured a systematic exploration of the parameter space while maintaining computational feasibility. 1 operating dimensionality operating input chitecture Each ality pooling respectively, operation resulting for ×5, EEG The The The reduction. convolutional format 1× was timeCNN EEGNet evaluated signal in on with characteristics consisted 5, trials applied across standardized each and a and analysis Due dropout of approach 1× using approaches approach signal fundamentally layer size of to non-uniformly 5. four the \[36\]. 19×500. ReLU rate of was The representation input large also convolutional the employed of In followed convolutional were Aactivation. compared representations. 0.5. our utilized disproportion Unlike different across Rstudy, compared The a by Twere 10-second standard fully the layers the we approaches batch Each architectures.
+
+Iblock timeCNN adapted used two between Cconnected as with While normalization, layer, complete CNN axes. Lwas a trials, modified kernel to E and the the model, followed both architecture Specifically, the block but spatial underlying avoided requirements EEG Isizes convolutional their version N this was a by ReLU analysis of and temporal method terminated introducing 3x3, applied three the Pof temporal EEG activation pooling this Rof comprising fully frameworks employed and preprocessing each directly dimension architecture, Ewith dimensions fully biases connected sizes model. Sfunction, a to connected, S
+
+16, EEGNet softmax for associated rather 10-second was This 32, successive following pipeline layers of and reduced 64, strategy than output the — max and was a with with original EEG remained as compact the layers 128 via layer pooling followed preserved different 50, enforcing strategy trials. tenfold filters, input for 40, were CNN the for classification. and by The architectures the proposed (19×5000), respectively. same, set resampling, dimension- a developed a common intended
+
+30 CNN to dropout 2×5, units, input
+
+by ar-
+
+Liu et al. \[37\], which introduces multiple parallel branches with temporal kernels of varying lengths, each designed to extract features corresponding to distinct EEG frequency bands.
+
+Specifically, our model processed EEG trials of size 1 ×19× 500 through three parallel convolutional branches, each using 16 kernels of sizes 1×3, 1×5, and 1×9, respectively. Since the data were resampled from fs = 500Hz to fs = 50Hz, these kernel lengths corresponded to temporal windows covering the following oscillatory ranges. The shortest kernel (1×3) spanned 60ms and was thus sensitive to faster beta rhythms (approximately 13–30Hz), the medium kernel (1× 5) covered 100ms, aligning with the alpha band (around 8–13Hz), while the longest kernel (1×9) extended over 180ms, capturing slower theta oscillations (approximately 4–8Hz). In each branch the temporal convolution was followed by batch normalization and depthwise convolution across the spatial domain using 32 depthwise filters of size (19,1). The filtered data was then passed once again through batch normalization, an exponential linear unit (ELU) activation function, average pooling (1,4), and dropout (p = 0.5).
+
+The outputs from the three parallel branches were concatenated along the feature dimension, yielding 24 feature maps and passed to the second block of the EEGNet architecture. In this block, we followed the original EEGNet approach by applying a single separable convolution layer, implemented as two consecutive operations: i) a depthwise convolution with 96 filters of size (1×16), applied independently to each feature map to capture temporal dynamics within each spatial location; ii) a pointwise convolution with 96 filters of size (1×1), which linearly combined the outputs across feature maps, enabling integration across spatial filters and frequency bands. This convolutional stage was followed by batch normalization, ELU activation, average pooling with a kernel size of (1×8), and dropout with a rate of 0.5. Finally, the output was flattened and passed to a fully connected softmax layer with two units, corresponding to the two target classes.
+
+/
+
+ACCEPTED ARTICLE MANUSCRIPT
+
+IN PRESS
+
+Figure 1. Overview of the experimental ARTpipeline, ICincluding LE Idataset N partitioning, PREEEG-image SS
+
+representations, and key deep-learning model parameters.
+
+In the fftCNN approach, spectral representations were constructed by estimating channel-wise power spectral density (PSD) using Welch’s method, which computes averaged FFT-based periodograms over overlapping signal segments. A 2- second Hamming window with 50% overlap was employed, and the resulting PSD estimates were subsequently logarithmi- cally transformed to stabilize variance. From the resulting spectra, the frequency range of 4–30Hz was extracted, which yielded 53 frequency bins with a resolution of 0.5Hz. For each trial, this representation was computed independently for all 19 EEG channels, resulting in a two-dimensional matrix of size 19×53. To obtain an image-like input better suited for convo- lutional processing, the representation was resampled by a factor of five along the channel dimension and by a factor of two along the frequency dimension, producing final matrices of size 95×106. These resampled images were subsequently used as inputs to a convolutional neural network. The network architecture was largely similar to that employed in the timeCNN approach, with two main modifications. First, only three convolutional layers were used, comprising 32, 64, and 128 filters, respectively. Second, max pooling was applied uniformly after each convolutional layer, with a consistent pooling size of 2×2.
+
+In the ANN approach, handcrafted features were extracted from EEG epochs. For each channel, a set of 14 features was computed: spectral power in five frequency bands (4–8Hz, 8–13Hz, 13–15Hz, 15-18Hz, and 18-30Hz), four statistical descriptors (mean, standard deviation, skewness, kurtosis), three Hjorth parameters (activity, mobility, and complexity), the Higuchi fractal dimension (HFD), and Shannon entropy. This procedure yielded 266 features per epoch (19× 14). The/
+
+ACCEPTED ARTICLE MANUSCRIPT
+
+IN PRESS
+
+TP+FPRecall = TP+FNTP , where TP, FP, and FN denote , true Apositives, RTIfalse Cpositives, LE IN PRESS and false negatives, respectively. features were provided as input to a fully connected ANN consisting of four hidden layers with 50, 40, 30, and 20 neurons, respectively. Each hidden layer was followed by batch normalization, ReLU activation, and dropout with a rate of 0.5. The network terminated with a softmax output layer for classification.
+
+Training and Validation A subject-level cross-validation protocol was employed to generate training and test splits for model development and eval- uation. To this end, both cohorts (AD and CN) were randomly partitioned into seven mutually exclusive subsets. Each AD subset was then paired with a randomly selected CN subset, creating seven combined subsets, each comprising 5 AD and 4 CN participants. These subsets were subsequently organized into seven distinct training–testing pairs for cross-validation. In each pair, six subsets served as the training set, while the remaining subset was used exclusively as the test set. Consequently, each training set contained 54 participants (9 participants per subset × 6 subsets). Considering that each participant contributed 52 or 55 trials (depending on the EEG signal segmentation scheme), the training set comprised 2808 (2970) trials, with 1560 (1650) AD trials and 1248 (1320) CN trials. On the other hand, each test set included 9 participants from one subset, yielding 468 (495) trials, with 260 (275) AD and 208 (220) CN trials. This subject-level cross-validation strategy ensured strictly subject-independent evaluation, preventing any overlap between training and testing participants. Before model training, z- score normalization was applied to all input representations. To avoid data leakage, normalization parameters were computed exclusively from the training data of each fold and subsequently applied unchanged to the corresponding validation and test subsets.
+
+For each cross-validation fold, a separate model was trained using the Adam optimizer with a learning rate of 0.0001. Model performance was monitored on a validation subset comprising 15% of the training data, and the weights corresponding to the lowest validation loss were retained. Training was conducted for a maximum of 100 epochs, with early stopping based on validation loss using a patience of five epochs. The batch size was set to 64, and categorical cross-entropy was used as the optimization objective. Prior to each epoch, the training data were randomly shuffled to reduce sensitivity to trial ordering. All models were implemented in PyTorch and trained on an NVIDIA GPU.
+
+Model performance was evaluated on the corresponding test subset using overall accuracy (ACC), balanced accuracy (BA), and class-specific precision, recall, and F1-score metrics. Precision and recall were computed as:
+
+Precision = TP
+
+(1)
+
+(2)
+
+The F1-score was calculated as:
+
+F1 = 2Precision×Recall
+
+Precision+Recall. (3)
+
+Overall accuracy was defined as:
+
+ACC = TP+TN TP+TN
+
+\+FP+FN, (4)
+
+where TN denotes the number of true negatives. Balanced accuracy was calculated as the mean recall obtained for the two classes:BA = RecallAD +Recall2 CN
+
+. (5)
+
+In our experiments, the AD class was treated as the positive class and the CN class as the negative class. Except for overall ac- curacy and balanced accuracy, all performance metrics were calculated separately for each class, enabling detailed assessment of the model’s ability to correctly identify both AD and CN participants.
+
+/
+
+LIME for Averaged Saliency Maps To gain insight into the decision-making process of the trained networks, we employed the averagedLIME method. LIME itself is a post-hoc explainability technique designed to provide human-interpretable insights into the predictions of black-box machine-learning models. The method operates under the assumption that while complex models may be globally non-linear and difficult to interpret, they can often be approximated locally by simpler, interpretable models, such as linear classifiers or decision trees \[38\]. Although applicable to a wide range of data types, LIME initially gained popularity for explaining predictions made by models trained on tabular data \[39\]. Over time, however, it has been increasingly adopted for interpreting the decisions of models processing image inputs, such as CNNs \[40\]. This shift in application has led to adaptations of the LIME framework that are tailored to the specific requirements of image data and convolutional models, enabling localized explanations for individual predictions based on visual inputs.
+
+In essence, LIME explains a CNN model’s decision for a chosen image by examining how the model responds to controlled variations of that image. To generate an explanation for a specific prediction, LIME perturbs the input image in its local neighborhood by generating a set of similar samples, typically through random perturbations. These perturbations are guided by binary masks that selectively occlude or retain different image segments, enabling the creation of new instances that differ slightly from the original image. The CNN model is then queried to obtain predictions for these perturbed samples. Using the resulting dataset of perturbed images and their corresponding model outputs, LIME fits a simple, interpretable model that mimics the behavior of the complex model in the neighborhood of the instance being explained.
+
+The weights of this surrogate model are then interpreted as importance scores, reflecting the influence of each image segment on the model’s prediction. By mapping these weights back onto the corresponding regions of the original image, LIME constructs a saliency map that visually highlights the areas most influential for the classification decision, thereby offering an interpretable explanation of the CNN’s prediction.
+
+Although the saliency maps generated by LIME provide local explanations of individual model decisions, in this study we extend their use toward identifying class-level patterns learned by the network. To transition from individual explanations to a more general interpretation, saliency maps are aggregated separately for each class following the averagedLIME approach proposed in \[4\]. This aggregation yields class-specific maps highlighting regions of the input representation that consistently influence the model’s decisions, thereby providing an intuitive summary of the discriminative patterns encoded by the CNN.
+
+The aggregation procedure employed in averagedLIME can be formally described as follows. Let Li(u,v) denote the local LIME explanation generated for sample i, and let pi denote the probability assigned by the CNN to the class represented by that sample. For a given class c, the aggregated class-level saliency map is computed as a confidence-weighted average:
+
+Gc(u,v) = ∑Ni=1 c piL∑Ni=1 c i(u,v)
+
+pi , (6)
+
+where Nc denotes the number of samples belonging to class c, Gc(u,v) represents the resulting class-level saliency map, and u and v denote spatial coordinates within the feature map. The confidence weighting scheme reduces the influence of uncertain predictions and assigns greater importance to explanations associated with samples for which the classifier expressed higher confidence.
+
+Aggregation of local explanations reduces sample-specific variability. While individual saliency maps may exhibit sub- stantial fluctuations, averaging suppresses stochastic effects and enhances structures that recur consistently across samples. Consequently, the resulting class-level maps provide a more stable representation of the discriminative patterns learned by the model than individual explanations.
+
+Complementary Explanation Methods In addition to the averagedLIME framework, two complementary explanation methods, namely SHAP \[41\] and Grad-CAM \[42\], were employed to provide independent perspectives on CNN decision-making and to facilitate comparison of the result- ing explanation patterns.
+
+SHAP uses the concept of Shapley values from cooperative game theory to quantify the contribution of individual input features to the final model prediction. In this framework, the prediction is interpreted as a payoff distributed among features according to their marginal contributions, yielding attribution scores that reflect the importance of individual features for the model output. Formally, for a model f with input vector x = (x1,x2,...,xM) consisting of M features, the Shapley value φi for the i-th feature is given by:
+
+φi(f,x) = ∑ S⊆N\\{i}
+
+|S|\!(M−|S|−1)\!
+
+ACCEPTED ARTICLE MANUSCRIPT
+
+IN PRESS
+
+ARTICLE IN PRESS
+
+M\! (f(S∪{i})− f(S)), (7)/
+
+ARTICLE ACCEPTED MANUSCRIPT
+
+IN PRESS
+
+where N = {1,2,...,M} is the set of all features and S denotes a subset of features excluding feature i. The term f(S) represents the expected model output when only the features in subset S are known (and the others are marginalized). The weighting factor ensures that all possible coalitions of features are treated fairly.
+
+In the context of CNNs, the input features correspond to individual pixels (or superpixels, if segmentation is applied) of the input image. The SHAP algorithm estimates the contribution of each pixel/superpixel to the model’s output, allowing visu- alization of which image regions are most relevant for a given prediction. These contributions can be arranged into a saliency map Φ(u,v), whose elements correspond to attribution scores assigned to individual pixels/superpixels. The contributions are computed relative to a reference or background distribution, which represents the expected model output in the absence of informative input. This background can be defined in several ways, including: (i) using a random subset of training samples, (ii) computing the mean or median across the dataset, or (iii) generating representative centroids via clustering methods such as k-means.
+
+In practice, the exact computation of Shapley values is combinatorially expensive, as it requires evaluating all possible subsets of features. SHAP addresses this challenge by introducing approximation strategies that are model-specific. For deep learning models, the DeepSHAP algorithm leverages backpropagation and linearization techniques to efficiently approximate Shapley values while preserving key theoretical properties. These approximations make SHAP feasible for high-dimensional data, such as EEG signals or images.
+
+Grad-CAM \[42\] generates class-specific saliency maps by computing gradients of the target class score with respect to the feature maps of the final convolutional layer. These gradients quantify the importance of individual feature maps for a given prediction and are subsequently aggregated to obtain feature-map importance weights. For a target class c, the weights are computed as:
+
+αk c= 1 ∂Ak(u,v)where yc denotes the prediction the number of spatial locations Mc(u,v) = ReLU ∑k , score for class c, Ak within the feature map. ARTICLis E the The k-th final IN feature Grad-CAM Pmap Rof saliency Ethe Sfinal map S
+
+convolutional is then obtained layer, as:
+
+and Z (8) represents
+
+\!αkcAk(u,v). (9)
+
+The ReLU operation suppresses negative contributions and retains only features that support the prediction of class c. Conse- quently, the resulting saliency map highlights regions whose activation contributes positively to the model decision.
+
+To facilitate comparison with averagedLIME and SHAP, Grad-CAM maps were generated for all EEG trials and subse- quently averaged separately within each diagnostic class, yielding class-level saliency maps.
+
+Evaluation of Explanation Quality and Reliability Because the proposed framework aims to identify stable cross-subject discriminative patterns rather than explain individual predictions only, additional analyses were performed to evaluate the quality, reliability, robustness, and interpretability of the obtained explanations. The evaluation comprised several complementary analyses, including assessment of explanation reproducibility across independently trained models, consistency between different explanation methods, generalizability to previously unseen data, sensitivity to methodological choices, faithfulness to the underlying model decisions, and relationships between attribution patterns and physiological signal characteristics.
+
+The first stage of the analysis examined reproducibility of the extracted patterns across the seven subject-independent cross- validation folds. Class-level explanation maps generated from independently trained models were quantitatively compared to determine whether similar spatial–spectral structures emerged despite differences in training data composition. Similarity between explanation maps was quantified using Pearson correlation, Spearman correlation, and Intersection over Union (IoU), capturing complementary aspects of explanation consistency. Pearson correlation evaluates agreement in attribution magni- tudes between corresponding regions of two explanation maps:
+
+r = ∑ni=1(xi− ¯x)(y∑ni=1i − (y¯y)
+
+i − ¯y)2 , (10)
+
+where xi and yi denote corresponding saliency values from the compared maps.
+
+/
+
+p
+
+Z ∑u ∑v
+
+∑ni=1(xi − ¯x)2p
+
+∂yc
+
+ARTICLE ACCEPTED MANUSCRIPT
+
+IN PRESS
+
+Spearman correlation evaluates whether regions are assigned similar relative importance, regardless of the exact attribution values:ρ = 1− 6∑ni=1di
+
+2n(n2 −1), (11)
+
+where di denotes the difference between ranks assigned to the i-th pair of corresponding regions in the two explanation maps, and n denotes the total number of regions included in the comparison.
+
+Finally, to assess agreement of the most strongly highlighted regions, explanation maps were transformed into binary masks and compared using Intersection over Union (IoU):
+
+IoU = |A∩B|
+
+|A∪B|, (12)
+
+where A and B denote binary masks derived from the compared explanation maps. In all analysis IoU was computed us- ing binary masks formed from the top 10% attribution values. Together, these metrics provide complementary information regarding agreement in attribution magnitude, relative importance ranking, and localization of salient regions.
+
+The second stage of evaluation examined consistency of the identified patterns across different explanation techniques. Agreement between averagedLIME, SHAP, and Grad-CAM was assessed to determine whether similar spectral–spatial struc- tures were identified by methods based on substantially different explanatory principles. High agreement would suggest that the observed patterns learned representation. Next, explanation generated from to assess whether Robustness a parameter sensitivity generated using particular choice The subsequent generalizability, involved in the For each explanation regions were subsequently samples were re-evaluated should lead to a of training model reduction and the of the the explanation stage reference map, robustness identified averagedLIME generalizability are decision analysis. samples in of a not removed by binary model evaluation the specific configuration patterns Aprocess. parameters.
+
+were of Saliency CNN. mask confidence. explanations, from Rframework compared was to remained TIf focused corresponding To the a the maps evaluated Iparticular address input in highlighted CThe order with on obtained with detectable they representation Lfaithfulness. resulting this through corresponding E to explanation respect did to question, determine the regions under not Ibeyond top confidence train–test to N determine alternative 10% by methodological Whereas were a algorithm setting whether the maps perturbation-based Phighest genuinely data consistency change Rwhether obtained the the perturbation used the Ebut attribution corresponding preceding was identified choices Sreflect to important highly from construct analysis. computed S
+
+faithfulness values more previously settings was analyses attributed patterns for pixels additionally the general Class-level was as: the were explanations. assessed generated. prediction, to unseen depended analysis regions zero, characteristics compared evaluated explanation test and the were was The strongly their data the consistency, performed. with genuinely
+
+identified modified removal in through of maps
+
+those order on the a
+
+∆p = pbefore− pafter, (13)
+
+where pbefore and pafter denote the predicted probability of the true class before and after perturbation, respectively.
+
+Finally, the relationship between model explanations and underlying signal characteristics was investigated by comparing attribution patterns with group-level spectral differences between AD and cognitively normal participants. For this purpose, average spectral representations were first computed separately for the two groups and subsequently subtracted to obtain a spectral power difference map:
+
+∆P = PAD −PCN, (14)
+
+where PAD and PCN denote the average spectral representations of the Alzheimer’s disease and cognitively normal groups, respectively. The resulting map highlights frequency–channel regions exhibiting the largest physiological differences between the two groups. Correlation analysis was then performed between these spectral difference maps and the corresponding attribution difference maps in order to evaluate the extent to which discriminative model patterns were related to group-level spectral power alterations.
+
+For all analyses involving comparison of explanation maps, similarity was quantified using the Pearson correlation, Spear- man correlation, and IoU measures described above.
+
+/
+
+ACCEPTED ARTICLE MANUSCRIPT
+
+IN PRESS
+
+In addition to explanation analysis, statistical comparisons between the evaluated CNN architectures were performed using non-parametric methods. A Friedman test was first applied to assess overall differences between models. When significant effects were observed, pairwise Wilcoxon signed-rank tests with Bonferroni correction were subsequently used to identify specific model pairs responsible for the observed differences.
+
+Results
+
+Models’ Performance We began the verification of our approach by constructing a set of 28 deep learning models designed to discriminate between AD and CN participants, comprising seven models for each of the four tested architectures: timeCNN, EEGNet, fftCNN, and ANN, following the data partitioning procedure described in the "Alzheimer Dataset and Data Partitioning" subsection. The resulting classification performance metrics, reported separately for both classes, are summarized in Table 3.
+
+As can be seen

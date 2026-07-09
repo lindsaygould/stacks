@@ -1,0 +1,3680 @@
+Next-Token Prediction Learns Generalisable
+Representations of Sleep Physiology
+
+arXiv:2606.09605v1 [cs.AI] 8 Jun 2026
+
+Jonathan F. Carter∗
+Institute of Biomedical Engineering
+University of Oxford
+
+Lionel Tarassenko
+Institute of Biomedical Engineering
+University of Oxford
+
+Abstract
+Foundation models offer a promising route to compress multi-modal physiological
+signals into compact representations of human health, with broad applications
+across sleep medicine, cardiology, neurology and other healthcare domains. Existing models have typically been trained with masked-reconstruction or contrastive
+objectives. However, masked reconstruction may be poorly suited to the stochastic
+nature of these signals, while contrastive approaches rely on positive-pair definitions despite the semantic invariances of physiological signals being poorly
+understood. In this work, we show that next-token prediction is a simple and
+scalable alternative. We develop Hypnos, a multi-modal sleep foundation model
+trained using eight different sensing modalities (e.g. EEG, ECG, respiratory signals) drawn from over 20,000 overnight polysomnography recordings. We tokenize
+each modality into streams of discrete tokens using residual vector quantization,
+then train a large auto-regressive RQ-Transformer to jointly predict the next token
+across all modalities in parallel. After training, Hypnos can be applied to continuous streams of sensor data from any subset of supported modalities, generating
+embeddings for downstream tasks. Across a range of benchmarks, Hypnos significantly outperforms existing foundation models. In sleep stage classification, we
+match the performance of strong supervised baselines on held-out test sets whilst
+using 100× less labelled data. Hypnos even generalises to daytime physiology,
+surpassing a dedicated ECG foundation model at detecting atrial fibrillation. Our
+results demonstrate that next-token prediction is a strong self-supervised objective
+for representation learning from multi-modal physiological signals.
+
+1
+
+Introduction
+
+Physiological recordings such as polysomnography (PSG) capture hours of continuous, multi-modal
+sensor data from the brain and body. A single overnight study with eight channels recorded at
+128 Hz yields over 30 million data points. How can we compress minutes, hours, or even days of
+continuous, multi-modal sensor data into better measures of health for tasks such as identifying
+neurodegenerative or cardiovascular disease? A key motivation for physiological foundation models
+is to use large quantities of unlabelled sensor data to address this challenge. Prior work has shown
+that self-supervised learning (SSL) techniques can be used to learn effective representations from a
+broad range of physiological sensors [5, 1, 63]. These models have predominantly been trained using
+either contrastive learning [55, 1] or masked reconstruction [30, 38, 18] approaches. However, each
+has known shortcomings on stochastic, continuous signals (see Section 2). Next-token prediction
+is a simple alternative: it underpins modern Large Language Models (LLMs) [43, 44, 8], has been
+demonstrated to scale to context lengths exceeding 1 M tokens [19], and has been successfully applied
+in the analogous, continuous-signal domain of audio [7, 16].
+∗ jonathan.carter@eng.ox.ac.uk
+
+Preprint.
+
+Figure 1: Overview. Hypnos is a large auto-regressive RQ-transformer trained via multi-modal nexttoken prediction on tokenized streams of physiological sensor data. During pre-training, cross-modal
+attention is restricted to randomly sampled sub-groups, improving test-time generalisation to subsets
+of supported modalities. After pre-training, Hypnos can be used to generate high-quality embeddings
+for a diverse range of sensor configurations and downstream tasks over different timescales. We
+evaluate on tasks including sleep stage classification of overnight recordings, the detection of cortical
+arousal events, and atrial fibrillation (Afib) detection.
+
+In this work, we show that next-token prediction is a simple and scalable self-supervised learning objective for multi-modal physiological sensor data (Figure 1). We introduce Hypnos, a sleep foundation
+model trained on eight sensing modalities including electroencephalogram (EEG), electrocardiogram
+(ECG), and respiratory signals. Each modality is tokenized into a stream of discrete tokens using
+residual vector quantization (RVQ), and an auto-regressive Transformer is trained to jointly predict
+the next token across modalities in parallel. Using over 20,000 overnight PSG recordings drawn from
+nine public datasets, we find that both next-token perplexity and downstream probing performance
+continue to improve with scale. Our key contributions are as follows:
+• Physiological next-token prediction: We demonstrate that next-token prediction is an effective method for joint self-supervised learning from diverse physiological signals, unifying
+generative modelling and representation learning into a single architecture.
+• State-of-the-art performance: Hypnos significantly outperforms prior sleep foundation
+models across a range of benchmark tasks and datasets. Embeddings from Hypnos even
+transfer beyond sleep, outperforming a dedicated ECG foundation model on external singlelead ECG benchmarks.
+• Deployment-focused design: Hypnos can run in a streaming fashion, supports diverse sensor combinations and arbitrary length recordings, and generates embeddings at a convenient
+rate of 1 Hz. This can enable real-time applications such as closed-loop neuromodulation.
+Code and model checkpoints will be made available at: https://github.com/joncarter1/hypnos.
+
+2
+
+Background and Motivation
+
+Vector Quantization Existing physiological foundation models typically operate on short windows
+of sensor data, e.g. 5 minutes or less [55, 50, 35], or on derived quantities such as step counts and
+heart rate statistics [38]. High sampling rates are essential to capture fine details from modalities such
+as EEG or ECG, e.g. peak-peak timings. However, these signals are also highly compressible. For
+example, it has long been known that continuous ECG data can be modelled using coupled differential
+equations with a small number of latent variables [36]. This motivates an initial compression of
+the data (e.g. tokenization) prior to sequence modelling. Vector quantization [57] learns a discrete
+codebook that maps continuous inputs to tokens, and has been used to build foundation models across
+domains including brain [24, 60] and audio [13, 7] signals. NeuroLM [25] trained an autoregressive
+Transformer over single-codebook VQ tokens of EEG signals. We extend this line of work to multimodal physiological signals, using residual vector quantization and an RQ-Transformer [28] to model
+multiple high-rate streams in parallel. Our technical approach, discussed in Section 3, is most similar
+to Moshi [16], a state-of-the-art speech-text foundation model.
+2
+
+Stochasticity Next-token prediction is well-suited to handle the stochastic nature of physiological
+signals. Rather than trying to exactly reconstruct physiological signals, e.g. [30, 18, 59], which
+may be sensitive to exact peak timings and waveform morphology, next-token prediction can assign
+probability mass to the plausible subset of next tokens (see Figure 2). Alternatively, the signal
+could be modelled using a continuous distribution, e.g. via diffusion [51, 21], as recently used in
+the analogous domain of audio [48]. However, we adopt discrete next-token prediction in this work
+to inherit architectures, training recipes, and simple tractable likelihoods from audio and language
+modelling.
+
+p
+
+zt+1
+
+Regular
+
+p
+
+next token
+
+Arrhythmia
+next token
+
+Figure 2: For stochastic signals such as an ECG (left), the distribution over the future may be
+well-characterised by a peaked distribution p over some discretisation (i.e. tokenization) zt+1 . For
+example, during arrhythmia, a subset of tokens with similar QRS morphologies may be equally likely.
+Multimodality Contrastive methods are characterised by the use of positive pairs. For example,
+prior work has constructed positive pairs using physiological signals from different modalities over
+the same time range [65, 55], segments from adjacent time ranges [27], and segments from the
+same subject at different time ranges [41]. Positive pair definitions and augmentations are inductive
+biases that implicitly shape the learnt latent space. For example, the motivation for the leave-one-out
+method used by SleepFM is to ‘encourage each embedding to align semantically with all other
+modalities’ [55]. However, a key flaw in this approach is that this encourages the model to extract
+information which is shared between modalities, meaning it may discard information that is not [14].
+Different sensing modalities are intentionally recorded because they give complementary ‘views’
+of physiology, with independent variations providing useful information for downstream tasks. For
+example, brain activity measured by the EEG often looks similar between Wake and Rapid Eye
+Movement (REM) sleep, but is easily distinguished using activity measured by the electrooculogram
+(EOG) [22]. This is unlike contrastive learning in vision [12], where augmentations such as crops
+or colour jitters are chosen precisely because they do not change the underlying semantic content.
+For physiological signals, the space of invariant augmentations is not well understood. For example,
+should ECG embeddings from one subject during exercise be closer to that of another subject
+during exercise, or the same subject when stationary? Human-defined augmentations may limit the
+effectiveness of both contrastive learning and the related approach of predicting transformations
+applied to the input [63, 23].
+Sequential Learning Finally, existing physiological foundation models have not been designed for
+sequential updates and streaming inference. This may be beneficial across a range of applications,
+ranging from closed loop neuromodulation to remote patient monitoring, by enabling real-time
+tracking of physiological state. The autoregressive nature of next-token prediction is well-suited for
+this downstream use case.
+
+3
+
+Method
+
+3.1
+
+Datasets
+
+To train and evaluate our models, we use overnight polysomnography (PSG) recordings drawn
+from datasets available from the National Sleep Research Resource (NSRR, [66]): SHHS [42],
+CCSHS [46] CFS [45], CHAT [33], MESA [11], MrOS [52], NCHSDB [29], and WSC [62]; using
+the same training, validation and test set splits for each dataset as Shuai et al. [50]. We use the
+3
+
+Dreem Open Datasets (DOD-H and DOD-O) for further external evaluation [20]. Collectively, these
+datasets contain over 20,000 overnight polysomnography recordings spanning a broad range of patient
+demographics, sensors and recording configurations.
+Modalities We use up to M = 8 modalities per
+recording, drawn from five physiological modality
+groups commonly available across the NSRR cohorts:
+central electroencephalogram (EEG), electrooculogram (EOG), chin electromyogram (EMG), electrocardiogram (ECG), and abdominal (ABD) / thoracic
+(THX) respiratory effort. These were selected based
+on their prevalence across cohorts and their relevance
+to downstream sleep analysis tasks. Table 1 summarises the supported input channels to Hypnos and
+the sampling rates used for each modality.
+
+Table 1: Supported modalities.
+Modality
+
+Rate (Hz)
+
+EEG (C3–M2)
+128
+EEG (C4–M1)
+128
+EOG (E1–M2)
+128
+EOG (E2–M1)
+128
+Chin EMG
+128
+ECG
+128
+Abdominal effort 32
+Thoracic effort
+32
+
+Tokenizer group
+EEG
+EEG
+EOG
+EOG
+EMG
+ECG
+Resp
+Resp
+
+Pre-processing Each channel was minimally pre-processed by resampling to a consistent rate across
+recordings before filtering and normalisation. Full pre-processing details are given in Section A.1.
+Tokenizing Physiological Signals
+
+X i ∈ Rf ·T
+
+Encoder
+
+Decoder
+
+X̂ i ∈ Rf ·T
+
+SeaNet
+
+Transformer
+
+RVQ
+
+V i ∈ {1, . . . , C}K×T
+Transformer
+
+For each modality, we train tokenizers to transform
+the continuous raw signals into discrete tokens. We
+do this using an encoder-decoder architecture with
+a residual vector quantization (RVQ) layer, previously used by several foundation models, including
+for audio [16] and brain data [60]. Residual vector
+quantization [26, 34] extends vector quantization by
+representing each input unit (e.g. a signal segment)
+as a sum of K tokens drawn from K separate codebooks. The first token quantizes the input vector;
+each subsequent token quantizes the residual error
+left by the preceding partial reconstruction.
+
+SeaNet
+
+3.2
+
+Figure 3: Tokenizer training. Each signal X i is encoded with RVQ into discrete
+residual tokens V i . Encoder and decoder are
+trained jointly to reconstruct X i .
+
+We tokenize each 1D channel X i ∈ Rf ·T into a stream of discrete residual tokens V i ∈
+{1, . . . , C}K×T , where f is the sampling rate in Hz, T is the sequence length in seconds, K is
+the number of residual levels, and C is the per-codebook vocabulary size. This differs from the design
+of BrainTokenizer [60], which compresses EEG or MEG data with varying numbers of channels into
+a fixed number of ‘virtual’ channels. This allows us to delegate the handling of missing modalities to
+downstream sequence modelling described in Section 3.3.
+Architecture Our encoders and decoders consist of stacks of convolutional (SeaNet [54]) and
+Transformer layers [58], as illustrated in Figure 3. We configure the stride in the convolutional layers
+such that the encoders produce embeddings at 1 Hz. All convolutions are causal [56], and each
+Transformer layer uses a causal sliding window. This design means that after training the tokenizer
+can be applied to arbitrary length input sequences, supporting streaming inference and enabling us to
+apply the tokenizers to an entire night of data in a single forward pass.
+Because they have similar signal characteristics, we share tokenizers between EEG channels, between
+EOG channels, and between respiratory channels, resulting in five tokenizers for eight modalities.
+The number of quantizers K was chosen for each modality to maintain high reconstruction accuracy.
+Full architecture and training hyper-parameters are given in Section A.2. An investigation into the
+effect of quantization depth is performed in Section B.1.
+Optimisation Each tokenizer is trained on 64-second windows sampled from the training split of
+the pre-training datasets. We use a multi-term reconstruction loss combined with an RVQ commitment
+penalty closely following BrainTokenizer [60]. Full loss specifications and hyper-parameters are
+given in Section A.2.
+4
+
+ztD
+D
+Vt,1
+
+E1D
+
+D
+vt,1
+
+D
+Vt,2
+
+E2D
+
+D
+vt,2
+
+D
+Vt,3
+
+E3D
+
+vD
+t,3
+
+D
+Vt,4
+
+E4D
+
+D
+vt,4
+
+Multimodal
+Temporal
+Transformer
+
+B
++
+
+mD
+t
+
+D
+vt+1,1
+
+D
+vt+1,2
+
+D
+vt+1,3
+
++
+
++
+
++
+
+ztA
+
+A
+
+C
+
+ztB
+
+ztD
+
+D
+
+Depth Transformer
+
+ztC
+
+Time, t
+
+D
+Vt+1,1
+
+D
+Vt+1,2
+
+D
+Vt+1,3
+
+D
+Vt+1,4
+
+Residual level, k
+
+(a)
+
+(b)
+
+(c)
+
+Figure 4: Hypnos training. (a) For each time t, the K discrete residual tokens (illustrated with
+K = 4) from modality i are combined to form an embedding mit . (b) A Transformer backbone mixes
+information to produce embeddings zti for each modality, e.g. i ∈ {A, B, C, D}. (c) For all i, t, the
+i
+Depth Transformer auto-regressively predicts the next residual token Vt+1,k
+conditioned on zti .
+3.3
+
+Hypnos
+
+After tokenization, we train a RQ-Transformer [28] to minimise the conditional log-likelihood over
+next residual tokens with all modalities, timesteps and residual levels weighted equally:
+L(θ) = −
+
+M X
+T X
+K
+X
+
+
+i
+i
+log pθ Vt,k
+| V≤t,<k
+.
+
+(1)
+
+i=1 t=1 k=1
+
+A key advantage of the RQ-Transformer design is that, rather than flattening the K · T tokens per
+modality into a single sequence, the architecture decouples temporal modelling from residual-depth
+modelling, meaning self-attention scales with T rather than K · T . This is illustrated in Figure 4.
+The first stage of the model is a learnt embedding layer which aggregates discrete residual tokens
+i
+Vt,k
+into a single embedding mit for each modality and timestep following prior work [28, 16]. This
+is followed by a stack of Transformer layers [58] which aggregate information over time and across
+modalities from the sequences of embeddings mit . To reduce computational complexity, each layer
+alternates between temporal and modality attention, rather than all-to-all attention. Finally, a depth
+transformer which auto-regressively predicts residual tokens for the next timestep conditioned on the
+modality embedding zti . To allow the shared depth transformer to disambiguate modalities, a learnt
+per-modality embedding ei is also added to the conditioning. Predictions are made in parallel for all
+modalities i and timesteps t. The backbone and depth transformer parameters are shared across all
+modalities.
+After training, we use the output embeddings zti from the temporal transformer for downstream tasks.
+The RQ-Transformer design means that the outputs of the temporal transformer are a natural choice
+to use as embeddings for downstream tasks. The training process encourages these embeddings to
+simultaneously encode coarse to fine details required by the depth transformer to predict each output
+residual token.
+Design and Optimisation We use modern Transformer components throughout, with slidingwindow attention [6] used to enable length-generalisation during inference. Models are trained with
+AdamW [31] and a cosine learning rate schedule, following prior language and audio work [8, 16].
+By default, we use batch size B = 512 and context length T = 512, i.e. ≈ 8.5 minutes of data
+per sequence at 1 Hz. We evaluated three model scales (Table 2) informed by Vision Transformer
+configurations [17]. Full architecture and training hyper-parameters are given in Section A.3.
+3.4
+
+Modality Masking
+
+A desired property of our model is robustness to missing modalities. Sleep studies use a wide range
+of sensor configurations, from full polysomnography (PSG) in clinical settings to single-channel EEG
+or cardio-respiratory only recordings in the home using wearable devices. To improve generalisation
+to subsets of supported modalities during inference, we randomly divide modalities into one or more
+groups of varying sizes during training. We then restrict attention in each Transformer layer so that
+modalities within a group can only attend to each other, as illustrated in Figure 5.
+5
+
+Table 2: Hypnos model configurations. Parameter counts include token embedding tables, both
+Transformer stacks, and per-codebook output heads.
+Temporal Transformer
+Depth Transformer
+Layers
+
+Hidden D
+
+Heads
+
+Layers
+
+Hidden D
+
+Heads
+
+Params
+
+12
+12
+12
+
+192
+384
+768
+
+3
+6
+12
+
+4
+4
+4
+
+128
+192
+384
+
+2
+3
+6
+
+37M
+81M
+222M
+
+Hypnos-Tiny
+Hypnos-Small
+Hypnos-Base
+
+We split modalities into groups by sampling from a Chinese
+Restaurant Process [2] with concentration parameter α. Modalities are assigned sequentially: modality i + 1 joins an existing
+group g of size ng with probability ng /(i + α) and starts a
+new group with probability α/(i + α). The resulting numPM −1
+ber of groups G is random, with E[G] = i=0 α/(i + α).
+Prior work has improved robustness to missing modalities
+by randomly masking out sensing modalities during training,
+e.g. [10, 61, 50]. Our alternative approach conveniently allows
+us to interpolate between using a single group (α → 0, G=1)
+and fully independent (α → ∞, G=M ), i.e. no cross-modal
+fusion during training. We use α = 1 by default, which exposes
+the model to a wide range of group sizes during training, and
+which gives E[G] ≈ 2.72 for M =8.
+
+3.5
+
+Keys / Values
+
+Queries
+
+Model
+
+A
+B
+C
+D
+A
+B
+C
+D
+
+Figure 5: Example cross-modal
+attention matrices (M = 4). During training, attention is restricted
+to random sub-groups.
+
+Embedding Aggregation
+
+We take a simple approach to produce embeddings over different timescales and modalities. To
+produce a summary vector zt for each timestep t, we simply take the average over the embeddings
+from available modalities zti . To produce a single embedding for a time range [t1 , t2 ], we simply
+average embeddings over that time range. For example, to produce an embedding for a 30-second
+interval for sleep stage classification, we average embeddings zt over that interval. We leave the
+design of more effective embedding aggregation strategies to future work.
+
+3.6
+
+Evaluation set-up
+
+We compare against existing sleep foundation models: OSF [50], SleepFM [55], and sleep2vec [64].
+We re-train SleepFM using the open-source code and re-implement sleep2vec from the paper description. Both re-trained models use the same data splits, modalities and pre-processing as Hypnos. We
+directly use the public OSF model weights. Further implementation details are given in Section A.4.
+To simplify comparison across foundation models, which produce embeddings at different timescales,
+we formulate sleep analysis tasks as classification over 30-second windows of data, following [50].
+For example, a 30-second window is marked as ‘positive’ for apnoea if it has any overlap with an
+apnoea event. To generate embeddings using existing models, recordings are chunked to match the
+context length of each model. In contrast, using Hypnos, we can generate embeddings for an arbitrary
+length recording in a single forward pass.
+For each model, we use all supported modalities as inputs. All probes are trained using only the
+training and validation splits of the pre-training datasets, such that MrOS, DOD-H and DOD-O
+serve as fully external test sets to evaluate generalisation. For our supervised baselines, we use the
+SLEEPYLAND framework [47] to train and evaluate SleepTransformer [40] and U-Sleep [39] on the
+same dataset splits. Additional details of our evaluation set-up are described in Section A.4.
+6
+
+4
+
+Experiments
+
+4.1
+
+Comparison with existing foundation models
+
+In Table 3, we compare Hypnos with existing foundation models across common sleep analysis
+tasks using four clinically motivated modality configurations: full PSG (M = 8), single-channel
+EEG (M = 1), EOG (M = 2), and cardio-respiratory signals (ECG, ABD and THX; M = 3).
+Additional information on the evaluation tasks is provided in Section A.4. We report performance
+using mean AUROC and AUPRC values over recordings. To assess statistical significance, we
+perform a Wilcoxon signed-rank test over recordings with Benjamini-Hochberg FDR correction
+(q < 0.05). The same procedure is used for all comparisons throughout this section. Across sensor
+configurations, Hypnos consistently achieves better performance across downstream tasks.
+Table 3: Foundation model comparison across tasks and sensor configurations. MLP probe results
+on held-out MrOS, under full-modality (M =8) and restricted-modality configurations. AUROC /
+AUPRC, mean over subjects; staging AUROC/AUPRC are macro-averaged over the five sleep stages.
+Best per metric in bold; ∗ indicates Hypnos is significantly better.
+Staging
+
+Arousal
+
+Apnoea
+
+Desat.
+
+Setting
+
+Method
+
+AUROC AUPRC AUROC AUPRC AUROC AUPRC AUROC AUPRC
+
+Full
+(M =8)
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.952
+0.960
+0.960
+0.973∗
+
+0.718
+0.741
+0.747
+0.796∗
+
+0.883
+0.886
+0.922
+0.934∗
+
+0.698
+0.704
+0.777
+0.808∗
+
+0.777
+0.754
+0.775
+0.795∗
+
+0.396
+0.382
+0.392
+0.418∗
+
+0.731
+0.736
+0.737
+0.767∗
+
+0.714
+0.712
+0.715
+0.755∗
+
+EEG-C3
+(M =1)
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.925
+0.946
+0.937
+0.969∗
+
+0.650
+0.707
+0.674
+0.779∗
+
+0.849
+0.834
+0.906
+0.922∗
+
+0.635
+0.610
+0.749
+0.790∗
+
+0.686
+0.693
+0.659
+0.723∗
+
+0.305
+0.321
+0.291
+0.351∗
+
+0.621
+0.636
+0.643
+0.635
+
+0.609
+0.624
+0.620
+0.628∗
+
+EOG
+(M =2)
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.916
+0.933
+0.940
+0.962∗
+
+0.638
+0.671
+0.691
+0.752∗
+
+0.824
+0.804
+0.907
+0.912∗
+
+0.593
+0.545
+0.747
+0.766∗
+
+0.681
+0.667
+0.688
+0.717∗
+
+0.303
+0.304
+0.309
+0.335∗
+
+0.654
+0.653
+0.651
+0.666∗
+
+0.627
+0.631
+0.630
+0.645∗
+
+ECG+ABD+THX SleepFM
+(M =3)
+sleep2vec
+OSF
+Hypnos
+
+0.849
+0.909
+0.870
+0.931∗
+
+0.512
+0.618
+0.545
+0.659∗
+
+0.798
+0.830
+0.849
+0.878∗
+
+0.544
+0.607
+0.632
+0.684∗
+
+0.753
+0.748
+0.762
+0.797∗
+
+0.373
+0.378
+0.379
+0.417∗
+
+0.737
+0.737
+0.742
+0.795∗
+
+0.714
+0.718
+0.722
+0.777∗
+
+4.2
+
+Comparison with supervised sleep stage classification models
+
+In Table 4, we compare the performance of Hypnos against strong supervised baselines on the
+task of sleep stage classification, evaluating against AASM (5-class) expert-annotated sleep stages:
+Wake, N1, N2, N3 and REM. We report Cohen’s κ (the most common metric in the automated sleep
+staging literature [40]), macro-averaged AUROC and macro-averaged AUPRC, for one representative
+in-domain cohort (SHHS) and one held-out cohort (MrOS). Additional per-dataset results across eight
+cohorts (SHHS, CCSHS, CFS, NCHSDB, MrOS, DOD-H, DOD-O, MESA), including MLP probe
+results, are reported in the 100% column of Tables 11 and 12. Using only a linear probe, Hypnos
+outperforms strong supervised baselines on every metric on both SHHS and MrOS, and (as detailed
+in Section B.5) outperforms both baseline models on the majority of datasets and metrics.
+4.3
+
+Few-shot learning
+
+Next, we evaluate model performance in the few-shot learning regime, scaling the proportion of
+labelled recordings used for training and validation from 1% up to 100%. Figure 6 reports sleep
+staging performance for an in-domain (SHHS) and a held-out (MrOS) dataset, alongside supervised
+baselines re-trained on the same data fractions. Hypnos outperforms existing foundation models and
+supervised baselines across all proportions of labelled data; on MrOS, Hypnos trained on as little as
+1% of recordings matches U-Sleep trained on the full dataset.
+7
+
+Table 4: Sleep stage classification performance. Cohen’s κ, macro-averaged AUROC and macroaveraged AUPRC (per-subject mean) on one in-domain (SHHS) and one held-out (MrOS) cohort.
+Best per (cohort, metric) in bold; ∗ indicates Hypnos is significantly better than every other foundation
+model (paired Wilcoxon, one-sided, per-subject; Benjamini–Hochberg FDR-corrected q < 0.05).
+SHHS (in-domain)
+
+MrOS (held-out)
+
+κ
+
+AUROC
+
+AUPRC
+
+κ
+
+AUROC
+
+AUPRC
+
+0.799
+0.806
+
+0.969
+0.974
+
+0.825
+0.832
+
+0.730
+0.753
+
+0.949
+0.958
+
+0.748
+0.758
+
+Self-supervised + linear probe
+SleepFM [55]
+0.716
+sleep2vec [64]
+0.763
+OSF [50]
+0.791
+Hypnos
+0.811∗
+
+0.941
+0.964
+0.968
+0.976∗
+
+0.731
+0.792
+0.809
+0.836∗
+
+0.658
+0.751
+0.740
+0.799∗
+
+0.919
+0.958
+0.957
+0.973∗
+
+0.659
+0.737
+0.738
+0.794∗
+
+Method
+Supervised
+U-Sleep [39]
+SleepTransformer [40]
+
+(a) SHHS (in-domain)
+
+(b) MrOS (held-out)
+
+Figure 6: Few-shot sleep stage classification. We train MLP probes on each foundation model and
+re-train supervised baselines using varying fractions of in-domain data. Using as little as 1% of the
+probe-training data, Hypnos matches U-Sleep trained on the full dataset on held-out MrOS.
+
+4.4
+
+Transfer to external ECG benchmarks
+
+To assess whether Hypnos’s representations trans- Table 5: External ECG benchmarks.
+fer beyond PSG recordings, we also evaluated per- Frozen-encoder linear-probe AUROC; full deformance on three external single-lead ECG bench- tails in Section B.6.
+marks: PhysioNet/CinC 2017 (atrial fibrillation detection), Apnea-ECG (overnight per-minute apnoea
+Dataset
+Hypnos xECG
+detection) and CPSC 2021 (paroxysmal AF detecCinC 2017
+0.984 0.985
+tion). We compare against xECG [32], a foundation
+Apnea-ECG 0.925 0.884
+model pre-trained on 12-lead clinical ECG. In TaCPSC 2021 0.985 0.934
+ble 5, we see that Hypnos matches xECG on atrial
+fibrillation (AF) detection using CinC 2017, and beats it by 4% and 5% on Apnea-ECG and CPSC
+2021 respectively, indicating the model effectively generalises to daytime physiology.
+4.5
+
+Generative modelling
+
+Although the focus of our work is representation learning, the next-token prediction objective makes
+Hypnos fully generative: for any subset of supported modalities, tokens can be auto-regressively
+sampled and decoded back to waveforms via the tokenizers. Figure 7 shows that, conditioned on real
+multi-modal context, Hypnos produces coherent continuations that preserve waveform morphology
+and cross-modal structure, indicating that next-token prediction captures the joint distribution of the
+underlying signals.
+8
+
+Figure 7: Autoregressive generation of physiological signals. Hypnos can be used to jointly
+generate physiological signals for any subset of supported modalities. Here we see that conditioned
+on 10 s of real context (blue), Hypnos generates plausible signals with cross-modal consistency. For
+example, we can observe respiration-induced amplitude modulation of R-peaks in the ECG.
+
+4.6
+
+Modality-masking
+
+We ablate our group masking approach (Default, α = 1) against three alternatives: No masking (α →
+0), where modalities are processed with full cross-modal attention during training; Independent (α →
+∞), where each modality is processed with no cross-modal attention; and Random where modalities
+are randomly masked out with probability p = 0.5. Table 6 reports linear-probe performance on
+full (M =8) and restricted-modality (Restr.) inputs, with full results in Table 10. The Independent
+variant lags across every configuration, highlighting the benefit of cross-modal fusion. Trainingtime masking improves restricted-modality robustness over No masking whilst maintaining fullmodality performance. Both masking strategies perform comparably, indicating that missing-modality
+robustness is insensitive to the specific masking strategy.
+Table 6: Modality-masking ablation. Per-subject mean of the primary metric per task. Restr. is the
+mean across three restricted-modality configurations (EEG-C3, EOG, ECG+ABD+THX); Full uses
+all eight modalities. Full results are reported in Table 10.
+Staging (κ)
+
+Arousal (AUROC) Apnoea (AUROC) Desat. (AUROC)
+
+Full
+
+Full
+
+Restr.
+
+Full
+
+Restr.
+
+Full
+
+Restr.
+
+No training-time masking
+Independent (α → ∞) 0.773 0.656 0.866
+No masking (α → 0) 0.792 0.659 0.900
+
+0.838
+0.864
+
+0.847
+0.861
+
+0.798
+0.802
+
+0.817
+0.830
+
+0.776
+0.769
+
+Training-time modality masking
+Random (p = 0.5)
+0.795 0.672 0.902
+Default (α = 1)
+0.797 0.676 0.901
+
+0.873
+0.874
+
+0.860
+0.859
+
+0.813
+0.814
+
+0.831
+0.831
+
+0.796
+0.798
+
+Variant
+
+4.7
+
+Restr.
+
+Model scaling
+
+We investigated the effect of model scaling from Tiny to Base configurations. Further scaling
+experiments, including to larger model sizes and context lengths of over an hour (T = 4096)
+using unimodal model variants, can be found in Section B.2. In Figure 8, we observe monotonic
+improvements in both next-token perplexity and performance on downstream tasks as we increase
+model size.
+9
+
+(a) Validation loss
+
+(b) Sleep staging
+
+(c) Apnoea detection
+
+(d) Arousal detection
+
+Figure 8: Scaling model size improves the performance of Hypnos. Next-token perplexity and
+downstream metrics all improve with model scale. Sleep stage classification, apnoea detection and
+arousal detection performance are reported using a linear probe on the SHHS validation set.
+
+5
+
+Limitations and Future Work
+
+Improving sensor generalisation We demonstrated that our method enables held-out generalisation
+to subsets of the supported modalities used during training, and to unseen device manufacturers,
+e.g. hand-held ECG in our ECG evaluation on CinC 2017. Combining our approach with sensor
+position encodings [60] and high-density EEG could enable further generalisation to arbitrary EEG
+electrode configurations, potentially enabling the learnt representation to extract rich spatio-temporal
+structure such as cortical travelling waves [37].
+Long-context learning Many clinically meaningful properties of physiological signals are only
+visible across hours or days of sensor data, including circadian phase, multi-night sleep regularity,
+and the clustering of rare events such as nocturnal seizures or periodic limb movements. Efficiently
+scaling physiological representation learning to these regimes is an important future direction.
+Further discussion of limitations and future directions, including clinical outcomes and biomarker
+discovery, is provided in Section C.
+
+6
+
+Conclusions
+
+We have presented Hypnos, a multi-modal sleep foundation model trained with next-token prediction
+over residual vector quantised (RVQ) tokens drawn from eight physiological sensing modalities.
+Hypnos can be applied to real-time continuous streams of physiological sensor data from modalities
+such as EEG and ECG signals, generating high-quality embeddings for a range of downstream tasks.
+Our model outperforms existing foundation models and strong supervised baselines across diverse
+physiological sensing tasks such as sleep staging, atrial fibrillation and apnoea detection.
+Hypnos is one step toward a broader goal: foundation models that compress hours to days of multimodal physiological signals into better measures of human health. That this simple recipe scales
+with model size, transfers to downstream tasks, and is robust to sensor configurations suggests it can
+extend beyond sleep.
+
+Acknowledgements
+Funding from ARIA and DSIT and Pillar VC under the Encode: AI for Science Fellowship. JC
+thanks Will Bolton and Botos Csaba for their feedback on a draft of the paper. We kindly thank the
+National Sleep Research Resource (NSRR) for providing access to the datasets used. The National
+Sleep Research Resource was supported by the National Heart, Lung, and Blood Institute (R24
+HL114473, 75N92019R002). Additional acknowledgements for the datasets used in this work are
+listed in Section E.
+
+10
+
+References
+[1] Salar Abbaspourazad, Oussama Elachqar, Andrew C. Miller, Saba Emrani, Udhyakumar Nallasamy,
+and Ian Shapiro. Large-scale Training of Foundation Models for Wearable Biosignals. In The Twelfth
+International Conference on Learning Representations, March 2024. doi: 10.48550/arXiv.2312.05409. 1
+[2] David J. Aldous. Exchangeability and related topics. In David J. Aldous, Illdar A. Ibragimov, Jean Jacod,
+and P. L. Hennequin, editors, École d’Été de Probabilités de Saint-Flour XIII — 1983, pages 1–198, Berlin,
+Heidelberg, 1985. Springer. ISBN 978-3-540-39316-0. doi: 10.1007/BFb0099421. 6
+[3] Thomas Andrillon, Yuval Nir, Richard J. Staba, Fabio Ferrarelli, Chiara Cirelli, Giulio Tononi, and Itzhak
+Fried. Sleep Spindles in Humans: Insights from Intracranial EEG and Unit Recordings. The Journal
+of Neuroscience, 31(49):17821–17834, December 2011. ISSN 0270-6474. doi: 10.1523/JNEUROSCI.
+2604-11.2011. 18
+[4] Mahmoud Assran, Quentin Duval, Ishan Misra, Piotr Bojanowski, Pascal Vincent, Michael Rabbat, Yann
+LeCun, and Nicolas Ballas. Self-Supervised Learning From Images With a Joint-Embedding Predictive
+Architecture. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition,
+pages 15619–15629, 2023. 17
+[5] Hubert Banville, Omar Chehab, Aapo Hyvärinen, Denis-Alexander Engemann, and Alexandre Gramfort. Uncovering the structure of clinical EEG signals with self-supervised learning. Journal of Neural
+Engineering, 18(4):046020, 2021. 1
+[6] Iz Beltagy, Matthew E. Peters, and Arman Cohan. Longformer: The Long-Document Transformer,
+December 2020. 5
+[7] Zalán Borsos, Raphaël Marinier, Damien Vincent, Eugene Kharitonov, Olivier Pietquin, Matt Sharifi,
+Dominik Roblek, Olivier Teboul, David Grangier, and Marco Tagliasacchi. Audiolm: A language modeling
+approach to audio generation. IEEE/ACM transactions on audio, speech, and language processing, 31:
+2523–2533, 2023. 1, 2
+[8] Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind
+Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss,
+Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel M. Ziegler, Jeffrey Wu, Clemens
+Winter, Christopher Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack
+Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever, and Dario Amodei. Language
+Models are Few-Shot Learners, July 2020. 1, 5, 16
+[9] Mathilde Caron, Hugo Touvron, Ishan Misra, Hervé Jégou, Julien Mairal, Piotr Bojanowski, and Armand
+Joulin. Emerging Properties in Self-Supervised Vision Transformers, May 2021. 17
+[10] Jonathan F. Carter and Lionel Tarassenko. Wav2sleep: A Unified Multi-Modal Approach to Sleep
+Stage Classification from Physiological Signals. In Proceedings of the 4th Machine Learning for Health
+Symposium, pages 186–202. PMLR, February 2025. 6
+[11] Xiaoli Chen, Rui Wang, Phyllis Zee, Pamela L. Lutsey, Sogol Javaheri, Carmela Alcántara, Chandra L.
+Jackson, Michelle A. Williams, and Susan Redline. Racial/Ethnic Differences in Sleep Disturbances: The
+Multi-Ethnic Study of Atherosclerosis (MESA). Sleep, 38(6):877–888, June 2015. ISSN 1550-9109. doi:
+10.5665/sleep.4732. 3
+[12] Xinlei Chen and Kaiming He. Exploring Simple Siamese Representation Learning. In 2021 IEEE/CVF
+Conference on Computer Vision and Pattern Recognition (CVPR), pages 15745–15753, Nashville, TN,
+USA, June 2021. IEEE. ISBN 978-1-6654-4509-2. doi: 10.1109/CVPR46437.2021.01549. 3
+[13] Jade Copet, Felix Kreuk, Itai Gat, Tal Remez, David Kant, Gabriel Synnaeve, Yossi Adi, and Alexandre
+Defossez. Simple and Controllable Music Generation. Advances in Neural Information Processing Systems,
+36:47704–47720, December 2023. 2
+[14] Imant Daunhawer, Alice Bizeul, Emanuele Palumbo, Alexander Marx, and Julia E. Vogt. Identifiability
+Results for Multimodal Contrastive Learning, March 2023. 3
+[15] Shaun Davidson, Rachel Sharman, Simon D. Kyle, and Lionel Tarassenko. Is it time to revisit the scoring
+of slow wave (N3) sleep? Sleep, 48(10), October 2025. ISSN 0161-8105. doi: 10.1093/sleep/zsaf063. 24
+[16] Alexandre Défossez, Laurent Mazaré, Manu Orsini, Amélie Royer, Patrick Pérez, Hervé Jégou, Edouard
+Grave, and Neil Zeghidour. Moshi: A speech-text foundation model for real-time dialogue, October 2024.
+1, 2, 4, 5, 15, 19
+
+11
+
+[17] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas
+Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, Jakob Uszkoreit, and
+Neil Houlsby. An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale. In
+International Conference on Learning Representations, October 2020. 5
+[18] Benjamin Fox, Joy Jiang, Sajila Wickramaratne, Patricia Kovatch, Mayte Suarez-Farinas, Neomi A Shah,
+Ankit Parekh, and Girish N Nadkarni. A foundational transformer leveraging full night, multichannel sleep
+study data accurately classifies sleep stages. Sleep, 48(8):zsaf061, August 2025. ISSN 0161-8105. doi:
+10.1093/sleep/zsaf061. 1, 3
+[19] Gemini Team. Gemini 1.5: Unlocking multimodal understanding across millions of tokens of context.
+https://arxiv.org/abs/2403.05530v5, March 2024. 1
+[20] Antoine Guillot, Fabien Sauvet, Emmanuel H. During, and Valentin Thorey. Dreem Open Datasets:
+Multi-Scored Sleep Datasets to Compare Human and Automated Sleep Staging. IEEE Transactions on
+Neural Systems and Rehabilitation Engineering, 28(9):1955–1965, September 2020. ISSN 1558-0210.
+doi: 10.1109/TNSRE.2020.3011181. 4
+[21] Jonathan Ho, Ajay Jain, and Pieter Abbeel. Denoising Diffusion Probabilistic Models. In Advances in
+Neural Information Processing Systems (NeurIPS 2020). arXiv, December 2020. doi: 10.48550/arXiv.
+2006.11239. 3
+[22] C. Iber. The AASM Manual for the Scoring of Sleep and Associated Events: Rules, Terminology, and
+Technical Specification. 2007. 3
+[23] Dulhan Jayalath, Gilad Landau, Brendan Shillingford, Mark Woolrich, and Oiwi Parker Jones. The Brain’s
+Bitter Lesson: Scaling Speech Decoding With Self-Supervised Learning. In Proceedings of the 42nd
+International Conference on Machine Learning, June 2025. 3
+[24] Wei-Bang Jiang, Li-Ming Zhao, and Bao-Liang Lu. Large Brain Model for Learning Generic Representations with Tremendous EEG Data in BCI. In International Conference on Learning Representations (ICLR
+2024), May 2024. doi: 10.48550/arXiv.2405.18765. 2
+[25] Weibang Jiang, Yansen Wang, Bao-liang Lu, and Dongsheng Li. NeuroLM: A Universal Multi-task Foundation Model for Bridging the Gap between Language and EEG Signals. In The Thirteenth International
+Conference on Learning Representations, October 2024. 2
+[26] Biing-Hwang Juang and A. Gray. Multiple stage vector quantization for speech coding. In ICASSP ’82.
+IEEE International Conference on Acoustics, Speech, and Signal Processing, volume 7, pages 597–600,
+May 1982. doi: 10.1109/ICASSP.1982.1171604. 4
+[27] Dani Kiyasseh, Tingting Zhu, and David A. Clifton. CLOCS: Contrastive Learning of Cardiac Signals
+Across Space, Time, and Patients, May 2021. 3
+[28] Doyup Lee, Chiheon Kim, Saehoon Kim, Minsu Cho, and Wook-Shin Han. Autoregressive Image
+Generation using Residual Quantization. In IEEE/CVF Conference on Computer Vision and Pattern
+Recognition (CVPR 2022). arXiv, March 2022. doi: 10.48550/arXiv.2203.01941. 2, 5
+[29] Harlin Lee, Boyue Li, Shelly DeForte, Mark L. Splaingard, Yungui Huang, Yuejie Chi, and Simon L.
+Linwood. A large collection of real-world pediatric sleep studies. Scientific Data, 9(1):421, July 2022.
+ISSN 2052-4463. doi: 10.1038/s41597-022-01545-6. 3
+[30] Simon A. Lee, Cyrus Tanade, Hao Zhou, Juhyeon Lee, Megha Thukral, Minji Han, Rachel Choi, Md Sazzad Hissain Khan, Baiying Lu, Migyeong Gwak, Mehrab Bin Morshed, Viswam Nathan, Md Mahbubur
+Rahman, Li Zhu, Subramaniam Venkatraman, and Sharanya Arcot Desai. HiMAE: Hierarchical Masked
+Autoencoders Discover Resolution-Specific Structure in Wearable Time Series. In The Fourteenth International Conference on Learning Representations, October 2025. doi: 10.48550/arXiv.2510.25785. 1,
+3
+[31] Ilya Loshchilov and Frank Hutter. Decoupled Weight Decay Regularization. In 7th International Conference on Learning Representations, ICLR 2019, New Orleans, LA, USA, May 6-9, 2019, 2019. 5
+[32] Riccardo Lunelli, Angus Nicolson, Samuel Martin Pröll, Sebastian Johannes Reinstadler, Axel Bauer,
+and Clemens Dlaska. BenchECG and xECG: A benchmark and baseline for ECG foundation models,
+September 2025. 8, 24
+
+12
+
+[33] Carole L. Marcus, Reneé H. Moore, Carol L. Rosen, Bruno Giordani, Susan L. Garetz, H. Gerry Taylor,
+Ron B. Mitchell, Raouf Amin, Eliot S. Katz, Raanan Arens, Shalini Paruthi, Hiren Muzumdar, David
+Gozal, Nina Hattiangadi Thomas, Janice Ware, Dean Beebe, Karen Snyder, Lisa Elden, Robert C. Sprecher,
+Paul Willging, Dwight Jones, John P. Bent, Timothy Hoban, Ronald D. Chervin, Susan S. Ellenberg, Susan
+Redline, and Childhood Adenotonsillectomy Trial (CHAT). A randomized trial of adenotonsillectomy for
+childhood sleep apnea. The New England Journal of Medicine, 368(25):2366–2376, June 2013. ISSN
+1533-4406. doi: 10.1056/NEJMoa1215881. 3
+[34] Julieta Martinez, Holger H. Hoos, and James J. Little. Stacked Quantizers for Compositional Vector
+Compression, November 2014. 4
+[35] Kaden McKeen, Sameer Masood, Augustin Toma, Barry Rubin, and Bo Wang. ECG-FM: An Open
+Electrocardiogram Foundation Model, May 2025. 2
+[36] P.E. McSharry, G.D. Clifford, L. Tarassenko, and L.A. Smith. A dynamical model for generating synthetic
+electrocardiogram signals. IEEE Transactions on Biomedical Engineering, 50(3):289–294, March 2003.
+ISSN 1558-2531. doi: 10.1109/TBME.2003.808805. 2
+[37] Lyle Muller, Frédéric Chavane, John Reynolds, and Terrence J. Sejnowski. Cortical travelling waves:
+Mechanisms and computational principles. Nature Reviews Neuroscience, 19(5):255–268, May 2018.
+ISSN 1471-0048. doi: 10.1038/nrn.2018.20. 10
+[38] Girish Narayanswamy, Xin Liu, Kumar Ayush, Yuzhe Yang, Xuhai Xu, Shun Liao, Jake Garrison, Shyam
+Tailor, Jake Sunshine, Yun Liu, Tim Althoff, Shrikanth Narayanan, Pushmeet Kohli, Jiening Zhan, Mark
+Malhotra, Shwetak Patel, Samy Abdel-Ghaffar, and Daniel McDuff. Scaling Wearable Foundation Models.
+In The Thirteenth International Conference on Learning Representations, October 2024. 1, 2
+[39] Mathias Perslev, Sune Darkner, Lykke Kempfner, Miki Nikolic, Poul Jørgen Jennum, and Christian Igel. USleep: Resilient high-frequency sleep staging. npj Digital Medicine, 4(1):72, April 2021. ISSN 2398-6352.
+doi: 10.1038/s41746-021-00440-5. 6, 8, 22, 23
+[40] Huy Phan, Kaare Mikkelsen, Oliver Y. Chén, Philipp Koch, Alfred Mertins, and Maarten De Vos. SleepTransformer: Automatic Sleep Staging With Interpretability and Uncertainty Quantification. IEEE
+Transactions on Biomedical Engineering, 69(8):2456–2467, August 2022. ISSN 1558-2531. doi:
+10.1109/TBME.2022.3147187. 6, 7, 8, 22, 23
+[41] Arvind Pillai, Dimitris Spathis, Fahim Kawsar, and Mohammad Malekzadeh. PaPaGei: Open Foundation
+Models for Optical Physiological Signals, February 2025. 3
+[42] S. F. Quan, B. V. Howard, C. Iber, J. P. Kiley, F. J. Nieto, G. T. O’Connor, D. M. Rapoport, S. Redline,
+J. Robbins, J. M. Samet, and P. W. Wahl. The Sleep Heart Health Study: Design, rationale, and methods.
+Sleep, 20(12):1077–1085, December 1997. ISSN 0161-8105. 3
+[43] Alec Radford, Karthik Narasimhan, Tim Salimans, and Ilya Sutskever. Improving language understanding
+by generative pre-training. 2018. 1
+[44] Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever. Language models
+are unsupervised multitask learners. OpenAI blog, 1(8):9, 2019. 1
+[45] S. Redline, P. V. Tishler, T. D. Tosteson, J. Williamson, K. Kump, I. Browner, V. Ferrette, and P. Krejci.
+The familial aggregation of obstructive sleep apnea. American Journal of Respiratory and Critical Care
+Medicine, 151(3 Pt 1):682–687, March 1995. ISSN 1073-449X. doi: 10.1164/ajrccm/151.3_Pt_1.682. 3
+[46] Carol L. Rosen, Emma K. Larkin, H. Lester Kirchner, Judith L. Emancipator, Sarah F. Bivins, Susan A.
+Surovec, Richard J. Martin, and Susan Redline. Prevalence and risk factors for sleep-disordered breathing
+in 8- to 11-year-old children: Association with race and prematurity. The Journal of Pediatrics, 142(4):
+383–389, April 2003. ISSN 0022-3476. doi: 10.1067/mpd.2003.28. 3
+[47] Alvise Dei Rossi, Matteo Metaldi, Michal Bechny, Irina Filchenko, Julia van der Meer, Markus H. Schmidt,
+Claudio L. A. Bassetti, Athina Tzovara, Francesca D. Faraci, and Luigi Fiorillo. SLEEPYLAND: Trust
+begins with fair evaluation of automatic sleep staging models. npj Digital Medicine, 9(1):55, December
+2025. ISSN 2398-6352. doi: 10.1038/s41746-025-02237-2. 6
+[48] Simon Rouard, Manu Orsini, Axel Roebel, Neil Zeghidour, and Alexandre Défossez. Continuous Audio
+Language Models. In The Fourteenth International Conference on Learning Representations, January
+2026. doi: 10.48550/arXiv.2509.06926. 3
+[49] Tim Salimans, Ian Goodfellow, Wojciech Zaremba, Vicki Cheung, Alec Radford, and Xi Chen. Improved
+Techniques for Training GANs, June 2016. 19
+
+13
+
+[50] Zitao Shuai, Zongzhe Xu, David Yang, Wei Wang, and Yuzhe Yang. OSF: On Pre-training and Scaling of
+Sleep Foundation Models. In Proceedings of the 43rd International Conference on Machine Learning,
+February 2026. doi: 10.48550/arXiv.2603.00190. 2, 3, 6, 8, 17, 22, 23
+[51] Jascha Sohl-Dickstein, Eric A. Weiss, Niru Maheswaranathan, and Surya Ganguli. Deep Unsupervised
+Learning using Nonequilibrium Thermodynamics, November 2015. 3
+[52] Yeonsu Song, Terri Blackwell, Kristine Yaffe, Sonia Ancoli-Israel, Susan Redline, Katie L. Stone, and
+Osteoporotic Fractures in Men (MrOS) Study Group. Relationships between sleep stages and changes
+in cognitive function in older men: The MrOS Sleep Study. Sleep, 38(3):411–421, March 2015. ISSN
+1550-9109. doi: 10.5665/sleep.4500. 3
+[53] Jianlin Su, Murtadha Ahmed, Yu Lu, Shengfeng Pan, Wen Bo, and Yunfeng Liu. RoFormer: Enhanced
+transformer with Rotary Position Embedding. Neurocomputing, 568:127063, February 2024. ISSN
+0925-2312. doi: 10.1016/j.neucom.2023.127063. 16
+[54] Marco Tagliasacchi, Yunpeng Li, Karolis Misiunas, and Dominik Roblek. SEANet: A Multi-modal Speech
+Enhancement Network, October 2020. 4
+[55] Rahul Thapa, Magnus Ruud Kjaer, Bryan He, Ian Covert, Hyatt Moore IV, Umaer Hanif, Gauri Ganjoo,
+M. Brandon Westover, Poul Jennum, Andreas Brink-Kjaer, Emmanuel Mignot, and James Zou. A
+multimodal sleep foundation model for disease prediction. Nature Medicine, 32(2):752–762, February
+2026. ISSN 1546-170X. doi: 10.1038/s41591-025-04133-4. 1, 2, 3, 6, 8, 16, 17, 22, 23, 24
+[56] Aaron van den Oord, Sander Dieleman, Heiga Zen, Karen Simonyan, Oriol Vinyals, Alex Graves, Nal
+Kalchbrenner, Andrew Senior, and Koray Kavukcuoglu. WaveNet: A Generative Model for Raw Audio,
+September 2016. 4
+[57] Aaron van den Oord, Oriol Vinyals, and Koray Kavukcuoglu. Neural Discrete Representation Learning. In
+Advances in Neural Information Processing Systems, volume 30. Curran Associates, Inc., 2017. 2
+[58] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz
+Kaiser, and Illia Polosukhin. Attention Is All You Need. arXiv:1706.03762 [cs], December 2017. 4, 5
+[59] Guangyu Wang, Wenchao Liu, Yuhong He, Cong Xu, Lin Ma, and Haifeng Li. Eegpt: Pretrained
+transformer for universal and reliable representation of eeg signals. Advances in Neural Information
+Processing Systems, 37:39249–39280, 2024. 3
+[60] Qinfan Xiao, Ziyun Cui, Chi Zhang, Siqi Chen, Wen Wu, Andrew Thwaites, Alexandra Woolgar, Bowen
+Zhou, and Chao Zhang. BrainOmni: A Brain Foundation Model for Unified EEG and MEG Signals. In
+Advances in Neural Information Processing Systems, volume 38, October 2025. doi: 10.48550/arXiv.2505.
+18185. 2, 4, 10, 15, 16, 18
+[61] Maxwell A. Xu, Girish Narayanswamy, Kumar Ayush, Dimitris Spathis, Shun Liao, Shyam A. Tailor,
+Ahmed Metwally, A. Ali Heydari, Yuwei Zhang, Jake Garrison, Samy Abdel-Ghaffar, Xuhai Xu, Ken
+Gu, Jacob Sunshine, Ming-Zher Poh, Yun Liu, Tim Althoff, Shrikanth Narayanan, Pushmeet Kohli, Mark
+Malhotra, Shwetak Patel, Yuzhe Yang, James M. Rehg, Xin Liu, and Daniel McDuff. LSM-2: Learning
+from Incomplete Wearable Sensor Data, June 2025. 6
+[62] Terry Young, Mari Palta, Jerome Dempsey, Paul E. Peppard, F. Javier Nieto, and K. Mae Hla. Burden of
+sleep apnea: Rationale, design, and major findings of the Wisconsin Sleep Cohort study. WMJ: official
+publication of the State Medical Society of Wisconsin, 108(5):246–249, August 2009. ISSN 1098-1861. 3
+[63] Hang Yuan, Shing Chan, Andrew P. Creagh, Catherine Tong, Aidan Acquah, David A. Clifton, and Aiden
+Doherty. Self-supervised learning for human activity recognition using 700,000 person-days of wearable
+data. npj Digital Medicine, 7(1):1–10, April 2024. ISSN 2398-6352. doi: 10.1038/s41746-024-01062-3.
+1, 3
+[64] Weixuan Yuan, Zengrui Jin, Yichen Wang, Donglin Xie, Ziyi Ye, Chao Zhang, and Xuesong
+Chen.
+Sleep2vec: Unified Cross-Modal Alignment for Heterogeneous Nocturnal Biosignals.
+https://arxiv.org/abs/2602.13857v1, February 2026. 6, 8, 16, 17, 22, 23
+[65] Daoze Zhang, Zhizhang Yuan, Junru Chen, Kerui Chen, and Yang Yang. Brant-X: A Unified Physiological
+Signal Alignment Framework. In Proceedings of the 30th ACM SIGKDD Conference on Knowledge
+Discovery and Data Mining, pages 4155–4166, Barcelona Spain, August 2024. ACM. ISBN 979-8-40070490-1. doi: 10.1145/3637528.3671953. 3
+[66] Guo-Qiang Zhang, Licong Cui, Remo Mueller, Shiqiang Tao, Matthew Kim, Michael Rueschman, Sara
+Mariani, Daniel Mobley, and Susan Redline. The National Sleep Research Resource: Towards a sleep data
+commons. Journal of the American Medical Informatics Association: JAMIA, 25(10):1351–1358, October
+2018. ISSN 1527-974X. doi: 10.1093/jamia/ocy064. 3
+
+14
+
+A
+
+Additional Implementation Details
+
+A.1
+
+Preprocessing
+
+Referencing and filtering EEG and EOG channels were re-referenced against the contralateral
+mastoid (C3–M2, C4–M1 for EEG; E1–M2, E2–M1 for EOG). Chin EMG was derived bipolarly
+from the chin electrode pair. ECG and respiratory effort (ABD, THX) were used directly. All signals
+were resampled using a polyphase filter with an anti-aliasing low-pass. Brain, muscle, and cardiac
+channels were resampled to 128 Hz. Respiratory effort signals (ABD, THX) were resampled to
+32 Hz, reflecting their lower frequency content. All channels were notch-filtered to suppress mains
+interference. Per-modality bandpass filters were then applied:
+• EEG, EOG, EMG: 0.5–45 Hz bandpass.
+• ECG: 0.05–45 Hz bandpass.
+• ABD, THX: 0.05 Hz high-pass.
+Normalisation and amplitude compression For each channel of each recording we performed
+an online rolling z-score normalisation: the mean and variance were tracked online by a 60-second
+exponential moving average. To prevent transient artefacts from inflating the running variance, the
+per-sample squared deviation was clipped at 6σ of the current variance estimate before accumulation.
+After normalisation, values lying beyond ±8σ were log-compressed, so that large artefacts remain
+order-preserving without dominating the reconstruction loss.
+A.2
+
+Tokenizer training details
+
+Architecture Each tokenizer consists of a SeaNet and Transformer components plus an RVQ
+bottleneck, as illustrated in Figure 3. SeaNet stride ratios are chosen so that the product of strides
+corresponds to one second of input samples, producing tokens at 1 Hz at every modality’s sampling
+rate. The encoder right-pads by one hop length and drops the first warm-up token, so each output token
+is right-aligned to its segment boundary. All other architecture and optimisation hyperparameters
+are listed in Table 7; weight decay is applied to Transformer parameters only, following the Mimi
+convention [16].
+
+Component
+
+Table 7: Tokenizer hyperparameters.
+Setting
+
+SeaNet n_filters
+SeaNet stride ratios
+SeaNet residual blocks
+Encoder embedding dim
+Codebook entry dim
+Codebook size C
+Residual levels K
+EMA decay
+Quantization dropout
+Encoder/decoder Transformer
+LayerScale init
+Loss weights
+Optimiser
+Gradient clipping
+Schedule
+Training steps
+Batch size × window
+Precision
+
+64
+[2, 4, 4, 4] at 128 Hz; [4, 4, 2] at 32 Hz
+1 per stage, dilation base 2
+512
+256
+2048
+8 (EEG, EOG, EMG); 4 (ECG, respiratory)
+0.99
+0.5
+4 layers, 8 heads, FFN dim 2048, sliding window 32
+10−2
+λϕ = 0.5, λRVQ = 0.25
+AdamW, lr 2 × 10−4 , wd 10−2 (Tx params)
+1.0 (norm)
+Cosine, 500-step linear warm-up
+50,000
+1024 × 64 s
+bf16 mixed
+
+Loss formulation Following BrainTokenizer [60], the tokenizer is trained with a multi-term
+reconstruction loss combined with an RVQ commitment penalty. The reconstruction loss has (i) a
+15
+
+time-domain term between the original waveform X and the reconstruction X̂:
+Ltime = ∥X − X̂∥1 ,
+
+(2)
+
+where ∥ · ∥1 denotes the ℓ1 distance; and (ii) a frequency-domain term between the amplitude spectra
+A, Â and phase spectra Φ, Φ̂ of the Hamming-windowed signals:
+Lfreq = ∥A − Â∥1 + λϕ · ∥Φ − Φ̂∥1 .
+
+(3)
+
+Letting zk and zqk denote the residual entering the k-th codebook and its nearest entry, the RVQ
+commitment loss is:
+K
+X
+2
+Lrvq =
+zk − sg[zqk ] 2 ,
+(4)
+k=1
+
+where sg[·] denotes a stop-gradient. This term pulls the encoder output zk toward its assigned
+codebook entry. Each tokenizer is trained to minimise:
+Ltok = Ltime + Lfreq + λRV Q · Lrvq ,
+
+(5)
+
+with scalar weights λϕ = 0.5 and λRV Q = 0.25, identical to BrainTokenizer [60].
+A.3
+
+Hypnos hyperparameters and training
+
+The temporal Transformer applies rotary position embeddings (RoPE, [53]) to attention queries and
+keys, while the depth Transformer uses a learnt position embedding indexed by codebook level.
+Linear and embedding parameters are initialised from N (0, 0.022 ) following GPT-2 [8]. We use
+a residual dropout of 0.1. Per-scale learning rates are set inversely to hidden width: 1.2 × 10−3
+for Hypnos-Tiny, 6 × 10−4 for Hypnos-Small, and 3 × 10−4 for Hypnos-Base. All other training
+hyperparameters are listed in Table 8.
+
+Component
+
+Table 8: Hypnos training hyperparameters.
+Setting
+
+Norm / activation
+Position encoding
+Sliding-window pattern
+CRP concentration
+Dropout
+LayerScale init
+Weight init
+Optimiser
+Gradient clipping
+Per-scale lr
+Schedule
+Training steps
+Batch size
+Context length
+Precision
+
+A.4
+
+LayerNorm + SwiGLU; RMSNorm on QK
+RoPE (temporal); learnt level-index embedding (depth)
+Local window 64; every 4th layer global (T /2)
+α = 1.0
+0.1
+10−2
+N (0, 0.022 ) for Linear / Embedding
+AdamW, (β1 , β2 ) = (0.9, 0.95), wd 0.1
+1.0 (norm)
+Tiny 1.2 × 10−3 ; Small 6 × 10−4 ; Base 3 × 10−4
+Cosine, 500-step linear warm-up
+50,000
+512
+512
+bf16 mixed, activation checkpointing
+
+Comparing sleep foundation models
+
+Baseline implementation SleepFM [55] and sleep2vec [64] were re-implemented and re-trained
+using the same modalities, pre-processing steps, and dataset splits as Hypnos, which match the dataset
+splits used by OSF. We used the ‘Large’ configuration of sleep2vec, which has around 240 million
+parameters, including a slightly larger Transformer backbone than Hypnos-Base. For completeness,
+in Table 9 we additionally report performance using the open-source SleepFM checkpoint, evaluated
+using all supported modalities and the original pre-processing steps. We adopt our re-trained variant
+as the stronger baseline throughout.
+16
+
+Table 9: Off-the-shelf vs. re-trained SleepFM. Performance on held-out MrOS with an MLP probe.
+Staging
+
+Arousal
+
+Apnoea
+
+Desat.
+
+SleepFM
+
+AUROC
+
+AUPRC
+
+AUROC
+
+AUPRC
+
+AUROC
+
+AUPRC
+
+AUROC
+
+AUPRC
+
+Open weights
+Re-trained
+
+0.928
+0.952
+
+0.657
+0.718
+
+0.771
+0.883
+
+0.465
+0.698
+
+0.729
+0.777
+
+0.349
+0.396
+
+0.694
+0.731
+
+0.679
+0.714
+
+Evaluation set-up We believe an important property of a ‘foundation model’ is effective ‘out-of-thebox’ embeddings, enabling strong downstream performance with limited task-specific supervision,
+and downstream multimodal fusion with other information streams, e.g. electronic healthcare records.
+In computer vision, representation quality is commonly evaluated with linear or MLP probes, e.g. [4,
+9]. However, existing sleep foundation models have varied drastically in their evaluation set-up;
+to the best of our knowledge, OSF [50] is the only prior work that evaluates performance using
+minimally expressive linear and MLP probes. In contrast, SleepFM used a recurrent model on top of
+frozen embeddings, with approximately 1 million parameters [55]. Meanwhile, sleep2vec originally
+performed low-rank fine-tuning of the model (up to 240 million parameters) on the full labelled
+dataset [64] .
+We aimed to standardise the use of embeddings to perform a fair comparison across different
+foundation models. We primarily report linear and MLP probing performance, applying simple
+temporal and modality pooling for each model where necessary to evaluate at 30-second resolution
+on downstream tasks. We believe this most closely matches evaluations in domains such as computer
+vision, e.g. mean-pooled embeddings from image patches. For OSF, which uses 30-second windows
+of input data, we use the dedicated CLS token for downstream probing experiments. For SleepFM
+and sleep2vec, which generate embeddings for each modality at different temporal resolutions, we
+first mean-pooled in the temporal dimension to obtain embeddings for each 30-second window. To
+combine embeddings from each modality, we evaluated both mean-pooling and concatenation and
+found the latter to work best across baselines.
+Sleep analysis tasks
+
+We primarily compare performance on the following tasks:
+
+• Staging: Sleep stage classification into one of five classes: Wake, N1, N2, N3 (deep) or
+rapid-eye-movement (REM) sleep.
+• Arousal: Detection of cortical arousal events, characterised by an abrupt shift to wakefulnesslike EEG activity. A high rate of cortical arousals during sleep correlates with excessive
+daytime sleepiness, impaired vigilance/cognition, and reduced quality of life.
+• Apnoea: Detection of apnoea events, i.e. a temporary cessation in breathing. All apnoeas
+(central, obstructive, mixed) are aggregated into a single class for the purpose of evaluation.
+• Desat.: Detection of blood oxygen desaturation events (transient drops in SpO2 ).
+Annotations for each task come from the NSRR-harmonised scoring provided alongside each
+overnight recording.
+Probe training Each foundation model was evaluated with an identical probing pipeline. Before
+fitting any probe, we standardised each embedding dimension to zero mean and unit variance, with
+the scaling statistics computed on the training split only and then applied to the validation and test
+splits. The linear probe is a single linear layer (multinomial logistic regression), trained to minimise
+cross-entropy with AdamW (learning rate 10−3 , weight decay 10−4 ) for 30 epochs. The MLP probe
+has two hidden layers of width 512 and 256 with ReLU activations and dropout (p = 0.1), and is
+trained to minimise cross-entropy with AdamW (learning rate 10−3 , weight decay 10−4 ) for up to
+10 epochs, with early stopping on a held-out validation split (patience 2). A separate probe is fit
+per task, and a fixed random seed is used throughout. We used the same probe configurations and
+hyper-parameters for all models reported. Probe hyper-parameters were chosen as sensible defaults
+and were not optimised.
+17
+
+A.5
+
+Compute usage
+
+Each tokenizer described in Section 3.2 was trained using a single NVIDIA H100 GPU using bf16
+mixed-precision, requiring 60 GB of GPU RAM and around 5 hours of training time. After training,
+tokenization was performed using a single NVIDIA L40S GPU, with each entire overnight recording
+of each channel (10+ hours) tokenized in a single forward pass in around 250 ms. All Hypnos models
+were trained using H100 GPUs with bf16 mixed-precision training and activation checkpointing in
+each Transformer layer. Training Hypnos-Base to 50k steps required 1.5 days distributed across 8
+GPUs, using around 45 GB of RAM on each GPU. For downstream probing evaluations, embeddings
+were generated using a single NVIDIA L40S GPU, with the embedding of each overnight recording
+taking around 3 seconds.
+To reduce compute usage, many of our experiments including initial model design and ablation
+studies were performed using a unimodal variant of Hypnos-Small using EEG data, which took
+around 1 day to train on a single H100 GPU. Across all experiments our total compute usage was
+approximately 8000 H100 GPU-hours.
+
+B
+
+Additional Experiments
+
+B.1
+
+Tokenizer design
+
+Residual depth BrainOmni uses a codebook with K = 4 quantization layers, which leads to visibly
+smoothed reconstructions of EEG data (see Fig. 4 of [60]). Instead, we used K = 8 quantizers for
+neural signals to increase reconstruction accuracy of higher frequency details, e.g. gamma activity.
+Here we investigate the effect of residual depth on downstream performance. We vary the quantization
+depth at both the input and output to Hypnos, Kin and Kout , which determine the residual tokens
+available for sequence modelling (Figure 4a) and the residual tokens to be predicted (Figure 4c)
+respectively. Figure 9 shows the performance of unimodal Hypnos variants across downstream tasks
+using EEG data as we vary Kin and Kout . We generally observe improved performance as we
+increase Kin , but a decrease in performance as we increase Kout . This indicates that high-frequency
+information is useful for sequence modelling, but trying to predict high-frequency information does
+not improve the quality of the learnt representation on the tasks evaluated. This suggests that Kout
+could be decreased during training. Reducing Kout from 8 to 2 would reduce Depth Transformer
+FLOPs by 75%, and overall FLOPs by around 25% for Hypnos-Base. However, this would come at
+the expense of generative capabilities.
+
+Figure 9: Effect of input and output residual depth on downstream performance. Linear probe
+metrics for unimodal EEG models on the SHHS validation set varying Kin and Kout . Performance
+slightly improves when increasing the number of input residual tokens but worsens when increasing
+the number of output residual tokens.
+Tokenization length In our main experiments, we designed our tokenizers to produce tokens at
+a rate of 1 Hz. This also determines the rate at which unique output embeddings are produced
+by the model. 1 Hz is a natural choice for real-world applications, aligning with standard units.
+Additionally, relevant physiological events such as heartbeats and sleep spindles [3] commonly occur
+on this timescale. Here we investigate the sensitivity of our approach to the tokenization length of
+different signals. For EEG and ECG signals, we trained 5 tokenizers with tokenization lengths, τ ∈
+(0.25, 0.5, 1.0, 3.0, 5.0) seconds. This was achieved by modifying the convolutional stride lengths in
+the convolutional components of the tokenizers. For 3-second and 5-second tokenization lengths, we
+also increased the input sequence length by 3x and 5x respectively, so that the input sequence length
+to Transformer components in the tokenizers remained constant. We then re-tokenized all datasets and
+18
+
+investigated the effect of tokenization length on downstream performance. Figure 10 shows both the
+reconstruction SNR and downstream performances as we vary the tokenization length. As expected,
+increasing tokenization length with fixed model capacity leads to a decrease in signal-to-noise ratio
+as the compression rate increases. Above τ = 0.25 s, performance is reasonably stable across a range
+of token durations for both ECG and EEG data, with τ = 1 s working well across tasks and inputs.
+Performance is noticeably poorer with τ = 0.25 across tasks. For very small tokenization lengths τ ,
+the auto-regression task reduces to trivial extrapolation over short timescales, empirically reducing
+the quality of the learnt representations.
+
+(a) Recon. SNR
+
+(b) Sleep staging
+
+(c) Apnoea detection (d) Arousal detection
+
+(e) Age regression
+
+Figure 10: Effect of token duration on downstream performance. (left) Reconstruction quality
+decreases as token duration is varied from 0.25 s to 5 s, i.e. the compression rate increases. However,
+performance is worst at high token rates (0.25 s) and saturates or regresses beyond 1 s. We adopt a 1 s
+token duration in all other experiments.
+Adversarial losses Défossez et al. [16] recently observed that removing reconstruction losses and
+solely relying on adversarial losses led to better performance in downstream audio modelling tasks.
+In early experiments, we tried incorporating adversarial losses but found that this did not have a
+significant effect on downstream performance. Additionally, it significantly increased computational
+requirements: each training run required substantially higher activation memory for the discriminator;
+and, more training runs were required to find stable hyper-parameters given the well-known instability
+issues in adversarial training [49].
+B.2
+
+Scaling unimodal EEG models
+
+Compute requirements precluded scaling our multimodal model beyond Base size in our main
+experiments. To extend the scaling analysis to larger models, we trained unimodal EEG variants
+of Hypnos from Tiny up to Large. Figure 11 shows next-token perplexity and downstream probing
+performance on the SHHS validation set as we scale model size. Trends mirror those observed in the
+multimodal setting: validation loss and downstream metrics continue to improve with scale through
+to Large.
+
+(a) Validation loss
+
+(b) Sleep staging
+
+(c) Apnoea detection
+
+(d) Arousal detection
+
+Figure 11: Scaling unimodal EEG models from Tiny to Large. Next-token perplexity and
+downstream metrics continue to improve with model scale. Sleep stage classification, apnoea
+detection and arousal detection performance are reported using a linear probe on the SHHS validation
+set.
+B.3
+
+Scaling context length
+
+A key motivation for next-token prediction is that it naturally scales to longer context lengths. To
+quantify the effect of context length on Hypnos, we trained unimodal EEG and ECG variants of
+Hypnos-Small with context lengths T ∈ {128, 256, 512, 1024, 2048, 4096} tokens, corresponding to
+roughly 2 minutes up to over an hour of data at 1 Hz. Models were trained for 50k steps, whilst all
+19
+
+other hyper-parameters were held fixed across runs. Figures 12 and 13 show validation perplexity
+and downstream probing performance on the SHHS validation set as we vary T .
+For both modalities, validation perplexity improves monotonically with context length, and most
+downstream metrics continue to improve out to 4096 tokens. Summary tasks benefit most: age
+regression, CVD risk and obstructive sleep apnoea (OSA) classification all improve steadily across
+the full range. Meanwhile, sleep staging and arousal detection saturate earlier, at around 1024–2048
+tokens. These trends are consistent across EEG and ECG, suggesting that the benefit of longer context
+is not specific to a single modality.
+
+(a) Validation perplexity
+
+(b) Sleep staging
+
+(e) Age regression
+
+(c) Apnoea detection
+
+(f) CVD risk
+
+(d) Arousal detection
+
+(g) Moderate OSA
+
+Figure 12: Effect of context length on single-channel EEG models. Validation perplexity decreases
+and downstream probing performance improves as the training context length is increased from 128
+to 4096 tokens. Sleep staging and arousal detection saturate at around 1024–2048 tokens, while age
+regression, CVD risk and moderate OSA detection continue to improve at the longest context lengths.
+
+(a) Validation perplexity
+
+(b) Sleep staging
+
+(e) Age regression
+
+(c) Apnoea detection
+
+(f) CVD risk
+
+(d) Arousal detection
+
+(g) Moderate OSA
+
+Figure 13: Effect of context length on ECG-only models. As with EEG, perplexity and downstream
+metrics improve with longer context. The largest relative gains are again on summary tasks such as
+moderate OSA detection and CVD risk.
+
+B.4
+
+Modality-masking ablation
+
+Table 10 reports the full results of the modality-masking ablation summarised in Section 4.6, including
+the linear-probe head and the secondary metric per task. The overall ordering is consistent across
+both probes: Independent is the weakest variant, No masking closes most of the gap on Full-modality
+evaluation but degrades on restricted-modality inputs, and Default (α = 1 group masking) matches
+20
+
+or exceeds Random on the majority of cells. All runs were trained on the same data splits using
+Hypnos-Small.
+Table 10: Modality-masking ablation — full results. Linear and MLP probes on SHHS (in-domain).
+Per-subject mean. Best per (probe, subset, metric) column in bold (ties bolded both). Variants:
+Independent (α → ∞, each modality stream trained independently), No masking (α → 0, always-full
+attention), Random (p = 0.5 per-modality random masking, following prior work), Default (ours,
+Chinese Restaurant Process with α = 1; Section 3.4).
+Staging
+
+Arousal
+
+Apnoea
+
+Desat.
+
+κ
+
+AUROC
+
+AUPRC
+
+AUROC
+
+AUPRC
+
+AUROC
+
+AUPRC
+
+AUROC
+
+AUPRC
+
+Independent (α → ∞)
+No masking (α → 0)
+Random (p = 0.5)
+Default (α = 1)
+
+0.747
+0.755
+0.773
+0.774
+
+0.958
+0.960
+0.965
+0.966
+
+0.774
+0.784
+0.797
+0.800
+
+0.862
+0.884
+0.896
+0.898
+
+0.622
+0.670
+0.691
+0.697
+
+0.771
+0.772
+0.786
+0.788
+
+0.573
+0.572
+0.597
+0.599
+
+0.766
+0.774
+0.793
+0.795
+
+0.455
+0.474
+0.508
+0.507
+
+EOG
+(M =2)
+
+Independent (α → ∞)
+No masking (α → 0)
+Random (p = 0.5)
+Default (α = 1)
+
+0.750
+0.760
+0.758
+0.764
+
+0.958
+0.962
+0.955
+0.957
+
+0.779
+0.791
+0.770
+0.778
+
+0.859
+0.877
+0.891
+0.888
+
+0.601
+0.643
+0.670
+0.671
+
+0.773
+0.776
+0.791
+0.793
+
+0.588
+0.596
+0.621
+0.622
+
+0.754
+0.745
+0.795
+0.794
+
+0.441
+0.428
+0.513
+0.510
+
+Cardio-resp.
+(M =3)
+
+Independent (α → ∞)
+No masking (α → 0)
+Random (p = 0.5)
+Default (α = 1)
+
+0.472
+0.463
+0.486
+0.490
+
+0.869
+0.869
+0.876
+0.878
+
+0.581
+0.575
+0.588
+0.591
+
+0.793
+0.831
+0.833
+0.835
+
+0.502
+0.565
+0.569
+0.573
+
+0.851
+0.858
+0.862
+0.861
+
+0.722
+0.731
+0.740
+0.737
+
+0.810
+0.789
+0.801
+0.806
+
+0.533
+0.490
+0.512
+0.522
+
+Full
+(M =8)
+
+Independent (α → ∞)
+No masking (α → 0)
+Random (p = 0.5)
+Default (α = 1)
+
+0.773
+0.792
+0.795
+0.797
+
+0.966
+0.970
+0.971
+0.971
+
+0.801
+0.816
+0.819
+0.820
+
+0.866
+0.900
+0.902
+0.901
+
+0.657
+0.710
+0.713
+0.716
+
+0.847
+0.861
+0.860
+0.859
+
+0.708
+0.731
+0.733
+0.730
+
+0.817
+0.830
+0.831
+0.831
+
+0.546
+0.582
+0.584
+0.582
+
+Independent (α → ∞)
+No masking (α → 0)
+Random (p = 0.5)
+Default (α = 1)
+
+0.784
+0.786
+0.796
+0.796
+
+0.969
+0.970
+0.972
+0.972
+
+0.811
+0.813
+0.823
+0.822
+
+0.917
+0.924
+0.932
+0.933
+
+0.752
+0.771
+0.790
+0.792
+
+0.788
+0.790
+0.798
+0.799
+
+0.599
+0.606
+0.617
+0.624
+
+0.788
+0.794
+0.809
+0.810
+
+0.499
+0.510
+0.537
+0.538
+
+EOG
+(M =2)
+
+Independent (α → ∞)
+No masking (α → 0)
+Random (p = 0.5)
+Default (α = 1)
+
+0.781
+0.787
+0.795
+0.794
+
+0.969
+0.970
+0.972
+0.972
+
+0.808
+0.813
+0.820
+0.820
+
+0.903
+0.916
+0.923
+0.922
+
+0.712
+0.743
+0.760
+0.759
+
+0.792
+0.794
+0.804
+0.803
+
+0.616
+0.624
+0.640
+0.634
+
+0.778
+0.768
+0.812
+0.810
+
+0.487
+0.466
+0.544
+0.542
+
+Cardio-resp.
+(M =3)
+
+Independent (α → ∞)
+No masking (α → 0)
+Random (p = 0.5)
+Default (α = 1)
+
+0.539
+0.543
+0.559
+0.562
+
+0.895
+0.897
+0.903
+0.905
+
+0.626
+0.628
+0.639
+0.643
+
+0.853
+0.873
+0.876
+0.877
+
+0.613
+0.650
+0.659
+0.659
+
+0.869
+0.879
+0.881
+0.881
+
+0.752
+0.771
+0.772
+0.772
+
+0.832
+0.815
+0.827
+0.835
+
+0.583
+0.539
+0.564
+0.579
+
+Full
+(M =8)
+
+Independent (α → ∞)
+No masking (α → 0)
+Random (p = 0.5)
+Default (α = 1)
+
+0.800
+0.812
+0.814
+0.813
+
+0.974
+0.976
+0.977
+0.977
+
+0.826
+0.835
+0.839
+0.837
+
+0.931
+0.943
+0.944
+0.944
+
+0.784
+0.813
+0.815
+0.816
+
+0.864
+0.880
+0.879
+0.880
+
+0.737
+0.766
+0.768
+0.767
+
+0.842
+0.856
+0.860
+0.858
+
+0.598
+0.630
+0.636
+0.631
+
+Subset
+
+Variant
+
+Linear probe
+EEG-C3
+(M =1)
+
+MLP probe
+EEG-C3
+(M =1)
+
+B.5
+
+Few-shot scaling across all datasets
+
+Figure 6 reports few-shot sleep-staging curves for one in-domain (SHHS) and one held-out (MrOS)
+dataset. For completeness, Tables 11 and 12 reports the full per-dataset breakdown of sleep staging
+results across eight cohorts, three labelled-data fractions (1%, 10%, 100%), and three metrics (Cohen’s
+κ, macro-AUROC, macro-AUPRC) for linear and MLP probes. Hypnos consistently achieves the
+best macro-AUPRC in every cohort at every data fraction, and is best or near-best on κ and AUROC
+throughout. Using 1% of labelled data, Hypnos outperforms both U-Sleep and SleepTransformer
+using 100% of the labelled data on 3 out of 4 held-out test sets evaluated.
+
+21
+
+Table 11: Few-shot sleep stage classification across all datasets — linear probe. Per-subject mean
+of Cohen’s κ, macro-AUROC and macro-AUPRC, macro-averaged over the five AASM stages, as
+the fraction of labelled recordings used to train the probe is scaled from 1% to 100%. Foundation
+models are evaluated with a frozen encoder and a linear probe; U-Sleep and SleepTransformer are
+supervised (EEG+EOG), retrained at each fraction. Best per (fraction, metric) within each dataset
+block in bold.
+1%
+Dataset
+
+10%
+
+100%
+
+κ
+
+AUROC
+
+AUPRC
+
+κ
+
+AUROC
+
+AUPRC
+
+κ
+
+AUROC
+
+AUPRC
+
+U-Sleep [39]
+SleepTransformer [40]
+
+0.734
+0.710
+
+0.916
+0.947
+
+0.741
+0.755
+
+0.790
+0.782
+
+0.958
+0.967
+
+0.815
+0.805
+
+0.799
+0.806
+
+0.969
+0.974
+
+0.825
+0.832
+
+SleepFM [55]
+sleep2vec [64]
+OSF [50]
+Hypnos
+
+0.699
+0.681
+0.754
+0.762
+
+0.942
+0.932
+0.955
+0.964
+
+0.733
+0.716
+0.773
+0.798
+
+0.668
+0.743
+0.780
+0.799
+
+0.911
+0.958
+0.964
+0.973
+
+0.671
+0.774
+0.796
+0.825
+
+0.716
+0.763
+0.791
+0.811
+
+0.941
+0.964
+0.968
+0.976
+
+0.731
+0.792
+0.809
+0.836
+
+U-Sleep
+SleepTransformer
+
+0.785
+0.776
+
+0.931
+0.965
+
+0.796
+0.819
+
+0.843
+0.852
+
+0.973
+0.980
+
+0.874
+0.867
+
+0.851
+0.873
+
+0.981
+0.987
+
+0.888
+0.896
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.776
+0.771
+0.827
+0.843
+
+0.960
+0.959
+0.973
+0.980
+
+0.801
+0.798
+0.842
+0.871
+
+0.742
+0.819
+0.842
+0.875
+
+0.934
+0.975
+0.979
+0.988
+
+0.738
+0.844
+0.859
+0.893
+
+0.784
+0.833
+0.849
+0.881
+
+0.958
+0.980
+0.983
+0.990
+
+0.797
+0.862
+0.872
+0.901
+
+U-Sleep
+SleepTransformer
+
+0.743
+0.760
+
+0.918
+0.958
+
+0.756
+0.798
+
+0.808
+0.779
+
+0.961
+0.962
+
+0.825
+0.816
+
+0.803
+0.804
+
+0.971
+0.973
+
+0.845
+0.847
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.705
+0.738
+0.757
+0.785
+
+0.937
+0.940
+0.954
+0.967
+
+0.735
+0.757
+0.784
+0.829
+
+0.662
+0.792
+0.784
+0.824
+
+0.906
+0.962
+0.962
+0.979
+
+0.677
+0.808
+0.802
+0.858
+
+0.725
+0.804
+0.805
+0.839
+
+0.933
+0.966
+0.968
+0.983
+
+0.738
+0.820
+0.816
+0.873
+
+U-Sleep
+SleepTransformer
+
+0.626
+0.618
+
+0.850
+0.925
+
+0.671
+0.731
+
+0.718
+0.740
+
+0.939
+0.948
+
+0.774
+0.783
+
+0.733
+0.773
+
+0.951
+0.963
+
+0.794
+0.816
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.595
+0.632
+0.609
+0.723
+
+0.909
+0.915
+0.909
+0.948
+
+0.692
+0.708
+0.715
+0.784
+
+0.570
+0.694
+0.674
+0.767
+
+0.880
+0.941
+0.932
+0.964
+
+0.634
+0.761
+0.749
+0.817
+
+0.639
+0.713
+0.704
+0.777
+
+0.918
+0.948
+0.942
+0.967
+
+0.707
+0.774
+0.764
+0.826
+
+U-Sleep
+SleepTransformer
+
+0.592
+0.673
+
+0.872
+0.938
+
+0.621
+0.699
+
+0.737
+0.714
+
+0.934
+0.943
+
+0.730
+0.724
+
+0.730
+0.753
+
+0.949
+0.958
+
+0.748
+0.758
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.622
+0.656
+0.698
+0.701
+
+0.918
+0.925
+0.940
+0.944
+
+0.638
+0.664
+0.702
+0.718
+
+0.601
+0.734
+0.707
+0.766
+
+0.889
+0.951
+0.948
+0.968
+
+0.604
+0.719
+0.723
+0.778
+
+0.658
+0.751
+0.740
+0.799
+
+0.919
+0.958
+0.957
+0.973
+
+0.659
+0.737
+0.738
+0.794
+
+U-Sleep
+SleepTransformer
+
+0.622
+0.628
+
+0.886
+0.952
+
+0.729
+0.787
+
+0.721
+0.757
+
+0.952
+0.967
+
+0.818
+0.846
+
+0.753
+0.785
+
+0.956
+0.972
+
+0.830
+0.861
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.478
+0.626
+0.690
+0.767
+
+0.911
+0.924
+0.951
+0.970
+
+0.717
+0.742
+0.808
+0.866
+
+0.402
+0.701
+0.639
+0.814
+
+0.861
+0.955
+0.953
+0.977
+
+0.617
+0.810
+0.821
+0.889
+
+0.635
+0.724
+0.679
+0.805
+
+0.925
+0.963
+0.957
+0.979
+
+0.740
+0.837
+0.833
+0.898
+
+U-Sleep
+SleepTransformer
+
+0.602
+0.295
+
+0.873
+0.894
+
+0.701
+0.610
+
+0.736
+0.554
+
+0.960
+0.937
+
+0.813
+0.730
+
+0.766
+0.720
+
+0.968
+0.956
+
+0.829
+0.795
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.386
+0.607
+0.645
+0.746
+
+0.891
+0.912
+0.945
+0.967
+
+0.666
+0.702
+0.768
+0.828
+
+0.409
+0.679
+0.656
+0.747
+
+0.856
+0.943
+0.954
+0.972
+
+0.593
+0.770
+0.784
+0.847
+
+0.612
+0.693
+0.717
+0.721
+
+0.917
+0.950
+0.960
+0.968
+
+0.703
+0.785
+0.801
+0.847
+
+U-Sleep
+SleepTransformer
+
+0.576
+0.475
+
+0.863
+0.882
+
+0.604
+0.633
+
+0.640
+0.663
+
+0.904
+0.940
+
+0.683
+0.726
+
+0.655
+0.661
+
+0.931
+0.942
+
+0.712
+0.740
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.544
+0.628
+0.623
+0.693
+
+0.890
+0.914
+0.917
+0.948
+
+0.619
+0.664
+0.667
+0.744
+
+0.526
+0.684
+0.637
+0.747
+
+0.879
+0.939
+0.926
+0.959
+
+0.585
+0.716
+0.685
+0.773
+
+0.562
+0.695
+0.652
+0.750
+
+0.904
+0.946
+0.936
+0.964
+
+0.640
+0.731
+0.700
+0.782
+
+Method
+
+In-domain
+
+SHHS
+
+CCSHS
+
+CFS
+
+NCHSDB
+
+Held-out
+
+MROS
+
+DOD-H
+
+DOD-O
+
+MESA
+
+22
+
+Table 12: Few-shot sleep stage classification across all datasets — MLP probe. Per-subject mean
+of Cohen’s κ, macro-AUROC and macro-AUPRC, macro-averaged over the five AASM stages, as the
+fraction of labelled recordings used to train the probe is scaled from 1% to 100%. Foundation models
+are evaluated with a frozen encoder and a MLP probe; U-Sleep and SleepTransformer are supervised
+(EEG+EOG), retrained at each fraction. Best per (fraction, metric) within each dataset block in bold.
+1%
+Dataset
+
+10%
+
+100%
+
+κ
+
+AUROC
+
+AUPRC
+
+κ
+
+AUROC
+
+AUPRC
+
+κ
+
+AUROC
+
+AUPRC
+
+U-Sleep [39]
+SleepTransformer [40]
+
+0.734
+0.710
+
+0.916
+0.947
+
+0.741
+0.755
+
+0.790
+0.782
+
+0.958
+0.967
+
+0.815
+0.805
+
+0.799
+0.806
+
+0.969
+0.974
+
+0.825
+0.832
+
+SleepFM [55]
+sleep2vec [64]
+OSF [50]
+Hypnos
+
+0.702
+0.699
+0.762
+0.785
+
+0.943
+0.940
+0.959
+0.971
+
+0.735
+0.725
+0.777
+0.821
+
+0.748
+0.741
+0.784
+0.807
+
+0.957
+0.957
+0.968
+0.975
+
+0.772
+0.767
+0.806
+0.832
+
+0.772
+0.771
+0.800
+0.819
+
+0.964
+0.966
+0.971
+0.978
+
+0.791
+0.799
+0.818
+0.844
+
+U-Sleep
+SleepTransformer
+
+0.785
+0.776
+
+0.931
+0.965
+
+0.796
+0.819
+
+0.843
+0.852
+
+0.973
+0.980
+
+0.874
+0.867
+
+0.851
+0.873
+
+0.981
+0.987
+
+0.888
+0.896
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.778
+0.773
+0.829
+0.856
+
+0.963
+0.961
+0.976
+0.984
+
+0.808
+0.793
+0.843
+0.880
+
+0.831
+0.813
+0.844
+0.871
+
+0.977
+0.975
+0.982
+0.988
+
+0.850
+0.838
+0.872
+0.894
+
+0.849
+0.839
+0.863
+0.888
+
+0.983
+0.982
+0.985
+0.991
+
+0.869
+0.868
+0.884
+0.914
+
+U-Sleep
+SleepTransformer
+
+0.743
+0.760
+
+0.918
+0.958
+
+0.756
+0.798
+
+0.808
+0.779
+
+0.961
+0.962
+
+0.825
+0.816
+
+0.803
+0.804
+
+0.971
+0.973
+
+0.845
+0.847
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.704
+0.748
+0.774
+0.793
+
+0.938
+0.944
+0.959
+0.974
+
+0.741
+0.755
+0.790
+0.843
+
+0.740
+0.778
+0.796
+0.821
+
+0.953
+0.960
+0.968
+0.979
+
+0.783
+0.794
+0.816
+0.865
+
+0.783
+0.810
+0.813
+0.838
+
+0.965
+0.970
+0.972
+0.983
+
+0.812
+0.828
+0.829
+0.880
+
+U-Sleep
+SleepTransformer
+
+0.626
+0.618
+
+0.850
+0.925
+
+0.671
+0.731
+
+0.718
+0.740
+
+0.939
+0.948
+
+0.774
+0.783
+
+0.733
+0.773
+
+0.951
+0.963
+
+0.794
+0.816
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.610
+0.628
+0.630
+0.749
+
+0.919
+0.921
+0.914
+0.960
+
+0.708
+0.710
+0.723
+0.807
+
+0.680
+0.687
+0.689
+0.770
+
+0.940
+0.940
+0.940
+0.967
+
+0.755
+0.753
+0.762
+0.822
+
+0.721
+0.733
+0.719
+0.782
+
+0.950
+0.954
+0.947
+0.969
+
+0.778
+0.787
+0.775
+0.833
+
+U-Sleep
+SleepTransformer
+
+0.592
+0.673
+
+0.872
+0.938
+
+0.621
+0.699
+
+0.737
+0.714
+
+0.934
+0.943
+
+0.730
+0.724
+
+0.730
+0.753
+
+0.949
+0.958
+
+0.748
+0.758
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.660
+0.663
+0.716
+0.746
+
+0.934
+0.930
+0.946
+0.961
+
+0.675
+0.668
+0.709
+0.763
+
+0.686
+0.720
+0.733
+0.767
+
+0.943
+0.947
+0.956
+0.968
+
+0.696
+0.701
+0.735
+0.776
+
+0.731
+0.758
+0.750
+0.805
+
+0.952
+0.960
+0.960
+0.973
+
+0.718
+0.741
+0.747
+0.796
+
+U-Sleep
+SleepTransformer
+
+0.622
+0.628
+
+0.886
+0.952
+
+0.729
+0.787
+
+0.721
+0.757
+
+0.952
+0.967
+
+0.818
+0.846
+
+0.753
+0.785
+
+0.956
+0.972
+
+0.830
+0.861
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.531
+0.639
+0.698
+0.788
+
+0.911
+0.934
+0.954
+0.975
+
+0.720
+0.746
+0.815
+0.882
+
+0.684
+0.679
+0.723
+0.786
+
+0.949
+0.950
+0.959
+0.976
+
+0.792
+0.797
+0.829
+0.889
+
+0.647
+0.745
+0.700
+0.820
+
+0.943
+0.963
+0.955
+0.982
+
+0.788
+0.836
+0.820
+0.906
+
+U-Sleep
+SleepTransformer
+
+0.602
+0.295
+
+0.873
+0.894
+
+0.701
+0.610
+
+0.736
+0.554
+
+0.960
+0.937
+
+0.813
+0.730
+
+0.766
+0.720
+
+0.968
+0.956
+
+0.829
+0.795
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.549
+0.615
+0.722
+0.742
+
+0.911
+0.919
+0.953
+0.966
+
+0.700
+0.707
+0.785
+0.833
+
+0.541
+0.660
+0.694
+0.689
+
+0.919
+0.940
+0.954
+0.962
+
+0.708
+0.758
+0.792
+0.835
+
+0.581
+0.707
+0.703
+0.733
+
+0.926
+0.952
+0.953
+0.966
+
+0.731
+0.788
+0.796
+0.843
+
+U-Sleep
+SleepTransformer
+
+0.576
+0.475
+
+0.863
+0.882
+
+0.604
+0.633
+
+0.640
+0.663
+
+0.904
+0.940
+
+0.683
+0.726
+
+0.655
+0.661
+
+0.931
+0.942
+
+0.712
+0.740
+
+SleepFM
+sleep2vec
+OSF
+Hypnos
+
+0.572
+0.626
+0.639
+0.690
+
+0.909
+0.919
+0.925
+0.956
+
+0.647
+0.667
+0.683
+0.757
+
+0.586
+0.669
+0.626
+0.702
+
+0.926
+0.935
+0.931
+0.958
+
+0.671
+0.699
+0.690
+0.763
+
+0.629
+0.705
+0.666
+0.692
+
+0.933
+0.947
+0.937
+0.956
+
+0.697
+0.732
+0.703
+0.754
+
+Method
+
+In-domain
+
+SHHS
+
+CCSHS
+
+CFS
+
+NCHSDB
+
+Held-out
+
+MROS
+
+DOD-H
+
+DOD-O
+
+MESA
+
+23
+
+B.6
+
+Transfer to external single-lead ECG benchmarks
+
+We evaluate Hypnos’s frozen ECG-only embeddings against xECG [32], a foundation model pretrained on 12-lead clinical ECG, on three external single-lead ECG benchmarks (Table 13). Neither
+model’s pretraining corpus contains any of these datasets. Both models use a frozen encoder followed by a StandardScaler + L2-regularised logistic-regression probe, with C tuned on validation
+AUROC over {10−4 , . . . , 102 }.
+Apnea-ECG protocol. We follow BenchECG’s sleep_apnea 5-way ensemble linear-probe recipe:
+each sample is a 300 s window centred on a target minute; the backbone produces per-minute features
+for five consecutive positions (m−2, . . . , m+2); a linear head is trained on each position supervised
+by the central-minute label; the five predictions are averaged at test time.
+Table 13: External single-lead ECG benchmarks. Frozen-encoder linear-probe AUROC across
+three publicly available external single-lead ECG datasets covering handheld (CinC 2017), overnight
+single-lead (Apnea-ECG), and dynamic Holter (CPSC 2021) settings. CinC 2017 reports 5-fold CV
+mean; other datasets report a single subject-disjoint split.
+
+C
+
+Dataset
+
+Task / eval unit
+
+Hypnos
+
+xECG
+
+CinC 2017
+Apnea-ECG
+CPSC 2021
+
+AF-vs-rest (per-record)
+Apnoea (per-minute)
+Paroxysmal AF (30 s window)
+
+0.984
+0.925
+0.985
+
+0.985
+0.884
+0.934
+
+Extended Limitations and Future Work
+
+Clinical Outcomes In this work, we evaluated the quality of Hypnos’ embeddings for existing
+diagnostic tasks such as sleep stage classification. Due to data availability, we were unable to evaluate
+Hypnos on broader clinical outcomes data like SleepFM [55]. Evaluating Hypnos on a similar broad
+range of clinical outcomes is an important direction for future work. Given the large performance
+improvements observed across our evaluations, we expect Hypnos would also enable a significant
+improvement in these tasks.
+Biomarker Discovery There are well-known issues with existing sleep stage definitions. For
+example, small changes to the brittle definition of deep (N3) sleep can have a significant effect on
+downstream analyses, such as how sleep architecture purportedly varies with age for women [15].
+A promising direction is using Hypnos for data-driven biomarker discovery and identifying better
+continuous measures of health. For example, identifying latent directions or sparse features predictive
+of incident neurodegenerative or cardiovascular disease. The generative capability of Hypnos could
+be used for visual interpretation of such features in input space.
+
+D
+
+Broader Impact
+
+Sleep disorders such as obstructive sleep apnoea and insomnia are common but routinely underdiagnosed, in part because polysomnography is expensive to record and labour-intensive to score.
+Foundation models for physiological signals offer a path to reducing the cost of sleep analysis and
+broadening access to sleep medicine, through improved generalisation with fewer labelled examples
+and via fast adaptation to novel sensor configurations, e.g. from consumer wearables. The recordings
+used in this work are drawn from nine public datasets, predominantly curated by the National Sleep
+Research Resource (NSRR). These cohorts are each biased by exclusion criteria; for example, MrOS
+is a study that solely recruited older males. For real-world deployment, Hypnos should be evaluated
+on populations of interest, and we encourage further work auditing performance across demographic
+subgroups.
+
+E
+
+Additional Acknowledgements
+
+The Sleep Heart Health Study (SHHS) was supported by National Heart, Lung, and Blood Institute
+cooperative agreements U01HL53916 (University of California, Davis), U01HL53931 (New York
+24
+
+University), U01HL53934 (University of Minnesota), U01HL53937 and U01HL64360 (Johns Hopkins University), U01HL53938 (University of Arizona), U01HL53940 (University of Washington),
+U01HL53941 (Boston University), and U01HL63463 (Case Western Reserve University).
+The Multi-Ethnic Study of Atherosclerosis (MESA) Sleep Ancillary study was funded by NIHNHLBI Association of Sleep Disorders with Cardiovascular Health Across Ethnic Groups (RO1
+HL098433). MESA is supported by NHLBI funded contracts HHSN268201500003I, N01-HC-95159,
+N01-HC-95160, N01-HC-95161, N01-HC-95162, N01-HC-95163, N01-HC-95164, N01-HC-95165,
+N01-HC-95166, N01-HC-95167, N01-HC-95168 and N01-HC-95169 from the National Heart,
+Lung, and Blood Institute, and by cooperative agreements UL1-TR-000040, UL1-TR-001079, and
+UL1-TR-001420 funded by NCATS.
+The Wisconsin Sleep Cohort Study was supported by the U.S. National Institutes of Health, National
+Heart, Lung, and Blood Institute (R01HL62252), National Institute on Aging (R01AG036838,
+R01AG058680), and the National Center for Research Resources (1UL1RR025011).
+The Childhood Adenotonsillectomy Trial (CHAT) was supported by the National Institutes of Health
+(HL083075, HL083129, UL1-RR-024134, UL1 RR024989).
+The Cleveland Family Study (CFS) was supported by grants from the National Institutes of Health
+(HL46380, M01 RR00080-39, T32-HL07567, RO1-46380).
+The Cleveland Children’s Sleep and Health Study (CCSHS) was supported by grants from the
+National Institutes of Health (RO1HL60957, K23 HL04426, RO1 NR02707, M01 Rrmpd0380-39).
+The National Heart, Lung, and Blood Institute provided funding for the ancillary MrOS Sleep Study,
+“Outcomes of Sleep Disorders in Older Men," under the following grant numbers: R01 HL071194,
+R01 HL070848, R01 HL070847, R01 HL070842, R01 HL070841, R01 HL070837, R01 HL070838,
+and R01 HL070839.
+NCH Sleep DataBank was supported by the National Institute of Biomedical Imaging and Bioengineering of the National Institutes of Health under Award Number R01EB025018.
+
+25
+
+

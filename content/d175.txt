@@ -1,0 +1,1845 @@
+Single-channel qEEG characteristics distinguish delirium from no delirium, but not postoperative from non-postoperative delirium 
+
+|  |
+| :-: |
+| [**Page 1**]() |
+
+Single-channel qEEG characteristics distinguish delirium from no
+
+delirium, but not postoperative from non-postoperative delirium
+
+D.Y. Lodema [a](#1),[b](#1),[1](#1),[\*](#1)
+
+, F.L. Ditzel [a](#1),[1](#1), S.C.A. Hut [a](#1), E. van Dellen [b](#1),[d](#1), W.M. Otte [c](#1), A.J.C. Slooter [a](#1),[b](#1),[d](#1)
+
+a *Department of Intensive Care Medicine and University Medical Center Utrecht Brain Center, University Medical Center Utrecht, Utrecht University, Utrecht, the Netherlands*
+
+b *Department of Psychiatry and University Medical Center Utrecht Brain Center, University Medical Center Utrecht, Utrecht University, Utrecht, the Netherlands*
+
+c *Department of Pediatric Neurology and University Medical Center Utrecht Brain Center, University Medical Center Utrecht, Utrecht University, Utrecht, the Netherlands*
+
+d *Department of Neurology, UZ Brussel and Vrije Universiteit Brussel, Brussels, Belgium*
+
+h i g h l i g h t s
+
+ Our random forest quantitative EEG (qEEG) classifier could classify delirium versus no delirium with an AUC of 0.76.
+
+ The most important delirium classification features were: theta peak frequency, relative alpha power and theta autocorrelation.
+
+ There was no evidence that qEEG features differed between postoperative and non-postoperative delirium.
+
+a r t i c l e i n f o
+
+*Article history:*
+
+Accepted 19 January 2024
+
+Available online 20 February 2024
+
+*Keywords:*
+
+Delirium
+
+Postoperative
+
+Random forest
+
+Electroencephalogram
+
+Acute encephalopathy
+
+a b s t r a c t
+
+*Objective:* This exploratory study examined quantitative electroencephalography (qEEG) changes in
+
+delirium and the use of qEEG features to distinguish postoperative from non-postoperative delirium.
+
+*Methods:* This project was part of the DeltaStudy, a cross-sectional, multicenter study in Intensive Care
+
+Units (ICUs) and non-ICU wards. Single-channel (Fp2-Pz) four-minutes resting-state EEG was analyzed
+
+in 456 patients. After calculating 98 qEEG features per epoch, random forest (RF) classification was used
+
+to analyze qEEG changes in delirium and to test whether postoperative and non-postoperative delirium
+
+could be distinguished.
+
+*Results:* An area under the receiver operating characteristic curve (AUC) of 0.76 (95% Confidence Interval
+
+(CI) 0.71–0.80) was found when classifying delirium with a sensitivity of 0.77 and a specificity of 0.63 at
+
+the optimal operating point. The classification of postoperative versus non-postoperative delirium
+
+resulted in an AUC of 0.50 (95%CI 0.38–0.61).
+
+*Conclusions:* RF classification was able to discriminate delirium from no delirium with reasonable accu-
+
+racy, while also identifying new delirium qEEG markers like autocorrelation and theta peak frequency. RF
+
+classification could not distinguish postoperative from non-postoperative delirium.
+
+*Significance:* Single-channel EEG differentiates between delirium and no delirium with reasonable accu-
+
+racy. We found no distinct EEG profile for postoperative delirium, which may suggest that delirium is one
+
+entity, whether it develops postoperatively or not.
+
+© 2024 International Federation of Clinical Neurophysiology. Published by Elsevier B.V. This is an open
+
+access article under the CC BY license (<http://creativecommons.org/licenses/by/4.0/>).
+
+**1. Introduction**
+
+Delirium is a neuropsychiatric syndrome characterized by dis-
+
+turbances of attention, awareness, and other cognitive functions
+
+([American Psychiatric Association, 2013](#7)). Increasing our knowl-
+
+edge of delirium is of great importance since the condition affects
+
+one in every four to five hospital patients ([Gibb et al., 2020](#7)) and is
+
+associated with prolonged hospitalization ([Salluh et al., 2015](#8)),
+
+long-term cognitive decline ([Austin et al., 2019; Goldberg et al.,](#7)
+
+[2020; Tsui et al., 2022](#7)), institutionalization and mortality, as well
+
+as increased costs ([Inouye et al., 2014; Leslie et al., 2008](#7)).
+
+Delirium can be categorized in different ways ([Wilson et al.,](#8)
+
+[2020](#8)), but one distinction that is often made is that between post-
+
+operative and non-postoperative delirium ([Palanca et al., 2017](#8)). In
+
+delirium research, elective surgery patients are often studied for
+
+their suitability for prospective study designs ([Boord et al., 2020;](#7)
+
+[Wiegand et al., 2022](#7)). However, various factors in postoperative
+
+<https://doi.org/10.1016/j.clinph.2024.01.009>
+
+1388-2457/© 2024 International Federation of Clinical Neurophysiology. Published by Elsevier B.V.
+
+This is an open access article under the CC BY license (<http://creativecommons.org/licenses/by/4.0/>).
+
+\* Corresponding author at: Department of Intensive Care Medicine. University
+
+Medical Center Utrecht. PO Box 85500, 3508 GA Utrecht, The Netherlands.
+
+*E-mail address:* [y.lodema@outlook.com ](mailto:y.lodema@outlook.com)(D.Y. Lodema).
+
+1 The first two authors contributed equally to this work.
+
+[Clinical Neurophysiology 161 (2024) 93–100](https://doi.org/10.1016/j.clinph.2024.01.009)
+
+Contents lists available at [ScienceDirect](http://www.sciencedirect.com/science/journal/13882457)
+
+Clinical Neurophysiology
+
+journal homepage: [www.elsevier.com/locate/clinph](http://www.elsevier.com/locate/clinph)
+
+-----
+
+|  |
+| :-: |
+| [**Page 2**]() |
+
+delirium are not uniform across the entire delirium population. For
+
+instance, the use of opioids and sedatives, two types of drugs com-
+
+monly prescribed in surgical patients, increases delirium incidence
+
+([Sanson et al., 2018](#8)). Furthermore, differences in electroen-
+
+cephalography (EEG) changes seen in postoperative and sepsis-
+
+related delirium have been reported. Triphasic waves have been
+
+reported in sepsis-related delirium but not postoperative delirium,
+
+while mixed alpha and fast oscillations have been reported in post-
+
+operative delirium but not sepsis-related ([Palanca et al., 2017](#8)).
+
+These differences raise the question whether findings from delir-
+
+ium research in the postoperative setting can be generalized to
+
+other types of delirium or should be interpreted separately.
+
+EEG provides a unique combination of accessibility and high
+
+temporal resolution and it has been used for decades in delirium
+
+research ([Engel and Romano, 1959](#7)). We previously showed that
+
+single-channel EEG (Fp2-Pz) could adequately detect delirium
+
+using only one minute of recorded data in a postoperative cohort,
+
+based on a limited number of qEEG changes ([Ditzel et al., 2022;](#7)
+
+[Numan et al., 2019](#7)). Here, we wanted to focus on expanding our
+
+knowledge of qEEG changes in delirium. Additionally, we aimed
+
+to explore if qEEG features differ between postoperative and
+
+non-postoperative delirium.
+
+To facilitate the comparison of a greater number of qEEG fea-
+
+tures than in prior delirium EEG studies ([Van Der Kooi et al.,](#8)
+
+[2015](#8)), machine learning (ML) techniques can be used. ML is typi-
+
+cally better suited than traditional statistical methods for analyz-
+
+ing large amounts of potentially non-predictive variables, as
+
+demonstrated in genetic research ([Libbrecht and Noble, 2015](#7)).
+
+Random Forest (RF) is a type of supervised ML that is seen as a
+
+leading algorithm for classification ([Deo, 2015](#7)), for it has been pro-
+
+ven to be robust and relatively insensitive to overfitting ([Breiman,](#7)
+
+[2001; Hosseini et al., 2021](#7)). In this exploratory study design, we
+
+used RF to allow a great variety of qEEG characteristics and their
+
+interactions to be included in the comparison. We used binary clas-
+
+sification for two-sample testing to study possible group differ-
+
+ences ([Friedman, 2003](#7)). We aimed to improve the understanding
+
+of delirium first by exploring a variety of qEEG features related
+
+to delirium and secondly, comparing qEEG changes of postopera-
+
+tive and non-postoperative delirium patients.
+
+**2. Methods**
+
+*2.1. Setting and study populations*
+
+This project was part of the DeltaStudy, a cross-sectional, multi-
+
+centerstudy in Intensive Care Units (ICUs) and non-ICU wards
+
+between May 2019 and December 2020 in ten hospitals in the
+
+Netherlands
+
+(University Medical Center
+
+(UMC)
+
+Utrecht,
+
+Diakonessenhuis Utrecht, Radboud UMC, Isala Zwolle, Isala Meppel,
+
+Tergooi Medical Center, Franciscus Gasthuis & Vlietland, Onze Lieve
+
+Vrouwe Gasthuis, Amphia, Medisch Spectrum Twente). The study
+
+design was conducted in accordance with the ethical principles that
+
+originated from the 2013 version of the Declaration of Helsinki
+
+([World Medical Association, 2013](#8)) approved by the local ethical
+
+committee of UMC Utrecht (17857) and registered at [ClinicalTri-](http://ClinicalTrials.gov)
+
+[als.gov ](http://ClinicalTrials.gov)(NCT03966274). This manuscript adheres to the Transpar-
+
+ent reporting of a multivariable prediction model for individual
+
+prognosis or diagnosis (TRIPOD) guidelines ([Collins et al., 2015](#7)).
+
+Patients were included when admitted on the days that the
+
+researchers visited the hospital. Inclusion criteria for the ICU were
+
+an expected stay of at least 24 h and a minimum age of 18. Patients
+
+admitted to a general ward were included if they had an expected
+
+stay of at least 48 h and a minimum age of 60. Exclusion criteria in
+
+both groups were:primarybrain surgery or any type of brain
+
+injury in the six preceding weeks, admission for primary neurolog-
+
+ical or neurosurgical disease, known dementia,use of lithium,
+
+presence of an intracranial metal plate or device, a language barrier
+
+or deafness, anda Richmond Agitation-Sedation Scale (RASS)
+
+score below
+
+2\. Patients who showed severe agitation disturbing
+
+the EEG measurement were also excluded. Additionally, patients
+
+with partly or completely missing delirium assessment or EEG data
+
+were excluded.
+
+*2.2. Clinical assessment of delirium*
+
+A trained researcher administered the Delirium Interview: a
+
+test battery targeting the DSM-5 delirium criteria, which takes
+
+about ten minutes, and is designed to serve as reference standard
+
+for studies on delirium assessment tools, with a sensitivity of
+
+89% (95% Confidence Interval (CI) 72%–98%) and a specificity of
+
+82% (95% CI 71%–90%) ([Ditzel et al., 2023](#7)). The results of the Delir-
+
+ium Interview were combined with information extracted from the
+
+electronic health record 24 h before and twelve h after the mea-
+
+surement. The diagnosis of delirium was based on a majority vote
+
+of three independent delirium experts asked to assess delirium at
+
+the moment of the measurement. These experts were blinded to
+
+RF classification results. The panel of experts was comprised of sev-
+
+enteen clinicians, primarily geriatricians and psychiatrists, who
+
+had an average of 17 years of clinical experience (with a standard
+
+deviation, SD of 6.3 years). Each of these clinicians encountered
+
+approximately 10 delirious patients per week.
+
+*2.3. EEG recordings, pre-processing, and analysis*
+
+Directly after the delirium assessment, the same researcher per-
+
+formed an EEG measurement. The researcher was blinded for the
+
+definitive outcome of the delirium assessment while measuring
+
+the EEG. Four-minutes, resting-state, eyes-closed EEG was
+
+recorded with a single Fp2-Pz lead, previously selected ([Van Der](#8)
+
+[Kooi et al., 2015](#8)) and validated ([Ditzel et al., 2022; Numan et al.,](#7)
+
+[2019](#7)) for delirium monitoring. Specially developed self-adhesive
+
+patches fixed with Ten20 electrode paste were used. EEGs were
+
+recorded in the patient’s hospital room, without displaying the
+
+recorded signal to the researcher. EEGs predominantly containing
+
+noise were excluded based on visual inspection. Analysis was per-
+
+formed with R version 4.1.0. The raw EEG data were first band-pass
+
+filtered from 1–25 Hz to largely eliminate electromyography arti-
+
+facts ([Whitham et al., 2007](#8)) and drifting. Next, the data were fil-
+
+tered to delta (1–4 Hz), widened delta (1–6 Hz), theta (4–8 Hz),
+
+alpha (8–13 Hz), and beta (13–25 Hz) bands. Then, the data were
+
+cut into eight-second-long epochs, after which automated artifact
+
+rejectiontook place. We applied automated artifact rejection
+
+because we preferred objectivity and reproducibility over sophisti-
+
+cation, especially since single-channel EEG manual epoch selection
+
+can be prone to subjectivity. This automated rejection consisted of
+
+excluding epochs in which the signal exceeded five times the signal
+
+amplitude SD. To ensure a balanced representation for each patient
+
+in the analysis, we analyzed an equal number of epochs for each
+
+participant. This approach was chosen to avoid a potential
+
+decrease in feature reliability for patients with fewer artifact-free
+
+epochs. The optimal number of epochs to be included per patient
+
+was determined by maximizing data availability and minimizing
+
+patient exclusion. The first artifact free epochs were selected to
+
+reduce selection bias ([van Diessen et al., 2015](#8)).
+
+A custom R script was used for qEEG feature extraction. The
+
+choice of features was based on previous delirium and epilepsy
+
+EEG literature ([Chao and Shen, 2003; Cohen, 2008; Komsta and](#7)
+
+[Novomestky, 2022; Luque et al., 2009; Salimpour and Anderson,](#7)
+
+[2019; Snaedal et al., 2012; Zhu et al., 2014](#7)). For explorative rea-
+
+sons, we used additional statistical measures suitable for quantify-
+
+ing characteristics of time series data, which were not specific for
+
+*D.Y. Lodema, F.L. Ditzel, S.C.A. Hut et al.*
+
+*Clinical Neurophysiology 161 (2024) 93–100*
+
+94
+
+-----
+
+|  |
+| :-: |
+| [**Page 3**]() |
+
+qEEG analysis. Since there was minimal risk of overfitting in the RF
+
+model, we were able to include a large number of features, even
+
+when they were not specifically predictive for the diagnosis of
+
+any clinical syndrome according to the literature ([Boord et al.,](#7)
+
+[2020](#7)). For the different frequency bands named previously, we cal-
+
+culated the absolute power, relative power, four slow fast power
+
+ratios, peak frequency, signal autocorrelation, entropy, horizontal
+
+visibility graph analysis, skewness, kurtosis, variance and cross-
+
+frequency coupling. See [Appendix A ]()for an extensive description
+
+of these features and the code used to calculate them. Before anal-
+
+ysis, feature values were averaged over the eight epochs per sub-
+
+ject and added to a feature matrix with features &#2; subjects.
+
+*2.4. Random forest classification*
+
+RF classification was used to train models for two comparisons:
+
+(1) delirium versus no delirium, and (2) postoperative delirium ver-
+
+sus non-postoperative delirium. Within the delirium group,
+
+patients who had undergone any type of surgery during their cur-
+
+rent hospital stay were considered postoperative. The remaining
+
+patients were considered non-postoperative. Models were based
+
+on the qEEG features mentioned previously. In R, RF was imple-
+
+mented with the randomForest function in the randomForest pack-
+
+age. Decision trees were trained using under-sampling to prevent
+
+skewed model performance in favor of the majority group. We used
+
+1000 decision trees instead of the standard 500 ([Breiman, 2001](#7)) to
+
+correct for the smaller sample per decision tree. The number of fea-
+
+tures used per tree split equaled the square root of the total number
+
+of features, equaling approximately ten features per tree split.
+
+The second classifier, postoperative versus non-postoperative
+
+delirium, was trained solely on patients positive for delirium
+
+(*N* = 129). To account for the smaller number of subjects to train
+
+the second classifier we performed a sensitivity analysis. Classifica-
+
+tion of delirium versus no delirium was also performed on a ran-
+
+domly selected patient subset with the same sample size as the
+
+delirium subgroup (*N* = 129). For this analysis, we kept the inci-
+
+dence of delirium in the subset equal to the fraction of non-
+
+postoperative delirium in the original cohort (i.e., 32/129 or 25%),
+
+which was similar to the delirium incidence in the original sample
+
+(i.e., 28%). This was done to compare the performance of the two
+
+classifiers irrespective of differences in training dataset size and
+
+incidence of predicted classes ([Figueroa et al., 2012](#7)).
+
+*2.5. Evaluation of random forest classification*
+
+Validation of the RF models, both for the main models and for
+
+the sensitivity analysis, was performed on unseen data, using 10-
+
+fold cross-validation. With this method, subjects are first randomly
+
+divided into ten subsets or folds without replacement. Model train-
+
+ing was conducted using 90% of the dataset, containing nine sub-
+
+sets, with the remaining 10% reserved for outcome prediction.
+
+This procedure was iteratively carried out ten times, each time
+
+employing a distinct validation subset ([Burman, 1989](#7)). Next, by
+
+combining predicted outcomes for all ten folds, we were able to
+
+calculate model performance measures for the entire sample,
+
+while still only taking into account performance on unseen data.
+
+Use of cross-validation in this way allowed for validation on
+
+unseen data, minimizing overfitting, while not requiring a separate
+
+testing dataset. This method is illustrated in [Fig. 1](#4).
+
+We evaluated RF performance with the area under the receiver
+
+operating characteristic curve (AUC) and the accuracy, defined as
+
+thenumber of correct classifications/total number of subjects.
+
+The presented sensitivity, specificity, positive- and negative pre-
+
+dictive values (PPV, NPV) were calculated at the optimal operating
+
+point on the Receiver Operating Characteristic (ROC) curve, as
+
+determined by the random forest algorithm. Lastly, the relative
+
+feature mean decrease in accuracy (MDC) was used to display fea-
+
+ture importance as it describes the loss of model accuracy when
+
+removing a particular feature during training of the model. Abso-
+
+lute MDC was transformed to relative MDC by dividing by the lar-
+
+gest absolute value, scaling the measure to a range of 0 to 1.
+
+*2.6. Statistical analysis*
+
+For both classifiers, we applied statistical testing to the 10% of
+
+qEEG features most predictive (based on the MDC) for that com-
+
+parison to test the univariate differences within our groups ([Kent](#7)
+
+[et al., 2020](#7)). Based on Shapiro-Wilk testing, normally distributed
+
+features were compared between two groups with independent
+
+t-tests, whilenon-normally distributed features were compared
+
+using Mann-Whitney U tests. We used a strict Bonferroni correc-
+
+tion for multiple testing, based on the total number of features.
+
+Since we multiplied the p-values with 98, double dipping, by pre-
+
+selecting features before statistical testing, played no role. A cor-
+
+rected p-value of \< 0.05 was considered to indicate statistical
+
+significance.
+
+**3. Results**
+
+*3.1. Participants*
+
+In total, 615 patients were enrolled, of whom 286 were in the
+
+ICU and 329 were innon-ICU departments (see the participant
+
+flowchart in [Fig. 2](#4)). We excluded 73 patients because of Electro-
+
+magnetic Compatibility (EMC)disturbancesin the EEG, which
+
+were caused by artifacts induced by the electromagnetic environ-
+
+ment in some hospital rooms. These issues were resolved through
+
+hardware within the first year of patient enrollment. During demo-
+
+graphic data extraction, we excluded 48 patients because they did
+
+not meet all inclusion criteria on closer inspection.Another 22
+
+patients were excluded because not all the required data were
+
+available. Lastly, fifteen patients were excluded because of poor
+
+EEG quality based on initial visual inspection. Artifact rejection of
+
+the remaining cohort excluded 10.63% of available epochs, with
+
+an average of 2.95 epochs per participant. Data availability allowed
+
+us to include the first eight epochs per participant, while only
+
+excluding one patient because of insufficient epochs after auto-
+
+mated artifact rejection. Therefore, the final dataset consisted of
+
+456 patients,of whom 129 with delirium.Within the delirium
+
+population, 32 patients were non-postoperative, and 97 were post-
+
+operative. Patient characteristics are shown in [Table 1](#5).
+
+*3.2. Classification of delirium*
+
+It is important to note that the performances in this section and
+
+[section 3.3 ](#3)were calculated by combining the performance of the
+
+ten different models trained during 10-fold cross-validation on
+
+unseen data, as explained in the methods section. Using the whole
+
+sample (*N* = 456) as model training data, delirium classification
+
+with RF resulted in an AUC of 0.76 (95% CI 0.71–0.80). Sensitivity
+
+was 0.77 (95% CI 0.72–0.82) and specificity was 0.63 (95% CI
+
+0.55–0.72), both calculated at the optimal operating point on the
+
+ROC curve. Complete classification performance measures are
+
+shown in [Table 2](#5). The corresponding confusion matrix can be
+
+found in [Appendix B](), [Table S2]()a.
+
+*3.3. Classification of postoperative delirium*
+
+Using the sample of patients with delirium (N = 129), the clas-
+
+sification of postoperative versus non-postoperative delirium
+
+resulted in model performance similar to chance level with an
+
+*D.Y. Lodema, F.L. Ditzel, S.C.A. Hut et al.*
+
+*Clinical Neurophysiology 161 (2024) 93–100*
+
+95
+
+-----
+
+|  |
+| :-: |
+| [**Page 4**]() |
+
+AUC of 0.50 (95% CI 0.38–0.61). Sensitivity was 0.48 (95% CI 0.30–
+
+0.66). Specificity was 0.43 (95% CI 0.33–0.54). Complete classifica-
+
+tion performance measures are shown in [Table 2](#5). The correspond-
+
+ing confusion matrix can be found in [Appendix B](), [Table S2]()b.
+
+**Fig. 1. Ten-fold cross-validation method.** *To evaluate performance of the random forest models, ten-fold cross-validation was used. The dataset (training set) was divided into ten*
+
+*subsets or folds of the same size. Then, the random forest algorithms were trained ten times on 90% of the data (training fold), in an alternating fashion, without replacement of patients*
+
+*between training sets. Each time, the remaining testing fold provided independent performance measures. The resulting performance measures (P1-P10) were then combined, resulting*
+
+*in performance measures for the entire training set (*
+
+P
+
+*P).*
+
+**Fig. 2. Participant flowchart.** *In total, 615 patients were enrolled, of whom 286 were in the Intensive Care Unit (ICU) and 329 were in non-ICU departments. The problem of*
+
+*Electromagnetic compatibility disturbance in the electroencephalogram was resolved within the first year of enrolment. N: number of participants.*
+
+*D.Y. Lodema, F.L. Ditzel, S.C.A. Hut et al.*
+
+*Clinical Neurophysiology 161 (2024) 93–100*
+
+96
+
+-----
+
+|  |
+| :-: |
+| [**Page 5**]() |
+
+*3.4. Classification of delirium sensitivity analysis*
+
+RF training of the delirium classifier in a randomly selected
+
+cohort of 129 patients resulted in an AUC of 0.77 (95% CI 0.68–
+
+0.85).
+
+*3.5. Most predictive features*
+
+Theten most important qEEG features based on MDC for-
+
+both the classifier for delirium and the classifier for postoperative
+
+delirium are displayed in radar charts ([Fig. 3](#6)). Based on MDC, the
+
+first model (delirium versus no delirium) depends for as much as
+
+25% on the two most important qEEG features (theta peak fre-
+
+quency and relative alpha power), as the model lost 25% of its accu-
+
+racy when these features were removed. The other eight most
+
+important features are displayed in [Fig. 3](#6). The most predictive fea-
+
+tures showed that theta peak frequency and relative alpha power
+
+were lower in delirium, while relative widened delta power and
+
+theta/alpha ratio were higher in delirium. Additionally, two vari-
+
+ants of beta autocorrelation were higher in delirium, while two
+
+variants of alpha and theta autocorrelation were lower in delirium.
+
+Lastly, alpha–beta CFC and general skewness were lower in
+
+delirium.
+
+After strict Bonferroni correction, there was a statistically sig-
+
+nificant difference between patients with delirium and without
+
+delirium for all of these features except for alpha autocorrelation
+
+with a time shift of 0.25 s and alpha–beta amplitude envelope
+
+cross-frequency coupling. The MDC values and p-values for these
+
+features are presented in [Table 3](#6).
+
+None of the ten best classifying qEEG features for postoperative
+
+delirium showed a statistically significant difference compared to
+
+non-postoperative delirium. There was some overlap in the most
+
+important features of the two classifiers: beta autocorrelation with
+
+a shorter time shift of 0.25 s, alpha autocorrelation with a longer
+
+time shift of 0.5 s, theta autocorrelation with the same time shift
+
+of 0.125 s, skewness and relative widened delta power. See [Appen-]()
+
+[dix C](), [Fig. S1 ]()for boxplots of the most predictive quantitative EEG
+
+features for both classifiers.
+
+**4. Discussion**
+
+In this multicenter study we used RF to classify delirium based
+
+on single-channel, resting state EEG, resulting in an AUC of 0.76
+
+(95% CI 0.71–0.80). The RF model was based on increased slow
+
+wave activity in delirium (lower theta peak frequency, lower rela-
+
+tive alpha power, higher relative widened delta power and higher
+
+theta/alpha ratio) and on a different autocorrelation in delirium
+
+(lower in the alpha and theta band and higher in the beta band
+
+with relatively longer time shifts). When classifying postoperative
+
+versus non-postoperative delirium, model performance was simi-
+
+lar to chance level 0.50 (95% CI: 0.38–0.61). In other words, the
+
+same method that could accurately predict the presence of delir-
+
+ium using EEG, even after conducting a sensitivity analysis that
+
+**Table 1**
+
+Patient characteristics (N = 456).
+
+**Delirium** (28%)
+
+**No delirium** (72%)
+
+**Overall** (*N* = 129)
+
+**Postop.**
+
+(*N* = 97; 75%)
+
+**Non-postop.**
+
+(*N* = 32; 25%)
+
+**Overall** (*N* = 327)
+
+**Postop.**
+
+(*N* = 235; 72%)
+
+**Non-postop.**
+
+(*N* = 92; 25%)
+
+**Sex**
+
+Male
+
+81 (62.8%)
+
+58 (59.8%)
+
+23 (71.9%)
+
+163 (49.8%)
+
+112 (47.7%)
+
+51 (55.4%)
+
+Female
+
+48 (37.2%)
+
+39 (40.2%)
+
+9 (28.1%)
+
+164 (50.2%)
+
+123 (52.3%)
+
+41 (44.6%)
+
+**Age Mean (SD)**
+
+70.6 (13.0)
+
+71.7 (12.5)
+
+67.3 (13.9)
+
+73.8 (12.6)
+
+75.2 (10.6)
+
+70.1 (16.0)
+
+**ICU**
+
+86 (66.7%)
+
+61 (62.9%)
+
+25 (78.1%)
+
+119 (36.4%)
+
+55 (59.8%)
+
+64 (27.2%)
+
+**Relevant psychiatric or neurological medical history**
+
+Stroke
+
+5 (3.9%)
+
+4 (4.1%)
+
+1 (3.1%)
+
+24 (7.3%)
+
+20 (8.5%)
+
+4 (4.3%)
+
+TIA
+
+8 (6.2%)
+
+7 (7.2%)
+
+1 (3.1%)
+
+12 (3.7%)
+
+10 (4.3%)
+
+2 (2.2%)
+
+Alcohol Abuses
+
+4 (3.1%)
+
+2 (2.1%)
+
+2 (6.2%)
+
+7 (2.1%)
+
+4 (1.7%)
+
+3 (3.3%)
+
+Depression
+
+2 (1.5%)
+
+2 (2.1%)
+
+0 (0.0%)
+
+2 (0.6%)
+
+2 (0.1%)
+
+0 (0.0%)
+
+**Relevant medication 24** h **before measurement**
+
+Antipsychotics
+
+50 (38.8%)
+
+37 (38.1%)
+
+13 (40.6%)
+
+12 (3.7%)
+
+7 (3%)
+
+5 (5.6%)
+
+Benzodiazepines
+
+16 (12.4%)
+
+10 (10.3%)
+
+6 (18.8%)
+
+8 (8.9%)
+
+32 (13.7%)
+
+40 (12.3%)
+
+Opioids
+
+56 (43.4%)
+
+46 (47.4%)
+
+10 (31.3%)
+
+153 (47.2%)
+
+123 (52.6%)
+
+30 (33.3%)
+
+**Relevant medication 2** h **before measurement**
+
+Antipsychotics
+
+8 (6.2%)
+
+7 (7.2%)
+
+1 (3.1%)
+
+2 (0.6%)
+
+1 (0.4%)
+
+1 (1.1%)
+
+Benzodiazepines
+
+1 (0.8%)
+
+1 (1.0%)
+
+0 (0.0%)
+
+5 (1.5%)
+
+3 (1.3%)
+
+2 (2.2%)
+
+Opioids
+
+17 (13.2%)
+
+11 (11.3%)
+
+6 (18.8%)
+
+31 (9.6%)
+
+22 (9.4%)
+
+9 (10%)
+
+Data are presented as number in percentage (%) or mean with standard deviation. Registered antipsychotics are haloperidol, olanzapine, quetiapine and clozapine. Registered
+
+alpha-2 antagonists are clonidine and dexmedetomidine. Registered benzodiazepines are: midazolam, lorazepam, temazepam, oxazepam and diazepam. Registered opioids
+
+are: morphine, fentanyl, remifentanyl, sufentanyl, tramadol, piritramide and oxycodone. Medication data was presented if it was administered to at least 10% of the cohort
+
+within the 24-hour period preceding the measurement. ICU: intensive care unit, N: number of participants, postop.: postoperative, SD: standard deviation, TIA: transient
+
+ischemic attack.
+
+**Table 2**
+
+Classification outcomes of the random forest models trained to predict delirium presence and postoperative versus non-postoperative delirium.
+
+**AUC**
+
+**Accuracy**
+
+**Sensitivity**
+
+**Specificity**
+
+**PPV**
+
+**NPV**
+
+**Delirium vs. nodelirium (N = 456)**
+
+0.76 (0.71–0.80)
+
+0.68 (0.64–0.72)
+
+0.78 (0.73–0.83)
+
+0.64 (0.56–0.73)
+
+0.46 (0.40–0.52)
+
+0.88 (0.83–0.92)
+
+**AUC**
+
+**Accuracy**
+
+**Sensitivity**
+
+**Specificity**
+
+**PPV**
+
+**NPV**
+
+**POD vs.non-POD(N = 129)**
+
+0.50 (0.38–0.61)
+
+0.47 (0.38–0.56)
+
+0.47 (0.30–0.66)
+
+0.44 (0.33–0.54)
+
+0.72 (0.60–0.83)
+
+0.22 (0.11–0.32)
+
+Data are presented as value with 95% confidence intervals. AUC: area under the receiver operating characteristic curve, PPV: positive predictive value, NPV: negative
+
+predictive value, POD: postoperative delirium.
+
+*D.Y. Lodema, F.L. Ditzel, S.C.A. Hut et al.*
+
+*Clinical Neurophysiology 161 (2024) 93–100*
+
+97
+
+-----
+
+|  |
+| :-: |
+| [**Page 6**]() |
+
+corrected for differences in sample size, could not classify whether
+
+delirium patients had surgery before developing delirium.
+
+We found an AUC of 0.76 when classifying delirium with RF,
+
+which matches or slightly exceeds performance of delirium classi-
+
+fiers in recent literature. For example, the outcome exceeds the
+
+AUCs of 0.70 ([Mulkey et al., 2023; van Sleuwen et al., 2021](#7)), as well
+
+as an AUC of 0.71 ([Yamanashi et al., 2022](#8)). Furthermore, it is con-
+
+sistent with an AUC of 0.74 ([Urdanibia-](#8)Centelles et al., 2021), and
+
+an AUC of 0.78 ([Ditzel et al., 2022](#7)). The current study includes the
+
+largest sample size, the most heterogenous population and used a
+
+relatively excessive delirium reference. Furthermore, the current
+
+study used an electrode selection that was previously selected
+
+([Van Der Kooi et al., 2015](#8)) and independently validated ([Numan](#8)
+
+[et al., 2019](#8)).
+
+Our finding that the EEG in delirium had a lower autocorrela-
+
+tion in the alpha and the theta band, can be considered to align
+
+with ([van der Kooi et al., 2014](#8)) who found that in delirium, the
+
+EEG shows decreased complexity as calculated with repetitiveness
+
+of the signal when analyzing the EEG window by window. The cur-
+
+rent study investigated autocorrelation in more detail than van der
+
+Kooi et al. investigated their measure of signal complexity, by
+
+using autocorrelation with different time shifts separately for each
+
+frequency band. Skewness and cross-frequency coupling have not
+
+been linked to delirium before, indicating possible new research
+
+targets in the expanding body of research comprising delirium
+
+EEG monitoring. Although previous studies suggested possible dif-
+
+ferences in EEG characteristics associated with postoperative and
+
+sepsis-related delirium ([Palanca et al., 2017](#8)), to the best of our
+
+knowledge, this is the first study to directly compare qEEG features
+
+of postoperative delirium and non-postoperative delirium.
+
+In previous studies, the method for detecting slow-wave activ-
+
+ity in single-channel EEG (Fp2-Pz) was primarily developed in a
+
+postoperative delirium population. Therefore, the validity of this
+
+monitoring method has remained relatively uncertain when
+
+applied in a non-postoperative delirium population ([Ditzel et al.,](#7)
+
+[2022; Hut et al., 2021; Numan et al., 2019; Van Der Kooi et al.,](#7)
+
+[2015](#7)). In the current study, the EEG of postoperative and non-
+
+postoperative delirium patients could not be distinguished. An
+
+important implication of this finding is that both postoperative
+
+and non-postoperative delirium can probably be monitored using
+
+the same EEG methods. Single-channel EEG (Fp2-Pz) can, therefore,
+
+likely be utilized in both patient populations. On a larger scale,
+
+these findings may suggest that delirium is one entity, whether it
+
+develops postoperatively or not.
+
+An important strength of this study is that we could show that
+
+our EEG pipeline and RF method were robust to classify delirium,
+
+**Fig. 3. Quantitative electroencephalography profiles of the ten most important features of the random forest classifiers, as based on mean decrease in accuracy.** *A:*
+
+*Radar chart of the most important delirium versus no delirium quantitative electroencephalography (qEEG) features. B: Radar chart of the most important postoperative delirium*
+
+*versus non-postoperative delirium qEEG features. Median values are presented, with axis limits representing the total interquartile range (25th-75th). \* p \< 0.05, \*\* p \< 0.001, AE:*
+
+*amplitude envelope, CFC: cross-frequency coupling, HVG: horizontal visibility graph, MD: mean degree, MDC: mean decrease in accuracy, POD: postoperative delirium, rel.: relative, s:*
+
+*seconds, TS: time series.*
+
+**Table 3**
+
+Mean decrease in accuracy values and p-values of the most predictive quantitative electroencephalography features of the delirium classifier.
+
+**Theta**
+
+**peak**
+
+**frequency**
+
+**Rel.**
+
+**alpha**
+
+**power**
+
+**Theta auto-**
+
+**correlation**
+
+**0.125 s**
+
+**Rel.**
+
+**widened**
+
+**delta power**
+
+**Beta auto-**
+
+**correlation**
+
+**0.5 s**
+
+**Skewness**
+
+**Alpha auto-**
+
+**correlation**
+
+**0.25 s**
+
+**Theta/**
+
+**alpha**
+
+**ratio**
+
+**Beta auto-**
+
+**correlation**
+
+**1.0 s**
+
+**Alpha-beta**
+
+**CFC (AE-**
+
+**AE)**
+
+**Rel. MDC**
+
+1.0
+
+0.73
+
+0.68
+
+0.67
+
+0.61
+
+0.59
+
+0.57
+
+0.56
+
+0.55
+
+0.51
+
+**Adj. p-value**
+
+\<0.001
+
+\<0.001
+
+\<0.001
+
+\<0.001
+
+0.006
+
+0.001
+
+0.243
+
+\<0.001
+
+0.010
+
+1
+
+**Non-adj. p-value**
+
+\<0.001
+
+\<0.001
+
+\<0.001
+
+\<0.001
+
+\<0.001
+
+\<0.001
+
+0.003
+
+\<0.001
+
+\<0.001
+
+0.019
+
+For both the delirium and postoperative delirium (POD) classifiers, the ten most important quantitative electroencephalography (qEEG) features are presented, as based on
+
+relative mean decrease in accuracy (MDC). Adj.: adjusted, AE: amplitude envelope, CFC: cross-frequency coupling, HVG: horizontal visibility graph, MD: mean degree, rel.:
+
+relative, s: seconds, TS: time series.
+
+*D.Y. Lodema, F.L. Ditzel, S.C.A. Hut et al.*
+
+*Clinical Neurophysiology 161 (2024) 93–100*
+
+98
+
+-----
+
+|  |
+| :-: |
+| [**Page 7**]() |
+
+independent of our training dataset size. As the delirium classifier
+
+was validated in a smaller sample during sensitivity analysis, our
+
+negative finding for the second objective became more robust.
+
+Also, incorporating a large number of qEEG features maximized
+
+the amount of information gained from the single-channel mea-
+
+surements used. Additionally, it is important to note that there
+
+were differences in patient characteristics, notably ICU admission
+
+being skewed towards delirium patients. Since we used supervised
+
+ML, this skewness may inadvertently play a role in the classifica-
+
+tion. It should, however, be mentioned that the current population
+
+also presents a clinically representative sample of patients. A pos-
+
+sible other limitation of this study is that only single-channel EEG
+
+was recorded. We could therefore not include any connectivity
+
+measures in the model as was done in previous studies when clas-
+
+sifying delirium with EEG ([Numan et al., 2017; Van Dellen et al.,](#8)
+
+[2014](#8)). Finally, it is known that EEG studies face limitations due
+
+to movement artifacts. Especially agitated, hyperactive delirium
+
+patients can have extensive artifacts hindering analysis, thus
+
+requiring exclusion ([Boord et al., 2020](#7)). This selection could poten-
+
+tially result in a lower-than-average representation of patients
+
+with hyperactive delirium in our sample.
+
+Further research could explore additional delirium etiologies as
+
+we solely
+
+focused
+
+on comparing
+
+postoperative
+
+and
+
+non-
+
+postoperative delirium etiological groups. Additionally, we recom-
+
+mend external validation in an independent dataset with a large
+
+sample size to confirm or refute the findings of this exploratory
+
+study ([Kent et al., 2020](#7)).
+
+**5. Conclusions**
+
+Using RF classification, delirium could be distinguished from no
+
+delirium, based on single-channel qEEG features with relatively
+
+high performance compared to previous literature. The analysis
+
+used yielded possible new qEEG markers for delirium such as
+
+skewness and cross-frequency coupling. When comparing postop-
+
+erative to non-postoperative delirium, RF performance was similar
+
+to chance level, meaning that we have not found evidence that
+
+single-channel qEEG features differ between these groups. Our
+
+results indicate that single-channel EEG can be used to classify
+
+delirium, but we found no evidence for a distinct EEG profile for
+
+postoperative delirium compared to delirium with other precipi-
+
+tating factors. These findings may suggest that delirium is one
+
+entity, whether it develops postoperatively or not.
+
+**Sponsor’s Role**
+
+This work was supported by European Union Horizon 2020
+
+\[grant number 820555\]. The sponsor had no role in the study
+
+design, data collection, data analysis, data interpretation, writing
+
+of the report, or the decision to submit for publication.
+
+**Declaration of competing interests**
+
+Arjen JC Slooter is a non-salaried advisor for Prolira, a start-up
+
+company that has developed an EEG-based delirium monitor.
+
+Any (future) profits from EEG-based delirium monitoring will be
+
+used for future scientific research only. None of the other authors
+
+reports any conflicts of interest. Prolira had no role in the study
+
+design, data analysis, data interpretation, or the decision to submit
+
+for publication.
+
+**Acknowledgments**
+
+All authors approved the manuscript to be published. We would
+
+like to thank T. van Nesselrooij, M. van den Boogaard PhD,
+
+M. Kromkamp MD PhD, C. Röder MD PhD, P. Bouvy, MD PhD, M.
+
+Coesmans, R. J. Osse MD PhD, M. Pop-Purceleanu, K. Milisen RN
+
+PhD, MD PhD, R. Faaij MD PhD, A. M. Vondeling MD, A. Kamper
+
+MD, J.W.M. Krulder MD PhD, B. van Munster MD PhD and J.W.M.
+
+Krulder MDA for their help in diagnosing delirium.
+
+**Appendix A. Supplementary material**
+
+Supplementary data to this article can be found online at
+
+<https://doi.org/10.1016/j.clinph.2024.01.009>.
+
+**References**
+
+American Psychiatric Association, 2013. DSM-5 Diagnostic Classification, in:
+
+Diagnostic and Statistical Manual of Mental Disorders. [https://doi.org/10.](https://doi.org/10.1176/appi.books.9780890425596.x00diagnosticclassification)
+
+[1176/appi.books.9780890425596.x00diagnosticclassification](https://doi.org/10.1176/appi.books.9780890425596.x00diagnosticclassification).
+
+Austin CA, O’Gorman T, Stern E, Emmett D, Stürmer T, Carson S, et al. Association
+
+between postoperative delirium and long-term cognitive function after major
+
+nonemergent
+
+surgery.
+
+JAMA
+
+Surg
+
+2019\.
+
+[https://doi.org/](https://doi.org/10.1001/jamasurg.2018.5093)
+
+[10.1001/jamasurg.2018.5093](https://doi.org/10.1001/jamasurg.2018.5093).
+
+Boord MS, Moezzi B, Davis D, Ross TJ, Coussens S, Psaltis PJ, et al. Investigating how
+
+electroencephalogram measures associate with delirium: a systematic review.
+
+Clin Neurophysiol 2020. <https://doi.org/10.1016/j.clinph.2020.09.009>.
+
+Breiman L. Random Forests. Mach Learn 2001;45:5–32.
+
+Burman P. A comparative study of ordinary cross-validation, v-fold cross-validation
+
+[and the repeated learning-testing methods. Biometrika 1989;76:503–14](http://refhub.elsevier.com/S1388-2457\(24\)00037-3/h0025).
+
+Chao A, Shen TJ. Nonparametric estimation of Shannon’s index of diversity when
+
+[there are unseen species in sample. Environ Ecol Stat 2003;10:429–43](http://refhub.elsevier.com/S1388-2457\(24\)00037-3/h0030).
+
+Cohen MX. Assessing transient cross-frequency coupling in EEG data. J Neurosci
+
+Methods 2008;168:494–9. <https://doi.org/10.1016/j.jneumeth.2007.10.012>.
+
+Collins GS, Reitsma JB, Altman DG, Moons KGM. Transparent reporting of a
+
+multivariable prediction model for individual prognosis or diagnosis (TRIPOD):
+
+the TRIPOD statement. Ann Intern Med 2015;162:55–63. [https://doi.org/](https://doi.org/10.7326/M14-0697)
+
+[10.7326/M14-0697](https://doi.org/10.7326/M14-0697).
+
+Deo RC. Machine learning in medicine. Circulation 2015;132:1920–30. [https://doi.](https://doi.org/10.1161/CIRCULATIONAHA.115.001593)
+
+[org/10.1161/CIRCULATIONAHA.115.001593](https://doi.org/10.1161/CIRCULATIONAHA.115.001593).
+
+Ditzel FL, Hut SC, Dijkstra-Kersten SM, Numan T, Leijten FS, van den Boogaard M,
+
+et al. An automated EEG algorithm to detect polymorphic delta activity in acute
+
+encephalopathy presenting as postoperative delirium. Psychiatry Clin Neurosci
+
+2022;1–2. <https://doi.org/10.1111/pcn.13478>.
+
+Ditzel FL, Slooter AJC, van den Boogaard M, Boonstra M, Nesselrooij TAV, Kromkamp
+
+M, et al. The Delirium Interview as a new reference standard in studies on
+
+delirium assessment tools. JAGS 2023;1–8. <https://doi.org/10.1111/jgs.18263>.
+
+Engel GL, Romano J. Delirium, a sydrome of cerebral insufficiency (reprint). J Chron
+
+[Dis 1959;9:260–77](http://refhub.elsevier.com/S1388-2457\(24\)00037-3/h0060).
+
+Figueroa RL, Zeng-Treitler Q, Kandula S, Ngo LH. Predicting sample size required for
+
+classification performance. BMC Med Inform Decis Mak 2012;12. [https://doi.](https://doi.org/10.1186/1472-6947-12-8)
+
+[org/10.1186/1472-6947-12-8](https://doi.org/10.1186/1472-6947-12-8).
+
+Friedman JH. On multivariate goodness of fit and two sample testing. eConf 2003;
+
+[C030908:311–3](http://refhub.elsevier.com/S1388-2457\(24\)00037-3/h0070).
+
+Gibb K, Seeley A, Quinn T, Siddiqi N, Shenkin S, Rockwood K, et al. The consistent
+
+burden in published estimates of delirium occurrence in medical inpatients
+
+over four decades: a systematic review and meta-analysis study. Age Ageing
+
+2020;49:352–60. <https://doi.org/10.1093/ageing/afaa040>.
+
+Goldberg TE, Chen C, Wang Y, Jung E, Swanson A, Ing C, et al. Association of delirium
+
+with
+
+long-term
+
+cognitive
+
+decline:
+
+a
+
+meta-analysis. JAMA
+
+Neurol
+
+2020;77:1373–81. <https://doi.org/10.1001/jamaneurol.2020.2273>.
+
+Hosseini MP, Hosseini A, Ahi K. A review on machine learning for EEG signal
+
+processing in bioengineering. IEEE Rev Biomed Eng 2021;14:204–18. [https://](https://doi.org/10.1109/RBME.2020.2969915)
+
+[doi.org/10.1109/RBME.2020.2969915](https://doi.org/10.1109/RBME.2020.2969915).
+
+Hut SC, Dijkstra-Kersten SM, Numan T, Henriquez NR, Teunissen NW, Boogaard M,
+
+et al. EEG and clinical assessment in delirium and acute encephalopathy.
+
+Psychiatry Clin Neurosci 2021;0–3. <https://doi.org/10.1111/pcn.13225>.
+
+Inouye SK, Westendorp RGJ, Saczynski JS. Delirium in elderly people. Lancet
+
+2014;383:911–22. <https://doi.org/10.1016/S0140-6736(13)60688-1.Delirium>.
+
+Kent P, Boyle E, Cancelliere C, Cassidy JD, Kongsted A, Kongsted A. A conceptual
+
+framework for prognostic research. BMC Med Res Methodol 2020;20. [https://](https://doi.org/10.1186/s12874-020-01050-7)
+
+[doi.org/10.1186/s12874-020-01050-7](https://doi.org/10.1186/s12874-020-01050-7).
+
+Komsta, L., Novomestky, F., 2022. Moments \[WWW Document\]. URL [https://CRAN.](https://CRAN.R-project.org/package=moments)
+
+[R-project.org/package=moments](https://CRAN.R-project.org/package=moments).
+
+Leslie DL, Marcantonio ER, Zhang Y, Leo-Summers L, Inouye SK. One-year health
+
+care costs associated with delirium in the elderly population. Arch Intern Med
+
+2008\. <https://doi.org/10.1001/archinternmed.2007.4>.
+
+Libbrecht MW, Noble WS. Machine learning applications in genetics and genomics.
+
+Nat Rev Genet 2015;16:321–32. <https://doi.org/10.1038/nrg3920>.
+
+Luque B, Lacasa L, Ballesteros F, Luque J. Horizontal visibility graphs: exact results
+
+for random time series. Phys Rev E Stat Nonlin Soft Matter Phys 2009;80:1–17.
+
+<https://doi.org/10.1103/PhysRevE.80.046103>.
+
+Mulkey MA, Huang H, Albanese T, Kim S, Yang B. Supervised deep learning with
+
+vision transformer predicts delirium using limited lead EEG. Sci Rep
+
+2023;13:7890. <https://doi.org/10.1038/s41598-023-35004-y>.
+
+*D.Y. Lodema, F.L. Ditzel, S.C.A. Hut et al.*
+
+*Clinical Neurophysiology 161 (2024) 93–100*
+
+99
+
+-----
+
+|  |
+| :-: |
+| [**Page 8**]() |
+
+Numan T, Slooter AJC, van der Kooi AW, Hoekman AML, Suyker WJL, Stam CJ, et al.
+
+Functional connectivity and network analysis during hypoactive delirium and
+
+recovery from anesthesia. Clin Neurophysiol 2017;128:914–24. [https://doi.org/](https://doi.org/10.1016/j.clinph.2017.02.022)
+
+[10.1016/j.clinph.2017.02.022](https://doi.org/10.1016/j.clinph.2017.02.022).
+
+Numan T, van den Boogaard M, Kamper AM, Rood PJT, Peelen LM, Slooter AJC, et al.
+
+Delirium detection using relative delta power based on 1-minute single-
+
+channel EEG: a multicentre study. Br J Anaesth 2019;122:60–8. [https://doi.org/](https://doi.org/10.1016/j.bja.2018.08.021)
+
+[10.1016/j.bja.2018.08.021](https://doi.org/10.1016/j.bja.2018.08.021).
+
+Palanca BJA, Wildes TS, Ju YS, Ching S, Avidan MS. Electroencephalography and
+
+delirium in the postoperative period. Br J Anaesth 2017;119:294–307. [https://](https://doi.org/10.1093/bja/aew475)
+
+[doi.org/10.1093/bja/aew475](https://doi.org/10.1093/bja/aew475).
+
+Salimpour Y, Anderson WS. Cross-frequency coupling based neuromodulation for
+
+treating neurological disorders. Front Neurosci 2019;13:1–13. [https://doi.org/](https://doi.org/10.3389/fnins.2019.00125)
+
+[10.3389/fnins.2019.00125](https://doi.org/10.3389/fnins.2019.00125).
+
+Salluh JIF, Wang H, Schneider EB, Nagaraja N, Yenokyan G, Damluji A, et al. Outcome
+
+of delirium in critically ill patients: systematic review and meta-analysis. BMJ
+
+(Online) 2015;350:1–10. <https://doi.org/10.1136/bmj.h2538>.
+
+Sanson G, Khlopenyuk Y, Milocco S, Sartori M, Dreas L, Fabiani A. Delirium after
+
+cardiac surgery. Incidence, phenotypes, predisposing and precipitating risk
+
+factors, and effects. Heart and Lung 2018;47:408–17. [https://doi.org/10.1016/j.](https://doi.org/10.1016/j.hrtlng.2018.04.005)
+
+[hrtlng.2018.04.005](https://doi.org/10.1016/j.hrtlng.2018.04.005).
+
+Snaedal J, Johannesson GH, Gudmundsson TE, Blin NP, Emilsdottir AL, Einarsson B,
+
+et
+
+al.
+
+Diagnostic
+
+accuracy
+
+of
+
+statistical
+
+pattern
+
+recognition
+
+of
+
+electroencephalogram registration in evaluation of cognitive impairment and
+
+dementia. Dement Geriatr Cogn Disord 2012;34:51–60. [https://doi.org/](https://doi.org/10.1159/000339996)
+
+[10.1159/000339996](https://doi.org/10.1159/000339996).
+
+Tsui A, Searle SD, Bowden H, Hoffmann K, Hornby J, Goslett A, et al. The effect of
+
+baseline cognition and delirium on long-term cognitive impairment and
+
+mortality: a prospective population-based study. Lancet Healthy Longev
+
+2022;232–241. <https://doi.org/10.1016/s2666-7568(22)00013-7>.
+
+Urdanibia-Centelles O, Nielsen RM, Rostrup E, Vedel-Larsen E, Thomsen K, Nikolic
+
+M, et al. Automatic continuous EEG signal analysis for diagnosis of delirium in
+
+patients with sepsis. Clin Neurophysiol 2021;132:2075–82. [https://doi.org/](https://doi.org/10.1016/j.clinph.2021.05.013)
+
+[10.1016/j.clinph.2021.05.013](https://doi.org/10.1016/j.clinph.2021.05.013).
+
+Van Dellen E, Van Der Kooi AW, Numan T, Koek HL, Klijn FAM, Buijsrogge MP, et al.
+
+Decreased functional connectivity and disturbed directionality of information
+
+flow in the electroencephalography of intensive care unit patients with
+
+delirium after cardiac surgery. Anesthesiology 2014;121:328–35. [https://doi.](https://doi.org/10.1097/ALN.0000000000000329)
+
+[org/10.1097/ALN.0000000000000329](https://doi.org/10.1097/ALN.0000000000000329).
+
+Van der Kooi AW, Slooter AJC, van het Klooster MA, Leijten FSS. EEG in delirium:
+
+increased spectral variability and decreased complexity. Clin Neurophysiol
+
+2014;125:2137–9. <https://doi.org/10.1016/j.clinph.2014.02.010>.
+
+Van Der Kooi AW, Zaal IJ, Klijn FA, Koek HL, Meijer RC, Leijten FS, et al. Delirium
+
+detection using EEG: what and how to measure. Chest 2015;147:94–101.
+
+<https://doi.org/10.1378/chest.13-3050>.
+
+Van Diessen E, Numan T, van Dellen E, van der Kooi AW, Boersma M, Hofman D,
+
+et al. Opportunities and methodological challenges in EEG and MEG resting
+
+state functional brain network research. Clin Neurophysiol 2015. [https://doi.](https://doi.org/10.1016/j.clinph.2014.11.018)
+
+[org/10.1016/j.clinph.2014.11.018](https://doi.org/10.1016/j.clinph.2014.11.018).
+
+Van Sleuwen M, Sun H, Eckhardt C, Neelagiri A, Tesh RA, Westmeijer M, et al.
+
+Physiological Assessment of Delirium Severity. Crit Care Med Publish Ah
+
+2021;1–9. <https://doi.org/10.1097/ccm.0000000000005224>.
+
+Whitham EM, Pope KJ, Fitzgibbon SP, Lewis T, Clark CR, Loveless S, et al. Scalp
+
+electrical recording during paralysis: Quantitative evidence that EEG
+
+frequencies above 20 Hz are contaminated by EMG. Clin Neurophysiol
+
+2007;118:1877–88. <https://doi.org/10.1016/j.clinph.2007.04.027>.
+
+Wiegand TLT, Rémi J, Dimitriadis K. Electroencephalography in delirium
+
+assessment: a scoping review. BMC Neurol 2022;22:1–23. [https://doi.org/](https://doi.org/10.1186/s12883-022-02557-w)
+
+[10.1186/s12883-022-02557-w](https://doi.org/10.1186/s12883-022-02557-w).
+
+Wilson JE, Mart MF, Cunningham C, Shehabi Y, Girard TD, MacLullich AMJ, et al.
+
+Delirium. Nat Rev Dis Primers 2020;6. [https://doi.org/10.1038/s41572-020-](https://doi.org/10.1038/s41572-020-00223-4)
+
+[00223-4](https://doi.org/10.1038/s41572-020-00223-4).
+
+World Medical Association, 2013. World Medical Association Declaration of
+
+Helsinki: ethical principles for medical research involving human subjects.
+
+JAMA 310, 2191–2194. [https://doi.org/10.1093/acprof:oso/9780199241323.](https://doi.org/10.1093/acprof%3aoso/9780199241323.003.0025)
+
+[003.0025](https://doi.org/10.1093/acprof%3aoso/9780199241323.003.0025).
+
+Yamanashi T, Crutchley KJ, Wahba NE, Sullivan EJ, Comp KR, Kajitani M, et al.
+
+Evaluation of point-of-care thumb-size bispectral electroencephalography
+
+device to quantify delirium severity and predict mortality. Br J Psychiatry
+
+2022;220:322–9. <https://doi.org/10.1192/bjp.2021.101>.
+
+Zhu G, Li Y, Wen PP. Epileptic seizure detection in EEGs signals using a fast weighted
+
+horizontal visibility
+
+algorithm. Comput
+
+Methods
+
+Programs
+
+Biomed
+
+2014;115:64–75. <https://doi.org/10.1016/j.cmpb.2014.04.001>.
+
+*D.Y. Lodema, F.L. Ditzel, S.C.A. Hut et al.*
+
+*Clinical Neurophysiology 161 (2024) 93–100*
+
+100

@@ -1,0 +1,3625 @@
+arXiv:2404.15319v1 \[eess.SP\] 3 Apr 2024 
+
+|  |
+| :-: |
+| [**Page 1**]() |
+
+The largest EEG-based BCI reproducibility study
+
+for open science: the MOABB benchmark
+
+Sylvain Chevallier, Igor Carrara, Bruno Aristimunha, Pierre
+
+Guetschel, Sara Sedlar, Bruna Lopes, Sebastien Velut, Salim
+
+Khazem, Thomas Moreau
+
+Inria TAU, LISN-CNRS, Université Paris-Saclay, 91405, Orsay, France
+
+Université Côte d’Azur, Inria Cronos Team, Sophia Antipolis, France
+
+Donders Institute, Radboud University, Nijmegen, Netherlands
+
+University of S˜ao Paulo, Sao Paulo, Brazil
+
+Federal University of ABC, Santo Andre, Brazil
+
+GeorgiaTech-CNRS IRL 2958, Centralesupelec, Metz, France
+
+Inria Mind team, Université Paris-Saclay, CEA, Palaiseau, 91120, France
+
+E-mail: sylvain.chevallier@universite-paris-saclay.fr
+
+Abstract.
+
+Objective. This study conduct an extensive Brain-computer interfaces (BCI)
+
+reproducibility analysis on open electroencephalography datasets, aiming to assess
+
+existing solutions and establish open and reproducible benchmarks for effective
+
+comparison within the field. The need for such benchmark lies in the rapid industrial
+
+progress that has given rise to undisclosed proprietary solutions. Furthermore, the
+
+scientific literature is dense, often featuring challenging-to-reproduce evaluations,
+
+making comparisons between existing approaches arduous. Approach. Within an open
+
+framework, 30 machine learning pipelines (separated into raw signal: 11, Riemannian:
+
+13, deep learning: 6) are meticulously re-implemented and evaluated across 36
+
+publicly available datasets, including motor imagery (14), P300 (15), and SSVEP (7).
+
+The analysis incorporates statistical meta-analysis techniques for results assessment,
+
+encompassing execution time and environmental impact considerations. Main results.
+
+The study yields principled and robust results applicable to various BCI paradigms,
+
+emphasizing motor imagery, P300, and SSVEP. Notably, Riemannian approaches
+
+utilizing spatial covariance matrices exhibit superior performance, underscoring the
+
+necessity for significant data volumes to achieve competitive outcomes with deep
+
+learning techniques. The comprehensive results are openly accessible, paving the way
+
+for future research to further enhance reproducibility in the BCI domain. Significance.
+
+The significance of this study lies in its contribution to establishing a rigorous and
+
+transparent benchmark for BCI research, offering insights into optimal methodologies
+
+and highlighting the importance of reproducibility in driving advancements within the
+
+field.
+
+Keywords: Brain-computer interface, EEG, Reproducibility, Riemannian classifier, Deep
+
+learning
+
+Submitted to: J. Neural Eng.
+
+arXiv:2404.15319v1 \[eess.SP\] 3 Apr 2024
+
+-----
+
+|  |
+| :-: |
+| [**Page 2**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+2
+
+1\. Introduction
+
+The field of Brain-Computer Interface (BCI)
+
+aims at developing methodologies to allow in-
+
+teractions with devices, like prostheses or com-
+
+puter environments, from decoding brain sig-
+
+nals. It is a very good candidate technology
+
+to assist people with motor disability, as it re-
+
+quires very limited motor capabilities of the
+
+subject. To go from brain signals to decision-
+
+making, BCI systems are defined by several
+
+choices: a paradigm, that specifies the cogni-
+
+tive tasks to perform to control the interface,
+
+an acquisition device, to record the brain activ-
+
+ity, and an algorithmic pipeline, that processes
+
+the acquired data and predicts which action
+
+the subject intends to perform. As such, BCI
+
+is at the forefront of interdisciplinary research,
+
+integrating expertise from diverse fields such as
+
+electronics, neuroscience, human-machine in-
+
+teraction (HMI), signal processing, and ma-
+
+chine learning.
+
+1.1. Open data
+
+To fasten the emergence of BCI system,
+
+the field has organized to decouple the
+
+lengthy paradigm design and data acquisition
+
+processes from the development of algorithmic
+
+pipelines to process them. The creation and
+
+publication of many accessible and openly
+
+available datasets allow for offline development
+
+and evaluation of novel processing pipelines.
+
+They also improve experiment replication and
+
+ensure the replicability of published results.
+
+Due to the constraints on real-time ac-
+
+quisitions in open environments, Electroen-
+
+cephalography (EEG) has become the leading
+
+device to develop BCI systems with its high-
+
+frequency acquisition and limited constraints
+
+on its deployment. In EEG-based BCI, many
+
+real-world competitions and open datasets ex-
+
+ist on a world scale to design and evaluate the
+
+best BCI systems. BCI datasets come with
+
+various paradigms, depending on the decoding
+
+task to perform from brain signals. Motor Im-
+
+agery (MI) is a common paradigm choice to
+
+control a BCI, with different imagined move-
+
+ments, but other paradigms are also very effi-
+
+cient like Event Related Potential (ERP) gen-
+
+erated by oddball stimulus or Steady State Vi-
+
+sually Evoked Potential (SSVEP) produced by
+
+repetitive stimulations. Many open datasets
+
+are thus openly available for EEG-based BCI.
+
+Yet, open data is not solely about avail-
+
+ability. It also requires the use of open for-
+
+mats that enable easy reading and exploitation
+
+of metadata. Indeed, there exists a wide va-
+
+riety of EEG acquisition devices with various
+
+hardware specifications, as well as a plethora of
+
+paradigm specifications, with their experimen-
+
+tal design, shared annotations, and code for
+
+interpreting the cued events. Retrieving this
+
+information is critical to developing valid sys-
+
+tems that can correctly process the retrieved
+
+data. Drawing inspiration from brain imag-
+
+ing techniques like fMRI or MEG that rely
+
+on the Brain Imaging Data Structure (BIDS),
+
+an extension of this format has been proposed
+
+for EEG-based research \[[91](#33)\]. Despite this pro-
+
+posed format, most EEG open data available
+
+online are stored in diverse structures and for-
+
+mats, which hinders the automation of data
+
+collection, as each dataset requires specific pro-
+
+cessing scripts.
+
+Moreover, while numerous books on EEG
+
+data acquisition and BCI exist, it remains
+
+challenging to find well-founded guidelines for
+
+hardware requirements and BCI design. These
+
+guidelines are needed to allow practitioners
+
+to make informed decisions regarding experi-
+
+mental design and hardware selection. In the
+
+worst-case scenario, a poorly designed BCI or
+
+an inappropriate hardware choice can result
+
+-----
+
+|  |
+| :-: |
+| [**Page 3**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+3
+
+in unusable data. The unique characteristics
+
+of EEG-based BCIs could be guided by meta-
+
+analyses of existing datasets, leading to rec-
+
+ommendations on the number and positioning
+
+of electrodes, sampling frequency, the required
+
+number of subject trials, and the influence of
+
+the number of classes. However, to the best
+
+of our knowledge, there is no comprehensive
+
+and systematic evaluation of these parameters
+
+available in the existing literature.
+
+1.2. BCI pipelines
+
+Based on these open datasets, the development
+
+of BCI classification pipelines for EEG sig-
+
+nals has a long-standing research history and a
+
+very active community \[[75](#32)\]. Pipelines initially
+
+focused on methods based on feature extrac-
+
+tion from raw signals, such as channel variance
+
+or local variation \[[74](#32)\], combined with com-
+
+plex classifiers. The first breakthrough came
+
+with the introduction of spatial filtering meth-
+
+ods based on covariance estimation, such as
+
+XDAWN \[[95](#33)\], CSP \[[2](#27)\], or CCA \[[72](#32)\]. These
+
+methods significantly improved classification
+
+accuracy when paired with simple classifiers.
+
+By using supervised filters, the separability of
+
+different BCI classes was improved while re-
+
+ducing the dimensionality of the input signal.
+
+As a result, these raw-signal-based pipelines
+
+with spatial filtering became the top-ranked
+
+approaches in BCI competitions. The second
+
+advancement in BCI classification involved a
+
+reformulation of spatial filtering based on co-
+
+variance matrices using Riemannian geome-
+
+try \[[12](#27)[,](#27) [124](#36)\]. Leveraging the inherent man-
+
+ifold structure of symmetric covariance ma-
+
+trices, this approach provides robust classifi-
+
+cation by exploiting the invariance properties
+
+of the covariance manifold. This method has
+
+demonstrated remarkable performance across
+
+various BCI tasks, even with noisy EEG sig-
+
+nals, making it the preferred choice and quickly
+
+outperforming other pipelines in BCI compe-
+
+titions \[[33](#29)\]. Pipelines based on Riemannian
+
+geometry are considered state-of-the-art meth-
+
+ods in the current literature.
+
+Recently, deep learning methods have been
+
+explored for EEG-based BCI classification \[[99](#34)\].
+
+Although deep learning has enjoyed success in
+
+computer vision tasks, it is not straightforward
+
+to adapt these techniques to handle strongly
+
+correlated time series data, such as EEG
+
+signals.
+
+As a result, the deep learning
+
+approaches performances on EEG signals have
+
+not outperformed existing approaches \[[103](#34)\].
+
+Indeed, the main workhorse for the success
+
+of deep learning lies in the availability of
+
+vast amounts of data.
+
+However, in the
+
+context of BCI and EEG data, there is a
+
+scarcity of data at subject-level, which could
+
+potentially explain the limited performance
+
+of deep neural networks in this domain. To
+
+address this issue, incorporating auxiliary
+
+tasks such as self-supervised learning \[[7](#27)\]
+
+or data augmentation \[[97](#34)\] are promising
+
+approaches. However, further investigation is
+
+still required to explore the efficacy of these
+
+methods.
+
+1.3. Evaluation and Reproducibility in BCI
+
+While the literature on EEG-based BCI
+
+pipelines is very dense, their evaluation and
+
+the interpretation of the results is a major
+
+issue for BCI. Indeed, for many studies, it is
+
+very difficult, if not impossible to compare the
+
+produced results. This stems from the fact
+
+that various factors hinder the experimental
+
+result comparison: specific preprocessing,
+
+cherry-picking datasets, subjects, or classes on
+
+a dataset, missing pipelines in the comparison,
+
+or lack of statistical analysis.
+
+On the one hand, this issue is compounded
+
+-----
+
+|  |
+| :-: |
+| [**Page 4**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+4
+
+by the need for shared resources and compre-
+
+hensive evaluations. Thorough evaluations of-
+
+ten exceed the scope of a single research work,
+
+and it is thus crucial to find rigorous meth-
+
+ods to assess the performance of BCI pipelines
+
+and ensure the reproducibility of their results.
+
+On the other hand, the scientific community
+
+has been grappling with a reproducibility crisis
+
+across various domains \[[6](#27)\], and the field of BCI
+
+is not exempt. Addressing this crisis in BCI
+
+research is particularly pertinent due to the
+
+domain’s unique requirements and complexi-
+
+ties. BCI studies involve complex methodolo-
+
+gies, intricate data acquisition techniques, and
+
+multifaceted analysis pipelines, making it chal-
+
+lenging to replicate and validate experiments.
+
+The transdisciplinary nature of BCI research
+
+necessitates specialized knowledge from multi-
+
+ple disciplines, further complicating the ability
+
+to reproduce results.
+
+Meta-analysis, a statistical technique for
+
+combining the results of multiple studies,
+
+is a powerful tool for synthesizing findings
+
+and deriving insights from a large body
+
+of research \[[48](#30)\].
+
+However, due to non-
+
+standardized evaluation protocols, conducting
+
+meta-analyses in the field of BCI has proven
+
+to be challenging. The variability in datasets,
+
+experimental tasks, and analysis pipelines in-
+
+hibits the aggregation of results, despite efforts
+
+to establish standardization protocols. Conse-
+
+quently, it is difficult to obtain a comprehen-
+
+sive understanding of the performance of BCIs
+
+pipelines across different paradigms through
+
+the existing literature.
+
+In response to these challenges, the field
+
+has seen the emergence of the Mother of All
+
+BCI Benchmarks (MOABB). MOABB \[[4](#27)\] was
+
+developed as an open-source platform to fa-
+
+cilitate the benchmarking and assessment of
+
+new datasets and classifiers in major BCI
+
+paradigms. The first version of MOABB initi-
+
+ated a community-driven effort to define rigor-
+
+ous and expert methods for conducting proper
+
+benchmarking assessments. By providing stan-
+
+dardized evaluation procedures, MOABB en-
+
+ables researchers to compare and evaluate the
+
+performance of BCI methods in a transparent
+
+and reproducible manner. While its adoption
+
+by the community is broadening, the system-
+
+atic evaluation of existing pipelines proposed
+
+in \[[54](#30)\] is now outdated because it is focused
+
+on a specific BCI modality, and new pipelines
+
+have emerged in the literature.
+
+1.4. Environmental impact
+
+Addressing climate change requires compre-
+
+hensive actions across all facets of human so-
+
+cieties to adhere to the Paris Climate Agree-
+
+ment. Research, including the field of AI,
+
+plays a significant role in achieving this ob-
+
+jective. Assessing the environmental impact
+
+of machine learning techniques is a challeng-
+
+ing task \[[71](#32)\], which has been pioneered by the
+
+natural language processing community with
+
+the prominence of conversational agents \[[76](#32)\].
+
+While machine learning models used in BCI
+
+are smaller in scale, assessing the performance
+
+of various models in link with their environ-
+
+mental impact is critical to promoting virtuous
+
+and sustainable models.
+
+The costs associated with deploying com-
+
+puters or computer clusters for training ma-
+
+chine learning models are dependent on infras-
+
+tructure requirements. The environmental im-
+
+pact resulting from energy consumption during
+
+model training varies based on geographical
+
+criteria, as electricity production methods dif-
+
+fer across countries. Several libraries have been
+
+developed to provide estimates of this environ-
+
+mental impact, measured in terms of grams of
+
+CO2 equivalent emissions \[[53](#30)\]. Although these
+
+libraries have limitations, they offer a valuable
+
+-----
+
+|  |
+| :-: |
+| [**Page 5**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+5
+
+measurement to enhance our understanding of
+
+the training requirements for models. This fa-
+
+cilitates a more comprehensive comparison of
+
+pipelines within a benchmark setting.
+
+1.5. Contributions
+
+This paper aims to address the lack of repro-
+
+ducibility studies in the field of EEG-based
+
+BCI and to go beyond a simple benchmark of
+
+existing machine learning pipelines. Indeed, it
+
+is important to provide an updated comparison
+
+of the previous benchmark \[[54](#30)\], including deep
+
+learning pipelines. Also, new BCI paradigms
+
+for controlling systems could now be included
+
+in the evaluation to propose a global take on
+
+the current BCI state.
+
+It is an impossible task to evaluate all
+
+openly available datasets and all published
+
+pipelines in the literature, as there are exotic
+
+or unreadable data formats, BCI protocols
+
+that are used for a unique dataset, and
+
+unavailable code. For this paper, we chose
+
+to restrict to three common BCI paradigms,
+
+namely MI, ERP, and SSVEP, that are well
+
+documented in the literature. The reason for
+
+this choice is to ensure reproducible evaluation
+
+with enough datasets and subjects to achieve
+
+decent statistical meta-analysis.
+
+For the machine learning pipelines, we
+
+follow similar guidelines to consider only
+
+approaches that could be reimplemented with
+
+Python open-source libraries. Indeed, we
+
+could only reimplement part of the published
+
+pipelines, but we try to include to the best of
+
+our effort all pipelines that have been reused in
+
+several publications or that are often cited as
+
+reference. The MOABB framework is designed
+
+to allow seamless integration of novel pipelines
+
+for new contributors and facilitate as much
+
+as possible the reproducibility of a benchmark
+
+to compare a novel pipeline with the one
+
+presented here.
+
+We thought of the MOABB open science
+
+initiative as a long-term project. The objective
+
+is to endow the community with the ability
+
+to easily compare results on new datasets or
+
+new pipelines, that will be added after the
+
+paper publication. A website reproduces the
+
+results presented here and will be updated
+
+with novel additions. The goal is also to
+
+limit the environmental impact of research
+
+works by providing a simple means for
+
+scientists to copy/paste up-to-date results in
+
+their publication to compare with a reference
+
+benchmark.
+
+Beyond the purely quantitative bench-
+
+mark, it is difficult to have a good overview of
+
+the open EEG datasets available online. They
+
+have been recorded with different hardware,
+
+using similar experimental protocols with some
+
+variability in experiment design. As data shar-
+
+ing is becoming a common requirement in the
+
+scientific community, future works will often
+
+result in sharing new open data. It is im-
+
+portant to be able to quickly identify exist-
+
+ing datasets, and common design choices, to
+
+correctly position new experiments with well-
+
+informed knowledge. This task is difficult, as
+
+open data is scattered in the literature with no
+
+common format.
+
+To summarize, in this paper we aim to
+
+address the following open questions:
+
+• What is the most effective approach for
+
+classifying EEG? How do their computa-
+
+tion time and energy consumption com-
+
+pare for training a model?
+
+• What is the best deep learning method?
+
+The best Riemannian-BCI pipeline?
+
+• How many trials or channels are required
+
+in a dataset to achieve correct perfor-
+
+mances?
+
+• For MI, which motor imagery tasks give
+
+-----
+
+|  |
+| :-: |
+| [**Page 6**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+6
+
+the best accuracy?
+
+• What are the open datasets in different
+
+paradigms and how do they compare?
+
+To investigate those research questions,
+
+we conducted many experiments built on open-
+
+source tools and with the help of a large
+
+community driven by open science guidelines.
+
+This paper describes the results obtained
+
+from a wide experimental campaign and their
+
+in-depth analysis, resulting in the following
+
+contributions:
+
+• the largest benchmarking in EEG-based
+
+BCI in open science relying on open source
+
+libraries
+
+• a fair and replicable evaluation with
+
+expert knowledge in BCI
+
+• a deep analysis of the benchmark results,
+
+with guidelines for proposing new machine
+
+learning pipelines and new datasets or
+
+experiments.
+
+2\. Benchmark methodology
+
+In this section, we describe the methodology
+
+for our benchmark, including which methods
+
+are considered, how they are trained and
+
+evaluated, and how we analyze the results.
+
+2.1. Analysis pipelines inclusion
+
+A major difficulty in the BCI literature, apart
+
+from the data and code availability, is the
+
+importance of signal processing in EEG. Many
+
+toolboxes are available, in different software
+
+platforms, like Matlab, Python, C/C++, Java,
+
+C\#, Julia, Delphi, and many more. Some
+
+toolboxes are sold as commercial products,
+
+with undisclosed code or signal processing
+
+techniques that are hidden or obfuscated for
+
+intellectual property reason. The choices made
+
+in those toolboxes, let apart all single projects
+
+maintained by only one person, are very
+
+different regarding signal filtering or electrode
+
+referencing and yield very different outcomes.
+
+Despite the fact that complex preprocessing
+
+pipelines, and often arguably overcomplicated
+
+ones, are detrimental for EEG interpretation
+
+and classification \[[37](#29)\], most of the toolboxes
+
+include them and promote their application in
+
+tutorials and guidelines.
+
+In this paper, our analysis pipeline relies
+
+on the Python language for its large adoption
+
+in the scientific computing, neuroscience and
+
+machine learning communities, supported by
+
+robust and extensively validated libraries such
+
+as numpy \[[47](#30)\], scipy \[[118](#35)\], MNE \[[43](#30)\], scikit-
+
+learn \[[89](#33)\] and pyriemann \[[14](#27)\]. Manipulation
+
+of EEG recordings is facilitated through MNE,
+
+enabling the extraction of hardware events and
+
+the conversion of recordings into numpy arrays.
+
+As a light preprocessing, the signal is processed
+
+with a 4th-order Butterworth bandpass IIR
+
+filter, applied with a forward-backward pass,
+
+using standard MNE parametrization. The
+
+specific bandpass frequencies are subsequently
+
+provided as they depend on the chosen
+
+BCI paradigm. Machine learning pipelines
+
+are based on scikit-learn and pyriemann
+
+estimators.
+
+2.2. Evaluation method
+
+Another difficulty for anyone who wants to
+
+reproduce literature results is that reporting
+
+classification performances on EEG-based BCI
+
+tasks is not standardized. A crucial method-
+
+ological consideration pertains to the selec-
+
+tion of the evaluation metric (whether it be
+
+Area Under the Curve (AUC), precision/re-
+
+call, F1-score, or accuracy), a decision that
+
+holds notable significance in the assessment
+
+of outcomes. Moreover, in many studies, the
+
+authors focus on specific subsets of subjects
+
+-----
+
+|  |
+| :-: |
+| [**Page 7**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+7
+
+within established datasets, or selectively use a
+
+restricted part of the cognitive tasks conducted
+
+during experiments. These choices make com-
+
+paring findings across papers becomes inher-
+
+ently cumbersome.
+
+To maintain consistent terminology con-
+
+cerning EEG signals, we will establish the fol-
+
+lowing definitions. A session refers to a series
+
+of runs where EEG electrodes remain attached
+
+to a subject’s head, and the overarching experi-
+
+mental parameters remain constant. The term
+
+run denotes the period during which an ex-
+
+periment is conducted without interruption or
+
+pause. Within a session, several runs are per-
+
+formed with potential intervals between them.
+
+An epoch or a trial signifies a segment within
+
+a run during which an atomic event occurs,
+
+triggered by an external stimulus for event-
+
+related potential or steady-state evoked po-
+
+tential or internal volition for motor imagery.
+
+These epochs are positioned in time relative to
+
+an onset, which corresponds to the start of a
+
+stimulus or a task.
+
+In the BCI framework, different evalua-
+
+tion methodologies exist for partitioning the
+
+data into training and test datasets, each
+
+tailored to address specific challenges. We
+
+differentiate between within-session as shown
+
+in [Figure 1](#7), cross-session, and cross-subject
+
+evaluations, respectively illustrated in the an-
+
+nexes in [Figure A1 ](#37)and [Figure A2](#37).
+
+In the context of within-session evalu-
+
+ation, the primary concern lies in identify-
+
+ing algorithms that can effectively mitigate
+
+overfitting within a single session. In line
+
+with common practices in machine learning
+
+for cross-validation, all trials from a session
+
+are shuffled before being split in k-folds, to
+
+evaluate the generalization performance on un-
+
+seen epochs. Consequently, the pipelines are
+
+trained on trials sampled throughout the ses-
+
+sion duration, which helps mitigate the im-
+
+**One Session**
+
+**Fold 1**
+
+**Fold 2**
+
+**Fold 3**
+
+**Fold 4**
+
+**Ordered**
+
+**samples**
+
+**Shuffled**
+
+**samples**
+
+**Training samples**
+
+**Testing samples**
+
+**Chronologically**
+
+**ordered samples**
+
+Figure 1: Within-session evaluation, small
+
+rectangles indicate a sample or EEG trial,
+
+pastel colors on the two top lines shows
+
+the chronological order, bright color on the
+
+last three lines indicates training and testing
+
+samples/trials.
+
+pact of intra-session variability in an individ-
+
+ual’s EEG. While this allows a more statisti-
+
+cally accurate benchmark of a pipeline, it pro-
+
+vides an upper bound for the evaluation met-
+
+rics when compared to online evaluation. De-
+
+spite the difference with experimental applica-
+
+tions of BCI system, this training methodology
+
+is commonly employed in the existing litera-
+
+ture \[[13](#27)[,](#27) [111](#35)[,](#35) [84](#33), [75](#32)\], influencing our decision
+
+to adopt it for this reproducibility study.
+
+In contrast, the cross-session (resp. cross-
+
+subject) evaluation employs a leave-one-out
+
+cross-validation technique, where only one
+
+session (resp. subject) is designated as the
+
+testing dataset.
+
+The results from cross-
+
+session or cross-subject evaluation methods
+
+put more emphasis on transfer learning to
+
+cope with subjects’ variability. However, the
+
+questions raised by transfer learning in a BCI
+
+context \[[119](#35)[,](#35) [121](#35)\] are manyfold – dealing with
+
+-----
+
+|  |
+| :-: |
+| [**Page 8**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+8
+
+subject alignment, training models for each
+
+subject or a single one, at a session, subject
+
+or dataset level – and are outside the scope of
+
+this article. For this reason, this paper focuses
+
+on the most common evaluation strategy in the
+
+literature, which is within-session evaluation.
+
+Nonetheless, one should acknowledge that
+
+within-session evaluation has its limitations. It
+
+addresses only partly the complications stem-
+
+ming from variations in sessions and subjects.
+
+Such variations may arise from internal fac-
+
+tors, like minor electrode displacements be-
+
+tween sessions, different calibrations of EEG
+
+hardware, or external factors, like the dynamic
+
+nature of EEG measurements in an individual
+
+based on the cognitive states \[[98](#34)\], such as alert-
+
+ness, drowsiness or fatigue.
+
+Within-session evaluation of a pipeline is
+
+conducted for each subject and each session
+
+by splitting the epochs into training and
+
+test epoch sets using five stratified K-fold
+
+splits. In each fold, the testing set contains
+
+20% of the session epochs while maintaining
+
+the class distribution. The final evaluation
+
+score corresponds to the average over the five
+
+splits. Depending on whether the classification
+
+problem is binary or involves more than
+
+two classes, evaluation scores correspond
+
+to the Area Under the Receiver Operating
+
+Characteristic Curve (ROC) or classification
+
+accuracy, respectively.
+
+2.3. Grid search
+
+Another important aspect in BCIs is how
+
+the hyperparameters are selected. They can
+
+significantly affect the performance of the
+
+algorithm and, consequently, the accuracy
+
+of the system’s predictions. It is therefore
+
+crucial to employ a method that facilitates
+
+the search for optimal parameter values. Grid
+
+search stands out as a popular method for
+
+hyperparameter tuning in machine learning
+
+algorithms.
+
+In particular, it is essential
+
+to search for the correct hyper-parameters
+
+for each scenario, considering variations in
+
+evaluation procedures, datasets, subjects, and
+
+sessions.
+
+Using nested cross-validation for hyper-
+
+parameters selection, we mitigate the risk of
+
+overfitting, as recommended in existing litera-
+
+ture \[[25](#28)\]. This approach is implemented by us-
+
+ing an inner 3-fold cross-validation. Addition-
+
+ally, we have devised tailored grid search func-
+
+tions for each evaluation procedure, as detailed
+
+in [subsection Appendix A.1](#36). This standard-
+
+ized framework streamlines hyperparameter
+
+tuning, enabling seamless performance com-
+
+parison across diverse machine-learning mod-
+
+els and promoting experiment reproducibility
+
+across varied datasets.
+
+2.4. Statistical analysis
+
+The statistical comparison of two different
+
+pipelines can be conducted either at a dataset-
+
+wise level or across multiple datasets.
+
+The dataset-wise comparison involves
+
+assessing the statistical differences between
+
+two pipelines within the same dataset. This
+
+is done using effect sizes and p-values. To
+
+optimize computational efficiency, the number
+
+of subjects N in the dataset determines the
+
+method of estimating p-values. For datasets
+
+with N \< 13, one-tailed permutation-based
+
+paired t-tests are used with all possible
+
+permutations. For datasets with 13 ≤ N ≤ 20,
+
+10000 random permutations are employed. For
+
+datasets with N \> 20, the Wilcoxon signed-
+
+rank test \[[122](#35)\] is used. The effect size between
+
+two pipelines is measured via Standardized
+
+Mean Difference (SMD) \[[48](#30)\] estimated over the
+
+subjects.
+
+For multiple datasets, the comparison of
+
+-----
+
+|  |
+| :-: |
+| [**Page 9**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+9
+
+statistical differences between two pipelines
+
+over D is done by combining effect sizes
+
+{si}D
+
+i=1
+
+and p-values {pi}D
+
+i=1
+
+with Stouffer’s Z-
+
+score method \[[96](#34)\] that take in account the
+
+different sizes of the datasets. Combined
+
+p-values are obtained by estimating Z =
+
+PD
+
+i=1
+
+wiZi, where Zi = Φ-1(1 − pi) with Φ
+
+the standard normal cumulative distribution
+
+function. This weighted Z-score relies on
+
+weights wi =
+
+q Ni
+
+PD
+
+i=1 w2
+
+i
+
+that are proportional
+
+to Ni the number of subjects in the dataset
+
+i. Combined measures of the effect sizes are
+
+obtained by S = P
+
+D
+
+i=1
+
+wisi weighted average
+
+of SMD.
+
+2.5. Code Carbon
+
+The assessment of the environmental impact
+
+of research is gathering momentum, yet the
+
+methodology remains a topic of heavy debate,
+
+particularly in computer science and machine
+
+learning \[[71](#32)\].
+
+Within these fields, a significant environ-
+
+mental impact stems from the production pro-
+
+cesses of devices (such as acquisition devices,
+
+computers, GPUs, and clusters) and the en-
+
+ergy consumption during their usage. Evaluat-
+
+ing the impact of device production poses chal-
+
+lenges, given the limited information shared by
+
+manufacturers, potential inaccuracies in esti-
+
+mations, and the frequent sharing and reusing
+
+of research equipment across multiple projects.
+
+This issue is notably prevalent for CPU and
+
+GPU clusters, where numerous experiments
+
+run in parallel \[[76](#32)\].
+
+Energy consumption during usage is
+
+commonly acknowledged as a key indicator
+
+of the environmental impact, although it
+
+represents only a fraction of the overall impact.
+
+This measurement is typically expressed as
+
+grams of CO2 equivalent (gCO2) emissions
+
+released into the atmosphere and heavily relies
+
+on factors such as the power grid setup
+
+and energy production localization. National
+
+power companies typically offer estimates of
+
+the carbon footprint of consumed energy,
+
+articulated in gCO2 per Watt-hour. This
+
+value can significantly vary between countries
+
+based on energy production sources; for
+
+instance, countries reliant on coal or fuel power
+
+plants tend to have a higher carbon footprint
+
+compared to those utilizing hydroelectric
+
+power or solar panels.
+
+For optimal measurement of energy con-
+
+sumption and carbon footprint, power meters
+
+are ideal, albeit encompassing the entire com-
+
+puter’s energy consumption. To gain more
+
+precise insights, especially for evaluating spe-
+
+cific programs or machine learning pipelines,
+
+software-based power meters prove useful \[[53](#30)\].
+
+Various tools exist for this purpose, many of
+
+which are open source. In our study, we
+
+opted to employ Code Carbon \[[35](#29)\], a Python-
+
+based tool that seamlessly integrates into ex-
+
+periments conducted on individual computers
+
+or clusters.
+
+When estimating the carbon footprint of
+
+a machine learning pipeline, it is critical to an-
+
+alyze both the training and inference phases.
+
+During k-fold validation, inference constitutes
+
+a substantial portion of energy consumption.
+
+Consequently, the estimated carbon footprint
+
+offers valuable insights into the trade-offs be-
+
+tween different algorithms, with considerations
+
+for CPU consumption, execution time, and the
+
+parallelization of algorithms. Notably, well-
+
+parallelized algorithms can achieve lower ex-
+
+ecution times when distributed across a large
+
+number of CPUs. The carbon footprint serves
+
+as an insightful metric for assessing the com-
+
+putational complexity of a pipeline, particu-
+
+larly when considering its adaptability to em-
+
+bedded or dedicated architectures, common in
+
+commercial neurotechnology products.
+
+-----
+
+|  |
+| :-: |
+| [**Page 10**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+10
+
+3\. Datasets
+
+There are different types of BCI applications,
+
+referred to as paradigms throughout this
+
+article, each relying on distinctive neurological
+
+patterns to facilitate communication between
+
+the brain and the BCI system. Depending on
+
+the selected paradigm, the raw EEG recordings
+
+are transformed into trials for machine learning
+
+pipelines.
+
+These transformations include
+
+bandpass filtering, signal cropping based on
+
+stimulus events, and potential resampling to
+
+adjust the sampling frequency if needed by
+
+the machine learning pipelines. Employing
+
+standardized preprocessing procedures enables
+
+a fair comparison among different algorithms.
+
+3.1. Motor Imagery
+
+The MI paradigm involves a cognitive process
+
+where an individual mentally simulates the
+
+execution of a motor action without actually
+
+performing it.
+
+This paradigm is widely
+
+used in neuroscience to delve into the neural
+
+mechanisms governing motor control and
+
+learning. Moreover, it finds applications in
+
+neurorehabilitation to assist in restoring motor
+
+functions for individuals with neurological
+
+disorders or injuries.
+
+Various tasks are
+
+associated with this paradigm in Mother Of
+
+All BCI Benchmark (BCI), with common
+
+examples including left-hand, right-hand, and
+
+feet imagery.
+
+The choice of evaluation
+
+metrics for classification performance varies
+
+based on the number of tasks involved in
+
+the classification process: ROC-AUC is used
+
+for two-task classifications, whereas accuracy
+
+metrics are employed for multiclass scenarios.
+
+With the MI paradigm, signal processing
+
+includes bandpass filtering within the \[8 −
+
+32\] Hz frequency range \[[86](#33)\].
+
+The [Table 1 ](#11)provides a comprehensive
+
+overview of MI datasets, with class name
+
+abbreviations including RH (Right Hand), LH
+
+(Left Hand), F (Feet), H (Hands), T (Tongue),
+
+R (Resting State), LHRF (Left Hand Right
+
+Foot), and RHLF (Right Hand Left Foot).
+
+The column ’No. trials’ denotes the number
+
+of trials per class, session, and run. For
+
+instance, BNCI2014 001 comprises 12 trials
+
+per class across 4 classes, 6 runs, and 2 sessions,
+
+resulting in a total of 12×4×6×2 = 576 trials
+
+in the dataset. The only exception is for the
+
+PhysionetMI dataset, where in the first 3 runs,
+
+there are RH, LH, and R events; in the last 3
+
+runs, there are H, F, and R events.
+
+3.2. P300/ERP
+
+The P300 paradigm, which is a specific ERP
+
+paradigm, serves as a framework for categoriz-
+
+ing psychophysical experiments \[[77](#32)\]. It pro-
+
+vides a visual representation of a distinct com-
+
+ponent characterized by a prominent positive
+
+deflection occurring approximately 300 ms af-
+
+ter stimulus onset. Typically, this compo-
+
+nent is elicited in cognitive tasks involving un-
+
+predictable and infrequent changes in stimuli.
+
+This is improperly called P300 ERP in the BCI
+
+community (see P300 BCI or P300 speller),
+
+whereas the cognitive components are more di-
+
+verse than just the P300 wave. See \[[77](#32)\] for a
+
+detailed discussion about this point.
+
+In the present study, our primary focus
+
+is on P3b, a specific subtype that examines
+
+stimulus changes relevant to the task at
+
+hand. This particular brain wave response
+
+manifests when the cognitive tasks involve
+
+stimuli that are predictable to some extent
+
+but are still imbued with an element of
+
+unpredictability. As is commonly the case in
+
+the literature, we classify events as targets or
+
+non-targets, i.e., at the epoch level, resulting
+
+in a binary classification task. We evaluate
+
+-----
+
+|  |
+| :-: |
+| [**Page 11**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+11
+
+Table 1: Overview of the Motor Imagery EEG datasets available in MOABB.
+
+Motor imagery
+
+Dataset
+
+No.
+
+subj.
+
+No.
+
+ch.
+
+No.
+
+classes
+
+No. trials
+
+/session/class
+
+Trial
+
+len.(s)
+
+S.freq.
+
+(Hz)
+
+No.
+
+sessions
+
+No.
+
+runs
+
+Classes
+
+AlexMI \[[8](#27)[\]](#27)
+
+8
+
+16
+
+2(3)
+
+20 ± 0
+
+3
+
+512
+
+1
+
+1
+
+RH, F, (R)
+
+BNCI2014 001 \[[111](#35)[\]](#35)
+
+9
+
+22
+
+3(4)
+
+72 ± 0
+
+4
+
+250
+
+2
+
+6
+
+RH, LH, F,
+
+(T)
+
+BNCI2014 002 \[[109](#34)[\]](#34)
+
+14
+
+15
+
+2
+
+80 ± 0
+
+5
+
+512
+
+1
+
+8
+
+RH, F
+
+BNCI2014 004 \[[70](#32)[\]](#32)
+
+9
+
+3
+
+2
+
+72.4 ± 9.5
+
+4.5
+
+250
+
+5
+
+1
+
+RH, LH
+
+BNCI2015 001 \[[38](#29)[\]](#29)
+
+12
+
+13
+
+2
+
+100 ± 0
+
+5
+
+512
+
+3 subj. 8-11
+
+2 others
+
+1
+
+RH, F
+
+BNCI2015 004 \[[102](#34)[\]](#34)
+
+9
+
+30
+
+2(5)
+
+39.4 ± 1.6
+
+7
+
+256
+
+2
+
+1
+
+RH, F
+
+Cho2017 \[[30](#29)[\]](#29)
+
+52
+
+64
+
+2
+
+101.2 ± 4.7
+
+3
+
+512
+
+1
+
+1
+
+RH, LH
+
+Lee2019 MI [\[](#31)[69](#31)[\]](#31)
+
+54
+
+62
+
+2
+
+50
+
+4
+
+1000
+
+2
+
+1
+
+RH, LH
+
+GrosseWentrup2009 \[[44](#30)[\]](#30)
+
+10
+
+128
+
+2
+
+150 ± 0
+
+7
+
+500
+
+1
+
+1
+
+RH, LH
+
+PhysionetMI [\[](#34)[101](#34)[\]](#34)
+
+109
+
+64
+
+4(5)
+
+22.6 ± 1.3
+
+3
+
+160
+
+1
+
+6\*\*\* RH, LH, H,
+
+F, (R)
+
+Schirrmeister2017 \[[103](#34)[\]](#34)
+
+14
+
+128
+
+3(4)
+
+240.8 ± 37.7
+
+4
+
+500
+
+1
+
+2
+
+RH, LH, F,
+
+(R)
+
+Shin2017A [\[](#34)[105](#34)[\]](#34)
+
+29
+
+30
+
+2
+
+10 ± 0
+
+10
+
+200
+
+3
+
+1
+
+RH, LH
+
+Weibo2014 [\[](#36)[125](#36)[\]](#36)
+
+10
+
+60
+
+4(7)
+
+79 ± 3
+
+4
+
+200
+
+1
+
+1
+
+RH, LH, H,
+
+F, (LHRF),
+
+(RHLF),
+
+(R)
+
+Zhou2016 [\[](#36)[128](#36)[\]](#36)
+
+4
+
+14
+
+3
+
+50 ± 3.5
+
+5
+
+250
+
+3
+
+2
+
+RH, LF, F
+
+its performance with the ROC-AUC metric,
+
+which handles the inherent imbalance in the
+
+problem at hand. With the ERP paradigm,
+
+the signal is bandpass filtered to the 1-24Hz
+
+frequency band \[[77](#32)\].
+
+The [Table 2 ](#12)shows an overview of all the
+
+ERP datasets. The column “No. epochs
+
+NT/T” indicates the number of NonTarget
+
+and Target epochs per session and run.
+
+3.3. SSVEP
+
+Steady State Visually Evoked Potentials are
+
+generated when presenting repetitive sensory
+
+stimuli to the subject. While tactile and audi-
+
+tory stimulations are seldom used, visual stim-
+
+ulation is very common, both for control \[[28](#28)\]
+
+or cognitive probes \[[123](#35)\]. The frequency of the
+
+stimulus repetition induces a brain oscillation
+
+in the associated sensory area. The amplitude
+
+of the generated oscillation follows the 1/f law,
+
+meaning that stimulation in low frequency (5-
+
+7 Hz) induces responses of higher amplitude
+
+than higher frequency (20-25 Hz). Stimulation
+
+above 40 Hz could be difficult to detect due to
+
+the weak generated oscillations. In BCI appli-
+
+cations, SSVEPs have been used for building
+
+spellers \[[83](#33)\] and for button-pressing \[[56](#31)\], but
+
+those applications are limited by the number of
+
+available frequencies of stimulation. It is possi-
+
+ble, using systems with precisely synchronized
+
+stimulation and recording, to encode informa-
+
+tion both in frequency and phase, therefore
+
+multiplying the choices possible \[[85](#33)\]. Similarly
+
+to the MI paradigm, we evaluate the classifiers
+
+using the ROC-AUC metric if only two classes
+
+are used and the accuracy metric if there are
+
+more. With the SSVEP paradigm, the signal
+
+is bandpass filtered to the 7-45Hz frequency
+
+band \[[29](#28)\]. The [Table 3 ](#12)encompasses all the
+
+SSVEP datasets considered in this study.
+
+-----
+
+|  |
+| :-: |
+| [**Page 12**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+12
+
+Table 2: Overview of the ERP EEG datasets available in MOABB.
+
+P300 / ERP
+
+Dataset
+
+No.
+
+subj.
+
+No.
+
+ch.
+
+No. epochs NT/T
+
+/session
+
+Epoch
+
+len.(s)
+
+S.freq.
+
+(Hz)
+
+No.
+
+sessions
+
+No.
+
+runs
+
+Keyboard
+
+BI2012 [\[](#35)[116](#35)[\]](#35)
+
+25
+
+16
+
+638.2 ± 1.9/127.6 ± 0.7
+
+1
+
+128
+
+1
+
+1
+
+36 aliens
+
+BI2013a \[[115](#35)[, ](#35)[10](#27)[, ](#27)[32](#29)[\]](#29)
+
+24
+
+16
+
+400.3 ± 2.3/80.1 ± 0.5
+
+1
+
+512
+
+8 subj. 1-7
+
+1 subj. 8-24
+
+1
+
+36 aliens
+
+BI2014a \[[64](#31)[\]](#31)
+
+64
+
+16 794.5 ± 276.7/158.9 ± 55.3
+
+1
+
+512
+
+1
+
+1
+
+36 aliens
+
+BI2014b \[[65](#31)[\]](#31)
+
+37
+
+32
+
+201.3 ± 61.5 /40.3 ± 12.3
+
+1
+
+512
+
+1
+
+1
+
+36 aliens
+
+BI2015a \[[62](#31)[\]](#31)
+
+43
+
+32
+
+461.8 ± 220.9/92.3 ± 44.1
+
+1
+
+512
+
+3
+
+1
+
+36 aliens
+
+BI2015b \[[63](#31)[\]](#31)
+
+44
+
+32
+
+2158.7 ± 6.3/479.9 ± 0.3
+
+1
+
+512
+
+1
+
+4
+
+36 aliens
+
+BNCI2014 008 [\[](#33)[94](#33)[, ](#33)[39](#29)[\]](#29)
+
+8
+
+8
+
+3500 ± 0/700 ± 0
+
+1
+
+256
+
+1
+
+1
+
+36 char.
+
+BNCI2014 009 [\[](#27)[3](#27)[\]](#27)
+
+10
+
+16
+
+480 ± 0/96 ± 0
+
+0.8
+
+256
+
+3
+
+1
+
+36 char.
+
+BNCI2015 003 [\[](#30)[46](#30)[\]](#30)
+
+10
+
+8
+
+2250 ± 1500 /270 ± 60
+
+0.8
+
+256
+
+1
+
+2
+
+36 char.
+
+EPFLP300 \[[49](#30)[\]](#30)
+
+8
+
+32
+
+685.2 ± 16.9/137.2 ± 3.5
+
+1
+
+2048
+
+4
+
+6
+
+6 images
+
+Huebner2017 \[[50](#30)[\]](#30)
+
+13
+
+31 3275.3 ± 2.1 /1007.8 ± 0.6
+
+0.9
+
+1000
+
+2 subj. 6
+
+3 others
+
+9
+
+42 char.
+
+Huebner2018 \[[51](#30)[\]](#30)
+
+12
+
+31 3638.4 ± 7.7 /1119.6 ± 2.5
+
+0.9
+
+1000
+
+3
+
+10
+
+42 char.
+
+Lee2019 ERP \[[69](#31)[\]](#31)
+
+54
+
+62
+
+3450/690
+
+1
+
+1000
+
+2
+
+1
+
+36 char.
+
+Sosulski2019 [\[](#34)[106](#34)[, ](#34)[108](#34)[\]](#34)
+
+13
+
+31
+
+75 ± 0 /15 ± 0
+
+1.2
+
+1000
+
+4 subj. 1
+
+3 others
+
+20
+
+2 tones
+
+Cattan2019 VR [\[](#28)[24](#28)[\]](#28)
+
+21
+
+16
+
+600 ± 0/120 ± 0
+
+1
+
+512
+
+2
+
+60
+
+36 crosses
+
+Table 3: Overview of the SSVEP EEG datasets available in MOABB.
+
+SSVEP
+
+Dataset
+
+No.
+
+subj.
+
+No.
+
+channels
+
+No.
+
+classes
+
+No. trials
+
+/session/class
+
+Trial
+
+len.(s)
+
+S.freq.
+
+(Hz)
+
+No.
+
+sess.
+
+No. runs
+
+Classes
+
+Lee2019 SSVEP [\[](#31)[69](#31)[\]](#31)
+
+54
+
+62
+
+4
+
+25
+
+1
+
+1000
+
+2
+
+1
+
+4 (5.45-12)
+
+MAMEM1 [\[](#33)[87](#33)[\]](#33)
+
+10
+
+256
+
+5
+
+16.8 ± 3.5 classes 8.57,10.0
+
+21.0 ± 4.4 classes 6.66,7.5,12.0
+
+3
+
+250
+
+1
+
+3 subj. 1,3,8; 4 subj. 4,6
+
+5 others
+
+5 (6.66-12.00)
+
+MAMEM2 [\[](#33)[87](#33)[\]](#33)
+
+10
+
+256
+
+5
+
+20 class 12.0; 30 class 8.57
+
+25 others
+
+3
+
+250
+
+1
+
+5
+
+5 (6.66-12.00)
+
+MAMEM3 [\[](#33)[87](#33)[\]](#33)
+
+10
+
+14
+
+4
+
+20.0 ± 0.0 class 6.66; 25.0 ± 0.0 class 8.57
+
+30.0 ± 0.0 class 10.0; 25.0 ± 0.0 class 12.0
+
+3
+
+128
+
+1
+
+10
+
+4 (6.66-12.00)
+
+Nakanishi2015 [\[](#33)[84](#33)[\]](#33)
+
+9
+
+8
+
+12
+
+15.0 ± 0.0
+
+4.15
+
+256
+
+1
+
+1
+
+12 (9.25-14.75)
+
+Kalunga2016 [\[](#31)[56](#31)[\]](#31)
+
+12
+
+8
+
+4
+
+20.0 ± 7.7
+
+2
+
+256
+
+1
+
+5 subj. 12; 4 subj.10
+
+3 subj. 7; 2 others
+
+4 (13,17,21,rest)
+
+Wang2016 [\[](#35)[120](#35)[\]](#35)
+
+34
+
+62
+
+40
+
+6.0 ± 0.0
+
+5
+
+250
+
+1
+
+1
+
+40 (8-15.8)
+
+The [Figure 2 ](#14)displays an embedding of
+
+all the datasets in 2 dimensions, using UMAP
+
+for dimensionality reduction on all feature
+
+information regarding the datasets, as listed
+
+in Tables [1](#11)[,](#11) [2 ](#12)and [3](#12). The color indicates the
+
+paradigms (blue for Motor Imagery, green for
+
+Event Related Potential, and red for Steady
+
+State Visually Evoked Potential), and the
+
+name of each dataset is written on top of
+
+the circle. The color intensity is related to
+
+the number of electrodes, datasets with a
+
+low number of electrodes are in lighter color,
+
+and the size of the circles is proportional
+
+to the number of subjects. The UMAP
+
+embedding preserves the local topology. This
+
+highlights that, despite different paradigms,
+
+datasets with many electrodes and many
+
+subjects are in a central position. Datasets
+
+with fewer subjects and fewer electrodes are
+
+closer to the border of the figure. The
+
+-----
+
+|  |
+| :-: |
+| [**Page 13**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+13
+
+BNCI2014 001 dataset, commonly called BCI
+
+Competition IV dataset 2a, is the most
+
+widely used in BCI literature. There are
+
+closely related datasets with roughly the same
+
+number of subjects, electrodes, and trials
+
+(BNCI2015 004, BNCI2015 001), with more
+
+subjects (Shin2017A) or with fewer subjects
+
+(Zhou2016). This group of datasets is useful
+
+for the fast evaluation of new pipelines and
+
+to see how well results generalize with the
+
+same kind of dataset. It is also possible
+
+to ensure a good coverage of the dataset
+
+features, using only a few datasets. With MI,
+
+a selection of BNCI2014 001, BNCI2014 004,
+
+Schirrmeister2017, and PhysioNetMI might be
+
+sufficient to evaluate an approach on datasets
+
+with very different configurations.
+
+4\. Pipelines
+
+As discussed in [section 1](#2), most classification
+
+algorithms in BCI research for EEG signals
+
+fall into one of three main categories: those
+
+based on raw signals (referred to as “Raw”
+
+hereafter), algorithms relying on covariance
+
+matrices seen as elements of a Riemannian
+
+manifold (denoted “Riemannian”) and the
+
+Deep Learning (DL) approaches.
+
+The Raw signal methods typically employ
+
+supervised spatial filters to simultaneously en-
+
+hance the component related to the cognitive
+
+task while reducing the dimensionality of the
+
+EEG data. In contrast, Riemannian pipelines
+
+consider the signal through its estimated co-
+
+variance matrices, leveraging the natural met-
+
+ric acting on the curved geometry of SPD ma-
+
+trices, which remains invariant by congruence
+
+transformations \[[124](#36)[,](#36) [33](#29)\]. Those approaches
+
+are thus mostly invariant to any spatial trans-
+
+formations applied on the signal, making them
+
+highly effective in BCI applications.
+
+Lastly, deep neural networks learn spatial
+
+and temporal filters directly from raw EEG
+
+data.
+
+Although there is a wealth of
+
+literature on deep learning models, there
+
+are few models available or evaluated with
+
+reproducible frameworks.
+
+Initiatives like
+
+Braindecode \[[103](#34)\] or, to a lesser extent for
+
+BCI, torchEEG \[[127](#36)\], offer an open-source
+
+implementation of the most efficient models.
+
+This study considers a set of raw, Riemannian,
+
+and deep learning models, which are detailed
+
+in [Table 4](#14), along with the hyperparameters
+
+used for the grid-search approach, listed in the
+
+annexes within [Table A1](#37).
+
+4.1. Raw signal
+
+The category of pipelines referred to as
+
+Raw consists of BCI classifiers employing
+
+traditional statistical analysis, as well as
+
+temporal and/or spatial filtering tools to
+
+extract features. Variance-based pipelines
+
+represent one of the initial BCI pipeline
+
+concepts proposed for motor imagery. Several
+
+approaches have highlighted the value of
+
+utilizing intra-channel variance for online
+
+decoding tasks. These pipelines calculate
+
+the variance of each electrode within an
+
+epoch to create a positive definite real-
+
+valued vector. To address noise or artifacts,
+
+it is common practice to logarithmically
+
+transform the observed variance \[[74](#32)\]. This
+
+approach essentially boils down to only
+
+considering the diagonal elements of the
+
+covariance matrices. Classifiers such as Linear
+
+Discriminant Analysis (LDA) or Support
+
+Vector Machine (SVM) can be utilized on the
+
+resulting vector to predict the label of the
+
+epoch.
+
+Common Spatial Pattern (CSP) approach
+
+learns spatial filtering matrices in a supervised
+
+manner, minimizing the variance of the
+
+band power feature vectors within the same
+
+-----
+
+|  |
+| :-: |
+| [**Page 14**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+14
+
+AlexandreMotorImagery
+
+BNCI2014-001
+
+BNCI2014-002
+
+BNCI2014-004
+
+BNCI2015-001
+
+BNCI2015-004
+
+Cho2017
+
+Lee2019-MI
+
+GrosseWentrup2009
+
+Schirrmeister2017
+
+Ofner2017
+
+PhysionetMI
+
+Shin2017A
+
+Weibo2014
+
+Zhou2016
+
+BNCI2014-008
+
+BNCI2014-009
+
+BNCI2015-003
+
+BI2012
+
+BI2013a
+
+BI2014a
+
+BI2014b
+
+BI2015a
+
+BI2015b
+
+Cattan2019-VR
+
+Huebner2017
+
+Huebner2018
+
+Sosulski2019
+
+EPFLP300
+
+Lee2019-ERP
+
+Lee2019-SSVEP
+
+Kalunga2016
+
+MAMEM1
+
+MAMEM2
+
+MAMEM3
+
+Nakanishi2015
+
+Wang2016
+
+Dataset visualization
+
+MI
+
+P300
+
+SSVEP
+
+Figure 2: Visualization of the MOABB datasets, with Motor Imagery in green, Event Related
+
+Potential in pink/purple and Steady State Visually Evoked Potential in yellow/brown. The size
+
+of the circle is proportional to the number of subjects and the contrast depends on the number
+
+of electrodes.
+
+Table 4: Pipelines considered in this study, the color indicates the paradigm. Green is for motor
+
+imagery, pink for P300 and orange for SSVEP.
+
+Pipeline Name
+
+Category
+
+References Pipeline Name
+
+Category
+
+References
+
+LogVar + LDA
+
+Raw
+
+TS + LR
+
+Riemannian
+
+\[[12](#27)[\]](#27)
+
+LogVar + SVM
+
+Raw
+
+TS + SVM
+
+Riemannian
+
+\[[12](#27)[\]](#27)
+
+CSP + LDA
+
+Raw
+
+[\[](#31)[61](#31)[,](#31) [19](#28)\] ACM + TS + SVM
+
+Riemannian
+
+\[[22](#28)[\]](#28)
+
+CSP + SVM
+
+Raw
+
+[\[](#31)[61](#31)[,](#31) [19](#28)\] ShallowConvNet
+
+Deep Learning
+
+\[[103](#34)[\]](#34)
+
+TRCSP + LDA
+
+Raw
+
+\[[73](#32)\] DeepConvNet
+
+Deep Learning
+
+\[[103](#34)[\]](#34)
+
+DLCSPauto + shLDA
+
+Raw
+
+\[[61](#31)[, ](#31)[19](#28)\], EEGNet 8 2
+
+Deep Learning
+
+\[[67](#31)[\]](#31)
+
+FBCSP+SVM
+
+Raw
+
+\[[2](#27)\] EEGTCNet
+
+Deep Learning
+
+\[[52](#30)[\]](#30)
+
+FgMDM
+
+Riemannian
+
+\[[12](#27)\] EEGITNet
+
+Deep Learning
+
+\[[100](#34)[\]](#34)
+
+MDM
+
+Riemannian
+
+\[[13](#27)\] EEGNeX 8 32
+
+Deep Learning
+
+\[[27](#28)[\]](#28)
+
+TS + EL
+
+Riemannian
+
+\[[34](#29)[\]](#29)
+
+XDAWN + LDA
+
+Raw
+
+\[[95](#33)\] XDAWNCov + TS + SVM Riemannian
+
+\[[28](#28)[\]](#28)
+
+XDAWNCov + MDM
+
+Riemannian
+
+\[[9](#27)\] ERPCov + MDM
+
+Riemannian
+
+\[[10](#27)[\]](#27)
+
+ERPCov(svdn = 4) + MDM Riemannian
+
+\[[10](#27)[\]](#27)
+
+TRCA
+
+Raw
+
+\[[85](#33)\] SSVEP MDM
+
+Riemannian
+
+\[[29](#28)[\]](#28)
+
+CCA
+
+Raw
+
+\[[72](#32)\] SSVEP TS + LR
+
+Riemannian
+
+\[[29](#28)[\]](#28)
+
+MsetCCA
+
+Raw
+
+[\[](#36)[126](#36)\] SSVEP TS + SVM
+
+Riemannian
+
+\[[29](#28)[\]](#28)
+
+-----
+
+|  |
+| :-: |
+| [**Page 15**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+15
+
+class, while maximizing the between-class
+
+variance \[[81](#32), [19](#28)\]. To enhance the robustness
+
+of the CSP against noise and overfitting,
+
+Tikhonov Regularized CSP (CSP) approach
+
+has been proposed in \[[73](#32)\].
+
+In contrast
+
+to the classical CSP, which uses band-pass
+
+filtered EEG signals that may vary per
+
+subject, Filter-Bank CSP (CSP) addresses
+
+this issue by extracting CSP features for
+
+each band-pass filter from the filter bank \[[2](#27)\].
+
+The [subsection Appendix B.1 ](#37)details the CSP
+
+algorithm.
+
+Canonical Correlation Analysis (CCA)
+
+has emerged as a prominent approach for clas-
+
+sifying SSVEP signals, initially introduced in
+
+the work by \[[72](#32)\]. Subsequently, CCA has
+
+been successfully employed in numerous no-
+
+table SSVEP-based BCI studies, such as those
+
+conducted by \[[18](#28)\] and \[[83](#33)\]. SSVEP signals
+
+exhibit correlation to flickering visual stimuli,
+
+with their signal phase and frequency corre-
+
+sponding to stimulus characteristics. Leverag-
+
+ing this relationship, CCA aids in extracting
+
+EEG spatial components with the strongest
+
+correlation to SSVEP stimuli. Further details
+
+on the different pipelines can be found in [sub-](#38)
+
+[section Appendix B.2](#38).
+
+4.2. Riemannian geometry
+
+The introduction of Riemannian geometry into
+
+BCI processing marked a pivotal moment for
+
+the BCI community \[[13](#27)\]. The fundamental
+
+concept underlying this approach is to repre-
+
+sent the signal using covariance matrices or
+
+their derivatives. As covariance matrices are
+
+Symmetric Positive Definite (SPD) matrices,
+
+they live in a Riemannian space \[[124](#36)\]. We
+
+provide here a general description of the frame-
+
+work needed to define algorithms based on the
+
+Riemann distance for classification tasks. For
+
+a more in-depth description of the Riemannian
+
+framework, we refer the reader to \[[20](#28)\] which
+
+gives a pedagogical introduction to these con-
+
+cepts.
+
+Due to the curvature of the SPD matrix
+
+space, traditional Euclidean geometry is
+
+ill-suited and introduces a swelling effect.
+
+Particularly, the Euclidean distance could
+
+result in a wrong characterization of the
+
+relationship between SPD matrices. Instead,
+
+Riemannian methods rely on a distance that
+
+respects the geometry of the SPD matrices
+
+space, based on geodesics, i.e., the shortest
+
+path that connects 2 elements and stays in
+
+the space of SPD matrices. A common choice
+
+of distance is the affine-invariant one \[[79](#32)\].
+
+Considering the manifold of SPD matrices
+
+Mn
+
+\= {P ∈ Rn×n|P = P⊤andx⊤Px \>
+
+0,∀x ∈ Rn}, the affine-invariant distance for
+
+P1,P2 ∈ M is defined as
+
+δR (P1,P2) =
+
+" n
+
+X
+
+i=1
+
+log2 λi P−1
+
+1 P2
+
+\#1/2
+
+(1)
+
+where λi(P) is the i-th eigenvalues of P.
+
+Similarly, the concept of the mean in
+
+Riemannian geometry must be redefined to
+
+ensure it belongs to the manifold; it is known
+
+as the Frechet mean \[[79](#32)\] and is defined as:
+
+ˆ
+
+G = argmin
+
+P∈P(n)
+
+m
+
+X
+
+i=1
+
+δ2
+
+R (P,Pi)
+
+(2)
+
+As we are operating within a Riemannian
+
+manifold, traditional machine-learning classifi-
+
+cation algorithms cannot be directly applied.
+
+Instead, there are two options: either create
+
+new algorithms to classify SPD matrices on
+
+the Riemannian manifold or map the matrices
+
+to an associated Euclidean space and then ap-
+
+ply standard classification algorithms. In the
+
+former scenario, algorithms like Minimum Dis-
+
+tance to Mean give robust accuracy. In the lat-
+
+ter scenario, it is possible to rely on the tangent
+
+-----
+
+|  |
+| :-: |
+| [**Page 16**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+16
+
+space to a point of the manifold. It is possible
+
+to circulate between the manifold and the tan-
+
+gent space using the Log and Exp map func-
+
+tions. The Log (resp. Exp) maps the manifold
+
+to the tangent space (resp. the tangent space
+
+to the manifold):
+
+ExpP (Si) = P1/2 Exp P−1/2SiP−1/2P1/2
+
+(3)
+
+LogP (Pi) = P1/2 Log P−1/2PiP−1/2P1/2
+
+(4)
+
+Projected in the tangent space, any machine
+
+learning algorithm could be applied. One lim-
+
+itation is the size of the considered space,
+
+that is
+
+n(n+1)
+
+2
+
+for Mn. Machine learning al-
+
+gorithms like Support Vector Machine (SVM),
+
+ElasticNet (EL) or Logistic Regression (LR)
+
+are among the most popular for classification
+
+in the tangent space. Details regarding the
+
+pipelines implementation are available in [sub-](#39)
+
+[section Appendix B.3](#39).
+
+4.3. Deep learning
+
+DL methods have demonstrated in recent years
+
+considerable promise in various tasks that
+
+involve handling massive volumes of digital
+
+data and those in different fields such as
+
+computer vision \[[66](#31)\] and Natural Language
+
+Processing \[[117](#35), [104](#34)\].
+
+This also holds for BCI applications. The
+
+BCI field has been significantly impacted by
+
+the integration of DL techniques \[[99](#34)[,](#34) [36](#29)\],
+
+which exhibit strong generalization capabili-
+
+ties, with transfer learning emerging as a key
+
+focus in BCI research. One notable advan-
+
+tage of DL models is their capacity to lever-
+
+age vast datasets, a task typically challeng-
+
+ing for classical Machine Learning (ML) algo-
+
+rithms. Moreover, by conducting all process-
+
+ing and classification steps within a neural net-
+
+work, DL models enable optimized end-to-end
+
+learning. In this paper, we will focus specifi-
+
+cally on DL methods that have been applied
+
+to MI paradigms.
+
+The predominant Python libraries for DL
+
+are Tensorflow \[[1](#26)\] and PyTorch \[[88](#33)\]. To fa-
+
+cilitate broader access to MOABB, we devel-
+
+oped integration for both libraries using wrap-
+
+pers from Scikeras \[[42](#29)\] (for Tensorflow)
+
+and Skorch \[[114](#35)\] (for PyTorch). We were also
+
+keen on integrating the Braindecode \[[103](#34)\]
+
+library, which incorporates several DL algo-
+
+rithms for EEG processing using PyTorch.
+
+Most DL architectures for EEG decoding
+
+operate on minimally pre-processed (bandpass
+
+filters) or raw epochs.
+
+To address the
+
+spatio-temporal complexity of EEG signals,
+
+convolutional layers are commonly employed
+
+with separable 1D convolution along the
+
+temporal and spatial dimension (i.e., EEG
+
+channels). By segregating the spatial and
+
+temporal convolutions, these models account
+
+for the fact that all EEG channels observe all
+
+brain sources.
+
+Although the goal is to minimize pre-
+
+processing steps before passing data to DL
+
+pipelines, a few steps are usually necessary.
+
+Bandpass filtering is applied to ensure a fair
+
+comparison between ML and DL methods.
+
+Neural network architectures reviewed here
+
+are designed for decoding EEG signals at
+
+a certain sampling frequency. Resampling
+
+datasets to match DL architectures’ expected
+
+frequencies is performed to avoid interfering
+
+with the relative temporal length of their
+
+kernels. Standard rescaling of the signal is
+
+implemented before DL pipelines in adherence
+
+to common deep learning practices \[[68](#31)\].
+
+Data augmentation, a technique generat-
+
+ing synthetic training samples through trans-
+
+formations, is well-established in computer vi-
+
+sion for producing state-of-the-art results \[[26](#28)\].
+
+However, in the realm of EEG applications,
+
+-----
+
+|  |
+| :-: |
+| [**Page 17**]() |
+
+The largest EEG-based BCI benchmark for open and reproducible science
+
+17
+
+data augmentation poses unique challenges.
+
+Despite its potential to reduce overfitting and
+
+enable complex algorithms, it is still an active
+
+area of research. Assessing whether a gener-
+
+ated signal accurately captures the physiolog-
+
+ical attributes of EEG remains an open ques-
+
+tion. Thus, this study abstained from employ-
+
+ing data augmentation procedures in the con-
+
+text of EEG decoding. For a comprehensive
+
+examination of various existing techniques for
+
+EEG, we refer the reader to \[[97](#34)\].
+
+Consistent parameters were used across
+
+all DL experiments, training networks for 300
+
+epochs with a batch size of 64, Adam opti-
+
+mizer \[[60](#31)\] with a base learning rate of 0.001
+
+and cross-entropy as the loss function. An
+
+early stopping strategy with a patience param-
+
+eter of 75 epochs was crucial to prevent overfit-
+
+ting. While the considered DL architecture hy-
+
+perparameters align with state-of-the-art stan-
+
+dards through signal resampling, further opti-
+
+mization could enhance model performance via
+
+a grid-search approach tailored to individual
+
+scenarios.
+
+5\. Experimental results
+
+The experimental results outlined in this
+
+section encapsulate the key insights gathered
+
+during this benchmark study.
+
+While we
+
+provide only the most important findings
+
+to the reader in this section, we also
+
+report all the raw results to ensure proper
+
+reproducibility. Due to space limitations,
+
+all the detailed evaluations, including ROC-
+
+AUC or accuracy scores, are available in the
+
+appendix. Tables [D1](#40)[,](#40) [D2](#40)[,](#40) [D3](#41)[,](#41) [D4 ](#41)and [D5](#41)
+
+display the average scores of each pipeline
+
+across all subjects and sessions within a
+
+specific dataset. Additionally, Figures [C1](#42), [C2](#42),
+
+[C3](#43)[,](#43) [C4 ](#43)and [C5 ](#43)present the pipeline groups’
+
+scores for each subject and session across all
+
+datasets to aid in result interpretation.
+
+5.1. Riemannan pipelines outperforms others
+
+pipelines
+
+The Riemannian distance-based classification
+
+pipeline consistently outperforms results ob-
+
+tained through DL and Raw pipelines across
+
+all datasets, on all paradigms. Figure [3 ](#19)illus-
+
+trates this superiority in the context of right-
+
+hand vs left-hand classification, SSVEP and
+
+P300. The ROC-AUC and accuracy results
+
+are shown based on each pipeline’s perfor-
+
+mance relative to its category (Raw, Rieman-
+
+nian, DL). It should be emphasized that each
+
+dot on the plots represents the average of all
+
+pipelines from a category on a dataset, each
+
+dataset encompassing 10 to 100 subjects. In
+
+the distributions, each dataset has the same
+
+weight, regardless of the number of subjects or
+
+sessions. The results presented here are thus
+
+summarizing the largest BCI study to date.
+
+The plots demonstrate the dominance of
+
+the Riemannian approaches, showcasing its su-
+
+perior performance not only in overall aver-
+
+ages but also consistently across all datasets
+
+examined. This trend is further reinforced
+
+by the noticeable peak shift in the distribu-
+
+tion of results, providing additional confirma-
+
+tion of the effectiveness of the Riemannian ap-
+
+proaches. Similar findings are observed across
+
+various classification tasks within the Motor
+
+Imagery paradigm, as could be seen in the ap-
+
+pendix on Figures [C1 ](#42)and [C2](#42).
+
+The suboptimal performance of DL
+
+pipelines can be attributed to two main fac-
+
+tors. Firstly, the hyperparameters of DL
+
+pipelines were not fine-tuned for each dataset;
+
+instead, the parameters described in the origi-
+
+nal articles were employed. This marks a sig-
+
+nificant divergence from the Riemannian and
+
+Raw approaches, which had their hyperpa-
+
+-----
+
+|  |
+| :-: |
+| [**Page 18**]() |
+
+The largest EEG-based BCI benchmark for op

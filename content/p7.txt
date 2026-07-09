@@ -1,0 +1,3237 @@
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+Connor Lane 1 2 Mihir Tripathy 1 3 Leema Krishna Murali 1 Ratna Sagari Grandhi 1 Shamus Sim Zi Yang 1
+Sam Gijsen 1 4 Debojyoti Das 1 Manish Ram 1 Utkarsh Kumar Singh 1 Cesar Kadir Torrico Villanueva 1
+Yuxiang Wei 1 5 Will Beddow 1 Gianfranco Cortés 1 6 Suin Cho 1 Daniel Z. Kaplan 1 Benjamin Warner 1 2
+Tanishq M. Abraham 1 2 Paul S. Scotti 1 2
+
+volume
+too dense
+
+arXiv:2510.13768v2 [cs.CV] 3 May 2026
+
+Abstract
+We study the problem of training self-supervised
+foundation models for functional MRI. Our main
+contributions are: (1) we introduce a new model
+family (CortexMAE) trained using the masked
+autoencoder framework on 2.1K hours of open
+fMRI data, and (2) we release the first open evaluation suite (B RAINMARKS) for fMRI foundation
+models. Our core innovation is simple: we adapt
+the Vision Transformer to fMRI by first converting each 3D fMRI volume to a 2D map using a
+cortical flat map projection. We directly compare
+flat maps to both parcellation and volume-based
+representations. While each has its advantages,
+flat maps generally perform best. We perform the
+first systematic scaling analysis for fMRI and observe strict power law scaling, albeit with limits.
+Finally, we use B RAINMARKS to do controlled
+benchmark comparisons. On subject-level trait
+prediction, we report a challenging null result: no
+single model achieves clear state-of-the-art performance. Moreover, all models struggle to outperform a simple functional connectivity baseline.
+On cognitive state decoding, we observe more robust performance, and in this setting our CortexMAE family outperforms prior models by a large
+margin. Code, models, and datasets are available
+at https://github.com/MedARC-AI/CortexMAE
+and https://github.com/MedARC-AI/Brainmarks.
+
+patch
+
+goldilocks zone
+
+flat map
+
+patch
+
+too lossy
+
+parcellation
+
+patch
+
+Figure 1. Spectrum of fMRI data representations: volume is the native 3D MRI format, flat map is our proposed representation based
+on cortical flat map projection, and parcellation data results from
+averaging signal within a set of regions (parcels). Volume patches
+are 3D cubes, flat map patches are 2D squares, and parcellation
+“patches” are single scalars. We hypothesize there is a “goldilocks
+zone” of representations that are neither too lossy nor too dense.
+
+et al., 2023; Xu et al., 2024; Wang et al., 2025b; Bodnar
+et al., 2025). These approaches, adapted from the broader
+deep learning community (Brown et al., 2020; Baevski
+et al., 2020; Oquab et al., 2024), combine large-scale data
+and compute with expressive model architectures and selfsupervised learning (SSL). Can we apply the foundation
+model approach to unlock new applications for fMRI?
+There have been many recent efforts to train self-supervised
+“foundation models” for fMRI data (Thomas et al., 2022;
+Malkiel et al., 2022; Kim et al., 2023; Caro et al., 2024;
+Dong et al., 2024; 2025; Wang et al., 2025a; Gijsen et al.,
+2025). One of the main considerations when adapting the
+foundation model paradigm to any new domain is how
+to represent the data for model input (Dosovitskiy et al.,
+2021). Most approaches use parcellation based representations, which reduce each 3D fMRI volume to a fixed
+dimension vector by averaging the activity within a set of
+regions (Glasser et al., 2016; Schaefer et al., 2018). This is
+a computationally efficient approach with strong inductive
+bias from neuroscience. However, parcellating the native
+fMRI time series is lossy, reducing the dimensionality by
+∼100×. At the other extreme, a few studies model the na-
+
+1. Introduction
+A longstanding goal of neuroscience is to extract clinically
+useful information from functional MRI (fMRI) recordings of human brain activity (Gabrieli et al., 2015; Woo
+et al., 2017). In other domains, “foundation model” (Bommasani et al., 2021) approaches to analyzing complex medical and scientific data have made significant progress (Zhou
+1
+
+MedARC 2 Sophont 3 Baylor College of Medicine 4 University
+of Tübingen 5 Georgia Tech 6 University of Florida. Correspondence to: Connor Lane <contact@sophontai.com>.
+
+1
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+2. Related Work
+
+tive 4D fMRI volume data directly (Kim et al., 2023; Wang
+et al., 2025a). This approach preserves the full information
+content of the signal and assumes no prior knowledge, but
+is more computationally expensive. While the Bitter Lesson (Sutton, 2019) reminds us that more native, agnostic
+approaches like this ultimately prevail, they require more
+data and compute to do so (Chung, 2024).
+
+Foundation models for fMRI. Early works exploring
+self-supervised learning (SSL) for fMRI include Thomas
+et al. (2022), Malkiel et al. (2022), and Kim et al. (2023).
+BrainLM (Caro et al., 2024) and Brain-JEPA (Dong et al.,
+2024) improve and scale up the approach, marking the first
+efforts to build fMRI “foundation models” (Bommasani
+et al., 2021). Recent extensions include Brain-Harmony
+(Dong et al., 2025), NeuroSTORM (Wang et al., 2025a), and
+Brain-Semantoks (Gijsen et al., 2025). Taken together, the
+works explore a broad range of modeling strategies leveraging available large-scale fMRI datasets, e.g. HCP-YA
+(Van Essen et al., 2013), UKBB (Miller et al., 2016). Importantly, all prior works use either parcellation or volumebased representations. Our work is the first to explore an
+intermediate representation (flat maps).
+
+Given the current data and compute regime, we hypothesize there may be a “goldilocks zone” of intermediate fMRI
+representations that effectively balance these two extremes
+(Figure 1). To test this, we represent an fMRI time series
+as a series of 2D maps overlaid on a flattened cortical surface mesh (Gao et al., 2015). This flat map representation
+maintains the full cortical fMRI signal (like volume approaches), while reducing the raw dimensionality and injecting some inductive bias of brain geometry (like parcellation
+approaches). Crucially, since fMRI flat maps are standard
+2D images, they are directly compatible with the standard
+Vision Transformer (ViT) (Dosovitskiy et al., 2021).
+
+Individual trait prediction is a key application area for
+fMRI foundation models. The goal is to predict an individual’s phenotypic traits, e.g. demographics or clinical diagnoses, invariant to within-subject variation over time. The
+classic approach involves fitting simple models to functional
+connectivity (FC) features (Finn et al., 2015; Shen et al.,
+2017). The approach is reminiscent of classic methods based
+on hand-crafted features from vision and language (Lowe,
+2004; Joachims, 1998). In these other domains, moving to
+deep representation learning yielded immediate improvement (Krizhevsky et al., 2012). In fMRI trait prediction,
+however, the benefit of deep learning over simple baselines
+is inconclusive (He et al., 2020; Popov et al., 2024).
+
+Using this flat map representation, we create CortexMAE:
+a spatiotemporal masked autoencoder (MAE-st) (He et al.,
+2022; Feichtenhofer et al., 2022) trained on 2.1K hours of
+fMRI data from the Human Connectome Project (Van Essen
+et al., 2013). We also train variants of CortexMAE using
+parcellation and volume-based representations, resulting in
+the first multi-representation fMRI foundation model family.
+A key challenge in the fMRI foundation model field is the
+lack of reproducible benchmarks (Pineau et al., 2021). Although prior works use common source datasets for evaluation, the results are difficult to reproduce due to variation
+in dataset curation, preprocessing, and evaluation setup. To
+address this, we created B RAINMARKS: an open fMRI foundation model benchmark suite supporting all current models
+evaluated on seven public source datasets (Table 1). B RAIN MARKS includes commonly reported subject-level trait prediction benchmarks, as well as dynamic cognitive state decoding benchmarks which are relatively under-studied.
+
+Mental state decoding is a complementary application
+(Kamitani & Tong, 2005; Norman et al., 2006). The goal
+is to predict aspects of individuals’ dynamic mental state,
+invariant to individual differences. Specific examples include cognitive task decoding (Poldrack et al., 2009; Mensch et al., 2017; Zhang et al., 2021), reconstructing seen
+images (Miyawaki et al., 2008; Takagi & Nishimoto, 2023;
+Scotti et al., 2023; Ozcelik & VanRullen, 2023; Chen et al.,
+2023; Scotti et al., 2024), speech reconstruction (Défossez
+et al., 2023), and language reconstruction (Tang et al., 2023).
+A key factor for these recent advances is the public availability of large-scale fMRI datasets with rich naturalistic
+stimuli (Hanke et al., 2014; Chang et al., 2019; Nastase
+et al., 2021; Allen et al., 2022; Hebart et al., 2023). Whereas
+prior work has focused on task-specific models, we study
+how well a general-purpose “foundation model” transfers to
+state decoding.
+
+CortexMAE learns to model complex spatiotemporal fMRI
+dynamics (Figures 3 and 4). Flat maps perform best for state
+decoding, while volume works best for age prediction, and
+parcellation is most efficient (Tables 2 and 3). We observe
+strict power law scaling, but with weak generalization to
+out-of-distribution data and a hard limit on model size (Figure 7). We do extensive ablations to analyze our model’s
+performance (Tables 4 to 6). In a controlled benchmark
+(Figure 8), trait prediction performance is unreliable across
+all models, while state decoding is more robust. In this
+setting, our CortexMAE family leads all models, with the
+flat map variant best overall.
+
+2
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+masked input
+
+be modeled straightforwardly using a 4D patch embedding
+(Hatamizadeh et al., 2022; Kim et al., 2023). However,
+a naive embedding of the entire 4D volume results in a
+∼5× longer patch sequence length compared to the flat map
+and parcellation approaches. Crucially, the relevant bloodoxygen-level-dependent (BOLD) signal is localized to only
+∼100K voxels of neurally active gray matter (Logothetis,
+2008). We exploit this by excluding voxels outside the
+Schaefer cortex mask, and patch-embed the remainder using
+the standard 4D patch embedding. Our CortexMAE with
+sparse cortical volume patch embedding achieves a ∼4×
+reduction in sequence length compared to the naive full
+volume strategy.
+
+ground truth
+
+encoder
+
+decoder
+
+Figure 2. MAE model architecture (He et al., 2022) adapted to
+fMRI flat maps. Single frame input and prediction shown for
+convenience. Model inputs are temporal sequences of 16 frames.
+
+Pretraining dataset. We pretrain our models using openly
+available fMRI data from the Human Connectome Project
+Young Adult (HCP-YA) dataset (Van Essen et al., 2013):
+
+3. Masked Autoencoders for Functional MRI
+Our approach is a straightforward adaptation of MAE-st
+(He et al., 2022; Feichtenhofer et al., 2022) to functional
+MRI (Figure 2). Briefly, an MAE consists of encoder and
+decoder ViTs (Dosovitskiy et al., 2021). An input image is
+first divided into a grid of square patches. The encoder computes embeddings for a sparse subset of observed patches,
+which are combined with [MASK] tokens and passed to the
+decoder. The two ViTs are trained jointly to minimize the
+mean squared error (MSE) between predicted and masked
+patches. After pretraining, the decoder is discarded and the
+encoder is applied to fully observed inputs. To extend from
+single images to video, the square p × p patches are simply
+expanded to pt × p × p “spacetime” patches.
+
+subjects hours
+980
+
+2058
+
+runs
+
+frames patches
+
+19K
+
+7.4M
+
+674M
+
+The dataset is made up of young adults (ages 22-35), and
+covers a range of experimental conditions (resting-state, 7
+cognitive tasks, movie watching) with two scan protocols
+(3T and 7T). To account for different temporal resolutions,
+we resample time series to a fixed TR of 1s.
+Data normalization is a small but important aspect of fMRI
+modeling. BOLD signals are in fact tiny 1-2% fluctuations
+in the underlying MRI image (Ogawa et al., 1990). To
+remove static variation due to tissue composition, we zscore normalize each voxel/ROI time series independently.
+To reduce global signal variation (Power et al., 2017), we
+also normalize each temporal frame across space. We refer
+to these as coordinate and frame normalization respectively.
+
+Flat map patch embedding. To adapt MAE to fMRI, the
+only component we need to modify is the ViT patch embedding. To make this as straightforward as possible, we
+convert the 3D fMRI volumes into 2D fMRI activity flat
+maps. Data must first be preprocessed using a standard
+surface-based pipeline (Fischl, 2012; Glasser et al., 2013;
+Esteban et al., 2019). The outputs are fMRI time series
+mapped to a group template cortical surface mesh. We copy
+the surface-mapped data to a corresponding flat surface
+mesh from pycortex (Gao et al., 2015), and resample to a
+regular image grid. The resulting time series of fMRI flat
+maps are simply “videos” of 2D images. We can therefore
+use the standard spacetime ViT patch embedding directly
+(Arnab et al., 2021). To account for the all-zero background,
+we exclude entirely empty background patches and compute
+MSE loss only for valid, non-background pixels (Figure 2).
+
+Implementation. Our implementation closely follows
+MAE-st (Feichtenhofer et al., 2022). Model inputs are clips
+of 16 fMRI frames (16s duration). Our default temporal
+patch size pt is 4 frames. Data dimensions for the different
+input representations are as follows
+space
+
+shape
+
+dim patches
+
+parcel
+T × 400
+400
+flat
+T × 224 × 560
+77K
+volume T × 91 × 109 × 91 132K
+
+400
+364
+465
+
+patch size
+pt × 1
+pt × 16 × 16
+pt × 8 × 8 × 8
+
+where dim is non-background dimensionality and patches
+is the patch sequence length. We use repeated sampling
+(Hoffer et al., 2020; Feichtenhofer et al., 2022) for efficient
+data loading. Our default masking ratio is 0.9 and we adopt
+tube masking (Tong et al., 2022) to prevent interpolation
+across time. Our default model is a vanilla MAE with a
+ViT-B encoder. We use a default training schedule of 625K
+steps with batch size 32 (512 frames). To evaluate masked
+reconstruction, we use a held out subset of HCP-YA subjects
+as well as out-of-distribution NSD data (Allen et al., 2022).
+
+Parcellation patch embedding. For the parcellation based
+CortexMAE, we follow the approach of Caro et al. (2024)
+and Dong et al. (2024) where each parcel time series is
+embedded independently using a time-only patch size pt .
+We use the Schaefer-400 parcellation (Schaefer et al., 2018),
+which has the same cortex-only brain coverage and results
+in a similar patch sequence length as the flat map approach.
+Volume patch embedding. Volume based fMRI data can
+3
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+Dataset
+
+Target
+
+Subjects
+
+Samples
+
+Seq length
+
+TR
+
+#Classes
+
+Majority %
+
+ABIDE (Di Martino et al., 2014)
+ADHD200 (ADHD-200, 2012)
+ADNI (Jack Jr et al., 2008)
+PPMI (Marek et al., 2011)
+HCP-A (Bookheimer et al., 2019)
+HCP-A (Bookheimer et al., 2019)
+
+ASD Dx
+ADHD Dx
+AD Dx
+PD Dx
+Age
+Sex
+
+578:124:124
+301:64:65
+328:41:41
+463:99:100
+455:53:52
+471:58:55
+
+578:124:124
+301:64:65
+328:41:41
+463:99:100
+455:53:52
+471:58:55
+
+150
+150
+100
+120
+500
+500
+
+2.0s
+2.0s
+3.0s
+2.5s
+0.7s
+0.7s
+
+2
+2
+2
+2
+4
+2
+
+55%
+57%
+77%
+62%
+27%
+58%
+
+HCP-YA (Van Essen et al., 2013)
+NSD (Allen et al., 2022)
+
+Task21
+COCO24
+
+416:88:110
+6:1:1
+
+19K:4K:5K
+33K:5K:5K
+
+16
+16
+
+1.0s
+1.0s
+
+21
+24
+
+17%
+7%
+
+Table 1. Summary of trait prediction (top) and state prediction (bottom) evaluation datasets. Dx = diagnosis classification, Age =
+quartile classification, Task21 = cognitive task state decoding, COCO24 = object category decoding. Subject and sample counts are
+train:validation:test. Trait prediction datasets include one sample per subject. For diagnosis datasets, controls are the majority class.
+
+4. B RAINMARKS Benchmark
+
+State prediction datasets. We include two datasets for
+decoding a subject’s dynamic cognitive state: HCP-YA taskstate prediction (Task21) (Van Essen et al., 2013), and NSD
+COCO object category decoding (COCO24) (Allen et al.,
+2022) (Table 1, bottom). The HCP-YA Task21 benchmark
+follows the setup of prior works (Zhang et al., 2021; 2022;
+Rastegarnia et al., 2023). The task is to classify which of
+21 cognitive conditions a subject is in (e.g. story listening,
+finger tapping) based on a short 16s fMRI clip.
+
+To enable consistent downstream evaluation across fMRI
+foundation models, we built B RAINMARKS: a reproducible
+benchmark suite covering both subject-level trait prediction
+and dynamic state decoding.
+Comparison models. We include 6 fMRI foundation
+models in our benchmark: SwiFT (Kim et al., 2023),
+BrainLM (Caro et al., 2024), Brain-JEPA (Dong et al.,
+2024), BrainHarmonix-F (Dong et al., 2025), NeuroSTORM
+(Wang et al., 2025a), and Brain-Semantoks (Gijsen et al.,
+2025). SwiFT and NeuroSTORM are volume-based models trained on short fMRI clips, while the others are
+trained on parcellated full time series. BrainHarmonix-F
+uses the cortex-only Schaefer-400 parcellation (Schaefer
+et al., 2018), while the others include subcortical structures. SwiFT is trained with contrastive learning (Dave
+et al., 2022), BrainLM and NeuroSTORM are trained with
+MAE (He et al., 2022), Brain-JEPA and BrainHarmonixF are trained with JEPA (Assran et al., 2023), and BrainSemantoks is trained by self-distillation (Caron et al., 2021).
+We also include a simple functional connectivity (FC) baseline, which uses Schaefer-400 connectome matrices as fixed
+feature embeddings (Hampson et al., 2006).
+
+NSD COCO24 is a visual category decoding benchmark
+similar to those used in prior works (Horikawa & Kamitani, 2017; Chang et al., 2019; Chen et al., 2023). We use
+CLIP (ViT-L/14) (Radford et al., 2021) to assign each NSD
+stimulus image a global COCO category label. We exclude
+ambiguous images (CLIP confidence <0.9), and categories
+with too few remaining examples (<600), leaving 25K images from 24 highly distinct categories (e.g. “motorcycle”,
+“zebra”, “pizza”). The task is to decode the seen object
+category from a 16s fMRI clip time-locked to stimulus image onset. Due to the short 4s trial duration in NSD, each
+fMRI clip contains overlapping responses to multiple image
+presentations. Models must therefore learn to attend to the
+target response while ignoring the others.
+To focus on general cross-subject decoding, the validation
+and test splits for both state prediction datasets are constructed with held out subjects. For HCP-YA, the test subjects are also excluded from the HCP-YA pretraining set.
+For NSD, the held out splits also use unseen images.
+
+Trait prediction datasets. Following prior works (Caro
+et al., 2024; Dong et al., 2025), we include five datasets for
+predicting subject-level traits: ABIDE (Di Martino et al.,
+2014) for Autism (ASD) classification, ADHD-200 (ADHD200, 2012) for ADHD classification, ADNI (Jack Jr et al.,
+2008) for Alzheimer’s Disease (AD) classification, PPMI
+(Marek et al., 2011) for Parkinson’s disease classification,
+and HCP-A (Bookheimer et al., 2019) for age and sex classification (Table 1, top). For ADHD-200, we combine across
+ADHD subcategories. For PPMI, we use prodromal subjects
+as controls for better class balance. For consistency with the
+other datasets, we formulate HCP-A age prediction as classification by discretizing into four quartile bins. For each
+dataset, we construct a curated subset of 400-900 subjects,
+including one 5-7 minute resting-state fMRI run per subject.
+
+Evaluation setup. We use a probe based evaluation following standard practice in vision SSL (Balestriero et al.,
+2023). For trait prediction, we use a simple and reliable
+linear probe setup to handle the small sample sizes. We
+train logistic regression classifiers (Pedregosa et al., 2011)
+on average-pooled embeddings and report average performance over 100 randomized train-test splits. Since state
+prediction datasets have more samples, we are able to use
+a more sensitive approach. We train attentive probe classifiers (Assran et al., 2023; Darcet et al., 2025) on unpooled
+
+4
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+Figure 3. MAE predictions on fMRI flat maps. We show the masked input (top), prediction (middle), and target (bottom) for 8 frames
+spaced 2s apart from left to right. RGB color mapping for visualization; model inputs are single channel.
+
+Figure 4. MAE denoising on fMRI flat maps. We show the original image (top), denoised prediction (middle), and standard deviation
+maps (bottom). The prediction is computed by averaging the masked reconstruction over 100 mask samples (excluding predictions for
+observed patches). The standard deviation maps capture how predictions vary depending on observed context.
+Default mode network
+
+embeddings and report performance for the single fixed
+split. All models are tuned with the same protocol. For
+trait prediction, we use 5-fold cross-validation with the default scikit-learn hyperparameter grid. For state prediction,
+we tune the attentive probe learning rate independently for
+each model over a dense grid of 49 values (Darcet et al.,
+2025) and apply early stopping. We use probes rather than
+fine-tuning to isolate the effect of pretraining and to keep
+evaluation cheap enough to apply uniformly to all models.
+
+CortexMAE position embedding PC1
+
+Figure 5. CortexMAE learns the brain’s default mode network
+from scratch. (left) Map of default mode network (principal gradient, Margulies et al. 2016). (right) First principal component of
+the model’s learned spatial position embedding.
+
+5. Experiments
+Figure 3 shows the masked reconstruction of our default flat
+map CortexMAE for an HCP-YA subject not seen during
+pretraining. Our model is able to reconstruct precise fMRI
+activity patterns given limited context.
+
+5.1. Comparison of fMRI Input Representations
+In this section, we compare the three CortexMAE variants
+trained with different representations: parcel, flat map, and
+cortical volume. To have a reliable comparison, we repeat
+pretraining 8 times with different random seeds. Figure 6 visualizes reconstructions for a common example. The parcel
+and volume reconstructions are projected to the flat map for
+consistent visualization. All models capture similar aspects
+of the signal. The flat map model’s targets and predictions
+are more detailed than the parcel, yet more structured and
+less noisy than the volume.
+
+In Figure 4, we apply our model to fMRI denoising. For a
+given input, we generate 100 reconstructions conditioned
+on different random masks and average the predictions. The
+denoised reconstructions recover the large-scale spatiotemporal dynamics of the input. Unstructured noise is unpredictable and is left behind. This highlights how models
+like CortexMAE can offer a new approach to fMRI denoising, by leveraging complex population priors learned from
+large-scale data (Elad et al. 2023; but see also Kay 2022).
+
+Downstream probe comparison. Table 2 reports the downstream probe performance for each model, averaged over
+8 pretraining repeats. For the clinical diagnosis datasets
+(ABIDE, ADHD200, ADNI, PPMI), we observe no reliable
+differences between input representations, likely reflecting
+the small sample sizes (Table 1). We discuss cross-model
+comparison on these datasets in Section 5.4.
+
+Figure 5 shows how the first principal component of the
+model’s spatial position embedding mirrors the brain’s default mode network (Raichle, 2015), represented here as the
+FC principal gradient (Margulies et al., 2016). While some
+prior works design position embeddings to explicitly encode
+functional network structure (Dong et al., 2024; Gijsen et al.,
+2025), our model shows that this structure can also emerge
+naturally during training.
+
+On age prediction, the volume model reliably outperforms the other two models. This may be driven by
+structural features such as age related cortical thinning
+5
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+space
+
+ABIDE
+
+ADHD200
+
+ADNI
+
+PPMI
+
+parcel
+flat
+volume
+connectome
+
+62.0 ±0.8
+61.4 ±1.3
+60.4 ±0.8
+59.8
+
+56.8 ±0.6
+59.2 ±1.0
+58.8 ±1.1
+57.0
+
+61.6 ±1.2
+62.4 ±1.4
+64.3 ±1.6
+58.6
+
+61.4 ±1.3
+58.8 ±1.1
+59.1 ±1.2
+58.0
+
+HCP-A Age HCP-A Sex HCP-YA Task21 NSD COCO24
+44.2 ±0.5
+47.5 ±1.6
+53.4 ±0.5
+45.6
+
+71.2 ±1.0
+87.4 ±0.7
+86.3 ±0.7
+81.9
+
+97.5 ±0.2
+98.9 ±0.1
+96.2 ±0.3
+82.4
+
+27.5 ±0.5
+31.0 ±0.7
+27.7 ±0.7
+7.4
+
+Table 2. Downstream probe performance across fMRI representations. Values are mean accuracy ± standard deviation over 8 random
+repeats. Bold indicates robust improvement over non-bold (p < 0.0001). The flat map MAE performs best on dynamic state classification.
+The volume MAE performs best on age classification. Both volume and flat outperform parcel on sex classification.
+
+parcel
+
+flat
+
+volume
+
+space
+
+time
+
+params
+
+FLOPs
+
+compute
+
+data
+
+parcel
+flat
+volume
+
+11 hr
+28 hr
+50 hr
+
+85M
+86M
+87M
+
+89G
+92G
+116G
+
+10K fps
+9K fps
+8K fps
+
+60K fps
+4K fps
+2K fps
+
+Table 3. Training time comparison across representations for default setting (ViT-B) on a single H100. Parameter count is for
+encoder only. FLOP count is for forward pass on a single sample.
+Compute and data loading are in fMRI frames per second (fps).
+Figure 6. MAE predictions across different fMRI representations
+for a single example. We project the parcel and volume data to
+the cortical flat map for consistent visualization. This projection is
+lossy for the volume model, capturing only voxels intersecting the
+cortical surface.
+
+et al. (2022). Similar to language modeling, the grounded
+masked prediction objective of MAE provides a natural setting for scaling analysis (Xie et al., 2023). We pretrain our
+default flat map CortexMAE (ViT-B) on varying size subsets of HCP-YA from 400K frames (110 hours, 50 subjects)
+to 6.6M frames (1.8K hours, 880 subjects).
+
+(Bethlehem et al., 2022) leaking into the dense volumebased fMRI representation. Regardless, it is a positive sign
+for future work toward dense fMRI models.
+
+Figure 7a visualizes MAE loss on the HCP-YA and NSD
+validation sets. For the in-distribution held-out data from
+HCP-YA, we find that the test loss decreases with increasing
+training dataset size according to a strict power “scaling law”
+(Figure 7a, top). This mirrors classic data scaling results in
+language modeling (Kaplan et al., 2020; Hoffmann et al.,
+2022)1 . This scaling behavior does not perfectly carry over
+to the out-of-distribution NSD validation set, however. As
+with HCP-YA, reconstruction on NSD improves with dataset
+size. But the rate of improvement slows compared to the
+power law prediction (Figure 7a, bottom). This raises the
+possibility that greater dataset diversity, as well as scale, is
+required for more generalizable representations.
+
+Our proposed flat map model shows a clear advantage for
+dynamic state prediction (Table 2, right). These results
+support our hypothesis that fMRI modeling benefits from
+an intermediate “goldilocks” representation.
+Compute comparison. Table 3 analyzes the compute cost
+of the different models. The models use the same architecture (ViT-B) and similar number of patches (364-465), so the
+parameter and FLOP counts are roughly similar. Nonetheless, the parcel MAE is 2.5× faster to train than the flat map
+MAE, which in turn is 1.8× faster than volume. For the
+dense flat map and volume models, training is bottlenecked
+by data loading, while the parcel model is compute bound.
+Our volume MAE achieves significant compute and IO savings over prior volume models by restricting to cortical gray
+matter (132K voxels) rather than processing the full MRI
+volume (900K voxels). The flat map MAE is even more efficient, due to its more compressed, structured representation.
+Future work may continue to explore more efficient dense
+fMRI representations.
+
+Scaling with model size. Figure 7b shows a similar scaling
+analysis over model size. To vary model size, we scale the
+encoder depth of our CortexMAE from 3 to 15 while keeping model proportions (depth-to-width ratio, encoder-todecoder depth ratio) matched to the default ViT-B encoder
+(Tan & Le, 2019; Hoffmann et al., 2022; Karpathy, 2025).
+We use the same training schedule and hyperparameters for
+all models. Similar to data scaling, MAE reconstruction
+improves with model size. However, the improvement saturates at depth 9 (37M encoder parameters) for both HCP-YA
+
+5.2. Scaling laws for fMRI
+Scaling with dataset size. To analyze how masked reconstruction scales with the amount of pretraining data, we
+emulate the approach of Kaplan et al. (2020) and Hoffmann
+
+1
+The exponent is -0.01 vs -0.1 in Kaplan et al. (2020), however,
+indicating weaker scaling than for next token prediction.
+
+6
+
+0.95
+
+N=3.2M
+N=6.6M
+
+0.85
+
+0.90
+
+0.84
+
+0.85
+
+0.83
+
+loss (NSD)
+
+1.00
+
+0.83
+
+0.90
+
+0.82
+
+100K 200K 300K 400K 500K 600K
+step
+
+0.86
+
+accuracy (%)
+
+48
+
+46.8
+45.0
+
+HCP-A Sex
+46.2
+
+86
+
+45
+
+84
+
+42
+
+82
+0.5 0.9 1.6 3.2 6.6
+
+86.4
+
+88
+
+87.0 99
+
+84.2
+
+HCP-YA Task21
+
+98.6 98.8
+
+98
+
+82.8 82.9
+
+97
+0.5 0.9 1.6 3.2 6.6
+
+97.5
+
+97.7
+
+96.9
+
+NSD COCO24
+30
+
+28.1
+
+28.8
+
+0.80
+0e+00 2e+18 4e+18 6e+18 8e+18 1e+19
+FLOPs
+
+48.2
+
+29.6
+
+28 26.5
+26
+
+0.5 0.9 1.6 3.2 6.6
+
+0.81
+
+0.82
+
+HCP-A Age
+
+31.5
+
+32
+
+100M
+
+L = (P/0) 0.008
+
+10M
+100M
+params (P)
+
+(b) fMRI masked reconstruction scaling with model size.
+
+accuracy (%)
+
+HCP-A Age
+
+48.1
+
+10M
+
+0.82
+
+0.84
+
+0.80
+
+106
+frames (N)
+
+(a) fMRI masked reconstruction scaling with data.
+
+50 46.6
+
+0.84
+
+L = (P/4) 0.012
+
+0.83
+
+0.80
+0K
+
+0.86
+
+0.86
+0.85
+0.84
+0.83
+0.82
+0.81
+
+P=86M
+P=168M
+
+L = (N/7) 0.017
+
+0.81
+
+0.85
+
+P=2M
+P=11M
+P=37M
+
+0.82
+
+0.84
+
+0.95
+
+0.80
+
+0.88
+
+L = (N/15) 0.014
+
+0.86
+
+loss (HCP-YA)
+
+N=0.5M
+N=0.9M
+N=1.6M
+
+loss (NSD)
+
+loss (HCP-YA)
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+0.5 0.9 1.6 3.2 6.6
+
+50
+48
+
+44.8 45.0
+
+46.1
+
+HCP-A Sex
+46.9
+
+83.4
+
+85
+
+98.5
+
+98
+
+45
+
+82 81.2
+
+97
+
+42
+
+80
+
+96
+
+2 11 37 86 168
+
+HCP-YA Task21
+
+87.2 87.9 87.7 99
+
+88
+
+2 11 37 86 168
+
+99.0 98.9
+
+97.7
+96.1
+
+2 11 37 86 168
+
+NSD COCO24
+30.9
+
+32
+
+29.5
+
+29.9
+
+30 27.7 28.5
+28
+26
+
+2 11 37 86 168
+
+frames (M)
+
+params (M)
+
+(c) Downstream probe accuracy scaling with data.
+
+(d) Downstream probe accuracy scaling with model size.
+
+Figure 7. Scaling analysis. (a) Models are trained on subsets of HCP-YA (split by subject). Lines indicate rolling median over 5 epochs.
+Vertical lines indicate best epochs for each dataset. Power laws are estimated from best losses using the three smallest data splits. (b)
+Encoder depth is scaled from 3 to 15 while fixing model proportions. Horizontal lines indicate best loss for each model. Power laws are
+estimated from best losses using the three smallest models. (c-d) Error bars indicate ± 2×stdev, using the standard deviations in Table 2.
+
+and NSD. This suggests that a relatively small capacity is
+sufficient to model all of HCP-YA.
+
+perform well. Uniform masking requires a higher masking
+ratio, while block tube masking struggles at the highest
+ratio.
+
+Effects of scale on downstream prediction. Figures 7c
+and 7d shows that downstream prediction performance
+scales reliably with dataset and model size. We report probe
+accuracy across four downstream datasets spanning trait and
+state prediction. We observe scaling trends consistent with
+reconstruction loss scaling in all datasets except HCP-A
+age. On NSD COCO24 for example, the largest data scale
+outperforms the smallest by ∼5%. As with reconstruction
+loss, downstream prediction performance begins to saturate
+around 37M parameter model size.
+
+Data augmentation. Data augmentation is an underexplored area for fMRI modeling. We evaluate several simple
+augmentation methods (Table 4b): temporal TR scaling,
+where we randomize the TR in [0.8, 1.25], grayscale jitter,
+weak random crop with fixed aspect ratio, and strong random crop with random aspect ratio. None of the augmentations result in robust improvements over baseline, although
+TR scaling appears to have a modest effect. This suggests
+that natural image augmentations like cropping are not a
+good fit for fMRI. Developing useful data augmentations
+specific for fMRI remains an open problem.
+
+5.3. Ablation Experiments
+
+Reconstruction target. He et al. (2022) found that focusing
+MAEs on higher frequency content by z-score normalizing
+each target patch (“patch norm”) improves performance.
+Like natural images, fMRI data are dominated by low spatial frequency signal. Moreover, the low frequency structure
+in fMRI can be characterized more strongly: most of the
+signal is explained by just a few stereotypical components
+(Margulies et al., 2016; Bolt et al., 2022). We extend the
+idea of patch normalization to account for this. Specifically,
+we orthogonalize target frames with respect to the first few
+frame-wise principal components (“PC norm”, see also Rodriguez et al. 2025). In Table 4c, patch norm and PC norm
+
+In this section, we analyze our model’s performance in a
+series of ablation experiments. We take advantage of the
+flat map representation to directly apply several techniques
+developed from images and video.
+Mask sampling. The mask sampling strategy and ratio
+are arguably the most important components of an MAE
+model. In Table 4a, we compare standard uniform masking
+(He et al., 2022), our default tube masking (Tong et al.,
+2022), and block tube masking with 2× patch blocks (32 ×
+32 patches) (Yang et al., 2025). Tube masking prevents
+local interpolation across time, while block tube masking
+promotes longer range prediction. All masking strategies
+7
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+strategy
+
+50
+
+75
+
+90
+
+95
+
+uniform 25.7 28.1 29.8 29.7
+tube
+23.4 29.9 31.4 30.4
+tube (2×) 26.6 31.1 30.6 28.7
+
+(a) Mask sampling across ratio.
+
+case
+
+case
+
+acc.
+
+none
+30.4
+TR scale
+31.7
+gray jitter
+29.7
+crop (weak) 28.9
+crop (strong) 24.4
+(b) Augmentation.
+
+acc.
+
+patch
+29.5
+patch norm
+31.4
+PC norm (d=2) 32.1
+PC norm (d=8) 24.6
+(c) Reconstruction target.
+
+pt patches acc
+16 364 27.6
+8
+728 28.3
+4
+1456 29.6
+2 2912 32.9
+1 5824 31.9
+(d) Temporal patch size
+
+Table 4. Ablations on NSD COCO24. The model is our default flat map CortexMAE (ViT-B). Default settings in gray . red indicates
+> 3σ below baseline. No scores > 3σ above baseline. (a) All masking strategies perform well. Uniform requires higher ratio. tube 2×
+(Yang et al., 2025) requires lower ratio. (b) No clear benefit from any augmentation. (c) No clear benefit from target patch normalization
+(He et al., 2022) or global PCA normalization. (d) Better performance for smaller temporal patch size.
+
+parcellation
+
+Age
+
+Sex
+
+Task21
+
+COCO24
+
+S400
+S400 + Tian S3
+A424
+
+44.1
+43.5
+44.3
+
+70.8
+72.5
+71.4
+
+97.3
+97.5
+96.7
+
+27.5
+27.2
+26.0
+
+tex + cerebellum, used by BrainLM). Including subcortical
+structures does not improve model performance (Table 5).
+State decoding performance using A424 is worse than the
+Schaefer-400 baseline. A424 is derived from the Glasser
+parcellation (Glasser et al., 2016), which uses less spatially
+compact parcels compared to Schaefer.
+
+Table 5. Subcortical structures have little effect. We compare
+parcellation CortexMAE models with Schaefer-400 (cortex only),
+Schaefer-400 + Tian S3 (cortex + subcortex), and A424 (cortex +
+subcortex + cerebellum). red indicates > 3σ below baseline .
+global coord frame
+
+Age
+
+Sex
+
+Task21
+
+COCO24
+
+✓
+✓
+✓
+
+✓
+✓
+✗
+
+✓
+✗
+✗
+
+48.1
+50.8
+40.2
+
+87.6
+87.3
+79.1
+
+98.8
+97.7
+16.1
+
+31.4
+26.3
+5.5
+
+✓
+
+eval
+
+✗
+
+40.8
+
+74.5
+
+74.9
+
+9.5
+
+Input normalization. Finally, we look at how different
+choices for input normalization affect performance. Our
+default setup applies both coordinate normalization across
+time, and per-frame normalization across space. Removing
+these steps results in dramatic loss of performance on state
+prediction (Table 6). In particular, without coordinate normalization performance is near chance. The model is effectively blind to the functional part of the fMRI signal. If we
+apply coordinate normalization at evaluation time to models
+pretrained without it (Table 6, bottom row), state prediction
+performance increases above chance, but not to the level of
+models trained with the normalization from scratch. Interestingly, performance on trait prediction is not affected in
+the same way. Even the model trained with only global normalization achieves competitive performance. Subject-level
+trait prediction can use static as well as dynamic features,
+while state prediction requires dynamics.
+
+Table 6. Input normalization is essential for state decoding. global
+= global normalization. coord = per-coordinate time series normalization. frame = per-frame spatial normalization. Bottom row uses
+coord norm during evaluation but not pretraining.
+
+with two components result in modest but non-significant
+improvements, while more aggressive PC norm hurts prediction. Developing better techniques to focus fMRI models
+on fine-grained detail is another open problem.
+
+Supplementary ablations. Appendix C includes more ablations testing the effects of temporal sequence length (Table 9), decoder depth (Table 11a), drop path rate (Table 11b),
+and probe depth (Table 11c). We also test the effects of pretraining on resting-state vs task fMRI (Table 12) and larger
+scale pretraining on UKBB (Miller et al., 2016) (Figure 11).
+
+Temporal patch size. Scaling the model’s token capacity
+by reducing the temporal patch size pt results in consistent
+performance improvements up to size 2 (Table 4d). This suggests that as with standard ViTs, there is a speed/accuracy
+tradeoff for smaller patches (Beyer et al., 2023). However,
+we do not observe a similar effect for smaller spatial patch
+size (Table 10).
+
+5.4. Benchmarking Against Prior Work
+
+Subcortical structures. A key limitation of the flat map
+representation is that it does not directly support subcortical
+structures, which are key nodes in the brain’s functional network (Park et al., 2024). To estimate the impact of excluding
+subcortex, we evaluate parcellation based CortexMAE models pretrained with three parcellations: Schaefer-400 (Schaefer et al., 2018) (cortex only, default), Schaefer-400 + Tian
+S3 (Tian et al., 2020) (cortex + subcortex, used by BrainJEPA), and A424 (Nemati et al., 2020) (cortex + subcor-
+
+Here we compare our models (CortexMAE-{P,F,V} for parcel, flat map, volume respectively; Table 2) against prior
+models using the B RAINMARKS benchmark suite.
+Trait prediction comparison. Overall, we observe inconsistent performance on trait prediction benchmarks (Figure 8). On the four clinical diagnostic datasets (ABIDE,
+ADHD200, ADNI, PPMI), the foundation models struggle
+to reliably outperform the simple FC baseline. The mod8
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+ABIDE Dx
+
+accuracy (%)
+
+61.4
+62.0
+60.4
+
+62
+60
+57.3
+58
+55 53.7
+53.5
+52.6
+52
+50.4
+50 48.5
+
+SwiFT
+
+ADHD200 Dx
+60
+59
+
+ADNI Dx
+
+61.1
+59.7 59.2
+58.8
+
+61
+
+60.2
+
+65
+
+59.9
+59.2 59.1
+
+58
+
+56.8
+
+57
+
+60
+55
+
+56
+
+BrainLM
+
+66.8
+
+60.7
+
+62.1
+
+64.3
+
+62.4
+61.6
+
+57.2
+
+55.5
+51.6
+
+Brain-JEPA
+
+BrainHarmonix-F
+
+PPMI Dx
+
+HCP-A Age
+56.6
+
+61.4
+64
+59.1
+62
+58.8
+60
+55.1
+58
+56.8
+56.3
+56 55.8
+54 52.7 53.4
+52
+
+53.4
+55
+47.5
+45.7
+50
+44.2
+45 43.8
+40 38.1 37.0
+35
+30
+28.0
+
+NeuroSTORM
+
+Brain-Semantoks
+
+HCP-A Sex
+
+87.4
+86.3
+
+90
+80
+70
+60
+50
+
+HCP-YA Task21
+100
+
+82.7
+79.2
+74.5
+
+71.2
+
+92.5
+
+90
+
+58.4
+49.3
+
+CortexMAE
+
+70
+
+89.8
+
+NSD COCO24
+
+31.0
+
+30
+25
+
+27.5 27.7
+22.3
+
+23.8
+
+20
+
+80
+
+64.9
+
+97.598.996.2
+
+94.4
+
+73.6
+
+70.5
+
+10 7.7 9.7
+
+63.6
+
+connectome
+
+15.3
+
+15
+
+parcel
+
+flat
+
+12.2
+
+volume
+
+Figure 8. fMRI foundation model probe comparison for subject-level trait prediction (left; ABIDE, ADHD200, ADNI, PPMI, HCP-A)
+and dynamic state prediction (right; HCP-YA Task21, NSD COCO24). To handle small sample size and class imbalance, trait prediction
+uses balanced accuracy and logistic probe over 100 random splits. State prediction uses raw accuracy and attentive probe over a single
+fixed split. Confidence intervals indicate ± 2×stdev over pretraining repeats (only available for CortexMAE and Brain-Semantoks).
+
+els appear poorly differentiated, and model ranking varies
+across datasets. On HCP-A age and sex classification, we
+observe somewhat more robust differences. On age classification in particular, NeuroSTORM and CortexMAE-V
+outperform the baseline and all other models. Both are
+volume-based models and may be sensitive to structural
+brain changes during aging (Bethlehem et al., 2022). Importantly, CortexMAE-V was trained only on HCP-YA (ages
+22-35) and saw no examples from the HCP-A age range (36100+) during pretraining. Whereas the pretraining dataset
+for NeuroSTORM includes subjects specifically from HCPA, as well as other older adults (Wang et al., 2025a).
+
+We hope these results motivate future work to focus more
+on dynamic mental state prediction. Due to much larger
+sample sizes (Table 1), state decoding benchmarks are able
+to measure performance more reliably than trait prediction.
+But more importantly, state based evaluations are able to
+distinguish function-specific fMRI foundation models vs
+models that are largely sensitive to the underlying structural
+part of the fMRI image.
+
+6. Conclusion
+Our goal in this work was to do a straightforward study
+of how to train an fMRI foundation model. We created
+CortexMAE: a family of fMRI foundation models trained
+with vanilla MAE-st on 2.1K hours of open fMRI data from
+HCP-YA. Our flagship model based on a simple flat map
+representation achieves SotA performance on cognitive state
+decoding, while our sparse cortical volume model performs
+well on age prediction, and the parcellation based model
+is most efficient. Our results provide initial support for
+a “goldilocks zone” hypothesis: the best fMRI representations (given current data and compute) should be neither
+too structured, nor too dense. The fact that flat maps do not
+universally outperform the alternatives, however, suggests
+that there is still room for improvement. We establish the
+first rigorous scaling laws for fMRI, while at the same time
+highlighting the limits of scaling with homogeneous data.
+Finally, we created B RAINMARKS: an open, reproducible
+benchmark suite. Our benchmark comparison shows that
+fMRI foundation models significantly outperform baselines
+on dynamic cognitive state prediction, while at the same
+time failing to do so on standard trait prediction benchmarks.
+
+To our knowledge, this is the first benchmark highlighting
+inconsistent performance of fMRI foundation models on
+trait prediction. We have taken significant steps to support
+a controlled, fair evaluation (Section 5.4, Appendix B.4).
+However, there are of course limitations of our current evaluation. For example, we do not currently implement modelspecific nuisance regression strategies. Importantly, our
+benchmark is open-source and fully reproducible. We invite
+the community to collaborate with us toward more robust
+fMRI foundation model evaluation.
+State prediction comparison. On dynamic state prediction,
+by contrast, we observe more robust performance. The
+model ranking is consistent across both datasets, and most
+models outperform the simple FC baseline. At the same
+time, our CortexMAE models robustly outperform all other
+models. The parcellation and volume based models are the
+best in their respective input representation classes, while
+the flat map model performs best overall.
+Some models (SwiFT, Brain-JEPA, NeuroSTORM) appear
+to have been pretrained without coordinate normalization,
+which likely explains their poor performance on these tasks
+(Table 6)2 . The performance of Brain-Semantoks vs other
+parcellation models may be due to its coarse (but compute
+efficient) network-based tokenization.
+
+Key limitations to explore in future work include: (1) developing even more effective intermediate representations
+of fMRI data, (2) scaling pretraining beyond single-source
+datasets, (3) expanding and continuing to standardize the set
+of fMRI foundation model benchmarks, and (4) exploring
+ways to leverage models’ unique representations of dynamic
+brain state for clinical application.
+
+2
+Following Table 6, the models are still evaluated with coord norm enabled. Otherwise, their performance is near chance
+(Table 15).
+
+9
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+Impact Statement
+
+Proceedings of the IEEE/CVF international conference
+on computer vision, pp. 6836–6846, 2021.
+
+Functional MRI has found much less clinical application
+compared to other medical imaging modalities (Gabrieli
+et al., 2015). Partly this is due to intrinsic limitations of
+the modality, such as low SNR, low spatiotemporal resolution, and loose coupling between neural firing and BOLD
+activity (Constable, 2023). Another aspect of the challenge,
+however, is that the data are significantly out-of-distribution
+with respect to our everyday visual experience. This makes
+it impossible for a radiologist to look at a raw fMRI time
+series and make sense of it. Foundation models could become a kind of perceptual “prosthesis” for interpreting fMRI
+data. By training models to natively see fMRI, and then
+analyzing their representations in turn, we could unlock
+broad new applications under the nascent field of functional
+neuroradiology (Faro et al., 2011).
+
+Assran, M., Duval, Q., Misra, I., Bojanowski, P., Vincent,
+P., Rabbat, M., LeCun, Y., and Ballas, N. Self-supervised
+learning from images with a joint-embedding predictive
+architecture. In Proceedings of the IEEE/CVF Conference
+on Computer Vision and Pattern Recognition, pp. 15619–
+15629, 2023.
+Baevski, A., Zhou, Y., Mohamed, A., and Auli, M. wav2vec
+2.0: A framework for self-supervised learning of speech
+representations. Advances in neural information processing systems, 33:12449–12460, 2020.
+Balestriero, R., Ibrahim, M., Sobal, V., Morcos, A., Shekhar,
+S., Goldstein, T., Bordes, F., Bardes, A., Mialon, G., Tian,
+Y., et al. A cookbook of self-supervised learning. arXiv
+preprint arXiv:2304.12210, 2023.
+
+At the same time, there are important potential ethical concerns (Rainey et al., 2020). Decoding aspects of a person’s
+mental state from fMRI raises privacy concerns. However,
+current fMRI decoding methods are low fidelity and require
+cooperation from the participant. Our approach to mitigate
+ethical risk is to do research in the open, using open data as
+much as possible.
+
+Bethlehem, R. A., Seidlitz, J., White, S. R., Vogel, J. W.,
+Anderson, K. M., Adamson, C., Adler, S., Alexopoulos,
+G. S., Anagnostou, E., Areces-Gonzalez, A., et al. Brain
+charts for the human lifespan. Nature, 604(7906):525–
+533, 2022.
+Beyer, L., Izmailov, P., Kolesnikov, A., Caron, M., Kornblith, S., Zhai, X., Minderer, M., Tschannen, M., Alabdulmohsin, I., and Pavetic, F. Flexivit: One model for
+all patch sizes. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp.
+14496–14506, 2023.
+
+Acknowledgements
+Thanks to FAL AI for providing compute that supported
+this research. Thanks to MedARC contributors Melvin Selim Atay, Mohammed Baharoon, Atmadeep Banerjee, Uday
+Bondi, Pierre Chambon, Alexey Kudrinsky, Souvik Mandal,
+Ashutosh Narang, Alex Nguyen, Yashvir Sabharwal, Kevin
+Son, and Dingli Yu for contributing to an earlier version of
+this project. Thanks to the MedARC Discord community in
+general for being the public forum from which this research
+was developed. Thanks to Zijao Chen, Gregory Kiar, and
+Florian Rupprecht for helpful discussions on an earlier version of this work. Thanks to the anonymous reviewers for
+helpful feedback.
+
+Bodnar, C., Bruinsma, W. P., Lucic, A., Stanley, M., Allen,
+A., Brandstetter, J., Garvan, P., Riechert, M., Weyn, J. A.,
+Dong, H., et al. A foundation model for the earth system.
+Nature, pp. 1–8, 2025.
+Bolt, T., Nomi, J. S., Bzdok, D., Salas, J. A., Chang, C.,
+Thomas Yeo, B., Uddin, L. Q., and Keilholz, S. D. A
+parsimonious description of global functional brain organization in three spatiotemporal patterns. Nature Neuroscience, 25(8):1093–1103, 2022.
+Bolya, D., Huang, P.-Y., Sun, P., Cho, J. H., Madotto, A.,
+Wei, C., Ma, T., Zhi, J., Rajasegaran, J., Rasheed, H.,
+et al. Perception encoder: The best visual embeddings
+are not at the output of the network. arXiv preprint
+arXiv:2504.13181, 2025.
+
+References
+ADHD-200. The adhd-200 consortium: a model to advance
+the translational potential of neuroimaging in clinical
+neuroscience. Frontiers in systems neuroscience, 6:62,
+2012.
+
+Bommasani, R. et al. On the opportunities and risks of
+foundation models. arXiv preprint arXiv:2108.07258,
+2021.
+
+Allen, E. J., St-Yves, G., Wu, Y., Breedlove, J. L., Prince,
+J. S., Dowdle, L. T., Nau, M., Caron, B., Pestilli, F.,
+Charest, I., et al. A massive 7t fmri dataset to bridge
+cognitive neuroscience and artificial intelligence. Nature
+neuroscience, 25(1):116–126, 2022.
+
+Bookheimer, S. Y., Salat, D. H., Terpstra, M., Ances, B. M.,
+Barch, D. M., Buckner, R. L., Burgess, G. C., Curtiss,
+S. W., Diaz-Santos, M., Elam, J. S., et al. The lifespan human connectome project in aging: an overview.
+Neuroimage, 185:335–348, 2019.
+
+Arnab, A., Dehghani, M., Heigold, G., Sun, C., Lučić, M.,
+and Schmid, C. Vivit: A video vision transformer. In
+10
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+Brown, T., Mann, B., Ryder, N., Subbiah, M., Kaplan, J. D.,
+Dhariwal, P., Neelakantan, A., Shyam, P., Sastry, G.,
+Askell, A., et al. Language models are few-shot learners.
+Advances in neural information processing systems, 33:
+1877–1901, 2020.
+
+Dave, I., Gupta, R., Rizve, M. N., and Shah, M. Tclr:
+Temporal contrastive learning for video representation.
+Computer Vision and Image Understanding, 219:103406,
+2022.
+Défossez, A., Caucheteux, C., Rapin, J., Kabeli, O., and
+King, J.-R. Decoding speech perception from noninvasive brain recordings. Nature Machine Intelligence,
+5(10):1097–1107, 2023.
+
+Caro, J. O., de Oliveira Fonseca, A. H., Rizvi, S. A., Rosati,
+M., Averill, C., Cross, J. L., Mittal, P., Zappala, E., Dhodapkar, R. M., Abdallah, C., and van Dijk, D. BrainLM:
+A foundation model for brain activity recordings. In The
+Twelfth International Conference on Learning Representations, 2024. URL https://openreview.net/forum?id=
+RwI7ZEfR27.
+
+Deng, J., Dong, W., Socher, R., Li, L.-J., Li, K., and Fei-Fei,
+L. Imagenet: A large-scale hierarchical image database.
+In 2009 IEEE conference on computer vision and pattern
+recognition, pp. 248–255. Ieee, 2009.
+
+Caron, M., Touvron, H., Misra, I., Jégou, H., Mairal, J.,
+Bojanowski, P., and Joulin, A. Emerging properties in
+self-supervised vision transformers. In Proceedings of the
+IEEE/CVF international conference on computer vision,
+pp. 9650–9660, 2021.
+
+Di Martino, A., Yan, C.-G., Li, Q., Denio, E., Castellanos,
+F. X., Alaerts, K., Anderson, J. S., Assaf, M., Bookheimer,
+S. Y., Dapretto, M., et al. The autism brain imaging data
+exchange: towards a large-scale evaluation of the intrinsic
+brain architecture in autism. Molecular psychiatry, 19(6):
+659–667, 2014.
+
+Casey, B. J., Cannonier, T., Conley, M. I., Cohen, A. O.,
+Barch, D. M., Heitzeg, M. M., Soules, M. E., Teslovich,
+T., Dellarco, D. V., Garavan, H., et al. The adolescent
+brain cognitive development (abcd) study: imaging acquisition across 21 sites. Developmental cognitive neuroscience, 32:43–54, 2018.
+
+Dong, Z., Li, R., Wu, Y., Nguyen, T. T., Chong, J., Ji, F.,
+Tong, N., Chen, C., and Zhou, J. H. Brain-jepa: Brain
+dynamics foundation model with gradient positioning and
+spatiotemporal masking. Advances in Neural Information
+Processing Systems, 37:86048–86073, 2024.
+Dong, Z., Ruilin, L., Chong, J. S. X., Dehestani, N., Teng,
+Y., Lin, Y., Li, Z., Zhang, Y., Xie, Y., Ooi, L. Q. R., Yeo,
+B. T., and Zhou, J. H. Brain harmony: A multimodal
+foundation model unifying morphology and function into
+1d tokens. In The Thirty-ninth Annual Conference on
+Neural Information Processing Systems, 2025. URL https:
+//openreview.net/forum?id=tPJg65EB7D.
+
+Chang, N., Pyles, J. A., Marcus, A., Gupta, A., Tarr, M. J.,
+and Aminoff, E. M. Bold5000, a public fmri dataset
+while viewing 5000 visual images. Scientific data, 6(1):
+49, 2019.
+Chen, Z., Qing, J., Xiang, T., Yue, W. L., and Zhou, J. H.
+Seeing beyond the brain: Conditional diffusion model
+with sparse masked modeling for vision decoding. In
+Proceedings of the IEEE/CVF Conference on Computer
+Vision and Pattern Recognition, pp. 22710–22720, 2023.
+
+Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn,
+D., Zhai, X., Unterthiner, T., Dehghani, M., Minderer,
+M., Heigold, G., Gelly, S., Uszkoreit, J., and Houlsby,
+N. An image is worth 16x16 words: Transformers for
+image recognition at scale. In International Conference on Learning Representations, 2021. URL https:
+//openreview.net/forum?id=YicbFdNTTy.
+
+Chung, H. W.
+Stanford cs25: V4.
+https://
+youtu.be/3gb-ZkVRemQ?si=7FXnklTS9X3FCuv1, 2024.
+YouTube video, Stanford University.
+Constable, R. T. Challenges in fmri and its limitations.
+Functional neuroradiology: principles and clinical applications, pp. 497–510, 2023.
+
+Elad, M., Kawar, B., and Vaksman, G. Image denoising:
+The deep learning revolution and beyond—a survey paper.
+SIAM Journal on Imaging Sciences, 16(3):1594–1654,
+2023.
+
+Darcet, T., Oquab, M., Mairal, J., and Bojanowski, P. Vision
+transformers need registers. In The Twelfth International
+Conference on Learning Representations, 2024. URL
+https://openreview.net/forum?id=2dnO3LLiJ1.
+
+Esteban, O., Markiewicz, C. J., Blair, R. W., Moodie, C. A.,
+Isik, A. I., Erramuzpe, A., Kent, J. D., Goncalves, M.,
+DuPre, E., Snyder, M., et al. fmriprep: a robust preprocessing pipeline for functional mri. Nature methods, 16
+(1):111–116, 2019.
+
+Darcet, T., Baldassarre, F., Oquab, M., Mairal, J., and Bojanowski, P. Cluster and predict latents patches for improved masked image modeling. Transactions on Machine Learning Research, 2025. ISSN 2835-8856. URL
+https://openreview.net/forum?id=Ycmz7qJxUQ.
+
+Faro, S. H., Mohamed, F. B., Law, M., and Ulmer, J. T.
+Functional neuroradiology: principles and clinical applications. Springer Science & Business Media, 2011.
+11
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+Feichtenhofer, C., Li, Y., He, K., et al. Masked autoencoders as spatiotemporal learners. Advances in neural
+information processing systems, 35:35946–35958, 2022.
+
+Hampson, M., Driesen, N. R., Skudlarski, P., Gore, J. C.,
+and Constable, R. T. Brain connectivity related to working memory performance. Journal of Neuroscience, 26
+(51):13338–13343, 2006.
+
+Finn, E. S. and Bandettini, P. A. Movie-watching outperforms rest for functional connectivity-based prediction of
+behavior. NeuroImage, 235:117963, 2021.
+
+Hanke, M., Baumgartner, F. J., Ibe, P., Kaule, F. R., Pollmann, S., Speck, O., Zinke, W., and Stadler, J. A highresolution 7-tesla fmri dataset from complex natural stimulation with an audio movie. Scientific data, 1(1):140003,
+2014.
+
+Finn, E. S., Shen, X., Scheinost, D., Rosenberg, M. D.,
+Huang, J., Chun, M. M., Papademetris, X., and Constable,
+R. T. Functional connectome fingerprinting: identifying
+individuals using patterns of brain connectivity. Nature
+neuroscience, 18(11):1664–1671, 2015.
+
+Hatamizadeh, A., Tang, Y., Nath, V., Yang, D., Myronenko,
+A., Landman, B., Roth, H. R., and Xu, D. Unetr: Transformers for 3d medical image segmentation. In Proceedings of the IEEE/CVF winter conference on applications
+of computer vision, pp. 574–584, 2022.
+
+Fischl, B. Freesurfer. Neuroimage, 62(2):774–781, 2012.
+Fu, L., Lian, L., Wang, R., Shi, B., Wang, X., Yala, A.,
+Darrell, T., Efros, A. A., and Goldberg, K. Rethinking
+patch dependence for masked autoencoders. Transactions
+on Machine Learning Research, 2025. ISSN 2835-8856.
+URL https://openreview.net/forum?id=JT2KMuo2BV.
+
+He, K., Chen, X., Xie, S., Li, Y., Dollár, P., and Girshick,
+R. Masked autoencoders are scalable vision learners. In
+Proceedings of the IEEE/CVF conference on computer
+vision and pattern recognition, pp. 16000–16009, 2022.
+
+Gabrieli, J. D., Ghosh, S. S., and Whitfield-Gabrieli, S.
+Prediction as a humanitarian and pragmatic contribution
+from human cognitive neuroscience. Neuron, 85(1):11–
+26, 2015.
+
+He, T., Kong, R., Holmes, A. J., Nguyen, M., Sabuncu,
+M. R., Eickhoff, S. B., Bzdok, D., Feng, J., and Yeo, B. T.
+Deep neural networks and kernel regression achieve comparable accuracies for functional connectivity prediction
+of behavior and demographics. NeuroImage, 206:116276,
+2020.
+
+Gao, J. S., Huth, A. G., Lescroart, M. D., and Gallant,
+J. L. Pycortex: an interactive surface visualizer for fmri.
+Frontiers in neuroinformatics, 9:23, 2015.
+Gijsen, S., Schulz, M.-A., and Ritter, K.
+Brainsemantoks: Learning semantic tokens of brain dynamics
+with a self-distilled foundation model. arXiv preprint
+arXiv:2512.11582, 2025.
+
+Hebart, M. N., Contier, O., Teichmann, L., Rockter, A. H.,
+Zheng, C. Y., Kidder, A., Corriveau, A., Vaziri-Pashkam,
+M., and Baker, C. I. Things-data, a multimodal collection
+of large-scale datasets for investigating object representations in human brain and behavior. Elife, 12:e82580,
+2023.
+
+Glasser, M. F., Sotiropoulos, S. N., Wilson, J. A., Coalson,
+T. S., Fischl, B., Andersson, J. L., Xu, J., Jbabdi, S., Webster, M., Polimeni, J. R., et al. The minimal preprocessing
+pipelines for the human connectome project. Neuroimage,
+80:105–124, 2013.
+
+Hoffer, E., Ben-Nun, T., Hubara, I., Giladi, N., Hoefler,
+T., and Soudry, D. Augment your batch: Improving
+generalization through instance repetition. In Proceedings
+of the IEEE/CVF Conference on Computer Vision and
+Pattern Recognition, pp. 8129–8138, 2020.
+
+Glasser, M. F., Coalson, T. S., Robinson, E. C., Hacker,
+C. D., Harwell, J., Yacoub, E., Ugurbil, K., Andersson,
+J., Beckmann, C. F., Jenkinson, M., et al. A multi-modal
+parcellation of human cerebral cortex. Nature, 536(7615):
+171–178, 2016.
+
+Hoffmann, J., Borgeaud, S., Mensch, A., Buchatskaya, E.,
+Cai, T., Rutherford, E., Casas, D. d. L., Hendricks, L. A.,
+Welbl, J., Clark, A., et al. Training compute-optimal
+large language models. arXiv preprint arXiv:2203.15556,
+2022.
+
+Goyal, P., Dollár, P., Girshick, R., Noordhuis, P.,
+Wesolowski, L., Kyrola, A., Tulloch, A., Jia, Y., and
+He, K. Accurate, large minibatch sgd: Training imagenet
+in 1 hour. arXiv preprint arXiv:1706.02677, 2017.
+
+Horikawa, T. and Kamitani, Y. Generic decoding of seen
+and imagined objects using hierarchical visual features.
+Nature communications, 8(1):15037, 2017.
+Jack Jr, C. R., Bernstein, M. A., Fox, N. C., Thompson, P.,
+Alexander, G., Harvey, D., Borowski, B., Britson, P. J.,
+L. Whitwell, J., Ward, C., et al. The alzheimer’s disease
+neuroimaging initiative (adni): Mri methods. Journal
+of Magnetic Resonance Imaging: An Official Journal
+
+Greene, A. S., Gao, S., Scheinost, D., and Constable, R. T.
+Task-induced brain state manipulation improves prediction of individual traits. Nature communications, 9(1):
+2807, 2018.
+12
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+Marek, K., Jennings, D., Lasch, S., Siderowf, A., Tanner, C.,
+Simuni, T., Coffey, C., Kieburtz, K., Flagg, E., Chowdhury, S., et al. The parkinson progression marker initiative
+(ppmi). Progress in neurobiology, 95(4):629–635, 2011.
+
+of the International Society for Magnetic Resonance in
+Medicine, 27(4):685–691, 2008.
+Joachims, T. Text categorization with support vector machines: Learning with many relevant features. In European conference on machine learning, pp. 137–142.
+Springer, 1998.
+
+Margulies, D. S., Ghosh, S. S., Goulas, A., Falkiewicz,
+M., Huntenburg, J. M., Langs, G., Bezgin, G., Eickhoff,
+S. B., Castellanos, F. X., Petrides, M., et al. Situating
+the default-mode network along a principal gradient of
+macroscale cortical organization. Proceedings of the
+National Academy of Sciences, 113(44):12574–12579,
+2016.
+
+Kamitani, Y. and Tong, F. Decoding the visual and subjective contents of the human brain. Nature neuroscience, 8
+(5):679–685, 2005.
+Kaplan, J., McCandlish, S., Henighan, T., Brown, T. B.,
+Chess, B., Child, R., Gray, S., Radford, A., Wu, J., and
+Amodei, D. Scaling laws for neural language models.
+arXiv preprint arXiv:2001.08361, 2020.
+
+Mensch, A., Mairal, J., Bzdok, D., Thirion, B., and Varoquaux, G. Learning neural representations of human
+cognition across many fmri studies. Advances in neural
+information processing systems, 30, 2017.
+
+Karpathy, A. nanochat: The best chatgpt that $100 can buy,
+2025. URL https://github.com/karpathy/nanochat.
+
+Miller, K. L., Alfaro-Almagro, F., Bangerter, N. K., Thomas,
+D. L., Yacoub, E., Xu, J., Bartsch, A. J., Jbabdi, S.,
+Sotiropoulos, S. N., Andersson, J. L., et al. Multimodal
+population brain imaging in the uk biobank prospective
+epidemiological study. Nature neuroscience, 19(11):
+1523–1536, 2016.
+
+Kay, K. The risk of bias in denoising methods: Examples
+from neuroimaging. PLoS One, 17(7):e0270895, 2022.
+Kim, P., Kwon, J., Joo, S., Bae, S., Lee, D., Jung, Y., Yoo,
+S., Cha, J., and Moon, T. Swift: Swin 4d fmri transformer.
+Advances in Neural Information Processing Systems, 36:
+42015–42037, 2023.
+
+Miyawaki, Y., Uchida, H., Yamashita, O., Sato, M.-a.,
+Morito, Y., Tanabe, H. C., Sadato, N., and Kamitani,
+Y. Visual image reconstruction from human brain activity
+using a combination of multiscale local image decoders.
+Neuron, 60(5):915–929, 2008.
+
+Krizhevsky, A., Sutskever, I., and Hinton, G. E. Imagenet
+classification with deep convolutional neural networks.
+Advances in neural information processing systems, 25,
+2012.
+
+Nastase, S. A., Liu, Y.-F., Hillman, H., Zadbood, A., Hasenfratz, L., Keshavarzian, N., Chen, J., Honey, C. J., Yeshurun, Y., Regev, M., et al. The “narratives” fmri dataset
+for evaluating models of naturalistic language comprehension. Scientific data, 8(1):250, 2021.
+
+Logothetis, N. K. What we can do and what we cannot do
+with fmri. Nature, 453(7197):869–878, 2008.
+Loshchilov, I. and Hutter, F. Sgdr: Stochastic gradient descent with warm restarts. arXiv preprint
+arXiv:1608.03983, 2016.
+
+Nemati, S., Akiki, T. J., Roscoe, J., Ju, Y., Averill, C. L.,
+Fouda, S., Dutta, A., McKie, S., Krystal, J. H., Deakin,
+J. W., et al. A unique brain connectome fingerprint predates and predicts response to antidepressants. IScience,
+23(1), 2020.
+
+Loshchilov, I. and Hutter, F. Decoupled weight decay regularization. arXiv preprint arXiv:1711.05101, 2017.
+Lowe, D. G. Distinctive image features from scale-invariant
+keypoints. International journal of computer vision, 60
+(2):91–110, 2004.
+
+Norman, K. A., Polyn, S. M., Detre, G. J., and Haxby, J. V.
+Beyond mind-reading: multi-voxel pattern analysis of
+fmri data. Trends in cognitive sciences, 10(9):424–430,
+2006.
+
+Malkiel, I., Rosenman, G., Wolf, L., and Hendler, T. Selfsupervised transformers for fmri representation. In International Conference on Medical Imaging with Deep
+Learning, pp. 895–913. PMLR, 2022.
+
+Ogawa, S., Lee, T.-M., Kay, A. R., and Tank, D. W. Brain
+magnetic resonance imaging with contrast dependent on
+blood oxygenation. proceedings of the National Academy
+of Sciences, 87(24):9868–9872, 1990.
+
+Marcus, D. S., Harms, M. P., Snyder, A. Z., Jenkinson,
+M., Wilson, J. A., Glasser, M. F., Barch, D. M., Archie,
+K. A., Burgess, G. C., Ramaratnam, M., et al. Human
+connectome project informatics: quality control, database
+services, and data visualization. Neuroimage, 80:202–
+219, 2013.
+
+Oquab, M., Darcet, T., Moutakanni, T., Vo, H. V.,
+Szafraniec, M., Khalidov, V., Fernandez, P., HAZIZA,
+D., Massa, F., El-Nouby, A., Assran, M., et al. DINOv2: Learning robust visual features without supervision. Transactions on Machine Learning Research, 2024.
+13
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+ISSN 2835-8856. URL https://openreview.net/forum?id=
+a68SUt6zFt. Featured Certification.
+
+Rodriguez, R. X., Noble, S., Camp, C. C., and Scheinost, D.
+Connectome caricatures remove large-amplitude coactivation patterns in resting-state fmri to emphasize individual
+differences. Nature neuroscience, pp. 1–11, 2025.
+
+Ozcelik, F. and VanRullen, R. Natural scene reconstruction from fmri signals using generative latent diffusion.
+Scientific Reports, 13(1):15666, 2023.
+
+Ryali, C., Hu, Y.-T., Bolya, D., Wei, C., Fan, H., Huang,
+P.-Y., Aggarwal, V., Chowdhury, A., Poursaeed, O., Hoffman, J., et al. Hiera: A hierarchical vision transformer
+without the bells-and-whistles. In International conference on machine learning, pp. 29441–29454. PMLR,
+2023.
+
+Park, S., Haak, K. V., Oldham, S., Cho, H., Byeon, K.,
+Park, B.-y., Thomson, P., Chen, H., Gao, W., Xu, T.,
+et al. A shifting role of thalamocortical connectivity in
+the emergence of cortical functional organization. Nature
+Neuroscience, 27(8):1609–1619, 2024.
+Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V.,
+Thirion, B., Grisel, O., Blondel, M., Prettenhofer, P.,
+Weiss, R., Dubourg, V., et al. Scikit-learn: Machine
+learning in python. Journal of machine learning research,
+12:2825–2830, 2011.
+
+Salimi-Khorshidi, G., Douaud, G., Beckmann, C. F.,
+Glasser, M. F., Griffanti, L., and Smith, S. M. Automatic
+denoising of functional mri data: combining independent
+component analysis and hierarchical fusion of classifiers.
+Neuroimage, 90:449–468, 2014.
+
+Pineau, J., Vincent-Lamarre, P., Sinha, K., Larivière,
+V., Beygelzimer, A., d’Alché Buc, F., Fox, E., and
+Larochelle, H. Improving reproducibility in machine
+learning research (a report from the neurips 2019 reproducibility program). Journal of machine learning research, 22(164):1–20, 2021.
+
+Schaefer, A., Kong, R., Gordon, E. M., Laumann, T. O.,
+Zuo, X.-N., Holmes, A. J., Eickhoff, S. B., and Yeo, B. T.
+Local-global parcellation of the human cerebral cortex
+from intrinsic functional connectivity mri. Cerebral cortex, 28(9):3095–3114, 2018.
+Scotti, P., Banerjee, A., Goode, J., Shabalin, S., Nguyen,
+A., Dempster, A., Verlinde, N., Yundler, E., Weisberg, D.,
+Norman, K., et al. Reconstructing the mind’s eye: fmrito-image with contrastive learning and diffusion priors.
+Advances in Neural Information Processing Systems, 36:
+24705–24728, 2023.
+
+Poldrack, R. A., Halchenko, Y. O., and Hanson, S. J. Decoding the large-scale structure of brain function by classifying mental states across individuals. Psychological
+science, 20(11):1364–1372, 2009.
+Popov, P., Mahmood, U., Fu, Z., Yang, C., Calhoun, V., and
+Plis, S. A simple but tough-to-beat baseline for fmri timeseries classification. NeuroImage, 303:120909, 2024.
+
+Scotti, P. S., Tripathy, M., Torrico, C., Kneeland, R., Chen,
+T., Narang, A., Santhirasegaran, C., Xu, J., Naselaris, T.,
+Norman, K. A., et al. Mindeye2: Shared-subject models
+enable fmri-to-image with 1 hour of data. In Forty-first
+International Conference on Machine Learning, 2024.
+
+Power, J. D., Plitt, M., Laumann, T. O., and Martin, A.
+Sources and implications of whole-brain fmri signals in
+humans. Neuroimage, 146:609–625, 2017.
+
+Shen, X., Finn, E. S., Scheinost, D., Rosenberg, M. D.,
+Chun, M. M., Papademetris, X., and Constable, R. T.
+Using connectome-based predictive modeling to predict
+individual behavior from brain connectivity. nature protocols, 12(3):506–518, 2017.
+
+Radford, A., Kim, J. W., Hallacy, C., Ramesh, A., Goh, G.,
+Agarwal, S., Sastry, G., Askell, A., Mishkin, P., Clark, J.,
+et al. Learning transferable visual models from natural
+language supervision. In International conference on
+machine learning, pp. 8748–8763. PMLR, 2021.
+Raichle, M. E. The brain’s default mode network. Annual
+review of neuroscience, 38(1):433–447, 2015.
+
+Sutton, R. The bitter lesson. Incomplete Ideas (blog), 13(1):
+38, 2019.
+
+Rainey, S., Martin, S., Christen, A., Mégevand, P., and
+Fourneret, E. Brain recording, mind-reading, and neurotechnology: ethical issues from consumer devices to
+brain-based speech decoding. Science and engineering
+ethics, 26(4):2295–2311, 2020.
+
+Takagi, Y. and Nishimoto, S. High-resolution image reconstruction with latent diffusion models from human brain
+activity. In Proceedings of the IEEE/CVF conference
+on computer vision and pattern recognition, pp. 14453–
+14463, 2023.
+
+Rastegarnia, S., St-Laurent, M., DuPre, E., Pinsard, B., and
+Bellec, P. Brain decoding of the human connectome
+project tasks in a dense individual fmri dataset. NeuroImage, 283:120395, 2023.
+
+Tan, M. and Le, Q. Efficientnet: Rethinking model scaling for convolutional neural networks. In International
+conference on machine learning, pp. 6105–6114. PMLR,
+2019.
+14
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+Tang, J., LeBel, A., Jain, S., and Huth, A. G. Semantic
+reconstruction of continuous language from non-invasive
+brain recordings. Nature Neuroscience, 26(5):858–866,
+2023.
+
+Yang, L., Li, S.-W., Li, Y., Lei, X., Wang, D., Mohamed,
+A., Zhao, H., and Xu, H. In pursuit of pixel supervision
+for visual pre-training. arXiv preprint arXiv:2512.15715,
+2025.
+
+Thomas, A., Ré, C., and Poldrack, R. Self-supervised learning of brain dynamics from broad neuroimaging data.
+Advances in neural information processing systems, 35:
+21255–21269, 2022.
+
+Yeo, B. T., Krienen, F. M., Sepulcre, J., Sabuncu, M. R.,
+Lashkari, D., Hollinshead, M., Roffman, J. L., Smoller,
+J. W., Zöllei, L., Polimeni, J. R., et al. The organization
+of the human cerebral cortex estimated by intrinsic functional connectivity. Journal of neurophysiology, 2011.
+
+Tian, Y., Margulies, D. S., Breakspear, M., and Zalesky,
+A. Topographic organization of the human subcortex
+unveiled with functional connectivity gradients. Nature
+neuroscience, 23(11):1421–1432, 2020.
+
+Zhang, Y., Tetrel, L., Thirion, B., and Bellec, P. Functional
+annotation of human cognitive states using deep graph
+convolution. NeuroImage, 231:117847, 2021.
+Zhang, Y., Farrugia, N., and Bellec, P. Deep learning models of cognitive processes constrained by human brain
+connectomes. Medical image analysis, 80:102507, 2022.
+
+Tong, Z., Song, Y., Wang, J., and Wang, L. Videomae:
+Masked autoencoders are data-efficient learners for selfsupervised video pre-training. Advances in neural information processing systems, 35:10078–10093, 2022.
+
+Zhou, Y., Chia, M. A., Wagner, S. K., Ayhan, M. S.,
+Williamson, D. J., Struyven, R. R., Liu, T., Xu, M.,
+Lozano, M. G., Woodward-Court, P., et al. A foundation
+model for generalizable disease detection from retinal
+images. Nature, 622(7981):156–163, 2023.
+
+Van Essen, D. C., Smith, S. M., Barch, D. M., Behrens, T. E.,
+Yacoub, E., Ugurbil, K., Consortium, W.-M. H., et al.
+The wu-minn human connectome project: an overview.
+Neuroimage, 80:62–79, 2013.
+Virtanen, P., Gommers, R., Oliphant, T. E., Haberland, M.,
+Reddy, T., Cournapeau, D., Burovski, E., Peterson, P.,
+Weckesser, W., Bright, J., et al. Scipy 1.0: fundamental
+algorithms for scientific computing in python. Nature
+methods, 17(3):261–272, 2020.
+Wang, C., Jiang, Y., Peng, Z., Li, C., Bang, C., Zhao, L.,
+Lv, J., Sepulcre, J., Yang, C., He, L., et al. Towards
+a general-purpose foundation model for fmri analysis.
+arXiv preprint arXiv:2506.11167, 2025a.
+Wang, E. Y., Fahey, P. G., Ding, Z., Papadopoulos, S., Ponder, K., Weis, M. A., Chang, A., Muhammad, T., Patel,
+S., Ding, Z., et al. Foundation model of neural activity
+predicts response to new stimulus types. Nature, 640
+(8058):470–477, 2025b.
+Woo, C.-W., Chang, L. J., Lindquist, M. A., and Wager,
+T. D. Building better biomarkers: brain models in translational neuroimaging. Nature neuroscience, 20(3):365–
+377, 2017.
+Xie, Z., Zhang, Z., Cao, Y., Lin, Y., Wei, Y., Dai, Q., and
+Hu, H. On data scaling in masked image modeling. In
+Proceedings of the IEEE/CVF Conference on Computer
+Vision and Pattern Recognition, pp. 10365–10374, 2023.
+Xu, H., Usuyama, N., Bagga, J., Zhang, S., Rao, R., Naumann, T., Wong, C., Gero, Z., González, J., Gu, Y., et al.
+A whole-slide foundation model for digital pathology
+from real-world data. Nature, 630(8015):181–188, 2024.
+15
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+A. Open Research: 100% Transparent
+Volunteer-Driven Science
+CortexMAE and B RAINMARKS were openly developed
+through volunteer contributions in the MedARC Discord
+server. Source code was always accessible via a public
+GitHub repository throughout the lifespan of the projects.
+Research discussions were held via public Discord channels,
+and weekly video conference calls were recorded and shared
+publicly. We continue to extend a global invitation to contribute to MedARC projects to cultivate an internationally
+diversified, volunteer-driven research team. We contend that
+fully transparent open-research initiatives could redefine the
+traditional framework of scientific research, democratizing
+entry into machine learning and medical research through
+the harnessing of crowd-sourced collective intelligence and
+community collaboration.
+
+Visual
+Somatomotor
+
+Dorsal attention
+Ventral attention
+
+Limbic
+Frontoparietal
+
+Default
+
+Figure 9. Schaefer 400 parcellation (Schaefer et al., 2018) with
+Yeo resting-state networks (Yeo et al., 2011) on the cortical surface
+and flat map. Relaxation cuts required for flat map transformation
+(Gao et al., 2015) are marked in white.
+
+distance. To project surface-mapped fMRI data onto the
+flat map grid, we extract the array of values corresponding
+to our flat map vertex mask and then resample using linear
+interpolation (Virtanen et al., 2020). After resampling, there
+are 77763 pixels contained in the flat map mask. Figure 9
+shows the correspondence between surface and flat map
+space using the Yeo resting-state networks overlaid on the
+Schaefer 400 parcellation (Yeo et al., 2011).
+
+A.1. Author Contributions
+CL project lead. MT scaling experiments, dataset curation for ADNI and HCP-A, BrainLM integration, UKBB
+pretraining. LKM comparison of preprocessing pipelines,
+streaming pretraining experiments, dataset curation for
+ABIDE. RSG dataset curation for PPMI, PCA feature visualization. SSZY masking strategy and mask ratio experiments,
+Brain-JEPA model integration. SG Brain-Semantoks model
+integration, manuscript review. DD decoder architecture experiments, NSD CLIP regression evaluation. MR masking
+strategy implementation, pretraining smoke test implementation. UKS CAPI pretraining experiments. CKTV SwiFT
+and NeuroSTORM model integration. YW experiments
+with “vector parcel embedding” ViTs. WB BrainHarmonixF integration. GC MLP baseline implementation. SC data
+augmentation implementation. DZK project feedback and
+manuscript review. BW project feedback and manuscript
+review. TMA project supervisor. PSS project supervisor,
+senior investigator.
+
+B.2. Dataset Preprocessing
+The HCP-YA, HCP-A, NSD, and UKBB datasets use the
+official preprocessed data derivatives provided by the collecting institutions. The HCP-A dataset preparation uses
+ICA-FIX denoised outputs (Salimi-Khorshidi et al., 2014),
+whereas the HCP-YA preparation uses data without any nuisance regression. ABIDE, ADHD-200, ADNI, and PPMI
+were preprocessed using fMRIPrep v25.2.3 (Esteban et al.,
+2019). No nuisance regression was applied. Flat map
+and parcellation models use preprocessed outputs in CIFTI
+“grayordinate” fsLR 91K space, whereas volume models use
+MNI152 2mm (FSL NLin6Asym) outputs.
+
+B. Additional methods
+B.1. Flat map construction
+We use the precomputed fsaverage flat map distributed
+with pycortex (Gao et al., 2015), which we resample onto
+the 32k fs LR template mesh using the connectome workbench (Marcus et al., 2013; Glasser et al., 2013). We exclude invalid medial wall vertices (which have a non-zero z
+component in flat map coordinates), and intersect with the
+Schaefer parcellation mask (Schaefer et al., 2018) to yield a
+valid flat map mask containing 58212 vertices across both
+cortical hemispheres. We fit a regular grid of size height ×
+width = 224 × 560 to the array of (x, y) points contained
+in the mask. The grid has a pixel resolution of 1.2mm in flat
+map coordinates, which equals the mean nearest neighbor
+
+config
+
+value
+
+optimizer
+momentum
+weight decay
+learning rate
+lr schedule
+warmup steps
+total steps
+batch size
+gradient clipping
+
+AdamW
+β1 , β2 =0.9, 0.95
+0.05
+1.25e-4 (flat, vol), 3.75e-5 (parcel)
+cosine decay
+31K
+625K
+32
+1.0
+
+Table 7. Pretraining setting on HCP-YA.
+
+B.3. Pretraining implementation details
+The default pretraining config is in Table 7. We use the
+AdamW optimizer (Loshchilov & Hutter, 2017) and cosine
+learning rate decay (Loshchilov & Hutter, 2016). In total, the model sees 320M fMRI frames during pretraining,
+which is ∼43 effective epochs over our HCP-YA training
+set. We use linear learning rate scaling (Goyal et al., 2017)
+(lr = base lr × batch size/256). We tuned the base
+16
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+value
+
+optimizer
+momentum
+base learning rate
+base weight decay
+
+AdamW
+β1 , β2 =0.9, 0.999
+3e-4
+0.05
+[0.02, 0.023, 0.028, 0.033,
+0.038, 0.045, 0.053, 0.062,
+0.074, 0.087, 0.1, 0.12, 0.14,
+0.17, 0.2, 0.23, 0.27, 0.32,
+0.38, 0.44, 0.52, 0.61, 0.72,
+0.85, 1, 1.2, 1.4, 1.6, 1.9,
+2.3, 2.7, 3.1, 3.7, 4.3, 5.1,
+6, 7.1, 8.3, 9.8, 12, 14, 16,
+19, 22, 26, 31, 36, 43, 50]
+[1.0]
+128
+4000
+1000
+cosine decay
+200
+
+lr scale grid
+
+wd scale grid
+batch size
+total steps
+warmup steps
+lr schedule
+early stop period
+
+parcel
+nsd coco24 (%)
+
+config
+
+flat
+
+volume
+
+25
+
+best ckpt
+last ckpt
+
+20
+15
+lr=2.5e-03 acc=25.6
+
+10
+
+lr=3.6e-04 acc=27.8
+
+lr=1.3e-04 acc=24.3
+
+5
+10 5
+
+10 4
+
+lr
+
+10 3
+
+10 2
+
+10 5
+
+10 4
+
+lr
+
+10 3
+
+10 2
+
+10 5
+
+10 4
+
+lr
+
+10 3
+
+10 2
+
+Figure 10. Attentive probe performance across learning rate for
+best and last checkpoints. The dense learning rate grid (trained in
+parallel) allows precise tuning of all models.
+
+diction setting). The config used for all models is in Table 8.
+We train parallel attentive probes over a grid of learning
+rates following (Darcet et al., 2025) and choose the best by
+validation accuracy. We also use early stopping (i.e. select
+the best performing checkpoint by validation accuracy). We
+find that attentive probe performance is sensitive to learning
+rate and training schedule, but relatively robust to changes
+in other parameters like weight decay. We use a dense learning rate scale grid of 49 values (np.logspace(-1.7,
+1.7, 49)) for precise tuning of all models (Figure 10).
+
+Table 8. Attentive probe setting
+
+lr for each input representation separately, resulting in values
+1e-3 for flat and volume and 3e-4 for parcellation. We use
+repeated sampling (Feichtenhofer et al., 2022; Hoffer et al.,
+2020) to improve data loading throughput. Each time an
+fMRI run is loaded from disk, we extract 4 · Nt /16 random
+clips, where Nt is the length of the run. The clips are then
+appended to an in-memory shuffle buffer, which we sample
+from to construct training batches using WebDataset.
+
+Sequence length. We resample inputs to each model’s
+target TR using linear interpolation (with a tolerance of 0.1
+s). For inputs shorter than a model’s expected temporal
+sequence length, we pad the input with the per-coordinate
+mean. For inputs longer than expected, we apply the model
+on non-overlapping sliding windows.
+
+Our default model is a vanilla MAE (He et al., 2022; Feichtenhofer et al., 2022) with some minor changes. To prevent
+large initial loss and gradient spikes, we initialize the decoder head weights to zero (Beyer et al., 2023). We remove
+redundant position embeddings added to the learned [CLS]
+token, and we remove decoder position encoding from the
+encoded embeddings, since they already contain position
+information. We train with mixed precision at float16. We
+observe significant training instability with bfloat16 (especially without the zero-init of the decoder head).
+
+C. Additional experiments
+C.1. Supplementary ablations
+Input sequence length. Existing parcellation based models
+like BrainLM (Caro et al., 2024) and Brain-JEPA (Dong
+et al., 2024) use long input time series (>2 min). This
+enables them to model long temporal dependencies, possibly
+at the expense of fine-grained state representation. Table 9
+shows that pretraining with longer input time series hurts
+HCP-YA and NSD state decoding. This drop likely explains
+much of the gap to the best prior model (BrainHarmonix-F:
+94.4% on HCP-YA, 23.8% on NSD; Figure 8).
+
+B.4. Model comparison protocol
+Trait prediction. Subject-level trait prediction performance
+is evaluated using a logistic regression probe on top of
+frozen embeddings. We use the average-pooled embedding across patches for all models. Although some models
+(Brain-Semantoks, CortexMAE) expose a [CLS] embedding, they do not predict better. The classifier is scikitlearn LogisticRegressionCV with default hyperparameters, standard-scale preprocessing, and 5-fold internal
+cross-validation. To reduce variance, we average performance over 100 repeats with randomized train/test splits,
+stratifying by target to preserve class proportions. We report
+balanced accuracy to account for class imbalance.
+
+Spatial patch size. Table 4d showed improved performance
+for smaller temporal patch size, suggesting a speed/accuracy
+tradeoff. In Table 10, however, it appears that this does not
+extend to smaller spatial patch sizes. Note that for spatial
+patch size 8, we use 2× patch masking (Yang et al., 2025),
+to maintain the 16 × 16 mask units.
+Decoder depth, drop path, and probe depth. In Table 11,
+we analyze the effects of different depth-related interventions. In contrast to (He et al., 2022; Feichtenhofer et al.,
+2022), we do not see any clear differences between different decoder depths (Table 11a). In contrast to (Ryali et al.,
+2023), we also don’t see an effect of increasing drop path
+
+State prediction. Trial-level state prediction is evaluated using the more performant attentive probe (Assran et al., 2023)
+(which would be compute-prohibitive in the noisy trait pre17
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+frames
+
+pt
+
+Age
+
+Sex
+
+Task21
+
+COCO24
+
+16
+16
+64
+
+4
+16
+16
+
+44.1
+43.0
+43.8
+
+70.8
+71.3
+72.9
+
+97.3
+97.4
+95.7
+
+27.5
+27.3
+25.1
+
+Table 9. Worse state decoding for longer input sequences. frames
+refers to number of temporal frames per sample. pt is the temporal
+patch size. The model is a parcellation based CortexMAE with the
+Schaefer-400 parcellation. red indicates > 3σ below baseline .
+p
+
+pt
+
+Age
+
+Sex
+
+Task21
+
+COCO24
+
+16
+16
+8
+
+16
+4
+4
+
+46.7
+49.5
+42.6
+
+84.9
+88.1
+84.6
+
+97.9
+99.0
+98.9
+
+27.6
+29.6
+29.4
+
+dpr acc
+
+2
+4
+8
+12
+
+0.0
+0.1
+0.2
+0.3
+
+31.6
+30.1
+28.8
+31.2
+
+(a) Decoder depth.
+
+31.3
+31.5
+30.7
+30.2
+
+(b) Drop path rate.
+
+Age
+
+Sex
+
+Task21
+
+COCO24
+
+all
+rest
+task
+
+47.5
+47.7
+47.4
+
+87.4
+85.5
+85.4
+
+98.9
+97.5
+98.5
+
+31.0
+30.8
+28.7
+
+2058
+1072
+987
+
+Table 12. Pretraining on all HCP-YA data outperforms restingstate or task-based only pretraining. The model is a flat map
+CortexMAE. Baseline performance is from Table 2.
+
+COCO24 visual decoding benchmark. All three pretraining
+datasets perform similarly on trait prediction benchmarks.
+
+Table 10. No benefit of smaller spatial patch size p on state decoding, and worse performance on trait prediction.
+depth acc
+
+subset hours
+
+C.2. Large scale pretraining on UKBB
+We use HCP-YA (Van Essen et al., 2013) as our primary
+pretraining dataset because it is openly accessible to all
+researchers, supporting easier reproducibility and direct
+comparison. Some prior works train on datasets (UKBB
+Miller et al. 2016, ABCD Casey et al. 2018) that are publicly available in theory, but difficult to access in practice.
+Accessing UKBB imaging data, for example, costs £9,000
+per institution3 . Datasets like UKBB and ABCD are, of
+course, extremely valuable data resources for the field, and
+their fees and usage restrictions are well justified. Nonetheless, the barrier to access these data limits machine learning
+modeling progress, which relies crucially on common open
+datasets (Deng et al., 2009).
+
+depth acc
+0
+15.2
+2
+21.2
+4
+25.9
+8
+29.5
+12
+30.6
+(c) Probe depth.
+
+Table 11. Depth related ablations on NSD COCO24. (a) No clear
+differences between different decoder depths. (b) No clear effect
+of increasing drop path rate. (c) Probing deeper encoder layers
+performs better. Depth 0 corresponds to probing immediately after
+the ViT patch + position embedding.
+
+To evaluate the impact of pretraining dataset selection, we
+pretrained flat map CortexMAE models on varying subsets of HCP-YA and UKBB (Figure 11). Surprisingly, we
+observe that UKBB pretraining underperforms HCP-YA
+pretraining, even with 10× more data. This holds both
+for the HCP-YA Task21 benchmark (in-distribution for the
+HCP-YA models), and NSD COCO24 (OOD with respect
+to both HCP-YA and UKBB). Importantly, this is a preliminary analysis, and the UKBB pretraining pipeline is much
+less tested compared to HCP-YA. Nonetheless, the results
+show that open datasets like HCP-YA are good options for
+fMRI foundation model pretraining.
+
+rate (resulting in stochastic encoder depth) (Table 11b).
+We do, however, observe improved performance from probing the encoder at deeper layers (cf Bolya et al. 2025). In
+particular, attaching the attentive probe at depth 0 (after the
+patch + position embedding but before any ViT blocks),
+results in a ∼50% relative performance drop from baseline.
+This validates that the encoder learns to compute better
+representations than are directly accessible in the input data.
+Pretraining data mixture. The HCP-YA pretraining
+dataset includes both resting-state and task-based fMRI runs.
+A natural question is whether one scanning condition produces more useful data for training foundation models than
+the other. Although resting-state is more common and arguably easier to collect, there is some evidence that data
+collected during structured cognitive tasks or naturalistic
+viewing are more predictive of behavior (Greene et al., 2018;
+Finn & Bandettini, 2021).
+
+Figure 11 also shows that there is currently no clear benefit
+of longer pretraining on larger data subsets. For the HCPYA models, continued pretraining on more data yields better
+performance on in-distribution HCP-YA Task21, but not
+out-of-distribution NSD COCO24. For the UKBB models,
+the smallest data subset is competitive on HCP-YA Task21,
+while outperforming all other models on NSD COCO24.
+This reinforces the weak generalization of data scaling
+trends to OOD settings from Section 5.2. Notably, the
+result in Figure 11, bottom left, is somewhat in tension with
+Figure 7c. A possible explanation could be that models in
+Figure 11 are trained for the full cosine lr schedule, whereas
+
+Table 12 shows that pretraining on all data results in more
+predictive representations than either modality separately.
+Pretraining on task transfers better to the in-distribution
+HCP-YA Task21 benchmark (which covers the same set
+of cognitive tasks), while pretraining on rest appears to
+lead to better generalization on the out-of-distribution NSD
+
+3
+
+18
+
+https://www.ukbiobank.ac.uk/use-our-data/fees/
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+Figure 11. Comparing pretraining datasets across data scales. Downstream performance as a function of pretraining steps (in millions) for
+models trained on subsets of HCP-YA (left) and UKBB (right). Dots are individual checkpoints; lines show a rolling median. All models
+within each family are trained for a matched number of effective epochs, with total steps scaled proportionally to dataset size.
+
+decoder
+
+attn
+
+lin
+
+self
+31.0 11.2
+cross
+29.8 8.6
+cross-reg (16) 25.8 10.9
+cross-reg (4) 31.0 12.9
+cross-reg (1) 29.1 24.2
+(a) Decoder architecture
+
+decoder
+
+w/o
+mask
+
+w/
+mask
+
+self
+31.0
+cross
+29.8
+cross-reg (1) 29.1
+
+32.0
+31.3
+28.9
+
+MAE patch embed weights
+
+(b) Decoder edge masking
+
+Table 13. Decoder comparison. (a) All decoding approaches perform well with attentive probe. Only single-register cross-register
+decoding supports linear probe. (b) Edge masking helps self and
+cross attention decoding. Number of registers in parentheses.
+classic decoding
+
+cross decoding
+
+cross-reg decoding
+
+Figure 13. Patch embedding 16 × 16 filters for the official MAE
+(He et al., 2022) showing edge artifacts. Maps show the red channel
+only for consistency with Figure 12.
+
+decoder edge masking
+
+ing pipeline. We propose a natural third extension of these
+approaches, which we call cross-register decoding. We
+prepend a set of register tokens to the input (Darcet et al.,
+2024), and decode by cross-attending only over the encoded
+registers. We hypothesize that compressing the latent information into a small set of registers will promote learning a
+more discriminative global embedding.
+
+Figure 12. Cross-register decoding and decoder edge masking
+prevent local interpolation and remove edge artifacts in weights.
+(top) Example reconstructions. Boxes indicate visible patches.
+(bottom) Example maps from the decoder head weight matrix.
+
+Table 13a compares the three decoder architectures on NSD
+COCO24. All decoding strategies perform sensibly with the
+default attentive probe. (The poor performance of cross-reg
+(16) may stem from underused patch embeddings going
+into the probe.) However, only the single-register crossregister decoding reaches competitive performance using
+the weaker linear probe. The absence of an explicit global
+image embedding in MAE is a known limitation for linear
+probe (He et al. (2022), Fig. 9). Compressing the encoded
+information into a single register (“cross-reg (1)”) helps
+address this issue.4
+
+Figure 7c uses intermediate checkpoints without the benefit
+of a full cooldown.
+C.3. MAE decoding experiments
+In this section, we discuss some tangential explorations into
+MAE decoder architecture and loss masking.
+Cross-register decoding. We experiment with three variants for the MAE decoder. The standard MAE decoder
+reconstructs masked pixel values by self-attending over a
+sequence of embeddings and [MASK] tokens. Alternatively, CrossMAE reconstructs by cross-attention only (Fu
+et al., 2025). This removes interactions between masked
+patches, reducing compute cost and simplifying the decod-
+
+Decoder edge masking. To prevent the model from interpolating at the edges of observed patches, we propose
+4
+
+He et al. (2022) note that linear probe requires a higher masking ratio than fine-tuning. Higher masking means a harder objective and more latent compression.
+
+19
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+model
+
+ABIDE
+Dx
+
+ADHD200
+Dx
+
+ADNI
+Dx
+
+PPMI
+Dx
+
+HCP-A
+Age
+
+HCP-A
+Sex
+
+HCP-YA
+Task21
+
+NSD
+COCO24
+
+BrainLM
+Brain-JEPA
+BrainHarmonix-F
+Brain-Semantoks
+CortexMAE-P
+
+48.5
+52.6
+50.4
+57.3 ±0.6
+62.0 ±0.8
+
+60.2
+59.1
+59.9
+59.7 ±0.7
+56.8 ±0.6
+
+55.5
+62.1
+51.6
+57.2 ±2.0
+61.6 ±1.2
+
+52.7
+56.8
+56.3
+55.1 ±1.4
+61.4 ±1.3
+
+43.8
+28.0
+37.0
+45.7 ±1.3
+44.2 ±0.5
+
+64.9
+49.3
+58.4
+79.2 ±1.7
+71.2 ±1.0
+
+92.5
+73.6
+94.4
+89.8 ±0.2
+97.5 ±0.2
+
+22.3
+9.7
+23.8
+15.3 ±0.5
+27.5 ±0.5
+
+SwiFT
+NeuroSTORM
+CortexMAE-V
+CortexMAE-F
+
+53.7
+53.5
+60.4 ±0.8
+61.4 ±1.3
+
+59.2
+61.1
+58.8 ±1.1
+59.2 ±1.0
+
+60.7
+66.8
+64.3 ±1.6
+62.4 ±1.4
+
+55.8
+53.4
+59.1 ±1.2
+58.8 ±1.1
+
+38.1
+56.6
+53.4 ±0.5
+47.5 ±1.6
+
+74.5
+82.7
+86.3 ±0.7
+87.4 ±0.7
+
+63.6
+70.5
+96.2 ±0.3
+98.9 ±0.1
+
+7.7
+12.2
+27.7 ±0.7
+31.0 ±0.7
+
+connectome
+
+59.8
+
+57.0
+
+58.6
+
+58.0
+
+45.6
+
+81.9
+
+82.4
+
+7.4
+
+Table 14. fMRI foundation model comparison using B RAINMARKS. (top) parcellation based models, (middle) dense volume models plus
+our flat map CortexMAE-F, (bottom) functional connectome baseline. The best models in each category are indicated with bold and
+underline. Only scores > 3σ better than connectome are highlighted. Results are the same as reported in Figure 8.
+model
+
+coord
+
+ABIDE
+Dx
+
+ADHD200
+Dx
+
+ADNI
+Dx
+
+PPMI
+Dx
+
+HCP-A
+Age
+
+HCP-A
+Sex
+
+HCP-YA
+Task21
+
+NSD
+COCO24
+
+SwiFT
+Brain-JEPA
+NeuroSTORM
+
+✗
+✗
+✗
+
+53.7
+52.6
+53.5
+
+59.2
+59.1
+61.1
+
+60.7
+62.1
+66.8
+
+55.8
+56.8
+53.4
+
+38.1
+28.0
+56.6
+
+74.5
+49.3
+82.7
+
+20.7
+16.9
+17.5
+
+6.4
+6.4
+6.4
+
+SwiFT
+Brain-JEPA
+NeuroSTORM
+
+eval
+
+53.8
+53.5
+53.5
+
+61.5
+50.4
+57.7
+
+58.2
+51.0
+53.5
+
+52.1
+52.6
+53.2
+
+38.4
+27.6
+52.7
+
+66.7
+50.2
+73.5
+
+63.6
+73.6
+70.5
+
+7.7
+9.7
+12.2
+
+eval
+eval
+
+Table 15. Effect of coordinate normalization on models pretrained without it. (top) performance with models’ official preprocessing,
+without coordinate norm. (bottom) performance with coordinate normalization added.
+
+decoder edge masking: we mask out a border of 4 pixels
+surrounding each observed patch and exclude them from the
+reconstruction loss. fMRI data are spatially very smooth,
+particularly after surface-based preprocessing. As a result,
+local interpolation is a noticeable problem in this setting.
+
+model
+
+Figure 12 shows that decoder edge masking eliminates interpolation at the edges of observed patches and removes edge
+artifacts from the decoder head weights for self and crossattention decoding. In Table 13b, we see this translates
+into modest improvement for downstream prediction. Interestingly, cross-register decoding does not show the same
+interpolation artifacts, and edge masking does not appear to
+impact prediction performance.
+
+params FLOP data/s fwd/s FLOP/s
+
+BrainLM
+113M 382G 267K 96K
+Brain-JEPA
+87M 1511G 338K 86K
+BrainHarmonix-F 89M 3135G 310K 20K
+Brain-Semantoks
+63M
+6G 179K 1079K
+CortexMAE-P
+85M 8062G 380K 19K
+
+73T
+261T
+122T
+12.2T
+303T
+
+SwiFT
+NeuroSTORM
+CortexMAE-V
+CortexMAE-F
+
+5.5T
+6.7T
+292T
+292T
+
+4M 183G
+8M 141G
+87M 9892G
+86M 7234G
+
+0.5K
+0.4K
+1.5K
+3.8K
+
+15K
+24K
+15K
+20K
+
+Table 16. Compute comparison of fMRI foundation models. FLOP
+count is for forward pass on a single sample (500 frames). Data
+loading and forward pass throughput is in frames per second.
+FLOP/s compute throughput is for model forward pass. Models
+are evaluated with AMP enabled at bfloat16. CortexMAE-{P,F,V}
+refer to the parcel, flat map, and volume models respectively.
+
+Edge artifacts are also visible in the original MAE patch
+embedding from He et al. (2022) (Figure 13). This suggests
+that even for natural images, MAEs partly exploit a local
+interpolation shortcut strategy.
+
+Table 6, the models’ performance on state prediction is near
+chance using the models’ official preprocessing pipeline
+without coordinate norm, and substantially improves with
+coordinate norm enabled. Interestingly, however, coordinate
+norm hurts performance on the trait prediction tasks, suggesting that the models are partly relying on static structural
+features.
+
+C.4. Supplementary benchmark analyses
+Table 14 shows the same results from Figure 8 in table form.
+Evaluation-time coordinate normalization. Table 15 tests
+the effect of applying coordinate normalization during evaluation on models that were pretrained without it. Similar to
+20
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+ABIDE Dx
+
+accuracy (%)
+
+70
+60
+
+45.7
+
+55.6
+64.3 60.9
+50.8
+54.6
+
+52.0
+36.9
+
+ADHD200 Dx
+70
+
+55.2
+59.3
+53.9 51.251.1 51.2 58.8
+53.3 49.8
+
+65
+60
+
+50
+
+55
+50
+
+40
+
+45
+
+SwiFT
+
+BrainLM
+
+Brain-JEPA
+
+ADNI Dx
+80
+70
+60
+
+70.1
+
+62.0
+
+55.7
+
+PPMI Dx
+
+63.7
+48.651.0
+
+70
+65
+
+59.7
+
+53.3
+
+60
+
+50.0
+
+50
+
+NeuroSTORM
+
+60
+50
+40
+
+50
+
+30
+
+Brain-Semantoks
+
+46.6
+57.829.040.8
+
+33.3
+35.5
+
+38.9
+30.6
+
+20
+
+CortexMAE
+
+HCP-A Sex
+
+54.2
+
+70
+
+55
+45
+
+40
+
+BrainHarmonix-F
+
+HCP-A Age
+
+52.0 60.4
+54.1
+58.4 48.752.5 59.0
+51.2
+51.1
+
+connectome
+
+90
+80
+70
+60
+50
+40
+
+parcel
+
+82.0
+88.4
+
+64.0
+
+92.484.1
+
+66.7
+
+65.2
+64.4
+47.7
+
+flat
+
+volume
+
+Figure 14. Attentive probe performance on subject-level trait prediction. Markers indicate each model’s performance (balanced accuracy)
+on a fixed train/test split using the attentive probe protocol. Confidence intervals indicate the mean ± 2 × stdev for the logistic probe over
+the 100 randomized splits. Attentive probe performance is variable, but within logistic probe CIs.
+
+Model compute comparison. Table 16 compares all fMRI
+foundation models in terms of their compute performance.
+Parcellation based models (top) use ViT-B-scale parameter
+counts, and have efficient data loading due to the sparse
+representation. Prior volume models (middle) have low parameter counts (<10M) and are bottlenecked by data loading. CortexMAE models (bottom) maintain the same model
+ViT-B architecture across input representations, achieve a
+reasonable compute/data tradeoff, and have better GPU utilization (>290TFLOP/s).
+Attentive probe performance on trait prediction. Our
+main evaluations for trait prediction use a simple linear
+logistic probe with randomized train/test splits for better
+robustness to small sample sizes (Table 1). Figure 14 evaluates all models on trait prediction instead using the attentive
+probe protocol. Attentive probe performance is variable
+across models, but within the confidence intervals of the
+logistic probe. This result further highlights the unreliability
+of the current clinical diagnosis prediction benchmarks.
+
+D. Compute cost
+One pretraining run for our default flat map CortexMAE
+currently takes ∼28 hours on our system using 1 NVIDIA
+H100 GPU (10GB memory usage, ∼160ms / step). This
+time varies depending on system load, since pretraining is
+IO bound. Total compute used for all experiments was ∼7K
+H100 hours.
+
+21
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+(a) HCP validation set (in distribution)
+
+(b) NSD validation set (out-of-distribution)
+Figure 15. Uncurated examples of MAE predictions on fMRI flat maps.
+
+22
+
+Scaling Vision Transformers for Functional MRI with Flat Maps
+
+(a) HCP validation set (in distribution)
+
+(b) NSD validation set (out-of-distribution)
+Figure 16. Uncurated examples of MAE denoising on fMRI flat maps.
+
+23
+
+

@@ -1,0 +1,2099 @@
+NeuroRVQ: Multi-Scale Biosignal Tokenization for Generative Foundation Models 
+
+|  |
+| :-: |
+| [**Page 1**]() |
+
+**NeuroRVQ**: Multi-Scale Biosignal Tokenization
+
+for Generative Foundation Models
+
+Konstantinos Barmpas
+
+Imperial College London & Cogitat
+
+konstantinos.barmpas16@imperial.ac.uk
+
+Na Lee
+
+Imperial College London & Cogitat
+
+Dimitrios Chalatsis
+
+Imperial College London
+
+William Raftery
+
+Imperial College London
+
+Yannis Panagakis
+
+National and Kapodistrian University of Athens &
+
+Archimedes Research Unit & Cogitat
+
+Dimitrios A. Adamos
+
+Imperial College London & Cogitat
+
+Nikolaos Laskaris
+
+Aristotle University of Thessaloniki & Cogitat
+
+Alexandros Koliousis
+
+Northeastern University London
+
+Dario Farina
+
+Imperial College London
+
+Stefanos Zafeiriou
+
+Imperial College London & Cogitat
+
+Abstract
+
+Biosignals such as electroencephalography (EEG), electrocardiography (ECG),
+
+and electromyography (EMG) encode physiological activity across multiple tem-
+
+poral and spectral scales, yielding representations that are rich but challenging
+
+for machine learning. Foundation models trained to predict masked signal to-
+
+kens have shown promise in learning generalizable biosignal representations, yet
+
+their performance depends on the tokenizer’s ability to preserve high-frequency
+
+dynamics and reconstruct signals with high fidelity. We introduce NEURORVQ,
+
+a modality-adaptive biosignal tokenizer family designed for high-fidelity signal
+
+reconstruction. To capture the full frequency spectrum, NEURORVQ decomposes
+
+biosignals into frequency-specific representations via multi-scale temporal convo-
+
+lutions, each encoded into hierarchical RVQ codebooks to preserve high-frequency
+
+detail, combined with a novel phase-aware training loss that respects the circular
+
+topology of Fourier phase. By tuning the temporal resolution, number and size
+
+of temporal kernels and RVQ depth, this design adapts to the spectro-temporal
+
+characteristics of each biosignal modality. To validate that tokenizer quality drives
+
+downstream performance, we train a simple masked-token foundation model for
+
+each modality (NEURORVQ-FM) using the corresponding NEURORVQ tokenizer.
+
+The NEURORVQ-FM family achieves competitive or superior downstream perfor-
+
+mance compared to existing modality-specific foundation models, demonstrating
+
+that high-fidelity tokenization is a critical factor for effective biosignal modeling.
+
+Preprint.
+
+arXiv:2510.13068v4 \[cs.LG\] 17 May 2026
+
+-----
+
+|  |
+| :-: |
+| [**Page 2**]() |
+
+1 Introduction
+
+Biosignals, electrical recordings of physiological activity, are fundamental to modern healthcare
+
+and Human-Computer Interaction (HCI): Electroencephalography (EEG) captures brainwave dy-
+
+namics underlying cognition, sleep and emotion; electrocardiography (ECG) records the cardiac
+
+electrical cycle critical for diagnosing arrhythmias and heart disease; and electromyography (EMG)
+
+measures muscular activation patterns essential for movement analysis and prosthetic control. Across
+
+these modalities, accurate signal decoding underpins a broad spectrum of applications, from Brain-
+
+Computer Interfaces (BCIs) for emotion recognition \[[Torres et al.,](#14) 2020, Xu et al., 2018\] and epileptic
+
+seizure detection [\[Alkawadri](#11), 2019, Djoufack Nkengfack et al., 2021\], to cardiac anomaly detec-
+
+tion [\[Hannun et al.](#12), 2019\] and gesture recognition from muscle activity \[Atzori et al., 2014\]. Despite
+
+their different physiological origins, EEG, ECG and EMG signals share a common characteristic: in-
+
+formation is distributed across multiple frequency scales. EEG brainwaves span distinct frequency
+
+bands (e.g., delta, alpha, gamma) that capture various physiological states[ \[Newson and Thiagarajan,](#13)
+
+[2018\]](#13). ECG signals encode both low-frequency morphological features (e.g., the QRS complex) and
+
+subtle high-frequency components indicative of abnormalities \[[Goldberger et al.,](#12) 2017\]. Similarly,
+
+EMG signals combine low-frequency motor unit recruitment patterns with high-frequency firing
+
+dynamics \[[De Luca,](#12) 1997\]. Any analysis framework for biosignals must capture this multiscale
+
+structure, both slow and fast dynamics, to fully preserve the information content of the signal.
+
+A range of techniques, from advanced signal processing to deep learning, have been employed
+
+for biosignal decoding. More recently, foundation models trained with self-supervised masked
+
+learning have emerged as a powerful paradigm: signals are first discretized into tokens by a tokenizer
+
+and during training, tokens are intentionally masked so that the model learns to reconstruct them.
+
+This approach has shown strong generalization capabilities without relying on task-specific data
+
+collection. However, the success of masked modeling relies heavily on tokenizer quality. Tokenizers
+
+must effectively capture spatio-temporal patterns to convert continuous signals into meaningful
+
+discrete representations while enabling faithful reconstruction. Current tokenizers struggle to
+
+preserve complete structural information, especially high-frequency components, necessary for
+
+robust generative masked modeling. The key to unlocking foundation-scale masked modeling for
+
+biosignals lies in the tokenizer:
+
+A well-designed biosignal tokenizer should not only compress continuous physiological
+
+signals into discrete neural tokens but also enable faithful reconstruction of the original
+
+waveform across all important frequency scales.
+
+In this work, we introduce NEURORVQ, a modality-adaptive biosignal tokenizer family designed for
+
+high-fidelity signal reconstruction. The main contributions of this work are:
+
+(1) a modality-adaptive multiscale tokenizer architecture that decomposes biosignals into
+
+frequency-specific representations via temporal convolutions with varying kernel sizes and
+
+encodes each frequency scale into hierarchical Residual Vector Quantization (RVQ) codebooks,
+
+enabling high-fidelity signal reconstruction across EEG, ECG, and EMG. By tuning the temporal
+
+resolution, number and size of temporal kernels, and RVQ depth, this architecture adapts to the
+
+spectro-temporal characteristics of each biosignal modality.
+
+(2) a phase-aware training loss that reconstructs the Fourier spectrum through three complementary
+
+components: a log-amplitude loss for Fourier amplitude to emphasize high-frequency content, a
+
+temporal-domain regularization loss and a novel phase loss that respects the circular topology of
+
+phase angles by leveraging cosine similarity for directional alignment; and
+
+(3) a simple masked-token foundation model (NEURORVQ-FM) for each modality that lever-
+
+ages the corresponding NEURORVQ tokenizer during pre-training and achieves competitive or
+
+superior downstream performance compared to existing modality-specific foundation models,
+
+demonstrating that high-fidelity tokenization (rather than model scale or architectural complexity)
+
+is a critical ingredient for effective biosignal modeling.
+
+Compared to existing approaches that operate at a single scale with a single codebook, NEURORVQ
+
+with its multi-scale architecture and per-scale hierarchical RVQ codebooks achieves substantially
+
+lower reconstruction error, while the phase-aware loss delivers the largest reconstruction improvement.
+
+When used in the pre-training of NEURORVQ-FM, the high-fidelity tokenization translates directly
+
+2
+
+-----
+
+|  |
+| :-: |
+| [**Page 3**]() |
+
+into strong downstream performance: NEURORVQ-EEG achieves the best mean balanced accuracy
+
+across five classification tasks (+4.2 points over the next-best model), NEURORVQ-ECG doubles the
+
+next-best balanced accuracy on 43-class PTB-XL classification and NEURORVQ-EMG outperforms
+
+existing EMG foundation models across four classification benchmarks.
+
+2 Background & Related Work
+
+The roots of biosignal analysis can be traced back to classical methods, when handcrafted features
+
+such as Power Spectral Density (PSD) and Independent Component Analysis (ICA) were regarded
+
+standard [\[James and Hesse,](#12) 2004, McFarland et al., 2006\]. Although these methods provided valuable
+
+insights into biosignal decoding, they often failed to generalize due to high inter-subject variability
+
+and their limited capacity to capture the full complexity of brain, heart and muscle activities.
+
+The deep learning era marked a shift towards data-driven feature extraction: models such as EEG-
+
+Net \[[Lawhern et al.](#13), 2018\], EEGInception \[Santamaría-Vázquez et al., 2020\], Brainwave-Scattering
+
+Net \[[Barmpas et al.](#11), 2023\] and EEGConformer \[Song et al., 2023\] for EEG, along with deep residual
+
+networks for ECG \[[Ribeiro et al.,](#14) 2020\] and convolutional architectures for EMG \[Côté-Allard et al.,
+
+[2019\]](#11), reduced reliance on handcrafted features by automatically learning signal representations. To
+
+address domain-specific challenges such as subject variability, researchers incorporated techniques
+
+like subject-alignment into these architectures \[[Bakas et al.](#11), 2022, Wei et al., 2022, Barmpas et al.,
+
+[2024b\]](#11). Despite these advances, most deep models remain limited: they require carefully labeled
+
+data and extensive task-specific training, hindering their ability to generalize across diverse tasks.
+
+More recently, the success of large foundation models in natural language processing \[[Brown et al.,](#11)
+
+[2020,](#11) Touvron et al., 2023\] and computer vision \[Mizrahi et al., 2023\] has motivated their adoption
+
+in biosignal decoding. While foundation models for EEG are now relatively mature, those for
+
+ECG and EMG are still emerging \[[Lee et al.,](#13) 2025b\]. Notable examples include BIOT \[Yang et al.,
+
+[2023\]](#15), LaBraM \[Jiang et al., 2024\], NeuroGPT \[Cui et al., 2024\], EEGPT \[Wang et al., 2024\],
+
+CBraMod \[[Wang et al., ](#15)2025\], BrainOmni \[Xiao et al., 2025\] and REVE \[Ouahidi et al., 2026\]
+
+for EEG; HuBERT-ECG \[[Coppola et al., ](#11)2024\] and ECGFounder \[Li et al., 2025\] for ECG; and
+
+PhysioWave \[[Chen et al.](#11), 2025\] and TinyMyo \[Fasulo et al., 2026\] for EMG. These models are
+
+pretrained on large unlabeled datasets using self-supervised signal reconstruction objectives and have
+
+shown promising generalization capabilities. However, they share a common bottleneck: the quality
+
+of signal tokenization, which determines the fidelity of the representations the model learns from.
+
+Tokenization is critical for robust generative masked modeling, yet current tokenizers struggle to
+
+capture the full structure of biosignals. Some models rely on deep backbone-based tokenizers (e.g.
+
+CBraMod), while others employ transformer-based approaches (e.g. BIOT), which often learn
+
+entangled and redundant representations not optimized for reconstruction. As a result, the generated
+
+tokens lack the fidelity required for effective masked prediction. More recently, codebook-based
+
+approaches, such as LaBraM and BrainOmni, have been introduced to learn reconstructable discrete
+
+tokens using vector quantization (VQ) and residual VQ (RVQ) respectively. However, both rely on
+
+a single codebook to capture the full spectrum of biosignal activity and train their tokenizers with
+
+losses that do not always respect the signal processing properties of their reconstruction targets. The
+
+result is codebook-based tokenizers with unfaithful signal reconstruction.
+
+3 NeuroRVQ Tokenizer Design
+
+3.1 Model Architecture
+
+NEURORVQ tokenizer is a specialized network designed to convert raw biosignals into a sequence of
+
+compact and informative neural tokens. This transformation reduces the inherently high-dimensional
+
+and noisy nature of biosignals into a structured lower-dimensional representation preserving essential
+
+temporal–spectral patterns. In doing so, the tokenizer provides a kind of "grammar" for the underlying
+
+physiological activity.
+
+Figure [1 ](#4)illustrates the tokenizer architecture and processing flow. The input multi-variate biosignal
+
+timeseries is first segmented into patches. These patches are encoded by the multi-scale temporal
+
+encoder, that captures features in multiple resolutions and are then combined via the transfromer
+
+encoder. For each scale, RVQ codebooks discretize the embeddings into a sequence of neural tokens.
+
+3
+
+-----
+
+|  |
+| :-: |
+| [**Page 4**]() |
+
+Figure 1: The NeuroRVQ tokenizer model. The multi-scale temporal encoder extracts multi-scale temporal
+
+features that are passed to the transformer encoder. RVQ codebooks per temporal branch discretize the biosignal
+
+patches into neural tokens. The tokenizer decoder reconstructs the biosignal by using the Fourier spectrum.
+
+Finally, these tokens from all scales are combined and passed through the tokenizer decoder to
+
+reconstruct the input biosignal patches using the Fourier spectrum.
+
+Generating patches. Let X ∈ RC×T denote the input multi-variate biosignal, where T is the
+
+number of time points and C is the number of electrodes. The signal is first segmented into temporal
+
+patches. To ensure that the tokenizer can accommodate biosignals with arbitrary numbers of channels
+
+and variable durations, we adopt the following approach: during model pre-training, each input
+
+multi-variate biosignal is represented by P patches of length w. This results in a segmented input
+
+sample x ∈ RP ×w which provides flexibility to handle heterogeneous biosignal recordings and
+
+facilitates robust pre-training across diverse datasets.
+
+Multi-scale temporal encoder. The first step is to extract multi-scale temporal features from each
+
+input patch using an inception-style module with S distinct temporal scales. To achieve this, we
+
+apply 1-D temporal convolutions with varying kernel sizes Ktemporal1 ,Ktemporal2 ,...,KtemporalS . Each
+
+temporal branch consists of the following sequence of operations: a 1-D convolution, followed by
+
+group normalization, GELU activation and pooling (this sequence of operations is repeated twice).
+
+This design enables the network to capture temporal features at multiple scales resulting in S outputs
+
+F1,F2,...,FS where Fi ∈ Rw where w is the patch time window length.
+
+Transformer encoder. Since the tokenization of the biosignal takes place in a per-patch level, the
+
+vital temporal and spatial information is incorporated through the use of trainable temporal TE and
+
+spatial SE embeddings, each with embedding dimension w. SE = {se1, ..., se|C|} is indexed by the
+
+positions of the patches’ electrodes within a list of all electrodes in the entire pre-training database C
+
+(e.g., 10-20 system for EEG or standard 12-lead for ECG) and TE = {te1, ..., teP } since each input
+
+consists of P patches of length w. These embeddings are added to the extracted multi-scale features
+
+F1,F2,...,FS and are shared across all S temporal branches. The combined embeddings of each
+
+temporal branch are then passed through a series of shared transformer layers \[[Vaswani et al.](#15), 2023\]
+
+resulting in the multi-scale patch representations p1, p2,..., pS ∈ RD. The shared transformer
+
+layers have incorporated the modification of [Dehghani et al.](#12) \[2023\].
+
+RVQ codebook. To efficiently discretize the multi-scale patch representations p1, p2,..., pS while
+
+preserving fine-grained information of the biosignal, we use S Residual Vector Quantization (RVQ)
+
+codebooks \[[Gray,](#12) 1984\]. For each temporal branch, the RVQ codebook R is defined as:
+
+R = {Vi|i = 1, ..., N}
+
+(1)
+
+where Vi is a single codebook of neural tokens defined as:
+
+Vi = {vj|j = 1, ..., K} ∈ RK×D
+
+(2)
+
+where K is the number of discrete neural tokens and D is the dimensionality of each token. The
+
+discretization of the patch representations is performed iteratively. For each R, at step 1, a quantizer
+
+maps each patch representation p1 to its corresponding neural token v1 ∈ V1. Specifically, for each
+
+patch, the quantizer selects the nearest neighbor z1 from the codebook V1:
+
+4
+
+-----
+
+|  |
+| :-: |
+| [**Page 5**]() |
+
+z1 = arg min
+
+v1∈V1
+
+l2(p1) − l2(v1)
+
+(3)
+
+At each next step i + 1, the residual patch representation pi+1 for the next codebook Vi+1 is updated
+
+by subtracting the selected token zi:
+
+pi+1 = pi − zi
+
+(4)
+
+This process is repeated for all N codebooks, producing a sequence of tokens z1, z2,..., zN for each
+
+temporal branch separately. The final reconstructed patch representations p is obtained by summing
+
+the contributions of all selected tokens z1, z2,..., zN :
+
+p =
+
+N
+
+X
+
+i=1
+
+zi
+
+(5)
+
+At the end of this module, we have p1, p2,..., pS corresponding to the S temporal branches.
+
+Tokenizer decoder. The purpose of the decoder module (a series shared transformer layers followed
+
+by prediction heads) is to reconstruct the original signal information based on the learned codebook
+
+tokens. Directly reconstructing raw biosignals has been shown to yield unstable training and poor
+
+performance, due to the inherently noisy and high-dimensional nature of these signals. Therefore, we
+
+leverage the Fourier spectrum (more specifically the phase ϕ and spectral amplitude A) as a more
+
+structured target for reconstruction.
+
+Modality-adaptive design parameters. NEURORVQ tokenizer architecture exposes four principled
+
+parameters that can be tuned per modality to accommodate biosignals with fundamentally different
+
+spectro-temporal characteristics: (i) the patch length w, which controls the temporal context per
+
+patch; (ii) the number of temporal branches S, which determines how many frequency scales the
+
+signal is decomposed into; (iii) the temporal convolution kernel sizes Ktemporal1 ,...,KtemporalS , which
+
+align each branch’s receptive field with the characteristic time scales of the target modality; and (iv)
+
+the number of RVQ codebooks N per branch, which dictates the quantization depth.
+
+3.2 Phase-Aware Training Loss
+
+However, architecture alone does not account for NEURORVQ’s reconstruction gains: the training
+
+loss is equally critical. The NEURORVQ tokenizer loss operates in the Fourier domain (phase and
+
+amplitude) and consists of three complementary loss components.
+
+Phase loss. Reconstructing the phase ϕ directly with mean squared error (MSE) is suboptimal due
+
+to the periodic nature of the Fourier phase (see Appendix [A)](#16). To address this, the tokenizer decoder
+
+replaces raw phase reconstruction with a sine/cosine phase representation and predicts two values c
+
+and s, corresponding to estimates of cos ϕ and sin ϕ respectively, which are smooth, continuous and
+
+better suited as loss terms. Since both predictions cand s refer to the same phase angle, we optimize
+
+them jointly rather than independently. We represent each phase as a 2D vector and compute the
+
+cosine similarity between the predicted vector (c, s) and the target (cos ϕ, sin ϕ). This formulation
+
+naturally respects the circular topology of phase: the phases are represented as vectors in 2D space,
+
+making the errors between them geometrically meaningful.
+
+Amplitude loss. For the amplitude component, rather than reconstructing raw spectral magnitudes
+
+A, we operate in the log-amplitude domain log(1 + A). This logarithmic scaling compresses the
+
+large dynamic range of signal spectra and places relatively greater emphasis on reconstructing high-
+
+frequency components. Therefore, the tokenizer decoder has three prediction heads responsible for
+
+reconstructing log(1 + ˆA), c and s, respectively.
+
+Temporal loss. Finally, although reconstructing raw biosignal X waveforms might lead to instability
+
+issues [\[Jiang et al](#12)., 2024\], we found that incorporating a temporal-domain reconstruction loss provides
+
+additional guidance. Specifically, we transform the predicted log-amplitude and phase back to the time
+
+domain (the predicted log-amplitudes are exponentiated and rescaled to recover the original amplitude
+
+spectrum before the inverse Fourier transformation) and compute a temporal MSE regularization
+
+term.
+
+5
+
+-----
+
+|  |
+| :-: |
+| [**Page 6**]() |
+
+The NEURORVQ tokenizer is thus trained end-to-end with the objective:
+
+LT =
+
+X
+
+i
+
+log(1 + ˆAi) − log(1 + Ai)
+
+2
+
+2
+
+|
+
+{z
+
+}
+
+Log-Amplitude Loss
+
+\+ 1 −
+
+X
+
+i
+
+ci cos ϕi + si sin ϕi
+
+pc2
+
+i + s2
+
+i
+
+|
+
+{z
+
+}
+
+Phase Loss
+
+\+
+
+ˆXi − Xi
+
+2
+
+2
+
+|
+
+{z
+
+}
+
+Temporal Loss
+
+\+ LQ
+
+(6)
+
+whereˆA, c, and s denote reconstructed Fourier components, ˆX denotes reconstructed biosignal in
+
+the time domain and LQ is the commitment loss.
+
+As shown in Appendix B,[ ](#17)the phase-aware loss is a critical component. The principled combination
+
+of multi-scale architecture (Section [3.1](#3)) and its novel training loss (Section 3.2) is what enables
+
+NEURORVQ’s high-fidelity reconstruction.
+
+4 Modality-Specific Configuration
+
+The NEURORVQ tokenizer architecture is modality-agnostic by design, but its parameters (namely
+
+patch length, sampling rate, number of temporal branches and RVQ codebooks) must be adapted to
+
+the distinct spectro-temporal characteristics of each biosignal. In this section, we describe the signal
+
+properties and the scaling analysis that motivate our configuration choices.
+
+4.1 Signal Characteristics
+
+EEG. Neural oscillations of interest span distinct frequency bands, namely delta (0.5–4 Hz), theta
+
+(4–8 Hz), alpha (8–13 Hz), beta (13–30 Hz), and gamma (\> 30 Hz). Each band is linked to specific
+
+cognitive states, with clinically and cognitively relevant content concentrated below 100 Hz[ \[Newson](#13)
+
+[and Thiagarajan,](#13) 2018\]. We resample all EEG recordings to 200 Hz, which satisfies the Nyquist
+
+criterion for frequencies up to 100 Hz. We set the patch length to w = 1sec, offering a practical
+
+trade-off between temporal localization and spectral resolution for downstream tokenization.
+
+ECG. The cardiac electrical cycle is characterized by a sequence of morphologically distinct
+
+waveforms whose shapes and duration carry critical diagnostic information: the P wave (∼ 60 −
+
+100 ms), the QRS complex (∼ 80 − 120 ms) and the T wave (typically ∼ 160 ms) \[[Sattar and](#14)
+
+[Chhabra, ](#14)2023\]. The clinically relevant frequency content of ECG signals is largely concentrated
+
+below 100 Hz, with high-frequency components above this range primarily reflecting noise \[[Kligfield](#13)
+
+[et al](#13)., 2007\]. Accordingly, we resample ECG recordings to 200Hz. We set the patch length to
+
+w = 200ms, a window that is sufficiently long to capture the QRS complex while remaining short
+
+enough to isolate individual waveform components without mixing adjacent cardiac features.
+
+EMG. EMG signals arise from the superposition of Motor Unit Action Potentials (MUAPs), which
+
+are brief electrical discharges lasting approximately 5–30 ms \[[Dumitru et al.](#12), 1997\]. The resulting
+
+surface EMG signal contains significant spectral energy extending up to 500 Hz, with the dominant
+
+power typically concentrated between 20 and 250 Hz \[[De Luca, ](#12)1997\]. To adequately capture these
+
+high-frequency dynamics, we resample EMG recordings to 1000 Hz (substantially higher than for
+
+EEG and ECG). We set the patch length to w = 200ms, which is long enough to encompass multiple
+
+MUAP events while remaining short enough to track rapid changes in muscle activation.
+
+Although NEURORVQ design is flexible, these modality-specific signal-level choices also influence
+
+the design of the temporal encoder, particularly the choice of kernel sizes (see in Appendix [C)](#19).
+
+4.2 Scaling Analysis
+
+To determine the optimal tokenizer configuration for each modality, we conduct a systematic scaling
+
+analysis over two key architectural hyperparameters [1](#6): (i) the number of temporal branches S ∈
+
+{1, 2, 4} and (ii) the number of RVQ codebooks per branch N ∈ {1, 2, 4, 8, 16, 32}. For each
+
+modality, we select a compact representative dataset, namely PhysioNet MI \[[Schalk et al.](#14), 2004\]
+
+for EEG, PTB \[[Bousseljot et al.,](#11) 2004\] for ECG, and the small version of emg2pose \[Salter et al.,
+
+1Larger configurations were not explored due to computational budget constraints.
+
+6
+
+-----
+
+|  |
+| :-: |
+| [**Page 7**]() |
+
+10
+
+25
+
+50
+
+100
+
+Parameters (M)
+
+0.0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+V
+
+alidation MSE
+
+**EEG**
+
+Branches
+
+1 Branch
+
+2 Branches
+
+4 Branches
+
+Codebooks
+
+CB 1
+
+CB 2
+
+CB 4
+
+CB 8
+
+CB 16
+
+CB 32
+
+10
+
+20
+
+40
+
+75
+
+Parameters (M)
+
+0.15
+
+0.20
+
+0.25
+
+0.30
+
+0.35
+
+0.40
+
+**ECG**
+
+200
+
+250
+
+300 335
+
+Parameters (M)
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+1.2
+
+1.4
+
+1.6
+
+**EMG**
+
+Branches
+
+1 Branch
+
+2 Branches
+
+4 Branches
+
+Codebooks
+
+CB 1
+
+CB 2
+
+CB 4
+
+CB 8
+
+CB 16
+
+CB 32
+
+Figure 2: Scaling Analysis. Mean squared error (MSE) reconstruction performance and number
+
+of trainable parameters for NEURORVQ with various numbers of temporal branches and RVQ
+
+codebooks (CB) per branch across three modalities (EEG, ECG, EMG).
+
+[2024\]](#14) for EMG. We train the NEURORVQ tokenizer for 50 epochs using the settings described in
+
+Appendix C[. ](#19)We report validation MSE (in an unseen set) averaged over the last 10 epochs.
+
+General trends. As seen from the results in Figure 2[ (](#7)separate plots for parameter counts and recon-
+
+struction MSE as a function of codebook depth / number of branches are provided in Appendix [D)](#21),
+
+two consistent patterns emerge across all modalities: (i) Increasing the number of codebooks per
+
+branch yields large reductions in reconstruction error, confirming that deeper residual quantization
+
+refines the discrete approximation of continuous signal features. (ii) Adding temporal branches pro-
+
+vides complementary gains (particularly when the number of codebooks is small) by adding specific
+
+priors and enabling the model to decompose the signal into frequency-specific representations that
+
+are each easier to quantize. When both dimensions are scaled jointly, the improvements accumulate.
+
+Modality-specific observations. For modalities sampled at the same rate (200Hz), signal com-
+
+plexity dictates the saturation behavior: less noisy ECG saturates earlier, whereas EEG with richer
+
+spectral structure demand finer-grained quantization, continues to benefit from scaling the number of
+
+codebooks. For EMG, which is sampled at a substantially higher rate (1000Hz) to capture its broad-
+
+band spectral content, the steepest improvements come from increasing codebook depth, suggesting
+
+that the wider frequency range require greater representational capacity. These trends validate a core
+
+design principle of NEURORVQ: the multi-scale branch structure and hierarchical RVQ codebooks
+
+are complementary mechanisms whose optimal balance is modality-dependent.
+
+5 Evaluation
+
+5.1 Signal Reconstruction Evaluation
+
+Tokenizer training. For each biosignal modality, a NEURORVQ tokenizer was trained using the
+
+hyperparameters described in Appendix C[ on](#19) the datasets listed in Appendix E. All datasets were
+
+resampled to the modality-specific sampling frequency defined in Section [4.1.](#6) Based on the scaling
+
+analysis in Section[ 4.](#6)2 and available computational resources, we select S = 4 temporal branches for
+
+all modalities with N = 8 codebooks per branch for EEG and ECG and N = 16 for EMG, reflecting
+
+the greater representational demands of broadband EMG signals. All experiments were conducted on
+
+an NVIDIA DGX system with 4 Tesla V100 GPUs.
+
+Reconstruction results. As shown in Figure [3](#8), NEURORVQ achieves high-fidelity signal recon-
+
+struction across all modalities. ECG exhibits the fastest and sharpest convergence consistent with
+
+its stereotyped morphology, EEG converges to a stable plateau reflecting its richer spectral structure
+
+and EMG converges more gradually, consistent with its broadband nature. For ECG and EMG,
+
+no unimodal codebook-based tokenizers currently exist; NEURORVQ is the first to demonstrate
+
+high-fidelity codebook-based reconstruction for these modalities (reconstruction examples are pro-
+
+vided in Appendix[ G](#24)). For EEG, we compare NEURORVQ against two pretrained open-source
+
+7
+
+-----
+
+|  |
+| :-: |
+| [**Page 8**]() |
+
+50
+
+100
+
+150
+
+Epoch
+
+0.00
+
+0.05
+
+0.10
+
+0.15
+
+V
+
+alidation MSE
+
+**EEG**
+
+50 100 150
+
+0.0150
+
+0.0175
+
+0.0200
+
+0.0225
+
+0.0250
+
+Epochs 31 199
+
+20
+
+40
+
+60
+
+80
+
+100
+
+Epoch
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+**ECG**
+
+25
+
+50
+
+75 100
+
+0.004
+
+0.006
+
+Epochs 21 102
+
+20
+
+40
+
+60
+
+80
+
+100
+
+Epoch
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+**EMG**
+
+25 50 75 100
+
+0.02
+
+0.03
+
+0.04
+
+0.05
+
+Epochs 21 106
+
+Figure 3: Validation mean squared error (MSE) during NEURORVQ tokenizer training across all
+
+three modalities. Note that absolute MSE values are not directly comparable across modalities.
+
+codebook-based tokenizers: LaBraM and BrainOmni. NEURORVQ consistently outperforms both
+
+across all frequency bands (see Appendix [F ](#23)for detailed comparisons).
+
+5.2 Downstream Task Performance
+
+To demonstrate that high-fidelity tokenization translates into strong downstream performance, we
+
+evaluate fine-tuned NEURORVQ foundation models (NEURORVQ-FMs) across all three biosignal
+
+modalities using the tokenizers of Section [5.1.](#7)
+
+Foundation model architecture and training. NEURORVQ-FM operates on the tokenized rep-
+
+resentation produced by the NEURORVQ tokenizer. The architecture consists of the multi-scale
+
+temporal encoder (Section [3.1)](#3), followed by transformer layers that model long-range dependencies
+
+and token prediction heads that reconstruct masked tokens using the learned codebooks R. The
+
+model is pre-trained with a masked-token prediction objective using a symmetric masking strat-
+
+egy \[[Jiang et al](#12)., 2024\]. For downstream tasks, the pre-trained backbone is extended with task-specific
+
+classification heads. We deliberately keep the foundation model architecture simple to isolate the
+
+contribution of the tokenizer: improvements in downstream performance can be attributed to the
+
+quality of the learned token representations rather than architectural complexity. The hyperparameters
+
+for the pre-training and fine-tuning of NEURORVQ foundation model for each biosignal modality
+
+are described in Appendix I[ ](#29)on the datasets listed in Appendix E. All datasets were resampled to the
+
+modality-specific sampling frequency defined in Section [4.1.](#6)
+
+Downstream task evaluation. We evaluate fine-tuned NEURORVQ-FMs across all three modalities.
+
+For EEG, we compare against seven foundation models on five downstream classification tasks
+
+from the benchmark of [Lee et al.](#13) \[2025a\]. These model include two models that use codebook-
+
+based tokenizers like NEURORVQ, namely LaBraM and BrainOmni [2 ](#8)and five common foundation
+
+model baselines, namely NeuroGPT, CBraMod, EEGPT, BIOT[3](#8), MIRepNet \[Liu et al., 2025\][4](#8).
+
+For ECG, we compare against two foundation models, HuBERT-ECG and ECGFounder, on the
+
+PTB-XL benchmark \[[Wagner et al.,](#15) 2020\]. For EMG, we compare against two foundation models,
+
+PhysioWave and TinyMyo, on four classification datasets (Discrete Gestures \[[Kaifosh et al.,](#12) 2025\],
+
+EPN-612 \[[Benalcazar et al.\]](#11), NinaPro DB5 \[Pizzolato et al.\], UCI-EMG \[Krilova et al., 2018\]).
+
+Appendix J[ ](#30)provides fine-tuning, implementational details and further analysis.
+
+As shown in Table [1](#9), NEURORVQ achieves strong downstream performance across all three biosignal
+
+modalities. NEURORVQ-EEG achieves the best or second-best balanced accuracy on every task and
+
+the highest mean balanced accuracy overall, outperforming the next-best model by over 4 percentage
+
+points. NEURORVQ-ECG achieves high balanced accuracy on both PTB-XL settings, doubling the
+
+balanced accuracy of HuBERT-ECG on the fine-grained 43-class task. While ECGFounder leads on
+
+5-class, NEURORVQ substantially outperforms all baselines on the more challenging 43-class setting
+
+(where class imbalance is most severe) suggesting that NEURORVQ’s codebook representations
+
+capture discriminative structure that benefits underrepresented diagnostic categories. NEURORVQ-
+
+EMG outperforms PhysioWave and TinyMyo across all four classification tasks by a wide margin.
+
+2BrainOmni could not be tested on Sleep due to computational constraints.
+
+3BIOT could not be tested on Sleep since the benchmark electrodes are missing from its pre-trained model.
+
+4As a motor-specific foundation model, MIRepNet was tested only on the Motor task.
+
+8
+
+-----
+
+|  |
+| :-: |
+| [**Page 9**]() |
+
+Table 1: Downstream task performance across three biosignal modalities. Bold and underlined
+
+values indicate best and second-best performance per column, respectively. All evaluations are
+
+subject-independent. EEG: Balanced accuracy (BAcc). ECG: Accuracy and Balanced accuracy
+
+(BAcc). EMG: Accuracy, F1, Balanced Accuracy (BAcc) and CLER (Classification Error Rate).
+
+(A) EEG — FIVE CLASSIFICATION TASKS [\[L](#13)[EE ET AL](#13)[.](#13), 2025[A](#13)\]
+
+Model
+
+Motor
+
+ERP
+
+Memory
+
+Sleep
+
+Eyes
+
+Mean
+
+BIOT \[[Yang et al.,](#15) 2023\]
+
+44.3±7.9
+
+50.0±0.0
+
+51.0±1.8
+
+–
+
+76.3±4.9
+
+–
+
+CBraMod \[[Wang et al.,](#15) 2025\]
+
+61.4±10.4
+
+77.7±5.2
+
+57.4±3.8
+
+63.5±4.1
+
+83.9±4.1
+
+68.8±5.5
+
+MIRepNet \[[Liu et al.,](#13) 2025\]
+
+68.9±8.6
+
+–
+
+–
+
+–
+
+–
+
+–
+
+EEGPT \[[Wang et al.,](#15) 2024\]
+
+31.3±3.5
+
+66.8±14.6
+
+52.0±1.7
+
+63.4±4.4
+
+79.7±3.7
+
+58.7±5.6
+
+NeuroGPT \[[Cui et al.,](#11) 2024\]
+
+68.2±8.3
+
+75.7±4.8
+
+59.7±2.9
+
+67.4±3.3
+
+82.7±3.6
+
+70.7±4.6
+
+BrainOmni† [\[Xiao et al](#15)., 2025\] 58.5±5.8
+
+72.3±4.1
+
+51.8±2.3
+
+–
+
+85.2±2.2
+
+–
+
+LaBraM† \[[Jiang et al.](#12), 2024\]
+
+63.0±7.6
+
+82.2±4.0
+
+52.6±2.6
+
+65.2±3.7
+
+79.9±4.7
+
+68.6±4.5
+
+NEURORVQ-EEG†
+
+70.0±7.3
+
+87.6±3.3
+
+57.4±2.7
+
+72.8±2.8
+
+86.9±2.6
+
+74.9±3.7
+
+† Models that use codebook-based tokenizers
+
+(B) ECG — PTB-XL CLASSIFICATION
+
+5-class
+
+43-class
+
+Model
+
+Accuracy
+
+BACC
+
+Accuracy
+
+BACC
+
+HuBERT-ECG \[[Coppola et al., ](#11)2024\]
+
+72.60
+
+60.23
+
+62.49
+
+20.71
+
+ECGFounder \[Li[ et al.,](#13) 2025\]
+
+76.55
+
+65.39
+
+65.51
+
+28.96
+
+NEURORVQ-ECG
+
+70.19
+
+64.50
+
+79.17
+
+58.33
+
+(C) EMG — FOUR CLASSIFICATION TASKS
+
+Discrete Gestures
+
+EPN-612
+
+NinaPro DB5
+
+UCI-EMG
+
+Model
+
+BAcc ↑
+
+CLER ↓
+
+Acc
+
+F1
+
+Acc
+
+F1
+
+Acc
+
+F1
+
+PhysioWave \[[Chen et al.,](#11) 2025\]
+
+54.70±0.0
+
+64.20±0.9
+
+90.30±0.6
+
+90.35±0.3
+
+24.91±2.5
+
+22.95±2.5
+
+56.52±2.4
+
+55.76±2.8
+
+TinyMyo \[[Fasulo et al.,](#12) 2026\]
+
+39.70
+
+64.20
+
+84.68±1.9
+
+84.68±1.9
+
+25.26±4.5
+
+23.29±4.9
+
+85.99±0.4
+
+85.66±0.4
+
+NEURORVQ-EMG
+
+70.80±0.6
+
+27.60±0.8
+
+94.65±0.4
+
+94.66±0.5
+
+41.36±2.8
+
+38.76±3.7
+
+89.43±1.1
+
+89.28±1.1
+
+Across all three modalities, NEURORVQ’s consistent improvements with a compact and simple
+
+foundation model architecture confirm the central claim of this work: high-fidelity tokenization
+
+is the critical ingredient for effective biosignal foundation models and its benefits transfer across
+
+physiologically diverse signal types.
+
+6 Discussion
+
+The NEURORVQ tokenizer demonstrates state-of-the-art reconstruction capabilities (Section [5.1](#7))
+
+on both in- and out-of-distribution signals (Appendix[ F](#23) and Appendix H). Importantly, these results
+
+cannot be attributed solely to the number of codebooks (single or multiple), their size or their type
+
+(e.g., RVQ-based). Instead, they arise from the inductive biases embedded in the tokenizer design
+
+(Section [4](#6)) which, together with the newly introduced phase-aware training loss (Section 3.2 and
+
+Appendix B[), ](#17)are particularly well-suited for capturing the complex nature of biosignals.
+
+Since biosignals differ fundamentally in their spectro-temporal characteristics, we train separate
+
+tokenizers in this work, each optimally configured for its target modality while the architecture
+
+remains identical: only signal-level hyperparameters change (see Section[ ](#6)4). Whether a shared
+
+cross-modal tokenizer can match this per-modality performance is an interesting future direction.
+
+A natural concern is whether pursuing high-fidelity reconstruction is warranted for inherently noisy
+
+signals. However, high-fidelity reconstruction does not mean memorizing noise. It ensures sufficient
+
+representational capacity to preserve all signal components, including subtle discriminative features
+
+that overlap spectrally with noise, letting downstream foundation models learn which are task-relevant.
+
+The main contribution of this work is the NEURORVQ tokenizer, which can be integrated into any
+
+biosignal foundation model. Further improvements can come from larger foundation architectures,
+
+cross-modal pre-training and incorporating causal reasoning-inspired training principles such as more
+
+targeted temporal and spatial masking strategies [\[Barmpas et al.](#11), 2024a\].
+
+9
+
+-----
+
+|  |
+| :-: |
+| [**Page 10**]() |
+
+7 Conclusion
+
+In this work, we introduce NEURORVQ, a modality-adaptive biosignal tokenizer family designed for
+
+high-fidelity signal reconstruction across EEG, ECG and EMG. Our main contribution is the design
+
+and training of the tokenizer, which captures low- and high-frequency components of biosignals,
+
+achieves state-of-the-art reconstruction performance and facilitates the development of more effective
+
+biosignal foundation models. We showed that when a simple masked-token foundation model is
+
+trained for each modality using NEURORVQ tokenizers, it outperforms existing pre-trained open-
+
+source modality-specific foundation models in various downstream tasks. In summary, NEURORVQ
+
+advances the development of efficient large biosignal foundation models by providing a high-fidelity
+
+biosignal tokenizer, paving the way for broader use of foundation models in the biosignal space.
+
+10
+
+-----
+
+|  |
+| :-: |
+| [**Page 11**]() |
+
+References
+
+Rafeed Alkawadri. Brain–Computer Interface (BCI) Applications in Mapping of Epileptic Brain
+
+Networks Based on Intracranial-EEG: An Update. Frontiers in Neuroscience, 13:191, 2019. ISSN
+
+1662-453X. doi: 10.3389/fnins.2019.00191.
+
+Manfredo Atzori, Arjan Gijsberts, Claudio Castellini, et al. Electromyography data for non-invasive
+
+naturally-controlled robotic hand prostheses. Scientific Data, 1:140053, 2014.
+
+Stylianos Bakas, Siegfried Ludwig, Konstantinos Barmpas, Mehdi Bahri, Yannis Panagakis, Niko-
+
+laos Laskaris, Dimitrios A. Adamos, and Stefanos Zafeiriou. Team Cogitat at NeurIPS 2021:
+
+Benchmarks for EEG Transfer Learning Competition, 2022.
+
+Konstantinos Barmpas, Yannis Panagakis, Dimitrios A Adamos, Nikolaos Laskaris, and Stefanos
+
+Zafeiriou. BrainWave-Scattering Net: a lightweight network for EEG-based motor imagery
+
+recognition. Journal of Neural Engineering, 20(5):056014, September 2023. ISSN 1741-2552.
+
+doi: 10.1088/1741-2552/acf78a.
+
+Konstantinos Barmpas, Yannis Panagakis, Dimitrios Adamos, Nikolaos Laskaris, and Stefanos
+
+Zafeiriou. A Causal Perspective in Brainwave Foundation Models. In Causality and Large Models
+
+@NeurIPS 2024, 2024a. doi: 10.1088/1741-2552/ad3eb5.
+
+Konstantinos Barmpas, Yannis Panagakis, Georgios Zoumpourlis, Dimitrios A Adamos, Nikolaos
+
+Laskaris, and Stefanos Zafeiriou. A causal perspective on brainwave modeling for brain–computer
+
+interfaces. Journal of Neural Engineering, 21(3):036001, may 2024b. doi: 10.1088/1741-2552/
+
+ad3eb5.
+
+Marco E. Benalcazar, Lorena Barona, Leonardo Valdivieso, Xavier Aguas, and Jonathan Zea. EMG-
+
+EPN-612 Dataset.
+
+Benjamin Blankertz, Guido Dornhege, Matthias Krauledat, Klaus-Robert Müller, and Gabriel Curio.
+
+The non-invasive Berlin Brain–Computer Interface: Fast acquisition of effective performance in
+
+untrained subjects. NeuroImage, 37(2):539–550, 2007. ISSN 1053-8119. doi: https://doi.org/10.
+
+1016/j.neuroimage.2007.01.051.
+
+Ralf-Dieter Bousseljot, D Kreiseler, and A Schnabel. The PTB diagnostic ECG database, 2004.
+
+Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal,
+
+Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel
+
+Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel M. Ziegler,
+
+Jeffrey Wu, Clemens Winter, Christopher Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott
+
+Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya
+
+Sutskever, and Dario Amodei. Language Models are Few-Shot Learners, 2020.
+
+Grace Buckwalter, Sidney Chhin, Sabariah Rahman, Iyad Obeid, and Joseph Picone. Recent Advances
+
+in the TUH EEG Corpus: Improving the Interrater Agreement for Artifacts and Epileptiform Events.
+
+In 2021 IEEE Signal Processing in Medicine and Biology Symposium (SPMB), pages 1–3, 2021.
+
+doi: 10.1109/SPMB52430.2021.9672302.
+
+Yanlong Chen, Mattia Orlandi, Pierangelo Maria Rapa, Simone Benatti, Luca Benini, and Yawei
+
+Li. Physiowave: A multi-scale wavelet-transformer for physiological signal representation. arXiv
+
+preprint arXiv:2506.10351, 2025.
+
+Edoardo Coppola, Mattia Savardi, Mauro Massussi, Marianna Adamo, Marco Metra, and Alberto
+
+Signoroni. HuBERT-ECG: a self-supervised foundation model for broad and scalable cardiac
+
+applications. medRxiv preprint doi:10.1101/2024.11.14.24317328, 2024. doi: 10.1101/2024.11.
+
+14.24317328.
+
+Wenhui Cui, Woojae Jeong, Philipp Thölke, Takfarinas Medani, Karim Jerbi, Anand A. Joshi, and
+
+Richard M. Leahy. Neuro-GPT: Towards A Foundation Model for EEG, 2024.
+
+Ulysse Côté-Allard, Cheikh Latyr Fall, Alexandre Drouin, Alexandre Campeau-Lecours, Clément
+
+Gosselin, Kyrre Glette, François Laviolette, and Benoit Gosselin. Deep learning for electromyo-
+
+graphic hand gesture signal classification using transfer learning. IEEE Transactions on Neural Sys-
+
+tems and Rehabilitation Engineering, 27(4):760–771, 2019. doi: 10.1109/TNSRE.2019.2896269.
+
+11
+
+-----
+
+|  |
+| :-: |
+| [**Page 12**]() |
+
+Carlo J De Luca. The use of surface electromyography in biomechanics. Journal of Applied
+
+Biomechanics, 13(2):135–163, 1997.
+
+Alexandre Défossez, Jade Copet, Gabriel Synnaeve, and Yossi Adi. High fidelity neural audio
+
+compression. Transactions on Machine Learning Research, 2023. ISSN 2835-8856. Featured
+
+Certification, Reproducibility Certification.
+
+Mostafa Dehghani, Josip Djolonga, Basil Mustafa, Piotr Padlewski, Jonathan Heek, Justin Gilmer,
+
+Andreas Steiner, Mathilde Caron, Robert Geirhos, Ibrahim Alabdulmohsin, Rodolphe Jenatton,
+
+Lucas Beyer, Michael Tschannen, Anurag Arnab, Xiao Wang, Carlos Riquelme, Matthias Minderer,
+
+Joan Puigcerver, Utku Evci, Manoj Kumar, Sjoerd van Steenkiste, Gamaleldin F. Elsayed, Aravindh
+
+Mahendran, Fisher Yu, Avital Oliver, Fantine Huot, Jasmijn Bastings, Mark Patrick Collier,
+
+Alexey Gritsenko, Vighnesh Birodkar, Cristina Vasconcelos, Yi Tay, Thomas Mensink, Alexander
+
+Kolesnikov, Filip Pavetic, Dustin Tran, Thomas Kipf, Mario Lucic, Xiaohua Zhai, Daniel Keysers,
+
+Jeremiah Harmsen, and Neil Houlsby. Scaling Vision Transformers to 22 Billion Parameters, 2023.
+
+Paolo Detti, Giampaolo Vatti, and Garazi Zabalo Manrqiue de Lara. EEG Synchronization Analysis
+
+for Seizure Prediction: A Study on Data of Noninvasive Recordings. Processes, 8:846, 07 2020.
+
+doi: 10.3390/pr8070846.
+
+Laurent Chanel Djoufack Nkengfack, Daniel Tchiotsop, Romain Atangana, Valérie Louis-Door,
+
+and Didier Wolf. Classification of EEG signals for epileptic seizures detection and eye states
+
+identification using Jacobi polynomial transforms-based measures of complexity and least-square
+
+support vector machine. Informatics in Medicine Unlocked, 23:100536, 2021. ISSN 2352-9148.
+
+doi: 10.1016/j.imu.2021.100536.
+
+Daniel Dumitru, John C. King, and Sanjeev D. Nandedkar. Motor unit action potential duration
+
+recorded by monopolar and concentric needle electrodes: Physiologic implications. American
+
+Journal of Physical Medicine & Rehabilitation, 76(6):488–493, November 1997. ISSN 0894-9115.
+
+doi: 10.1097/00002060-199711000-00011.
+
+Patrick Esser, Robin Rombach, and Björn Ommer. Taming Transformers for High-Resolution Image
+
+Synthesis, 2020.
+
+Matteo Fasulo, Giusy Spacone, Thorir Mar Ingolfsson, Yawei Li, Luca Benini, and Andrea Cossettini.
+
+Tinymyo: a tiny foundation model for flexible emg signal processing at the edge, 2026.
+
+Ary L Goldberger, Zachary D Goldberger, and Alexei Shvilkin. Goldberger’s Clinical Electrocardio-
+
+graphy: A Simplified Approach. Elsevier, 9th edition, 2017.
+
+Brian Gow, Tom Pollard, Larry A Nathanson, Alistair Johnson, Benjamin Moody, Chrystinne
+
+Fernandes, Nathaniel Greenbaum, Jonathan W Waks, Parastou Eslami, Tanner Carbonati, Ashish
+
+Chaudhari, Elizabeth Herbst, Dana Moukheiber, Seth Berkowitz, Roger Mark, and Steven Horng.
+
+MIMIC-IV-ECG: Diagnostic Electrocardiogram Matched Subset. PhysioNet, September 2023.
+
+doi: 10.13026/4nqg-sb35. Version 1.0.
+
+Robert M. Gray. Vector quantization. IEEE ASSP Magazine, 1:4–29, 1984.
+
+Awni Y Hannun, Pranav Rajpurkar, Masoumeh Haghpanahi, Geoffrey H Tison, Codie Bourn,
+
+Mintu P Turakhia, and Andrew Y Ng. Cardiologist-level arrhythmia detection and classification in
+
+ambulatory electrocardiograms using a deep neural network. Nature Medicine, 25:65–69, 2019.
+
+Christopher J James and Christian W Hesse. Independent component analysis for biomedical signals.
+
+Physiological Measurement, 26(1):R15, dec 2004. doi: 10.1088/0967-3334/26/1/R02.
+
+Weibang Jiang, Liming Zhao, and Bao liang Lu. Large brain model for learning generic representa-
+
+tions with tremendous EEG data in BCI. In The Twelfth International Conference on Learning
+
+Representations, 2024.
+
+Patrick Kaifosh, Thomas R Reardon, and CTRL-labs at Reality Labs. A generic non-invasive
+
+neuromotor interface for human-computer interaction. Nature, 645(8081):702–711, September
+
+2025\.
+
+12
+
+-----
+
+|  |
+| :-: |
+| [**Page 13**]() |
+
+Bastiaan Kemp, Aeilko H. Zwinderman, Bert Tuk, Hilbert A. C. Kamphuisen, and Josefien J. L.
+
+Oberyé. Analysis of a sleep-dependent neuronal feedback loop: the slow-wave microcontinuity
+
+of the EEG. IEEE Transactions on Biomedical Engineering, 47(9):1185–1194, 2000. doi:
+
+10.1109/10.867928.
+
+Hong-Kyung Kim, John Williamson, Min-Ho Lee, O-Yeon Kwon, Seong-Whan Lee, Siamac Fazli,
+
+Yong-Jeong Kim, and Young-Eun Lee. Supporting data for "EEG Dataset and OpenBMI Toolbox
+
+for Three BCI Paradigms: An Investigation into BCI Illiteracy", 2019.
+
+Paul Kligfield, Leonard S. Gettes, James J. Bailey, and et al. Recommendations for the standardization
+
+and interpretation of the electrocardiogram: Part i: The electrocardiogram and its technology.
+
+Circulation, 115(10):1306–1324, 2007. doi: 10.1161/CIRCULATIONAHA.106.180200.
+
+Louis Korczowski, Martine Cederhout, Anton Andreev, Grégoire Cattan, Pedro Rodrigues, Violette
+
+Gautheret, and Marco Congedo. Brain Invaders calibration-less P300-based BCI with modulation
+
+of flash duration Dataset (bi2015a), 07 2019.
+
+N. Krilova, I. Kastalskiy, V. Kazantsev, V.A. Makarov, and S. Lobov. EMG Data for Gestures. UCI
+
+Machine Learning Repository, 2018. DOI: https://doi.org/10.24432/C5ZP5C.
+
+Vernon J. Lawhern, Amelia J. Solon, Nicholas R. Waytowich, Stephen M. Gordon, Chou P. Hung,
+
+and Brent J. Lance. EEGNet: A Compact Convolutional Neural Network for EEG-based
+
+Brain–Computer Interfaces. Journal of Neural Engineering, 15(5):056013, July 2018. ISSN
+
+1741-2552. doi: 10.1088/1741-2552/aace8c.
+
+Na Lee, Stylianos Bakas, Konstantinos Barmpas, Yannis Panagakis, Dimitrios Adamos, Nikolaos
+
+Laskaris, and Stefanos Zafeiriou. Assessing the capabilities of large brainwave foundation models.
+
+In 2025 IEEE 35th International Workshop on Machine Learning for Signal Processing (MLSP),
+
+pages 01–06, 2025a. doi: 10.1109/MLSP62443.2025.11204282.
+
+Na Lee, Konstantinos Barmpas, Alexandros Koliousis, Yannis Panagakis, Dimitrios Adamos, Niko-
+
+laos Laskaris, and Stefanos Zafeiriou. A comprehensive review of biosignal foundation models.
+
+November 2025b. doi: 10.36227/techrxiv.176369849.97173246/v1.
+
+Jun Li, Aaron D. Aguirre, Valdery Moura Junior, Jiarui Jin, Che Liu, Lanhai Zhong, Chenxi Sun, Gari
+
+Clifford, M. Brandon Westover, and Shenda Hong. An Electrocardiogram Foundation Model Built
+
+on over 10 Million Recordings. NEJM AI, 2(7):AIoa2401033, 2025. doi: 10.1056/AIoa2401033.
+
+Dingkun Liu, Zhu Chen, Jingwei Luo, Shijie Lian, and Dongrui Wu. Mirepnet: A pipeline and
+
+foundation model for eeg-based motor imagery classification, 2025.
+
+Matthew Luciw, Ewa Jarocka, and Benoni Edin. Multi-channel EEG recordings during 3,936
+
+grasp and lift trials with varying weight and friction. Scientific data, 1:140047, 11 2014. doi:
+
+10.1038/sdata.2014.47.
+
+Perrin Margaux, Emmanuel Maby, Sébastien Daligault, Olivier Bertrand, and Jérémie Mattout.
+
+Objective and Subjective Evaluation of Online Error Correction during P300-Based Spelling.
+
+Advances in Human-Computer Interaction, 2012, 01 2012. doi: 10.1155/2012/578295.
+
+Dennis J. McFarland, Charles W. Anderson, Klaus-Robert Müller, Alois Schlögl, and Dean J.
+
+Krusienski. BCI meeting 2005-workshop on BCI signal processing: feature extraction and
+
+translation. IEEE Transactions on Neural Systems and Rehabilitation Engineering, 14(2):135–138,
+
+2006\. doi: 10.1109/TNSRE.2006.875637.
+
+David Mizrahi, Roman Bachmann, Oguzhan Fatih Kar, Teresa Yeo, Mingfei Gao, Afshin Dehghan,
+
+and Amir Zamir. 4M: Massively Multimodal Masked Modeling. In Thirty-seventh Conference on
+
+Neural Information Processing Systems, 2023.
+
+Jennifer J Newson and Tara C Thiagarajan. EEG frequency bands in psychiatric disorders: A review
+
+of resting state studies. Front. Hum. Neurosci., 12:521, 2018.
+
+Yassine El Ouahidi, Jonathan Lys, Philipp Thölke, Nicolas Farrugia, Bastien Pasdeloup, Vincent
+
+Gripon, Karim Jerbi, and Giulia Lioi. REVE: A foundation model for EEG - adapting to any setup
+
+with large-scale pretraining on 25,000 subjects. In The Thirty-ninth Annual Conference on Neural
+
+Information Processing Systems, 2026. doi: 10.48550/arXiv.2510.21585.
+
+13
+
+-----
+
+|  |
+| :-: |
+| [**Page 14**]() |
+
+Yuri G. Pavlov, Dauren Kasanov, Alexandra I. Kosachenko, and Alexander I. Kotyusov. "EEG,
+
+pupillometry, ECG and photoplethysmography, and behavioral data in the digit span task and rest",
+
+2022\.
+
+Stefano Pizzolato, Luca Tagliapietra, Matteo Cognolato, Monica Reggiani, Henning Müller, and
+
+Manfredo Atzori. Comparison of six electromyography acquisition setups on hand movement
+
+classification tasks. 12(10):e0186132. ISSN 1932-6203. doi: 10.1371/journal.pone.0186132.
+
+Antônio H Ribeiro, Manoel Horta Ribeiro, Gabriela M M Paixão, Derick M Oliveira, Paulo R Gomes,
+
+Jéssica A Canazart, Milton P S Ferreira, Carl R Andersson, Peter W Macfarlane, Wagner Meira, Jr,
+
+Thomas B Schön, and Antonio Luiz P Ribeiro. Automatic diagnosis of the 12-lead ECG using a
+
+deep neural network. Nat. Commun., 11(1):1760, April 2020.
+
+Sasha Salter, Richard Warren, Collin Schlager, Adrian Spurr, Shangchen Han, Rohin Bhasin, Yujun
+
+Cai, Peter Walkington, Anuoluwapo Bolarinwa, Robert Wang, et al. emg2pose: A large and diverse
+
+benchmark for surface electromyographic hand pose estimation. In The Thirty-eight Conference
+
+on Neural Information Processing Systems Datasets and Benchmarks Track, 2024.
+
+Eduardo Santamaría-Vázquez, Víctor Martínez-Cagigal, Fernando Vaquerizo-Villar, and Roberto
+
+Hornero. EEG-Inception: A Novel Deep Convolutional Neural Network for Assistive ERP-Based
+
+Brain-Computer Interfaces. IEEE Transactions on Neural Systems and Rehabilitation Engineering,
+
+28(12):2773–2782, 2020. doi: 10.1109/TNSRE.2020.3048106.
+
+Yasar Sattar and Lovely Chhabra. Electrocardiogram. In StatPearls \[Internet\]. StatPearls Publishing,
+
+Treasure Island (FL), Jun 2023. Updated Jun 5, 2023.
+
+Gerwin Schalk, Dennis J McFarland, Thilo Hinterberger, Niels Birbaumer, and Jonathan R Wolpaw.
+
+BCI2000: a general-purpose brain-computer interface (BCI) system. IEEE Trans. Biomed. Eng.,
+
+51(6):1034–1043, June 2004. doi: 10.1109/TBME.2004.827072.
+
+Robin Tibor Schirrmeister, Jost Tobias Springenberg, Lukas Dominique Josef Fiederer, Martin
+
+Glasstetter, Katharina Eggensperger, Michael Tangermann, Frank Hutter, Wolfram Burgard, and
+
+Tonio Ball. Deep learning with convolutional neural networks for EEG decoding and visualization.
+
+Human brain mapping, 38(11):5391–5420, 2017.
+
+Vinit Shah, Eva von Weltin, Silvia López, James Riley McHugh, Lily Veloso, Meysam Golmoham-
+
+madi, Iyad Obeid, and Joseph Picone. The Temple University Hospital Seizure Detection Corpus,
+
+2018\.
+
+Viswanath Sivakumar, Jeffrey Seely, Alan Du, Sean R Bittner, Adam Berenzweig, Anuoluwapo Bo-
+
+larinwa, Alexandre Gramfort, and Michael I Mandel. emg2qwerty: A large dataset with baselines
+
+for touch typing using surface electromyography. In A. Globerson, L. Mackey, D. Belgrave, A. Fan,
+
+U. Paquet, J. Tomczak, and C. Zhang, editors, Advances in Neural Information Processing Systems,
+
+volume 37, pages 91373–91389. Curran Associates, Inc., 2024. doi: 10.52202/079017-2899.
+
+Yonghao Song, Qingqing Zheng, Bingchuan Liu, and Xiaorong Gao. EEG Conformer: Convolutional
+
+Transformer for EEG Decoding and Visualization. IEEE Transactions on Neural Systems and
+
+Rehabilitation Engineering, 31:710–719, 2023. doi: 10.1109/TNSRE.2022.3230250.
+
+Mastaneh Torkamani-Azar, Sumeyra Demir Kanik, Serap Aydin, and Mujdat Cetin. Prediction of
+
+Reaction Time and Vigilance Variability from Spatiospectral Features of Resting-State EEG in a
+
+Long Sustained Attention Task, 2019.
+
+Edgar P. Torres, Edgar A. Torres, Myriam Hernández-Álvarez, and Sang Guun Yoo. EEG-Based
+
+BCI Emotion Recognition: A Survey. Sensors, 20(18), 2020. ISSN 1424-8220. doi: 10.3390/
+
+s20185083.
+
+Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée
+
+Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand
+
+Joulin, Edouard Grave, and Guillaume Lample. LLaMA: Open and Efficient Foundation Language
+
+Models, 2023.
+
+Logan Trujillo. Raw EEG Data, 2020.
+
+14
+
+-----
+
+|  |
+| :-: |
+| [**Page 15**]() |
+
+Logan T. Trujillo, Candice T. Stanfield, and Ruben D. Vela. The Effect of Electroencephalogram
+
+(EEG) Reference Choice on Information-Theoretic Measures of the Complexity and Integration
+
+of EEG Signals. Frontiers in Neuroscience, Volume 11 - 2017, 2017. ISSN 1662-453X. doi:
+
+10.3389/fnins.2017.00425.
+
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz
+
+Kaiser, and Illia Polosukhin. Attention Is All You Need, 2023.
+
+Lily Veloso, James R. McHugh, Eva von Weltin, Silvia López, Iyad Obeid, and Joseph Picone. Big
+
+data resources for EEGs: Enabling deep learning research. In 2017 IEEE Signal Processing in
+
+Medicine and Biology Symposium (SPMB), pages 1–3, 2017. doi: 10.1109/SPMB.2017.8257044.
+
+Patrick Wagner, Nils Strodthoff, Ralf-Dieter Bousseljot, Dieter Kreiseler, Fatima I Lunze, Wojciech
+
+Samek, and Tobias Schaeffter. PTB-XL, a large publicly available electrocardiography dataset.
+
+Sci. Data, 7(1):154, May 2020.
+
+Guangyu Wang, Wenchao Liu, Yuhong He, Cong Xu, Lin Ma, and Haifeng Li. EEGPT: Pretrained
+
+Transformer for Universal and Reliable Representation of EEG Signals. In The Thirty-eighth
+
+Annual Conference on Neural Information Processing Systems, 2024.
+
+Jiquan Wang, Sha Zhao, Zhiling Luo, Yangxuan Zhou, Haiteng Jiang, Shijian Li, Tao Li, and Gang
+
+Pan. CBraMod: A Criss-Cross Brain Foundation Model for EEG Decoding. In The Thirteenth
+
+International Conference on Learning Representations, 2025. doi: 10.48550/arXiv.2412.07236.
+
+Xiaoxi Wei, A Aldo Faisal, Moritz Grosse-Wentrup, Alexandre Gramfort, Sylvain Chevallier, Vinay
+
+Jayaram, Stylianos Bakas Camille Jeunet, Siegfried Ludwig, Konstantinos Barmpas, Mehdi
+
+Bahri, Yannis Panagakis, Nikolaos Laskaris, Dimitrios A Adamos, Stefanos Zafeiriou, William C
+
+Duong, Stephen M Gordon, Vernon J Lawhern, Maciej Sliwowski, Vincent Rouanne, and Piotr
+
+Tempczyk. 2021 BEETL Competition: Advancing Transfer Learning for Subject Independence &
+
+Heterogenous EEG Data Sets, 2022.
+
+Qinfan Xiao, Ziyun Cui, Chi Zhang, SiQi Chen, Wen Wu, Andrew Thwaites, Alexandra Woolgar,
+
+Bowen Zhou, and Chao Zhang. Brainomni: A brain foundation model for unified EEG and MEG
+
+signals. In The Thirty-ninth Annual Conference on Neural Information Processing Systems, 2025.
+
+Tao Xu, Yun Zhou, Zi Wang, and Yixin Peng. Learning Emotions EEG-based Recognition and Brain
+
+Activity: A Survey Study on BCI for Intelligent Tutoring System. Procedia Computer Science,
+
+130:376–382, 2018. ISSN 1877-0509. doi: j.procs.2018.04.056. The 9th International Conference
+
+on Ambient Systems, Networks and Technologies (ANT 2018) / The 8th International Conference
+
+on Sustainable Energy Information Technology (SEIT-2018) / Affiliated Workshops.
+
+Chaoqi Yang, M Westover, and Jimeng Sun. BIOT: Biosignal Transformer for Cross-data Learning
+
+in the Wild. In A. Oh, T. Naumann, A. Globerson, K. Saenko, M. Hardt, and S. Levine, editors,
+
+Advances in Neural Information Processing Systems, volume 36, pages 78240–78260. Curran
+
+Associates, Inc., 2023.
+
+Jianwei Zheng, Hangyuan Guo, and Huimin Chu. A large scale 12-lead electrocardiogram database
+
+for arrhythmia study. PhysioNet, August 2022. doi: 10.13026/wgex-er52. Version 1.0.0.
+
+15
+
+-----
+
+|  |
+| :-: |
+| [**Page 16**]() |
+
+A Design of the Phase Term in the Phase-Aware Loss
+
+We describe the benefits of using a sine-cosine representation of the Fourier phase ϕ in the loss
+
+function, instead of the raw phase values.
+
+Other tokenizer architectures (e.g LaBraM \[[Jiang et al.](#12), 2024\]) compute phase loss directly as the
+
+squared error between predictedˆϕ and true ϕ:
+
+Lϕ = ||ˆϕ − ϕ||2.
+
+(7)
+
+This formulation, however, is discontinuous at the boundaries of the phase domain \[−π, π\]. For
+
+instance, withˆϕ = π − ϵ and ϕ = −π + ϵ for small ϵ \> 0,
+
+Lϕ = ||ˆϕ − ϕ||2 = (2π − 2ϵ)2.
+
+(8)
+
+The loss approaches 4π2, even though the two angles are nearly identical. Thus, small phase shifts
+
+near the ±π boundary (e.g., 2◦ between 179◦ and −179◦) result in large discontinuous jumps in the
+
+loss, leading to unstable gradients and poor convergence.
+
+To address this issue, we map phase ϕ to its sine and cosine components, a point on the unit circle:
+
+r(ϕ) = (sin(ϕ), cos(ϕ)) ∈ R2,
+
+(9)
+
+The corresponding loss is:
+
+Lr(ϕ) = || sin( ˆϕ) − sin(ϕ)||2 + || cos( ˆϕ) − cos(ϕ)||2 = 2 − 2 cos( ˆϕ − ϕ)
+
+(10)
+
+Our formulation is continuous across the ±π boundary. Revisiting the earlier example withˆϕ = π −ϵ
+
+and ϕ = −π + ϵ,
+
+Lr(ϕ) = 2 − 2 cos(2ϵ) ≈ 4ϵ2
+
+(11)
+
+which smoothly approaches 0 as ϵ → 0.
+
+While Lr(ϕ) resolves the discontinuity problem, it creates a gradient issue when the prediction is
+
+maximally wrong on the unit circle, i.eˆϕ ≈ ϕ ± π. Consider the gradient with respect to ˆϕ:
+
+∂
+
+∂ ˆϕ
+
+Lr(ϕ) = 2 sin( ˆϕ − ϕ)
+
+(12)
+
+Whenˆϕ ≈ ϕ ± π, sin( ˆϕ − ϕ) ≈ 0. This means the worst predictions receive weak learning update.
+
+Instead, our architecture predicts two values c and s (see Section[ 3.2](#5)), corresponding to estimates
+
+of cos ϕ and sin ϕ respectively. To avoid the issues relating to Lr(ϕ) but keeping its benefits, we
+
+introduce a joint optimization of c and s with the phase-aware loss term Lphase, since both values
+
+refer to the same underlying phase angle. Lphase optimizes the directional alignment between the
+
+predicted vector (c, s) and the target (cos ϕ, sin ϕ) via cosine similarity. Since the target is a unit
+
+vector by definition (cos2 ϕ + sin2 ϕ = 1), the loss simplifies to:
+
+Lphase = 1 −
+
+X
+
+i
+
+ci cos ϕi + si sin ϕi
+
+pc2
+
+i + s2
+
+i
+
+(13)
+
+The gradient of Lphase with respect to the predicted vector is well-behaved across the full range
+
+of phase errors: it is proportional to the component of the predicted vector orthogonal to the
+
+target direction, scaled by the inverse of the predicted norm. This means that (i) maximally wrong
+
+predictions produce large gradients and (ii) the loss jointly optimizes direction rather than treating c
+
+and s as independent quantities.
+
+Although cosine similarity is scale-invariant and does not explicitly constrain (c, s) to lie on the unit
+
+circle (see Figure[ 4](#17)), the predicted norms tend to remain close to unity in practice. Let r =
+
+√
+
+c2 + s2
+
+denote the predicted norm. The gradient of Lphase with respect to c is:
+
+∂Lphase
+
+∂c
+
+\= −
+
+1
+
+r
+
+cos ϕ −
+
+ccos ϕ + ssin ϕ
+
+r2
+
+c
+
+(14)
+
+16
+
+-----
+
+|  |
+| :-: |
+| [**Page 17**]() |
+
+(a) Prediction off the unit circle.
+
+(b) Prediction on the unit circle.
+
+Figure 4: Visualization of phase predictions off (a) and on (b) the unit circle.
+
+The 1/r scaling optimizes direction without creating incentives to grow or shrink the predicted nor

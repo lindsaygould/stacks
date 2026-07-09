@@ -1,0 +1,2971 @@
+Neural Signals Generate Clinical Notes in the Wild
+
+Jathurshan Pradeepkumar1∗ Zheng Chen2,∗ Jimeng Sun1,∗
+University of Illinois Urbana-Champaign 2 SANKEN, Osaka University
+{jp65,jimeng}@illinois.edu,{chenz}@sanken.osaka-u.ac.jp
+
+arXiv:2601.22197v3 [cs.LG] 13 May 2026
+
+1
+
+Abstract
+Generating clinical reports that summarize abnormal patterns, diagnostic findings,
+and clinical interpretations from long-term EEG recordings remains labor-intensive.
+We present CELM, the first clinical EEG-to-Language foundation model capable
+of summarizing long-duration, variable-length EEG recordings and performing
+end-to-end clinical report generation at multiple scales. CELM integrates pretrained
+EEG foundation models with language models to enable scalable multimodal
+learning. We curate a large-scale clinical EEG dataset containing 9,922 reports
+paired with approximately 11,000 hours of EEG recordings from 9,048 patients to
+train CELM, and release the benchmark with an automated report-structuring pipeline
+to facilitate future research. Experimental results show that CELM consistently
+outperforms existing methods across all evaluation settings. Importantly, we
+further conduct human evaluation with clinical experts, demonstrating that CELM
+generates reports that are more clinically coherent, diagnostically reliable, and
+better aligned with expert interpretation. We release our model and benchmark
+construction pipeline at https://github.com/Jathurshan0330/CELM.
+
+1
+
+Introduction
+
+Electroencephalography (EEG) records long-term, real-time neuronal activity with millisecond-level
+temporal resolution and is widely used for neurological diagnosis [1, 2]. However, writing clinical
+reports to summarize diagnostic findings over EEG recordings remains a labor-intensive process.
+Typically, neurologists visually inspect EEG signals to assess brain activity and then compose clinical
+reports that document various phenotypes and their clinical interpretations [3]. This task requires
+substantial domain knowledge and extensive clinical experience, which incur long-term training costs
+and require continual updates as new EEG phenotypes or waveforms are identified [4].
+Limitations of prior works. Although several deep learning approaches have been proposed for
+EEG report generation [4, 5, 6], several limitations remain. Conceptually, many existing methods
+formulate report generation as a phenotype classification task followed by text decoding. Such
+pipelines fail to model EEG-to-report generation in an end-to-end manner, leading to an objective
+misalignment between classification and generation. Methodologically, they rely on short EEG
+contexts (spanning only several to tens of seconds) and fixed-context templates that construct checkliststyle mappings between EEG phenotypes and predefined clinical notes. They fail to model long-term
+reasoning required for interpreting long-duration EEG data, further preventing multi-granularity
+report generation. Practically, due to the limited resource, these methods are developed as taskspecific models, each tailored to a narrow reporting objective [5]. However, clinical practice requires
+multi-level reporting, where neurologists routinely construct overall EEG summaries and section-wise
+outputs, including impressions, interpretations, and event or seizure annotations.
+Present work. To fill the gap, we present CELM, to the best of our knowledge, the first Clinical EEGto-language foundation model (ELM) that unlocks meaningful interpretation of raw clinical EEG
+∗ corresponding authors
+
+Preprint.
+
+What is the
+clinical interpretation?
+
+EEG Description/Details
+Impression/Interpretation
+
+What is this event?
+
+Background Activity
+Events/Seizures
+
+Hours long EEG recordings
+Multi-channel
+
+Neurologist Manual Review & Report Writing
+
+Epleptiform Abnormalities
+
+High frequency
+Requires expert interpretation
+
+Interictal Epleptiform
+Abnormalities
+
+CELM
+
+Clinical EEG Report
+
+Long Clinical EEG to Structured Reports
+
+1
+
+Lack of EEG-Report Data
+
+Unmatched EEG
+
+2
+
+Unstructured Reports
+
+EEG-Language Alignment Gap
+
+EEG
+Latent Space
+
+3
+
+Benchmark Construction
+
+Naive Linear
+Projection
+
+9,922
+Reports
+
+11K
+Hours
+
+Clinical EEG Language Model
+
+Language
+Latent Space
+
+Epoch Aggregated
+Tokenization
+
+Training
+Instability
+
+Sequence Aware
+Alignment
+
+Privacy & Long Context Modeling
+
+~ 31M
+Data
+Limitation
+
+Long Multi-Channel
+EEG
+
+9,048
+Patients
+
+Unimodal + Text + EEG Features Input
+Multimodal + Linear Projector
+CELM - SCC
+CELM
+
+Bridge EEG-FMs &
+Local LLMs
+
+Datapoints /
+2h recording
+
+S0002
+
+S0001
+
+Figure 1: Overview of CELM, a clinical EEG-to-language foundation model (ELM) for translating
+long-duration EEG recordings into structured clinical reports. CELM addresses key challenges in EEG
+report generation, including limited EEG-report data, EEG-language alignment, and long-context
+EEG modeling. The framework constructs a large-scale EEG-report benchmark and enables direct
+generation of structured clinical reports from raw EEG recordings.
+signals and enable report generation at multiple scales. Our motivation stems from recent advances in
+multimodal foundation models that enable text generation from non-text modalities (e.g., images and
+speech) [7, 8]. CELM hence shifts the paradigm from conventional EEG classification toward languagecentric EEG understanding and describing, with three key innovations: ❶ A report structuring
+pipeline that automatically decomposes clinical notes and generates hierarchical structured reports,
+spanning EEG description, background activity, epileptiform abnormalities, events/seizures, and
+impressions/interpretations. ❷ A novel pretrained foundation model that processes EEG recordings of
+up to three hours, learns multi-grained representations from local patterns to global temporal contexts,
+and translates representations into text for end-to-end report generation. This is achieved by three core
+components: (i) epoch-aggregated tokenization that produces compact representations from variablelength recordings, (ii) sequence-aware alignment that captures inter-epoch temporal dependencies,
+and (iii) prompt fusion for conditional report generation. Importantly, our model design harnesses the
+representation capabilities of pretrained EEG foundation models and LLMs while enabling flexible
+generation across multiple clinical settings. ❸ A large-scale EEG-report benchmark curated from
+the largest clinical EEG corpora to date (the Harvard Electroencephalography Database [9, 10]),
+comprising approximately 10,000 clinical reports paired with over 11,000 hours of EEG recordings
+from 10,000 patients, enabling CELM training and facilitating future model development.
+To rigorously evaluate CELM, we benchmark it against state-of-the-art (SOTA) methods across five
+real-world report drafting tasks. Moreover, we conduct human evaluation with six clinical experts to
+assess the quality and clinical reliability of the generated reports. Extensive experiments demonstrate
+that CELM not only achieves significant improvements across quantitative metrics, but also produces
+reports that are better aligned with human interpretation. Our contributions are as follows:
+• We introduce a novel EEG-to-text foundation model capable of learning representations from
+long-duration EEG recordings (up to three hours) and directly generating clinical reports.
+• We propose an automated report structuring pipeline for raw EEG-text clinical data, yielding
+10,000 clinical reports paired with over 11,000 hours of EEG recordings from 10,000 patients.
+• Beyond benchmarking CELM, we also conduct human evaluation to assess whether the generated
+reports are more diagnostically reliable. Results show that CELM is statistically significantly more
+clinically coherent than those produced by prior methods and general language models.
+2
+
+EEG Description/Details
+
+Clinical Report Structuring
+
+The record shows good organization at rest, consisting of
+predominantly *****-***** uv, 9 hz posterior alpha activity
+with fair reactivity. there is
+increased beta activity
+bilaterally...
+
+Session 1
+
+Clinical Context Extraction
+Clinical
+History
+
+Local LLM
+
+Session 2
+CLINICAL HISTORY:
+
+Reason for
+Study
+
+Impression/Interpretation
+
+REASON FOR STUDY:
+
+Abnormal ***** due to: 1. frequent high-amplitude 3 hz
+frontally-predominant generalized spike-wave discharges,
+occurring both sporadically and in sustained runs >10
+seconds without clear clinical correlate
+2. numerous
+electroclinical
+seizures
+consisting
+of
+frontallypredominant....
+
+Session n
+
+Detection
+
+Extraction
+
+Normalization
+
+Clinical Context
+
+EEG Findings Extraction
+
+EEG
+Reports
+
+EEG
+Details
+
+Local LLM
+EEG DESCRIPTION/DETAILS:
+
+Detection
+
+Interictal Epleptiform Abnormalities
+
+IMPRESSION/INTERPRETATION:
+
+Impression
+
+Extraction
+
+Normalization
+
+EEG Findings
+
+EEG-Report
+Matching
+
+Frequent 3 hz frontally-predominant generalized spikewave discharges, up to 400 uv, and occurring during both
+wakefulness and sleep. these rarely occur sporadically,
+but more frequently occur in runs lasting >10 seconds as
+described below.
+
+Figure 2: EEG–Report benchmark construction pipeline, including clinical report structuring (Section 3), matching reports to EEG sessions, and examples of standardized report sections.
+
+2
+
+Related Work
+
+EEG-to-Language Modeling. Existing work at the intersection of EEG and natural language can
+be broadly categorized into two paradigms: (1) EEG-to-language decoding and (2) text-enhanced
+EEG representation learning. The goal of EEG-to-language decoding is to reconstruct textual content
+from concurrent EEG recordings of subjects reading or imagining speech [11, 12]. This line of work
+spans both invasive approaches using electrocorticography (ECoG) [13, 14] and non-invasive methods
+based on scalp EEG [12, 15, 16]. However, these methods assume precise EEG–text alignment,
+whereas clinical EEG consists of heterogeneous events embedded in long, continuous recordings
+spanning hours to days [9, 10]. The second paradigm leverages clinical notes as auxiliary supervision
+to enhance EEG representation learning, rather than decoding language directly from neural activity.
+Inspired by vision–language pretraining frameworks [17], a recent work [18] aligns EEG data with
+clinical report text in a shared feature space. However, it remains focused on discriminative objectives
+and does not support automated clinical report generation.
+Clinical EEG Report Generation. An early attempt at EEG report generation, EEGtoText [4],
+proposed a two-stage pipeline that first classifies EEG phenotypes, and then generates report text via
+a text decoder conditioned on the classified labels. However, this relies on intermediate phenotyping
+as a bottleneck, limiting the capabilities to capture nuanced clinical findings beyond predefined
+categories. While some attempts jointly learn EEG encoders and text decoders [5], they rely on fixed
+segmentation and template-based generation [6]. As a result, these methods fall short of end-to-end
+clinical report generation from long-duration EEG recordings. We address the above challenges by
+introducing the first family of EEG–Language foundation models.
+EEG Foundation Models. Recent years have witnessed rapid advances in EEG foundation
+models. BENDR [19], BIOT [1], LaBraM [20], TFM-Tokenizer [21], EEGPT [22], LUNA [23],
+REVE [24], and CBraMod [25] introduce increasingly scalable tokenization and representation learning frameworks that achieve strong transfer on diverse EEG tasks. These models are predominantly
+encoder-only and are optimized for classification tasks, leaving generative objectives largely unexplored. Our CELM is designed for clinical EEG report generation, and notably, it is fully compatible
+with existing foundation models, which can be directly leveraged as EEG encoders.
+
+3
+
+EEG-Report Benchmark Construction
+
+Currently, no publicly available benchmark provides structured EEG–report pairs for training and
+evaluating EEG-to-text models. In this work, we leverage two resources from the Brain Data
+Science Platform: (1) the Harvard Electroencephalography Database v4.1 [10, 9], which contains
+approximately 10k clinical reports paired with about 100k hours of EEG recordings from 10,886
+patients across multiple hospital sites, and (2) the Electronic Health Records (EHR) Repository with
+corresponding unstructured neurology reports. The EHR repository links reports to one or more
+EEG sessions via temporal alignment between EDF start times and report timestamps. Therefore, we
+construct an EEG–report benchmark using a dedicated processing pipeline (Figure 2).
+Clinical Report Structuring. Neurology reports can be broadly decomposed into two types of
+sections: (1) Clinical Context, which contains information such as patient history and monitoring
+indications that cannot be inferred from EEG signals, and (2) EEG Findings, which describe EEG
+3
+
+Epoch Tokenization
+
+2.1. Sequence Context Alignment
+
+Linear Projector
+
+Feed
+Forward
+
+Cross
+Attention
+
+Sequence Context
+Transformer
+
+EEG Epoch
+Tokens
+
+Epoch
+Position Enc.
+
+[SESSION_SEP]
+
+Projected
+Tokens
+
+Add
+[SESSION_SEP]
+
+Query Tokens
+
+Linear Projector
+
+Epoch
+Position Enc.
+
+EEG Epoch
+Tokens
+
+Sequence Context
+Transformer
+
+Epoching
+
+b. Sequence-Aware Alignment
+Add
+[SESSION_SEP]
+
+a. Epoch-Aggregated
+Tokenization (EAT)
+
+Compressed
+Tokens
+
+2.2. Sequence Context Compression
+
+EEG-FM
+
+c. Prompt Fusion and Generation
+Epoch
+Aggregation
+
+Sequence Aware
+Alignment
+
+Epoch
+Token
+
+Add Special
+Tokens
+
+Local LLM
+
+Local LLM
+
+[EEG_END]
+
+TASK PROMPT
+
+[EEG_START]
+
+EAT-Alignment
+
+[SESSION_SEP]
+
+[EEG_START] [EEG_END]
+
+EEG Epoch Tokens
+
+EEG
+Findings
+EEG Epoch Tokens
+Clinical Context
+
+Tokenize &
+Get Text Embedding
+
+Fixed
+
+Trainable
+
+Figure 3: The proposed Clinical EEG Language Model (CELM) comprises (a) Epoch-Aggregated
+Tokenization, (b) Sequence-Aware Alignment, and (c) Prompt Fusion and Generation.
+observations and clinical interpretations that are directly inferable from EEG recordings. A key
+challenge lies in reliably extracting and structuring these sections without information loss. Substantial
+variability in reporting styles and formatting makes manual extraction infeasible at scale. We therefore
+propose a three-stage automated pipeline to extract and structure reports.
+• Section Detection: We curate a comprehensive list of candidate section headers under each
+category and detect their presence using string matching.
+• Section-wise Extraction: For each detected section, we employ a local LLM (Meta-Llama-38B-Instruct) to extract the corresponding text using simple copy-based prompts. This detect-thensegment strategy avoids hallucinations and cross-section contamination that arise when extracting
+multiple sections jointly.
+• Canonical Normalization: We standardize the extracted sections into canonical categories, including EEG description/details, impressions/interpretations, background activity, epileptiform
+abnormalities, and events/seizures.
+EEG Preprocessing. Matched EEG recordings are preprocessed using a standard pipeline. Signals
+are first band-pass filtered between 0.1–75 Hz and notch filtered at 60 Hz to remove power-line
+interference. The recordings are then resampled to 200 Hz to ensure compatibility with existing EEGonly foundation models. Each recordings are segmented into non-overlapping 10-second windows,
+which is the typical temporal context used by current EEG foundation architectures. Finally, EEG
+channels are standardized to a 22-channel montage following the International 10-20 system. While
+the dataset contains reports matched to multiple EEG sessions, we filter to samples with single-session
+matches for training, validation, and evaluation.
+
+4
+
+CELM: Clinical EEG Language Model
+
+This section introduces our CELM, consisting of three key components: Epoch-Aggregated Tokenization, Sequence-Aware Alignment, and Prompt Fusion and Generation. An effective model must
+identify and aggregate clinically relevant information from long-term EEG recordings to support
+report generation at multiple levels. To this end, Section 4.1 discusses the unique challenges of
+clinical ELMs and provides an overview of the model architecture and forward process. Sections 4.2,
+4.3, and 4.4 then present the details of the three components.
+4.1
+
+Architecture and Forward Process
+
+Clinical EEG introduces three unique challenges that prevent the direct adoption of existing multimodal paradigms, such as dictionary-based alignment or contrastive learning with fixed-length
+epochs [18]. Here, we design CELM with three corresponding steps:
+4
+
+Epoch-Aggregated Tokenization addresses the extreme temporal scale of clinical EEG. EEG sessions span hours of high-frequency, multi-channel signals, resulting in at least ∼ 31.7M+ data points
+per recording, far exceeding the context limits of modern LLMs [26, 27, 28].
+Sequence-Aware Alignment mitigates the loss of temporal context during alignment. EEG signals
+are inherently sequential, and naive projection into the LLM embedding space fails to preserve
+long-range temporal dependencies required for clinical interpretation.
+Prompt Fusion and Generation addresses weak EEG–text correspondence. Clinical reports aggregate findings over entire recordings without explicit temporal grounding, requiring the model to
+synthesize coherent clinical narratives from distributed EEG evidence.
+Overall, given an input EEG recording, CELM processes the signal through above three stages. The
+recording is first transformed into compact epoch-level tokens via Epoch-Aggregated Tokenization,
+which reduces the temporal scale. These tokens are then projected into the language space through
+Sequence-Aware Alignment, enabling long-range temporal dependencies to be maintained across
+epochs. Finally, Prompt Fusion and Generation conditions the language model on the aligned EEG
+representations and optional clinical context to generate structured reports.
+4.2
+
+Epoch-Aggregated Tokenization
+
+The fundamental bottleneck in developing ELMs is representing long EEG recordings within the
+LLM context constraints. A typical two-hour clinical EEG recording at 200 Hz across 22 channels
+yields 7, 200 × 200 × 22 ≈ 31.7M data points, far exceeding current LLM capacities, making raw
+sample-level tokenization infeasible. A common alternative is mini-window tokenization, leveraging
+pretrained EEG encoders that typically tokenize 1-second segments. However, naively applying this
+granularity to full recordings produces ≈ 158K tokens per session, still well beyond the context
+limits of most local LLMs [26, 27, 28]. To overcome this limitation while harnessing pretrained EEG
+representations, we propose Epoch-Aggregated Tokenization (see Figure 3a).
+Given an EEG recording session X ∈ RN ×C×T , where N, C, and T denote the number of epochs,
+channels, and time points per epoch (typically 10 seconds) respectively, we first tokenize 1s windows
+within each epoch using a pretrained EEG encoder. The resulting representations are then aggregated
+across windows and channels to produce a single token per epoch, yielding a compact sequence of
+epoch tokens Eeeg ∈ RN ×Deeg , where Deeg is the embedding dimension. The aggregation strategy
+is encoder-dependent. For example, CBraMod applies pooling [25], whereas TFM-Tokenizer [21]
+uses [CLS] pooling. This tokenization compresses the tokens by up to C × T (∼ 220× compared to
+window tokenization), enabling EEG recordings to fit within LLM context limits.
+4.3
+
+Sequence-Aware Alignment
+
+To enable EEG-conditioned clinical report generation, EEG representations must be aligned with
+the text embedding space of LLMs. Existing vision-language models such as LLaVA achieve this
+through simple linear projection [29], but this strategy does not generalize well to EEG (Section 5.5)
+due to its sequential and long-range temporal structure. Unlike static images, EEG signals contain
+temporal dynamics across epochs that must be preserved during alignment. This introduces two key
+challenges: modeling long temporal dependencies and scaling to very long sequences. To address
+these challenges, we propose two sequence-aware alignment strategies (Figure 3b): (1) Sequence
+Context Alignment, which preserves full temporal structure, and (2) Sequence Context Compression,
+which compresses EEGs into fixed-length latent representations for memory-efficient alignment.
+Sequence Context Alignment (SCA). Given a sequence of tokens Eeeg , we augment the sequence
+with position encodings and [SESSION_SEP] tokens to differentiate EEG sessions. A lightweight
+linear-attention transformer [30] is then applied to capture the temporal structure across epochs.
+The resulting representations are subsequently projected through a linear layer into the language
+embedding space, yielding Heeg ∈ RN ×Dllm , where Dllm denotes the LLM embedding dimension.
+Sequence Context Compression (SCC). To address the memory and scalability challenges of
+long EEG sequences, we explore a compression strategy inspired by Perceiver architectures [31, 32].
+After encoding temporal structure among epoch tokens, a fixed set of learnable query tokens Q ∈
+RL×Deeg (L < N ) attend to the full sequence of epoch tokens via cross-attention. This compresses
+5
+
+the variable-length EEG sequence into a fixed number of tokens, which are subsequently projected
+into the language embedding space, enabling efficient alignment for recordings of arbitrary duration.
+4.4
+
+Prompt Fusion and Generation
+
+CELM generates clinical reports by conditioning a local LLM on EEG-derived representations jointly
+with clinical context when available (see Figure 3c). Given projected EEG tokens Heeg , we augment
+the sequence with special tokens [EEG_START] and [EEG_END] to distinguish EEG representations
+from text inputs. A task-specific prompt that specifies the target report sections, together with optional
+clinical context (e.g., reason for study or clinical history), is tokenized using the LLM tokenizer to
+obtain text embeddings Hprompt . The final input sequence is formed by concatenation,
+Hin = [[EEG_START]; Heeg ; [EEG_END]; Htext ]
+
+(1)
+
+which is processed autoregressively to generate a structured EEG report text. We employ instruction
+tuned Qwen3-4B [28] as our base LLM, CBraMod [25] as our EEG encoder and perform supervised
+fine-tuning using the next-token prediction objective:
+T
+X
+L=−
+log Pθ (yt | Hinput , y<t )
+(2)
+t=1
+
+During training, both the EEG encoder and LLM remain frozen, only the Sequence-Aware Alignment
+module is updated, enabling efficient adaptation while preserving pretrained representations.
+
+5
+
+Experiments and Results
+
+Datasets. The EEG-Report benchmark is constructed using data from two hospital sites in the
+Harvard Electroencephalography Database v4.1 [10, 9]: Massachusetts General Hospital (MGH,
+S0001) and Brigham and Women’s Hospital (BWH, S0002). In total, through our pipeline, we curated
+12, 290 clinical EEG reports matched to one or more EEG sessions from 10, 886 patients. For model
+training and evaluation, we restrict our analysis to reports paired with a single EEG session.
+❐ S0001: This site includes diverse EEG visit types (routine EEG, epilepsy monitoring unit (EMU),
+portable EEG, complex EEG). We filtered only routine EEG and EMU samples paired with single
+sessions, excluding long recordings exceeding 10, 000 seconds to prevent memory issues during
+training. We curated 5,049 reports from 4,669 patients.
+❐ S0002: From the available visit types (EEG and portable EEG), we retained only standard EEG
+visits with single corresponding sessions, yielding 4, 873 reports from 4, 379 patients.
+For both sites, we performed patient-wise 60/20/20 splits into training, validation, and test sets.
+Additional dataset details are provided in Appendix A.
+Baselines. Due to the lack of existing EEG multimodal models for clinical EEG report generation,
+we compare CELM against three types of baselines: (1) Unimodal + text-only input: only clinical
+context is provided as input without EEG data, providing a lower bound that quantifies hallucination
+and isolates performance when the model does not attend to neural signals, (2) Unimodal + text and
+EEG features input: the clinical context is augmented with channel-wise spectral band power features
+(delta, theta, alpha, beta, gamma, Appendix B.1) extracted from each EEG session, overcoming
+context length limitation that prevents providing raw EEG arrays directly, (3) Multimodal + linear
+projector: a linear projector maps pretrained EEG embeddings from CBraMod [25] into the language
+model’s embedding space, enabling direct conditioning on continuous EEG signals. We evaluate
+LLMs from three model families, including LLaMA-3 [26], Gemma-3 [27], and Qwen-3 [28], across
+multiple parameter scales, and include MedGemma [33] as a domain-specific baseline (more details
+at Appendix B). We report lexical metrics [34, 35, 36] along with manual qualitative analysis and a
+human expert evaluation study to evaluate report generation performance.
+5.1
+
+Report Generation Performance
+
+Table 1 compares the report generation performance of CELM on test samples from both sites containing patient history. It compares against unimodal baselines that use either text-only or text with
+handcrafted EEG features as input, and finetuned multimodal baselines that use EEG foundation
+model embeddings. We report results for two CELM variants: CELM-SCC, which uses sequence context
+6
+
+Table 1: Report generation performance comparison on samples with clinical context across two
+hospital sites (S0001 and S0002). We report mean ± standard deviation for smoothed BLEU-1,
+ROUGE-1, and METEOR scores. The best results are highlighted in orange, and the best baseline per
+category is highlighted in blue. Relative improvements are also reported, and ⋆ indicates finetuning.
+S0001
+Method
+
+BLEU-1
+
+S0002
+
+ROUGE-1
+
+METEOR
+
+BLEU-1
+
+ROUGE-1
+
+METEOR
+
+0.2330 ± 0.0876
+0.2318 ± 0.0600
+0.2775 ± 0.0558
+0.1998 ± 0.0649
+0.2280 ± 0.0734
+0.0954 ± 0.0869
+0.2346 ± 0.0877
+0.2655 ± 0.0766
+0.2588 ± 0.0586
+0.1189 ± 0.1296
+0.2690 ± 0.0448
+
+0.1319 ± 0.0565
+0.1181 ± 0.0472
+0.1506 ± 0.0514
+0.0993 ± 0.0490
+0.1198 ± 0.0542
+0.0494 ± 0.0504
+0.1430 ± 0.0689
+0.1480 ± 0.0581
+0.1416 ± 0.0481
+0.0735 ± 0.0821
+0.1622 ± 0.0434
+
+Unimodal + Text Only Input
+Gemma-3-1b-it
+Gemma-3n-e2b-it
+Gemma-3-4b-it
+Gemma-3n-e4b-it
+Medgemma-4b-it
+Llama-3.2-1b-instruct
+Llama-3.2-3b-instruct
+Llama-3.1-8b-instruct
+Meta-llama-3-8b-instruct
+Qwen3-1.7b
+Qwen3-4b-instruct-2507
+
+0.1897 ± 0.1340
+0.1967 ± 0.1592
+0.2372 ± 0.1508
+0.1793 ± 0.1685
+0.1502 ± 0.1725
+0.0337 ± 0.0667
+0.1951 ± 0.1630
+0.2128 ± 0.1702
+0.2249 ± 0.1602
+0.1335 ± 0.1481
+0.2795 ± 0.1243
+
+0.2112 ± 0.1408
+0.2410 ± 0.1722
+0.2857 ± 0.1590
+0.2416 ± 0.1778
+0.2196 ± 0.1924
+0.0919 ± 0.0744
+0.2224 ± 0.1755
+0.2511 ± 0.1872
+0.2673 ± 0.1731
+0.1378 ± 0.1557
+0.3038 ± 0.1460
+
+Gemma-3-1b-it
+Gemma-3n-e2b-it
+Gemma-3-4b-it
+Gemma-3n-e4b-it
+Medgemma-4b-it
+Llama-3.2-1b-instruct
+Llama-3.2-3b-instruct
+Llama-3.1-8b-instruct
+Qwen3-1.7b
+Qwen3-4b-instruct-2507
+
+0.0068 ± 0.0442
+0.0083 ± 0.0504
+0.0085 ± 0.0532
+0.0101 ± 0.0348
+0.1618 ± 0.1730
+0.0310 ± 0.0615
+0.1692 ± 0.1414
+0.2040 ± 0.1450
+0.2047 ± 0.1351
+0.1809 ± 0.0986
+
+0.0086 ± 0.0524
+0.0116 ± 0.0605
+0.0093 ± 0.0594
+0.0397 ± 0.0606
+0.2100 ± 0.1919
+0.0820 ± 0.0727
+0.1844 ± 0.1611
+0.2151 ± 0.1693
+0.2051 ± 0.1453
+0.2058 ± 0.1192
+
+0.1567 ± 0.1238
+0.1875 ± 0.1725
+0.2147 ± 0.1668
+0.1816 ± 0.1786
+0.1529 ± 0.1835
+0.0529 ± 0.0519
+0.1843 ± 0.1864
+0.1839 ± 0.1788
+0.1946 ± 0.1809
+0.1102 ± 0.1316
+0.2418 ± 0.1440
+
+0.1509 ± 0.0898
+0.0925 ± 0.0769
+0.1538 ± 0.0990
+0.0539 ± 0.0664
+0.0865 ± 0.0855
+0.0340 ± 0.0700
+0.1651 ± 0.1110
+0.1629 ± 0.0970
+0.1441 ± 0.0847
+0.0886 ± 0.1095
+0.1912 ± 0.0807
+
+Unimodal + Text + EEG Features Input
+0.0064 ± 0.0462
+0.0088 ± 0.0543
+0.0078 ± 0.0558
+0.0231 ± 0.0392
+0.1529 ± 0.1832
+0.0473 ± 0.0479
+0.1751 ± 0.1871
+0.1844 ± 0.1647
+0.1683 ± 0.1304
+0.2067 ± 0.1079
+
+0.0957 ± 0.0925
+0.0750 ± 0.0771
+0.2089 ± 0.0895
+0.0169 ± 0.0486
+0.0888 ± 0.0910
+0.0312 ± 0.0668
+0.1779 ± 0.1101
+0.1960 ± 0.0959
+0.1890 ± 0.1048
+0.2483 ± 0.0425
+
+0.1755 ± 0.1157
+0.2190 ± 0.0840
+0.2886 ± 0.0458
+0.0357 ± 0.0903
+0.1829 ± 0.1128
+0.1016 ± 0.0773
+0.2309 ± 0.0903
+0.2256 ± 0.0904
+0.2049 ± 0.1021
+0.2638 ± 0.0341
+
+0.0954 ± 0.0692
+0.1082 ± 0.0546
+0.1738 ± 0.0476
+0.0180 ± 0.0462
+0.1000 ± 0.0702
+0.0517 ± 0.0448
+0.1540 ± 0.0743
+0.1509 ± 0.0682
+0.1413 ± 0.0724
+0.2017 ± 0.0285
+
+Multimodal + Linear Projector + CBraMod⋆
+Gemma-3-4b-it
+Medgemma-4b-it
+Llama-3.2-3B-instruct
+Llama-3.1-8B-instruct
+Qwen3-4B-instruct-2507
+
+0.2201 ± 0.1349
+0.0392 ± 0.1478
+0.0312 ± 0.1055
+0.0042 ± 0.0312
+0.2647 ± 0.0908
+
+0.2688 ± 0.1448
+0.0494 ± 0.1806
+0.0568 ± 0.1311
+0.0063 ± 0.0428
+0.2819 ± 0.1132
+
+0.2020 ± 0.1579
+0.0441 ± 0.1719
+0.0396 ± 0.1172
+0.0050 ± 0.0369
+0.2444 ± 0.1093
+
+CELM-SCC
+CELM
+
+0.3383 ± 0.1936
+0.4823 ± 0.1920
+
+0.3843 ± 0.1876
+0.5565 ± 0.1683
+
+0.2889 ± 0.1866 0.3767 ± 0.1557 0.4487 ± 0.1283 0.3232 ± 0.1261
+0.4734 ± 0.1941 0.5695 ± 0.1702 0.6408 ± 0.1494 0.5597 ± 0.1728
+
++72.56%
+
++83.18%
+
+Improvement
+
++93.70%
+
+compression to compress and produce a fixed number of projected EEG tokens, and CELM, which
+uses non-compressed EEG representations via sequence context alignment. Incorporating EEG
+features yields modest gains over text-only on
+S0002 (0.1912 → 0.2483) except for LLaMA3.1-8B, which fails due to its 8K context limit.
+On S0001, performance degrades due to greater
+multi-section report complexity. Finetuned multimodal baselines, which align EEG foundation
+embeddings with the language space via linear
+projection, achieve the best baseline performance.
+However, the marginal gains relative to the additional training overhead underscore the fundamental challenge of EEG-language alignment.
+
+0.2683 ± 0.0751
+0.0533 ± 0.0795
+0.1529 ± 0.1010
+0.0169 ± 0.0492
+0.2775 ± 0.0485
+
+0.3084 ± 0.0491
+0.1491 ± 0.1349
+0.2425 ± 0.0837
+0.0385 ± 0.0823
+0.2998 ± 0.0425
+
++105.23%
+
++107.78%
+
+0.2002 ± 0.0482
+0.0729 ± 0.0701
+0.1398 ± 0.0610
+0.0209 ± 0.0458
+0.2143 ± 0.0349
+
++161.18%
+
+Table 2: Zero-context report generation performance on S0001 and S0002. The best results are
+highlighted in orange, and the best baseline is
+highlighted in blue.
+S0001
+Method
+
+ROUGE-1
+
+METEOR
+
+S0002
+ROUGE-1
+
+METEOR
+
+Unimodal + Text + EEG Features Input
+Gemma-3-4b-it
+0.20 ± 0.09 0.15 ± 0.07 0.09 ± 0.13 0.05 ± 0.08
+Medgemma-4b-it 0.13 ± 0.12 0.08 ± 0.07 0.13 ± 0.10 0.07 ± 0.06
+Llama-3.2-3b-itt 0.14 ± 0.11 0.10 ± 0.08 0.20 ± 0.09 0.12 ± 0.06
+Qwen3-4b-it
+0.16 ± 0.07 0.16 ± 0.06 0.23 ± 0.08 0.17 ± 0.06
+Multimodal + Linear Projector + CBraMod
+Gemma-3-4b-it
+0.24 ± 0.05 0.17 ± 0.05 0.29 ± 0.06 0.19 ± 0.05
+Medgemma-4b-it 0.03 ± 0.09 0.02 ± 0.06 0.18 ± 0.11 0.08 ± 0.05
+Llama-3.2-3B-it 0.02 ± 0.06 0.01 ± 0.04 0.13 ± 0.12 0.07 ± 0.07
+Qwen3-4B-it
+0.25 ± 0.05 0.22 ± 0.04 0.29 ± 0.03 0.21 ± 0.03
+CELM-SCC
+CELM
+
+0.27 ± 0.17
+0.51 ± 0.16
+
+0.21 ± 0.14 0.39 ± 0.12 0.26 ± 0.10
+0.41 ± 0.17 0.56 ± 0.20 0.49 ± 0.21
+
+Improvement
++104%
++86%
++93%
++133%
+Both CELM variants substantially outperform all
+baselines across metrics, with CELM achieving approximately two-fold improvement over the strongest
+baseline on both sites (e.g., ROUGE on S0002: 0.3084 → 0.6408). Although CELM-SCC outperforms
+the baselines, its performance gap relative to the non-compressed model (0.4487 vs 0.6408) highlights
+a key trade-off between compression and performance for ELMs. This leads to an important
+future direction: developing compression and alignment strategies that preserve clinically relevant
+information while scaling to longer EEG sequences.
+
+5.2
+
+Zero-Context Report Generation
+
+To assess our model’s ability to generate clinical reports solely from EEG signals, without relying on
+clinical context, we define a zero-context report generation task in which only EEG data is provided
+7
+
+Unimodal + Text + EEG Features Input
+
+Abnormality Prediction
+
+Multimodal + Linear Projector
+
+Lateralization
+
+CELM - SCC
+
+Spectral Dynamics
+
+CELM
+
+Epileptiform Abnormalities
+
+CELM
+
+CELM
+
+CELM
+
+CELM
+
+this routine eeg, performed in the waking and drowsy
+states is mildly abnormal, there are no definite focal
+or epileptiform abnormalities.
+
+there is moderate beta activity bilaterally. intermittent
+drowsiness is characterized by attenuation of the
+background, slow roving eye movements and bilateral
+slowing in the theta and delta range with shifting
+predominance.
+
+the waking background shows good organization,
+consisting of predominantly
+20-40 v, 10 hz
+symmetric posterior alpha activity, reactive to eye
+opening. there is moderate beta activity bilaterally.
+
+Interictal epileptiform discharges were present in
+the frontal and centrotemporal regions, particularly
+in channels F3, F4, C3, C4, and P3, P4. Spikes
+were observed at 3-4 Hz, with a left-sided
+predominance.
+
+Ground Truth
+
+Ground Truth
+
+Ground Truth
+
+Ground Truth
+
+this routine eeg, performed in the waking and drowsy
+states is mildly abnormal due to rare left>right
+bitemporal theta slowing, consistent with mild
+bitemporal cerebral dysfunction.
+
+there is moderate beta activity bilaterally. there are
+rare, very brief bursts of bitemporal l>r theta slowing.
+none intermittent drowsiness is characterized by
+attenuation of the background, slow roving eye
+movements and bilateral slowing in the theta and
+delta range with shifting predominance.
+
+the waking background shows good organization
+at rest, consisting of predominantly 30-40 v, 9 hz
+posterior alpha activity with good reactivity. there
+is moderate beta activity bilaterally.
+
+multifocal epileptiform discharges including:
+* abundant 10-20 hz spike-wave maximal f7 field to
+t3 and f3, frequently occur in runs of up to 4-5hz
+with a duration of one second. at times this can also
+become periodic at 5-6hz.
+
+Figure 4: Manual qualitative analysis across four clinically relevant dimensions: abnormality prediction, lateralization, spectral dynamics, and epileptiform abnormalities. Representative example cases
+are provided below each dimension.
+as input. This experiment also studies the potential language-model bias, in which reports could
+be generated by inferring plausible clinical context while ignoring EEG inputs. We conduct this
+experiment on both sites, using only the EEG signal as input, and summarize the results in Table 2.
+CELM outperforms all baselines across all metrics, demonstrating that it effectively extracts and
+utilizes clinically relevant information from EEG recordings.
+5.3
+
+Manual Qualitative Analysis
+
+While lexical metrics capture overlap, they fail to assess clinical correctness, and no reliable automated
+alternative exists. To address this, we manually inspect 30 randomly sampled reports from both
+sites and evaluate correctness across four clinically relevant dimensions. Results and representative
+examples are presented in Figure 4. ❐ Abnormality prediction. We evaluate whether the generated
+report correctly classifies the recording as normal/abnormal. CELM achieves higher accuracy than
+all baselines. However, it frequently misclassifies mildly abnormal recordings as normal. One
+important observation is that even when the model accurately describes abnormal signal patterns (e.g.,
+“frequent bilateral but right-predominant temporal sharply contoured theta and delta slowing”), it often
+fails at decision-making. This suggests a lack of domain knowledge, in which injecting neurology
+guidelines presents a promising approach. ❐ Lateralization. We assess whether the generated report
+correctly identifies the hemisphere in which brain activities occur. CELM performs significantly better
+than all baselines on this task. Notably, the unimodal baseline with EEG features and text input
+captures frequency information but fails to localize brain activity spatially. In contrast, CELM and
+other baselines benefit from the learned channel embeddings of EEG foundation models, which
+enable better lateralization. ❐ Spectral dynamics. We study whether the generated report accurately
+captures frequency band behavior, which is a critical aspect of EEG interpretation. Interestingly, the
+unimodal baseline with handcrafted EEG features outperforms the multimodal baseline using linearly
+projected CBraMod embeddings, indicating that task-specific features can partially enable LLMs to
+infer specific EEG-related tasks. However, crafting such features is labor-intensive, motivating the use
+of foundation model embeddings. While naive linear projection fails to leverage these embeddings
+effectively, CELM achieves strong performance, demonstrating the importance of proper alignment
+strategies. ❐ Epileptiform abnormalities. We evaluate whether the generated report correctly
+identifies epileptiform activity. While all models perform reasonably well on this dimension, we note
+that epileptiform events are rare and highly imbalanced in the dataset.
+5.4
+
+Human Expert Evaluation Study
+
+To further strengthen our evaluation, we conducted an expert study in which six domain experts
+(clinicians and BME researchers) assessed report quality through an anonymized survey. Each
+expert evaluated 20 randomly sampled cases, with each case presenting the ground-truth clinical
+report alongside three anonymized generated reports from two different baseline categories and CELM.
+8
+
+b.
+
+c.
+S0001
+
+Expert Preferential
+Ranking
+
+a.
+
+S0002
+
+Unimodal + Text + EEG Features Input
+
+Multimodal + Linear Projector
+
+CELM
+
+Figure 5: (a) Human expert evaluation study results, (b) Human expert preferential ranking for each
+report. (c) LLMs-as-a-judge results
+Experts rated each report on a 5-point scale (1: very poor to 5: very good) across five clinically
+relevant dimensions: (1) Clinical Correctness - accuracy compared to the ground truth, (2) Findings
+Coverage - coverage of key findings identified relative to ground truth, (3) Finding Accuracy —
+accuracy of attributes such as lateralization, frequency, and morphology, (4) Real-World Readiness —
+suitability for clinical use, and (5) Completeness — completeness of the report, whether all relevant
+aspects are covered. Results are summarized in Figure 5a, where CELM significantly outperforms
+both baselines across all five dimensions (Wilcoxon signed-rank test, p < 0.001 for all comparisons).
+Experts also provided their preferred rankings across the reports, as shown in Figure 5b, where CELM
+obtains a weighted-average rank of 1.29, with 98 votes for rank 1.
+LLM-as-judge. Human expert evaluation is labor-intensive and difficult to scale. We conducted
+an LLM-as-judge evaluation of generated reports using the Qwen2.5-72B-Instruct-AWQ model
+(Figure 5c). Although closed LLMs (e.g., GPT-4, Claude) correlate well with human judgments,
+data-usage agreement constraints their use. We define three evaluation metrics, as in the expert study,
+and CELM consistently outperforms.
+5.5
+
+Alignment Module Ablation
+
+The alignment module is critical for ELMs, and
+naive linear projection has been shown to be insufficient. We ablate four alignment strategies: (1)
+Linear projector, projection via a single linear layer,
+(2) Perceiver projector, cross-attention with learnable queries followed by feedforward, and our proposed (3) SCA and (4) SCC projectors (Section 4.3).
+As shown in Figure 6, SCA achieves the best performance. Training dynamics (Figure 6b) reveal
+that Linear and Perceiver projectors overfit, with increasing validation loss despite decreasing training
+loss, whereas SCA and SCC exhibit stable convergence. This confirms confirming that modeling
+inter-epoch temporal dependencies prior to projection is essential for effective alignment.
+
+6
+
+a.
+
+ROUGE
+
+b. Training Loss
+
+Val Perplexity
+
+Val Loss
+
+Linear Projector
+Perceiver Projector
+SCC Projector
+SCA Projector
+
+Epochs
+
+Figure 6: (a) Report generation performance of
+different alignment module variants. (b) Training dynamics of each variant, including training
+loss, validation loss, and perplexity curves.
+
+Conclusion
+
+We introduced CELM, the first clinical EEG-to-language foundation model for automated report
+generation from long-duration EEG recordings. CELM addresses three core challenges in this setting:
+(1) representing hour-scale EEG within LLM context limits via Epoch-Aggregated Tokenization,
+(2) preserving long-range temporal dependencies through Sequence-Aware Alignment, and (3) enabling flexible, multi-scale report generation via Prompt Fusion. We further presented a scalable
+EEG–Report benchmark construction pipeline and conducted extensive evaluations across hospital
+sites, report sections, and zero-context settings. Empirical results show that CELM consistently outperforms strong baselines. Overall, this work establishes EEG-to-language modeling as a distinct and
+promising research direction at the intersection of multimodal learning and clinical neurophysiology,
+and we hope that CELM and the accompanying benchmark construction pipeline will facilitate future
+advances in long-context EEG modeling and clinically grounded EEG language systems.
+9
+
+References
+[1] Chaoqi Yang, M Westover, and Jimeng Sun. Biot: Biosignal transformer for cross-data learning
+in the wild. Advances in Neural Information Processing Systems, 36:78240–78260, 2023.
+[2] Rikuto Kotoge, Zheng Chen, Tasuku Kimura, Yasuko Matsubara, Takufumi Yanagisawa,
+Haruhiko Kishima, and Yasushi Sakurai. Evobrain: Dynamic multi-channel EEG graph
+modeling for time-evolving brain networks. In The Thirty-ninth Annual Conference on Neural
+Information Processing Systems, 2025.
+[3] William O Tatum IV, Olga Selioutski, Juan G Ochoa, Heidi Munger Clary, Janna Cheek, Frank W
+Drislane, and Tammy N Tsuchida. American clinical neurophysiology society guideline 7:
+guidelines for eeg reporting. The Neurodiagnostic Journal, 56(4):285–293, 2016.
+[4] Siddharth Biswal, Cao Xiao, M Brandon Westover, and Jimeng Sun. Eegtotext: learning to
+write medical reports from eeg recordings. In Machine learning for healthcare conference,
+pages 513–531. PMLR, 2019.
+[5] Woonghee Lee, Jaewoo Yang, Doyeong Park, and Younghoon Kim. Automated clinical
+impression generation for medical signal data searches. Applied Sciences, 13(15), 2023.
+[6] Kang Yin and Hye-Bin Shin. Neurolex: A lightweight domain language model for eeg report
+understanding and generation. 10.48550/arXiv.2511.12851, 2025.
+[7] Florian Bordes, Richard Yuanzhe Pang, Anurag Ajay, Alexander C. Li, Adrien Bardes, Suzanne
+Petryk, Oscar Mañas, Zhiqiu Lin, Anas Mahmoud, Bargav Jayaraman, Mark Ibrahim, Melissa
+Hall, Yunyang Xiong, Jonathan Lebensold, Candace Ross, Srihari Jayakumar, Chuan Guo,
+Diane Bouchacourt, Haider Al-Tahan, Karthik Padthe, Vasu Sharma, Hu Xu, Xiaoqing Ellen
+Tan, Megan Richards, Samuel Lavoie, Pietro Astolfi, Reyhane Askari Hemmat, Jun Chen,
+Kushal Tirumala, Rim Assouel, Mazda Moayeri, Arjang Talattof, Kamalika Chaudhuri, Zechun
+Liu, Xilun Chen, Quentin Garrido, Karen Ullrich, Aishwarya Agrawal, Kate Saenko, Asli
+Celikyilmaz, and Vikas Chandra. An introduction to vision-language modeling, 2024.
+[8] Yifan Shen, Yuanzhe Liu, Jingyuan Zhu, Xu Cao, Xiaofeng Zhang, Yixiao He, Wenming Ye,
+James Matthew Rehg, and Ismini Lourentzou. Fine-grained preference optimization improves
+spatial reasoning in VLMs. In The Thirty-ninth Annual Conference on Neural Information
+Processing Systems, 2025.
+[9] Chenxi Sun, Jin Jing, Niels Turley, Callison Alcott, Wan-Yee Kang, Andrew J Cole, Daniel M
+Goldenholz, Alice Lam, Edilberto Amorim, Catherine Chu, et al. Harvard electroencephalography database: A comprehensive clinical electroencephalographic resource from four boston
+hospitals. Epilepsia, 2025.
+[10] S Zafar, T Loddenkemper, JW Lee, A Cole, D Goldenholz, J Peters, A Lam, E Amorim, C Chu,
+S Cash, et al. Harvard electroencephalography database (version 4.1). Brain Data Science
+Platform, 2025.
+[11] Christian Herff, Dominic Heger, Adriana De Pesters, Dominic Telaar, Peter Brunner, Gerwin
+Schalk, and Tanja Schultz. Brain-to-text: decoding spoken phrases from phone representations
+in the brain. Frontiers in neuroscience, 8:141498, 2015.
+[12] Zhenhailong Wang and Heng Ji. Open vocabulary electroencephalography-to-text decoding
+and zero-shot sentiment classification. In Proceedings of the AAAI Conference on Artificial
+Intelligence, volume 36, pages 5350–5358, 2022.
+[13] Joseph G Makin, David A Moses, and Edward F Chang. Machine translation of cortical activity
+to text with an encoder–decoder framework. Nature neuroscience, 23(4):575–582, 2020.
+[14] Francis R Willett, Erin M Kunz, Chaofei Fan, Donald T Avansino, Guy H Wilson, Eun Young
+Choi, Foram Kamdar, Matthew F Glasser, Leigh R Hochberg, Shaul Druckmann, et al. A
+high-performance speech neuroprosthesis. Nature, 620(7976):1031–1036, 2023.
+10
+
+[15] Yiqun Duan, Jinzhao Zhou, Zhen Wang, Yu-Kai Wang, and Chin-teng Lin. Dewave: Discrete
+encoding of eeg waves for eeg to text translation. Advances in Neural Information Processing
+Systems, 36:9907–9918, 2023.
+[16] Jinzhao Zhou, Yiqun Duan, Fred Chang, Thomas Do, Yu-Kai Wang, and Chin-Teng Lin. Belt-2:
+Bootstrapping eeg-to-language representation alignment for multi-task brain decoding. arXiv
+preprint arXiv:2409.00121, 2024.
+[17] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal,
+Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al. Learning transferable visual
+models from natural language supervision. In International conference on machine learning,
+pages 8748–8763. PmLR, 2021.
+[18] Tidiane Camaret Ndir, Robin T Schirrmeister, and Tonio Ball. Eeg-clip: Learning eeg representations from natural language descriptions. Frontiers in Robotics and AI, 12:1625731,
+2025.
+[19] Demetres Kostas, Stephane Aroca-Ouellette, and Frank Rudzicz. Bendr: Using transformers
+and a contrastive self-supervised learning task to learn from massive amounts of eeg data.
+Frontiers in Human Neuroscience, 15:653659, 2021.
+[20] Wei-Bang Jiang, Li-Ming Zhao, and Bao-Liang Lu. Large brain model for learning generic
+representations with tremendous eeg data in bci. arXiv preprint arXiv:2405.18765, 2024.
+[21] Jathurshan Pradeepkumar, Xihao Piao, Zheng Chen, and Jimeng Sun. Single-channel eeg
+tokenization through time-frequency modeling. arXiv preprint arXiv:2502.16060, 2025.
+[22] Guangyu Wang, Wenchao Liu, Yuhong He, Cong Xu, Lin Ma, and Haifeng Li. Eegpt: Pretrained
+transformer for universal and reliable representation of eeg signals. Advances in Neural
+Information Processing Systems, 37:39249–39280, 2024.
+[23] Berkay Döner, Thorir Mar Ingolfsson, Luca Benini, and Yawei Li. Luna: Efficient and topologyagnostic foundation model for eeg signal analysis. arXiv preprint arXiv:2510.22257, 2025.
+[24] Yassine El Ouahidi, Jonathan Lys, Philipp Thölke, Nicolas Farrugia, Bastien Pasdeloup, Vincent
+Gripon, Karim Jerbi, and Giulia Lioi. Reve: A foundation model for eeg–adapting to any setup
+with large-scale pretraining on 25,000 subjects. arXiv preprint arXiv:2510.21585, 2025.
+[25] Jiquan Wang, Sha Zhao, Zhiling Luo, Yangxuan Zhou, Haiteng Jiang, Shijian Li, Tao Li, and
+Gang Pan. Cbramod: A criss-cross brain foundation model for eeg decoding. arXiv preprint
+arXiv:2412.07236, 2024.
+[26] Aaron Grattafiori, Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Kadian,
+Ahmad Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten, Alex Vaughan, et al. The llama
+3 herd of models. arXiv preprint arXiv:2407.21783, 2024.
+[27] Gemma Team, Aishwarya Kamath, Johan Ferret, Shreya Pathak, Nino Vieillard, Ramona
+Merhej, Sarah Perrin, Tatiana Matejovicova, Alexandre Ramé, Morgane Rivière, et al. Gemma
+3 technical report. arXiv preprint arXiv:2503.19786, 2025.
+[28] An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu,
+Chang Gao, Chengen Huang, Chenxu Lv, et al. Qwen3 technical report. arXiv preprint
+arXiv:2505.09388, 2025.
+[29] Haotian Liu, Chunyuan Li, Qingyang Wu, and Yong Jae Lee. Visual instruction tuning. Advances
+in neural information processing systems, 36:34892–34916, 2023.
+[30] Sinong Wang, Belinda Z Li, Madian Khabsa, Han Fang, and Hao Ma. Linformer: Self-attention
+with linear complexity. arXiv preprint arXiv:2006.04768, 2020.
+[31] Andrew Jaegle, Felix Gimeno, Andy Brock, Oriol Vinyals, Andrew Zisserman, and Joao
+Carreira. Perceiver: General perception with iterative attention. In International conference on
+machine learning, pages 4651–4664. PMLR, 2021.
+11
+
+[32] Andrew Jaegle, Sebastian Borgeaud, Jean-Baptiste Alayrac, Carl Doersch, Catalin Ionescu,
+David Ding, Skanda Koppula, Daniel Zoran, Andrew Brock, Evan Shelhamer, et al. Perceiver
+io: A general architecture for structured inputs & outputs. arXiv preprint arXiv:2107.14795,
+2021.
+[33] Andrew Sellergren, Sahar Kazemzadeh, Tiam Jaroensri, Atilla Kiraly, Madeleine Traverse,
+Timo Kohlberger, Shawn Xu, Fayaz Jamil, Cían Hughes, Charles Lau, et al. Medgemma
+technical report. arXiv preprint arXiv:2507.05201, 2025.
+[34] Kishore Papineni, Salim Roukos, Todd Ward, and Wei-Jing Zhu. Bleu: a method for automatic
+evaluation of machine translation. In Proceedings of the 40th annual meeting of the Association
+for Computational Linguistics, pages 311–318, 2002.
+[35] Chin-Yew Lin. ROUGE: A package for automatic evaluation of summaries. In Text Summarization Branches Out, pages 74–81, 2004.
+[36] Satanjeev Banerjee and Alon Lavie. Meteor: An automatic metric for mt evaluation with
+improved correlation with human judgments. In Proceedings of the acl workshop on intrinsic
+and extrinsic evaluation measures for machine translation and/or summarization, pages 65–72,
+2005.
+
+12
+
+Appendix
+Contents
+A Details of EEG-Report Benchmark
+
+13
+
+B Additional Experiment Details
+
+13
+
+B.1 Band Power Features . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+13
+
+B.2 Evaluation Metrics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+14
+
+B.3 Baselines and Prompts . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+14
+
+C Implementation Details
+
+17
+
+C.1 Model Details and Hyperparameters . . . . . . . . . . . . . . . . . . . . . . . . .
+
+17
+
+C.2 Training Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+17
+
+C.3 Prompts . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+17
+
+D Additional Experiment Results
+
+19
+
+D.1 Extended Report Generation Performance on S0001 . . . . . . . . . . . . . . . . .
+
+19
+
+D.2 Extended Report Generation Performance on S0002 . . . . . . . . . . . . . . . . .
+
+19
+
+D.3 Additional Results on Alignment Module Ablation . . . . . . . . . . . . . . . . .
+
+21
+
+D.4 EEG Encoder Ablation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+21
+
+D.5 Performance Analysis by Report Section . . . . . . . . . . . . . . . . . . . . . . .
+
+21
+
+D.6 Score Distribution . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+23
+
+D.7 Qualitative Analysis and Case Studies . . . . . . . . . . . . . . . . . . . . . . . .
+
+25
+
+E Discussion, Limitations and Implications for Future work
+
+28
+
+F Broader Impact Statement
+
+28
+
+A
+
+Details of EEG-Report Benchmark
+
+This section provides detailed information on the EEG–Report benchmark constructed in our study.
+Table 3 summarizes key statistics, including the number of EEG–report pairs, patient counts, and
+total EEG recording duration for each site. Figure 7 further illustrates dataset distributions across
+EEG session duration, patient demographics (age and gender), and EEG report sections.
+
+Site
+
+Table 3: Statistics of the EEG–Report benchmark.
+# of Paired EEG & Reports # of Patients Total Duration (hrs)
+
+S0001
+S0002
+
+5049
+4873
+
+B
+
+Additional Experiment Details
+
+B.1
+
+Band Power Features
+
+4669
+4379
+
+6639
+4367
+
+This section describes the extraction of handcrafted EEG features used in the unimodal text + EEG
+feature baselines. To construct EEG features that fit current context-length constraints, we extract
+13
+
+Figure 7: Dataset statistics of the filtered and constructed EEG-Report Benchmark used in our study
+
+band-power features from EEG recordings. For each 10-second multichannel EEG segment, we
+compute channel-wise band power using Welch’s method by first estimating the power spectral
+density and then integrating it within five EEG frequency bands: delta (0.5–4 Hz), theta (4–8 Hz),
+alpha (8–13 Hz), beta (13–30 Hz), and gamma (30–80 Hz). To further reduce input sequence length
+for LLMs with limited context windows, we optionally pool consecutive epochs by concatenating
+their time axes prior to spectral estimation, yielding a more compact representation. The resulting
+band power values are formatted as structured text and provided as input to the LLMs (see example
+in Figure 9).
+B.2
+
+Evaluation Metrics
+
+We evaluate report generation performance using a comprehensive set of natural language generation metrics to evaluate different aspects of
+generation quality. In the main manuscript, we
+report smoothed BLEU-1, ROUGE-1, and METEOR scores. In Appendix D, we additionally
+report smoothed BLEU-4, ROUGE-2, ROUGEL, and ROUGE-LSUM. We further include persample score distributions for all metrics in Appendix D.6.
+B.3
+
+Table 4: Summary of LLM Baselines
+LLM
+
+Family
+
+Context Length
+
+Gemma-3-1b-it
+Gemma-3n-E2B-it
+Gemma-3n-E4B-it
+Gemma-3-4b-it
+Medgemma-4b-it
+Llama-3.2-1B-Instruct
+Llama-3.2-3B-Instruct
+Llama-3.1-8B-Instruct
+Meta-Llama-3-8B-Instruct
+Qwen3-1.7B
+Qwen3-4B-Instruct-2507
+
+Gemma 3
+Gemma 3
+Gemma 3
+Gemma 3
+Gemma
+Llama-3.2
+Llama-3.2
+Llama-3.1
+Llama-3
+Qwen 3
+Qwen 3
+
+32K
+32K
+32K
+128K
+128K
+128K
+128K
+128K
+8K
+32K
+256K
+
+Baselines and Prompts
+
+In this section, we provide additional details on
+the baseline models and the prompts used in our experiments. Table 4 summarizes all LLMs
+14
+
+considered in our study along with their respective context lengths2 , further underscoring the practical
+challenges of directly conditioning LLMs on long-duration EEG recordings. Figures 8 and 9 present
+the prompts used for the unimodal text-only and unimodal text + EEG feature baselines, respectively.
+For clarity, we provide examples for certain prompt sections using bounding boxes.
+Unimodal + Text Only Prompt
+You are an expert clinical neurophysiologist specializing in EEG interpretation and clinical
+report generation.
+TASK
+Your task is to generate the specified sections of a formal clinical EEG report using only the
+provided:
+• Patient history
+• EEG description
+EEG SECTION DESCRIPTIONS
+[STANDARDIZED_SECTION_DESCRIPTIONS]
+e.g. EEG DESCRIPTION/DETAILS: Detailed narrative of EEG findings
+including background activity, sleep stages, physiologic variants,
+and abnormalities observed during the recording period.
+
+GUIDELINES
+• Generate only the sections listed in **SECTIONS TO BE GENERATED**.
+• Do NOT generate any additional sections.
+• Do NOT repeat the same section more than once.
+• Only generate the output in the JSON format and do not include any other text or
+explanation.
+OUTPUT FORMAT (STRICT)
+Return ONLY the following JSON structure, with no preamble, explanation, or markdown:
+json
+{"report_sections": [
+{"section_name": "Name of the section as given in SECTIONS TO BE
+GENERATED",
+"section_text": "Generated text for the section in string"},
+...
+]}
+
+SECTIONS TO BE GENERATED
+[SECTION_NAMES]
+e.g. ['EEG DESCRIPTION/DETAILS']
+
+PATIENT HISTORY AND EEG DESCRIPTION
+[PATIENT_HISTORY_AND_EEG_DESCRIPTION]
+e.g. age: 77.0, gender: Female, indication: ***** y.o. female with
+history of afib, l mca stroke, and headaches, presenting with episodes
+of altered consciousness concerning for seizure vs. syncope.
+none pertinent medications: keppra, neurontin, seroquel. none
+
+Now generate the EEG report.
+
+Figure 8: Prompt for unimodal + text only baselines.
+
+2 Context length information is extracted from their respective technical reports and Hugging Face https://huggingface.
+
+co/
+
+15
+
+Unimodal + Text + EEG Features Prompt
+EEG-DERIVED STATISTICS
+{"eeg_session_0":{"delta (0.5-4Hz) band power (dB)": [[-22.90, -21.60, ...]],
+"theta (4-8Hz) band power (dB)": [[-25.30, -24.80, ...]],
+"alpha (8-12Hz) band power (dB)": [[-27.50, -26.60, ...]],
+"beta (12-30Hz) band power (dB)": [[-30.60, -30.20, ...]],
+"gamma (30-80Hz) band power (dB)": [[-36.30, -36.10, ...]],
+
+EEG CHANNELS
+
+['C3', 'C4', 'O1', 'O2', 'Cz', 'F3', 'F4', 'F7', 'F8', 'Fz', 'Fp1', 'Fp2',
+'Fpz', 'P3', 'P4', 'Pz', 'T3', 'T4', 'T5', 'T6', 'A1', 'A2']
+
+You are an expert clinical neurophysiologist specializing in EEG interpretation and clinical
+report generation.
+TASK
+Your task is to generate the specified sections of a formal clinical EEG report using only the
+provided:
+• Patient history
+• EEG description
+• EEG Channels
+• EEG-derived statistics (provided above)
+EEG SECTION DESCRIPTIONS
+[STANDARDIZED_SECTION_DESCRIPTIONS]
+e.g. EEG DESCRIPTION/DETAILS: Detailed narrative of EEG findings including
+background activity, sleep stages, physiologic variants, and abnormalities
+observed during the recording period.
+
+GUIDELINES
+• Generate only the sections listed in **SECTIONS TO BE GENERATED**.
+• Do NOT generate any additional sections.
+• Do NOT repeat the same section more than once.
+• Only generate the output in the JSON format and do not include any other text or
+explanation.
+OUTPUT FORMAT (STRICT)
+Return ONLY the following JSON structure, with no preamble, explanation, or markdown:
+json
+{"report_sections": [
+{"section_name": "Name of the section as given in SECTIONS TO BE GENERATED",
+"section_text": "Generated text for the section in string"},
+...]}
+
+SECTIONS TO BE GENERATED
+[SECTION_NAMES]
+e.g. ['EEG DESCRIPTION/DETAILS']
+
+PATIENT HISTORY AND EEG DESCRIPTION
+[PATIENT_HISTORY_AND_EEG_DESCRIPTION]
+e.g. age: 77.0, gender: Female, indication: ***** y.o. female with history
+of afib, l mca stroke, and headaches, presenting with episodes of altered
+consciousness concerning for seizure vs. syncope.
+none pertinent medications: keppra, neurontin, seroquel. none
+
+Now generate the EEG report.
+
+Figure 9: Prompt for unimodal + text and EEG features as input baselines.
+
+16
+
+C
+
+Implementation Details
+
+To facilitate reproducibility, we provide the complete source code for constructing the EEG–report
+benchmark from the Harvard Electroencephalography Database and the EHR database hosted on the
+Brain Data Science Platform, together with our model implementation, training scripts, data loaders,
+and pretrained weights at https://anonymous.4open.science/r/CELM-3AF4. Additionally, we
+provide the detailed implementation details of our approach in this section and the prompts used
+for the baselines in Appendix B. The dataset utilized for this study is publicly available and can
+be accessed at https://bdsp.io/content/harvard-eeg-db/4.1/ after obtaining credentialed
+access. Experiments were conducted using multiple NVIDIA RTX 6000 and NVIDIA A100 GPUs
+with 49GB and 80GB of memory.
+C.1
+
+Model Details and Hyperparameters
+
+We use CBraMod [25] as the EEG encoder and Qwen-4B-Instruct-2507 as the local LLM backbone
+in our framework. CBraMod is selected due to its SOTA performance among EEG foundation models
+and its pretraining on large, diverse EEG datasets. In addition, our encoder ablation study comparing
+CBraMod with LaBraM shows that CBraMod consistently achieves better performance. We chose
+Qwen-4B-Instruct-2507 as the LLM backbone because it outperforms other local LLMs in unimodal
+baselines and reliably follows instruction prompts to generate outputs with the required structure. In
+Table 5, we provide the hyperparameters of the alignment modules used in our study.
+Table 5: Hyperparameters of the alignment (projector) modules.
+Module
+Linear Projector
+
+Perceiver Projector
+
+Sequence Context Compression (SCC)
+
+Sequence Context Alignment (SCA)
+
+C.2
+
+Hyperparameter
+Projector Input Dimension (CBraMod Embedding Dimension)
+Projector Output Dimension (Qwen-3 4B Embedding Dimension)
+Bias
+# Trainable parameters
+# Query tokens
+Embedding Dimension
+# Attention heads
+# Perceiver layers (cross attention followed by feed-forward layer)
+Dropout
+Feed-forward multiplier (×)
+Final linear projection
+# Trainable parameters
+Transformer Encoder Type
+Transformer # heads
+Transformer # layers (depth)
+# Query tokens
+# Perceiver layers
+# Trainable parameters
+Transformer Encoder Type
+# Heads
+# Transformer Layers
+Final linear projection
+# Trainable parameters
+
+Values
+200
+2560
+True
+522,240
+256
+200
+8
+2
+0.1
+2
+Linear(200, 2560)
+1,219,040
+Linear attention transformer
+8
+1
+256
+1
+1,378,440
+Linear attention transformer
+8
+2
+Linear(200, 2560)
+1,486,240
+
+Table 6: Training details
+
+Training Details
+
+Hyperparameter
+Batch size
+Gradient accumulation steps
+Optimizer
+Learning rate
+Weight decay
+β1
+β2
+C.3 Prompts
+LR scheduler
+Figure 10 illustrates the prompt used in # of training epochs
+our approach along with the EEG tokens.Warm-up ratio
+Mixed precision
+We also provide examples of the
+sections in the prompt.
+In our approach, the EEG encoder and
+LLM backbone are frozen, and only
+the alignment module is trained via
+supervised learning using a next-token
+prediction objective. Training details
+are summarized in Table 6.
+
+17
+
+Values
+4
+4
+AdamW
+1e-4
+0.01
+0.9
+0.99
+Linear scheduler with warmup
+10
+0.1
+bf16
+
+ELM Prompt
+Input : EEG projected tokens prepended to text tokens.
+EEG CHANNELS
+['C3', 'C4', 'O1', 'O2', 'Cz', 'F3', 'F4', 'F7', 'F8', 'Fz', 'Fp1', 'Fp2',
+,→
+'Fpz',
+'P3', 'P4', 'Pz', 'T3', 'T4', 'T5', 'T6', 'A1', 'A2']
+
+You are an expert clinical neurophysiologist specializing in EEG interpretation and clinical
+report generation.
+TASK
+Your task is to generate the specified sections (**SECTIONS TO BE GENERATED**) of a
+formal clinical EEG report using the above provided data of EEG recording sessions and the
+following information:
+• Patient history
+• EEG description
+• EEG Channels
+EEG SECTION DESCRIPTIONS
+[STANDARDIZED_SECTION_DESCRIPTIONS]
+e.g. EEG DESCRIPTION/DETAILS: Detailed narrative of EEG findings including
+background activity, sleep stages, physiologic variants, and abnormalities
+observed during the recording period.
+
+GUIDELINES
+• Generate only the sections listed in **SECTIONS TO BE GENERATED**.
+• Do NOT generate any additional sections.
+• Do NOT repeat the same section more than once.
+• Only generate the output in the JSON format and do not include any other text or
+explanation.
+OUTPUT FORMAT (STRICT)
+Return ONLY the following JSON structure, with no preamble, explanation, or markdown:
+json
+{"report_sections": [
+{"section_name": "Name of the section as given in SECTIONS TO BE
+GENERATED",
+"section_text": "Generated text for the section in string"},
+... ]}
+
+SECTIONS TO BE GENERATED
+[SECTION_NAMES]
+e.g. ['EEG DESCRIPTION/DETAILS']
+
+PATIENT HISTORY AND EEG DESCRIPTION
+[PATIENT_HISTORY_AND_EEG_DESCRIPTION]
+e.g. age: 77.0, gender: Female, indication: ***** y.o. female with history
+of afib, l mca stroke, and headaches, presenting with episodes of altered
+consciousness concerning for seizure vs. syncope.
+none pertinent medications: keppra, neurontin, seroquel. none
+
+Now generate the EEG report.
+
+Figure 10: Prompt for CELM.
+
+18
+
+D
+
+Additional Experiment Results
+
+D.1
+
+Extended Report Generation Performance on S0001
+
+Table 7 presents a comprehensive performance comparison of EEG report generation on the S0001
+site for samples with clinical context. Both proposed variants consistently outperform all baselines
+across all evaluation metrics. Among them, CELM achieves better performance compared to the
+memory-efficient CELM-SCC variant across all metrics.
+Table 7: Report generation performance comparison on samples with clinical context on S0001. We
+provide results for a complete set of evaluation metrics under two input settings: (i) Unimodal +
+Text Only Input, where language models generate reports solely from clinical context text, and (ii)
+Unimodal + Text + EEG Features Input, where EEG-derived features are additionally provided. The
+table compares multiple strong baselines, including general-purpose and medical LLMs, against our
+CELM. The best results are highlighted in orange, and the best baseline per category is highlighted in
+blue.
+Method
+
+BLEU-1
+
+BLEU-4
+
+ROUGE-1
+
+ROUGE-2
+
+ROUGE-L
+
+ROUGE-LSUM
+
+BERTScore
+
+METEOR
+
+0.1381 ± 0.1137
+0.1687 ± 0.1824
+0.1929 ± 0.1747
+0.1687 ± 0.1890
+0.1593 ± 0.1910
+0.0629 ± 0.0515
+0.1550 ± 0.1759
+0.1722 ± 0.1892
+0.1795 ± 0.1787
+0.0855 ± 0.1075
+0.1916 ± 0.1622
+
+0.6461 ± 0.3014
+0.7848 ± 0.0765
+0.7941 ± 0.0922
+0.7847 ± 0.0747
+0.6683 ± 0.2994
+0.5580 ± 0.3284
+0.7116 ± 0.2311
+0.6994 ± 0.2605
+0.7392 ± 0.2055
+0.3856 ± 0.3941
+0.7975 ± 0.0852
+
+0.1567 ± 0.1238
+0.1875 ± 0.1725
+0.2147 ± 0.1668
+0.1816 ± 0.1786
+0.1529 ± 0.1835
+0.0529 ± 0.0519
+0.1843 ± 0.1864
+0.1839 ± 0.1788
+0.1946 ± 0.1809
+0.1102 ± 0.1316
+0.2418 ± 0.1440
+
+0.0311 ± 0.1512
+0.0415 ± 0.1756
+0.0247 ± 0.1384
+0.2498 ± 0.3570
+0.6172 ± 0.3319
+0.4978 ± 0.3562
+0.6441 ± 0.2898
+0.6930 ± 0.2289
+0.6063 ± 0.3215
+0.7249 ± 0.1840
+
+0.0064 ± 0.0462
+0.0088 ± 0.0543
+0.0078 ± 0.0558
+0.0231 ± 0.0392
+0.1529 ± 0.1832
+0.0473 ± 0.0479
+0.1751 ± 0.1871
+0.1844 ± 0.1647
+0.1683 ± 0.1304
+0.2067 ± 0.1079
+
+Unimodal + Text Only Input
+Gemma-3-1b-it
+Gemma-3n-e2b-it
+Gemma-3-4b-it
+Gemma-3n-e4b-it
+Medgemma-4b-it
+Llama-3.2-1b-instruct
+Llama-3.2-3b-instruct
+Llama-3.1-8b-instruct
+Meta-llama-3-8b-instruct
+Qwen3-1.7b
+Qwen3-4b-instruct-2507
+
+0.1897 ± 0.1340
+0.1967 ± 0.1592
+0.2372 ± 0.1508
+0.1793 ± 0.1685
+0.1502 ± 0.1725
+0.0337 ± 0.0667
+0.1951 ± 0.1630
+0.2128 ± 0.1702
+0.2249 ± 0.1602
+0.1335 ± 0.1481
+0.2795 ± 0.1243
+
+0.0351 ± 0.0694
+0.0641 ± 0.1402
+0.0641 ± 0.1349
+0.0642 ± 0.1486
+0.0485 ± 0.1383
+0.0059 ± 0.0166
+0.0625 ± 0.1487
+0.0598 ± 0.1444
+0.0620 ± 0.1418
+0.0213 ± 0.0450
+0.0593 ± 0.1100
+
+0.2112 ± 0.1408
+0.2410 ± 0.1722
+0.2857 ± 0.1590
+0.2416 ± 0.1778
+0.2196 ± 0.1924
+0.0919 ± 0.0744
+0.2224 ± 0.1755
+0.2511 ± 0.1872
+0.2673 ± 0.1731
+0.1378 ± 0.1557
+0.3038 ± 0.1460
+
+0.0431 ± 0.0985
+0.0702 ± 0.1939
+0.0821 ± 0.1893
+0.0763 ± 0.2003
+0.0654 ± 0.1954
+0.0053 ± 0.0217
+0.0669 ± 0.1860
+0.0753 ± 0.1967
+0.0765 ± 0.1895
+0.0285 ± 0.0704
+0.0763 ± 0.1672
+
+0.1356 ± 0.1129
+0.1657 ± 0.1826
+0.1893 ± 0.1749
+0.1659 ± 0.1892
+0.1569 ± 0.1908
+0.0615 ± 0.0500
+0.1511 ± 0.1760
+0.1689 ± 0.1889
+0.1758 ± 0.1785
+0.0835 ± 0.1054
+0.1872 ± 0.1623
+
+Gemma-3-1b-it
+Gemma-3n-e2b-it
+Gemma-3-4b-it
+Gemma-3n-e4b-it
+Medgemma-4b-it
+Llama-3.2-1b-instruct
+Llama-3.2-3b-instruct
+Llama-3.1-8b-instruct
+Qwen3-1.7b
+Qwen3-4b-instruct-2507
+
+0.0068 ± 0.0442
+0.0083 ± 0.0504
+0.0085 ± 0.0532
+0.0101 ± 0.0348
+0.1618 ± 0.1730
+0.0310 ± 0.0615
+0.1692 ± 0.1414
+0.2040 ± 0.1450
+0.2047 ± 0.1351
+0.1809 ± 0.0986
+
+0.0019 ± 0.0273
+0.0029 ± 0.0330
+0.0025 ± 0.0299
+0.0020 ± 0.0067
+0.0488 ± 0.1400
+0.0053 ± 0.0119
+0.0528 ± 0.1147
+0.0508 ± 0.1177
+0.0331 ± 0.0611
+0.0288 ± 0.0555
+
+0.0086 ± 0.0524
+0.0116 ± 0.0605
+0.0093 ± 0.0594
+0.0397 ± 0.0606
+0.2100 ± 0.1919
+0.0820 ± 0.0727
+0.1844 ± 0.1611
+0.2151 ± 0.1693
+0.2051 ± 0.1453
+0.2058 ± 0.1192
+
+CELM-SCC
+CELM
+
+0.3383 ± 0.1936 0.1345 ± 0.1860 0.3843 ± 0.1876 0.1651 ± 0.1960 0.2699 ± 0.1867 0.2732 ± 0.1865 0.7949 ± 0.1783 0.2889 ± 0.1866
+0.4823 ± 0.1920 0.2831 ± 0.1952 0.5565 ± 0.1683 0.3458 ± 0.2036 0.4687 ± 0.1857 0.4702 ± 0.1852 0.8697 ± 0.0901 0.4734 ± 0.1941
+
+Unimodal + Text + EEG Features Input
+
+D.2
+
+0.0022 ± 0.0367
+0.0032 ± 0.0403
+0.0032 ± 0.0402
+0.0014 ± 0.0072
+0.0611 ± 0.1870
+0.0037 ± 0.0150
+0.0543 ± 0.1575
+0.0617 ± 0.1695
+0.0422 ± 0.0971
+0.0402 ± 0.0969
+
+0.0063 ± 0.0449
+0.0080 ± 0.0500
+0.0062 ± 0.0466
+0.0259 ± 0.0395
+0.1455 ± 0.1858
+0.0547 ± 0.0485
+0.1271 ± 0.1529
+0.1469 ± 0.1690
+0.1286 ± 0.1150
+0.1275 ± 0.1082
+
+0.0064 ± 0.0451
+0.0083 ± 0.0507
+0.0065 ± 0.0474
+0.0262 ± 0.0401
+0.1482 ± 0.1862
+0.0556 ± 0.0493
+0.1342 ± 0.1536
+0.1499 ± 0.1693
+0.1317 ± 0.1163
+0.1303 ± 0.1087
+
+Extended Report Generation Performance on S0002
+
+Tables 8 and 9 present a comprehensive performance comparison of EEG report generation on
+the S0002 site under settings with and without patient clinical context (subset of S0002 samples
+without patient clinical context). Both proposed variants consistently outperform all baselines across
+all evaluation metrics. Among them, CELM achieves better performance compared to the memoryefficient CELM-SCC variant across all metrics, except for BERTScore in the zero-context setting.
+
+19
+
+Table 8: Report generation performance comparison on samples with clinical context on S0002. We
+provide results for a complete set of evaluation metrics under two input settings: (i) Unimodal +
+Text Only Input, where language models generate reports solely from clinical context text, and (ii)
+Unimodal + Text + EEG Features Input, where EEG-derived features are additionally provided. The
+table compares multiple strong baselines, including general-purpose and medical LLMs, against our
+CELM. The best results are highlighted in orange, and the best baseline per category is highlighted in
+blue.
+Method
+
+BLEU-1
+
+BLEU-4
+
+ROUGE-1
+
+ROUGE-2
+
+ROUGE-L
+
+ROUGE-LSUM
+
+BERTScore
+
+METEOR
+
+0.1259 ± 0.0495
+0.1254 ± 0.0408
+0.1440 ± 0.0369
+0.1175 ± 0.0407
+0.1345 ± 0.0458
+0.0596 ± 0.0509
+0.1271 ± 0.0517
+0.1404 ± 0.0476
+0.1390 ± 0.0411
+0.0652 ± 0.0716
+0.1350 ± 0.0324
+
+0.7058 ± 0.2423
+0.7683 ± 0.0560
+0.7851 ± 0.0730
+0.7635 ± 0.0525
+0.7576 ± 0.1375
+0.5139 ± 0.3501
+0.7261 ± 0.1919
+0.7502 ± 0.1531
+0.7702 ± 0.0817
+0.3650 ± 0.3893
+0.7867 ± 0.0178
+
+0.1319 ± 0.0565
+0.1181 ± 0.0472
+0.1506 ± 0.0514
+0.0993 ± 0.0490
+0.1198 ± 0.0542
+0.0494 ± 0.0504
+0.1430 ± 0.0689
+0.1480 ± 0.0581
+0.1416 ± 0.0481
+0.0735 ± 0.0821
+0.1622 ± 0.0434
+
+Unimodal + Text Only Input
+Gemma-3-1b-it
+Gemma-3n-e2b-it
+Gemma-3-4b-it
+Gemma-3n-e4b-it
+Medgemma-4b-it
+Llama-3.2-1b-instruct
+Llama-3.2-3b-instruct
+Llama-3.1-8b-instruct
+Meta-llama-3-8b-instruct
+Qwen3-1.7b
+Qwen3-4b-instruct-2507
+
+0.1509 ± 0.0898
+0.0925 ± 0.0769
+0.1538 ± 0.0990
+0.0539 ± 0.0664
+0.0865 ± 0.0855
+0.0340 ± 0.0700
+0.1651 ± 0.1110
+0.1629 ± 0.0970
+0.1441 ± 0.0847
+0.0886 ± 0.1095
+0.1912 ± 0.0807
+
+0.0158 ± 0.0121
+0.0115 ± 0.0230
+0.0163 ± 0.0180
+0.0083 ± 0.0243
+0.0109 ± 0.0194
+0.0036 ± 0.0073
+0.0186 ± 0.0256
+0.0190 ± 0.0237
+0.0176 ± 0.0232
+0.0097 ± 0.0124
+0.0218 ± 0.0197
+
+0.2330 ± 0.0876
+0.2318 ± 0.0600
+0.2775 ± 0.0558
+0.1998 ± 0.0649
+0.2280 ± 0.0734
+0.0954 ± 0.0869
+0.2346 ± 0.0877
+0.2655 ± 0.0766
+0.2588 ± 0.0586
+0.1189 ± 0.1296
+0.2690 ± 0.0448
+
+0.0302 ± 0.0210
+0.0274 ± 0.0346
+0.0354 ± 0.0335
+0.0281 ± 0.0358
+0.0341 ± 0.0341
+0.0082 ± 0.0135
+0.0321 ± 0.0351
+0.0424 ± 0.0356
+0.0403 ± 0.0330
+0.0142 ± 0.0191
+0.0398 ± 0.0298
+
+0.1233 ± 0.0467
+0.1224 ± 0.0377
+0.1407 ± 0.0336
+0.1152 ± 0.0392
+0.1315 ± 0.0433
+0.0581 ± 0.0483
+0.1221 ± 0.0478
+0.1368 ± 0.0444
+0.1354 ± 0.0374
+0.0633 ± 0.0686
+0.1317 ± 0.0295
+
+Gemma-3-1b-it
+Gemma-3n-e2b-it
+Gemma-3-4b-it
+Gemma-3n-e4b-it
+Medgemma-4b-it
+Llama-3.2-1b-instruct
+Llama-3.2-3b-instruct
+Llama-3.1-8b-instruct
+Qwen3-1.7b
+Qwen3-4b-instruct-2507
+
+0.0957 ± 0.0925
+0.0750 ± 0.0771
+0.2089 ± 0.0895
+0.0169 ± 0.0486
+0.0888 ± 0.0910
+0.0312 ± 0.0668
+0.1779 ± 0.1101
+0.1960 ± 0.0959
+0.1890 ± 0.1048
+0.2483 ± 0.0425
+
+0.0109 ± 0.0203
+0.0093 ± 0.0226
+0.0222 ± 0.0186
+0.0018 ± 0.0052
+0.0110 ± 0.0195
+0.0035 ± 0.0073
+0.0207 ± 0.0224
+0.0227 ± 0.0251
+0.0185 ± 0.0118
+0.0217 ± 0.0098
+
+0.1755 ± 0.1157
+0.2190 ± 0.0840
+0.2886 ± 0.0458
+0.0357 ± 0.0903
+0.1829 ± 0.1128
+0.1016 ± 0.0773
+0.2309 ± 0.0903
+0.2256 ± 0.0904
+0.2049 ± 0.1021
+0.2638 ± 0.0341
+
+0.5785 ± 0.3384
+0.7175 ± 0.2153
+0.7883 ± 0.0418
+0.1073 ± 0.2678
+0.5979 ± 0.3260
+0.5903 ± 0.3062
+0.7377 ± 0.1557
+0.6895 ± 0.2171
+0.6345 ± 0.2944
+0.7704 ± 0.0125
+
+0.0954 ± 0.0692
+0.1082 ± 0.0546
+0.1738 ± 0.0476
+0.0180 ± 0.0462
+0.1000 ± 0.0702
+0.0517 ± 0.0448
+0.1540 ± 0.0743
+0.1509 ± 0.0682
+0.1413 ± 0.0724
+0.2017 ± 0.0285
+
+CELM-SCC
+CELM
+
+0.3767 ± 0.1557 0.1671 ± 0.1054 0.4487 ± 0.1283 0.2149 ± 0.1109 0.3232 ± 0.1263 0.3268 ± 0.1258 0.8229 ± 0.1341
+0.5695 ± 0.1702 0.4145 ± 0.1639 0.6408 ± 0.1494 0.4805 ± 0.1603 0.5757 ± 0.1624 0.5772 ± 0.1613 0.8755 ± 0.1521
+
+0.3232± 0.1261
+0.5597 ± 0.1728
+
+Unimodal + Text + EEG Features Input
+0.0239 ± 0.0316
+0.0350 ± 0.0350
+0.0446 ± 0.0331
+0.0049 ± 0.0138
+0.0248 ± 0.0349
+0.0090 ± 0.0142
+0.0350 ± 0.0349
+0.0365 ± 0.0364
+0.0236 ± 0.0179
+0.0334 ± 0.0179
+
+0.0980 ± 0.0653
+0.1256 ± 0.0516
+0.1451 ± 0.0315
+0.0194 ± 0.0490
+0.1008 ± 0.0641
+0.0620 ± 0.0420
+0.1217 ± 0.0484
+0.1198 ± 0.0542
+0.1077 ± 0.0530
+0.1283 ± 0.0180
+
+0.1007 ± 0.0684
+0.1281 ± 0.0539
+0.1491 ± 0.0356
+0.0207 ± 0.0526
+0.1029 ± 0.0660
+0.0634 ± 0.0438
+0.1364 ± 0.0575
+0.1236 ± 0.0574
+0.1110 ± 0.0568
+0.1322 ± 0.0250
+
+Table 9: Zero-context report generation performance on S0002. The best results are highlighted in
+orange, and the best baseline is highlighted in blue.
+Method
+
+BLEU-1
+
+BLEU-4
+
+ROUGE-1
+
+ROUGE-2
+
+ROUGE-L
+
+ROUGE-LSUM
+
+BERTScore
+
+METEOR
+
+0.6441 ± 0.2920
+0.7716 ± 0.0826
+0.7875 ± 0.0203
+0.0471 ± 0.1844
+0.6073 ± 0.3121
+0.6324 ± 0.2729
+0.7328 ± 0.1553
+0.7010 ± 0.1985
+0.6265 ± 0.3013
+0.7418 ± 0.1337
+
+0.1052 ± 0.0556
+0.1116 ± 0.0411
+0.1514 ± 0.0412
+0.0067 ± 0.0281
+0.0820 ± 0.0520
+0.0530 ± 0.0396
+0.1214 ± 0.0617
+0.1298 ± 0.0506
+0.1304 ± 0.0688
+0.1790 ± 0.0420
+
+Unimodal + Text + EEG Features Input
+Gemma-3-1b-it
+Gemma-3n-e2b-it
+Gemma-3-4b-it
+Gemma-3n-e4b-it
+Medgemma-4b-it
+Llama-3.2-1b-instruct
+Llama-3.2-3b-instruct
+Llama-3.1-8b-instruct
+Qwen3-1.7b
+Qwen3-4b-instruct-2507
+
+0.1019 ± 0.0782
+0.0717 ± 0.0710
+0.1699 ± 0.0885
+0.0058 ± 0.0304
+0.0559 ± 0.0660
+0.0265 ± 0.0627
+0.1261 ± 0.1028
+0.1556 ± 0.0817
+0.1772 ± 0.0999
+0.2260 ± 0.0592
+
+0.0105 ± 0.0082
+0.0089 ± 0.0090
+0.0189 ± 0.0122
+0.0007 ± 0.0037
+0.0069 ± 0.0080
+0.0033 ± 0.0074
+0.0125 ± 0.0094
+0.0160 ± 0.0088
+0.0164 ± 0.0104
+0.0183 ± 0.0071
+
+0.1935 ± 0.0953
+0.2203 ± 0.0581
+0.2557 ± 0.0484
+0.0127 ± 0.0509
+0.1591 ± 0.0959
+0.1041 ± 0.0723
+0.1995 ± 0.0806
+0.2090 ± 0.0737
+0.1819 ± 0.0938
+0.2315 ± 0.0501
+
+0.0185 ± 0.0148
+0.0331 ± 0.0175
+0.0382 ± 0.0203
+0.0021 ± 0.0094
+0.0208 ± 0.0191
+0.0109 ± 0.0116
+0.0304 ± 0.0188
+0.0305 ± 0.0170
+0.0187 ± 0.0149
+0.0241 ± 0.0139
+
+CELM-SCC
+CELM
+
+0.2991 ± 0.1276 0.0912 ± 0.0590 0.3793 ± 0.0892 0.1378 ± 0.0666 0.2441 ± 0.0771 0.2441 ± 0.0771 0.8192 ± 0.0299 0.2574 ± 0.0891
+0.4652 ± 0.1884 0.2666 ± 0.1354 0.5248 ± 0.1869 0.3271 ± 0.1494 0.4339 ± 0.1767 0.4339 ± 0.1767 0.7990 ± 0.2432 0.4390 ± 0.1869
+
+20
+
+0.1046 ± 0.0509
+0.1341 ± 0.0331
+0.1341 ± 0.0271
+0.0072 ± 0.0288
+0.0917 ± 0.0535
+0.0632 ± 0.0361
+0.1114 ± 0.0425
+0.1142 ± 0.0416
+0.0982 ± 0.0498
+0.1162 ± 0.0254
+
+0.1046 ± 0.0509
+0.1346 ± 0.0332
+0.1341 ± 0.0271
+0.0072 ± 0.0288
+0.0917 ± 0.0535
+0.0632 ± 0.0361
+0.1141 ± 0.0453
+0.1149 ± 0.0417
+0.0991 ± 0.0502
+0.1162 ± 0.0254
+
+D.3
+
+Additional Results on Alignment Module Ablation
+
+Comprehensive results of the alignment-module ablation study on the S0002 dataset, covering settings
+with clinical context, without clinical context, and all cases, are summarized in Table 10. Across
+most evaluation settings, the SCT projector achieves significantly stronger performance than other
+alignment variants, highlighting the importance of modeling dependencies among EEG epoch tokens
+before projecting them into the LLM embedding space.
+Table 10: Alignment module ablation on S0002 dataset. The best results are highlighted in orange
+Projector
+
+BLEU-1
+
+BLEU-4
+
+ROUGE-1
+
+ROUGE-2
+
+ROUGE-L
+
+ROUGE-LSUM
+
+BERTScore
+
+METEOR
+
+EEG Only
+Linear Projector
+0.2644 ± 0.0471 0.0247 ± 0.0063 0.2928 ± 0.0314 0.0447 ± 0.0141 0.1392 ± 0.0161 0.1392 ± 0.0161 0.7828 ± 0.0152 0.2072 ± 0.0382
+Perceiver Projector
+0.2636 ± 0.0696 0.0249 ± 0.0098 0.2897 ± 0.0344 0.0404 ± 0.0146 0.1377 ± 0.0165 0.1377 ± 0.0165 0.7888 ± 0.0162 0.1968 ± 0.0385
+SCT Perceiver Projector 0.2991 ± 0.1276 0.0912 ± 0.0590 0.3793 ± 0.0892 0.1378 ± 0.0666 0.2441 ± 0.0771 0.2441 ± 0.0771 0.8192 ± 0.0299 0.2574 ± 0.0891
+SCT Projector
+0.4652 ± 0.1884 0.2666 ± 0.1354 0.5248 ± 0.1869 0.3271 ± 0.1494 0.4339 ± 0.1767 0.4339 ± 0.1767 0.7990 ± 0.2432 0.4390 ± 0.1869
+With Patient History
+Linear Projector
+0.2775 ± 0.0485 0.0283 ± 0.0121 0.2998 ± 0.0425 0.0507 ± 0.0240 0.1429 ± 0.0239 0.1473 ± 0.0306 0.7852 ± 0.0153 0.2143 ± 0.0349
+Perceiver Projector
+0.2672 ± 0.0556 0.0273 ± 0.0192 0.2879 ± 0.0378 0.0461 ± 0.0300 0.1384 ± 0.0281 0.1422 ± 0.0321 0.7878 ± 0.0159 0.1955 ± 0.0393
+SCT Perceiver Projector 0.3767 ± 0.1557 0.1671 ± 0.1054 0.4487 ± 0.1283 0.2149 ± 0.1109 0.3232 ± 0.1263 0.3268 ± 0.1258 0.8229 ± 0.1341 0.3232 ± 0.1261
+SCT Projector
+0.5695 ± 0.1702 0.4145 ± 0.1639 0.6408 ± 0.1494 0.4805 ± 0.1603 0.5757 ± 0.1624 0.5772 ± 0.1613 0.8755 ± 0.1521 0.5597 ± 0.1728
+All
+Linear Projector
+0.2762 ± 0.0485 0.0279 ± 0.0117 0.2991 ± 0.0416 0.0501 ± 0.0233 0.1426 ± 0.0232 0.1465 ± 0.0296 0.7849 ± 0.0153 0.2135 ± 0.0353
+Perceiver Projector
+0.2669 ± 0.0571 0.0271 ± 0.0184 0.2881 ± 0.0375 0.0455 ± 0.0288 0.1384 ± 0.0271 0.1417 ± 0.0309 0.7879 ± 0.0160 0.1956 ± 0.0392
+SCT Perceiver Projector 0.3689 ± 0.1548 0.1594 ± 0.1042 0.4417 ± 0.1267 0.2071 ± 0.1098 0.3152 ± 0.1246 0.3185 ± 0.1243 0.8226 ± 0.1275 0.3166 ± 0.1245
+SCT Projector
+0.5590 ± 0.1749 0.3996 ± 0.1673 0.6292 ± 0.1574 0.4650 ± 0.1657 0.5614 ± 0.1692 0.5628 ± 0.1685 0.8678 ± 0.1650 0.5475 ± 0.1779
+
+D.4
+
+EEG Encoder Ablation
+
+We conducted an ablation study to analyze report generation performance across different EEG
+encoders. Specifically, we compared CBraMod [25] and LaBraM [20], both EEG foundation models
+pretrained on large-scale EEG datasets. The results show that CBraMod consistently outperforms
+LaBraM, highlighting the critical role of high-quality EEG representations in effective clinical report
+generation.
+Table 11: EEG encoder ablation study
+EEG Encoder
+Labram
+Cbramod
+
+D.5
+
+BLEU-1
+
+BLEU-4
+
+ROUGE-1
+
+ROUGE-2
+
+ROUGE-L
+
+ROUGE-LSUM
+
+BERTScore
+
+METEOR
+
+0.4654 ± 0.2272 0.3188 ± 0.1904 0.5355 ± 0.2312 0.3809 ± 0.2027 0.4673 ± 0.2233 0.4689 ± 0.2231 0.7781 ± 0.2931 0.4600 ± 0.2259
+0.5590 ± 0.1749 0.3996 ± 0.1673 0.6292 ± 0.1574 0.4650 ± 0.1657 0.5614 ± 0.1692 0.5628 ± 0.1685 0.8678 ± 0.1650 0.5475 ± 0.1779
+
+Performance Analysis by Report Section
+
+Clinical EEG reports comprise multiple sections, each serving a distinct purpose: EEG description/details provides a detailed narrative of observed waveforms and patterns, impression/interpretation
+summarizes the clinical significance of findings, background activity characterizes baseline rhythms,
+and events/seizures documents seizure episodes. To evaluate whether CELM can reliably generate
+these diverse sections, we conduct a section-wise analysis on S0001, which exhibits richer section
+diversity compared to S0002 (where reports predominantly contain only EEG description/details;
+see Figure 7 in Appendix). Figure 11 presents ROUGE-1 scores, comparing CELM against the bestperforming unimodal baseline (text + EEG features) from each LLM family. CELM achieves the
+highest performance in 6 out of 7 report sections. Performance degrades in the interictal epileptiform
+abnormalities section, highlighting a key limitation and a challenge for ELMs in modeling rare and
+clinically complex events, an important direction for future work. Detailed results are provided in
+Table 12, which reports the complete section-wise performance across all models and evaluation
+metrics. These results further demonstrate the consistency of CELM across diverse components of
+clinical reports.
+
+21
+
+Gemma-3n-E4B
+
+Medgemma-4B
+
+Llama-3.1-8B
+
+Qwen3-4B
+
+Ours
+
+Figure 11: Section-wise comparison of report generation performance between CELM and the
+best-performing baselines from different LLM families.
+
+Table 12: Performance by report section on S0001 dataset
+Report Section
+
+EEG Description/Details
+
+Epileptiform Abnormalities
+
+Background Activity
+
+Method
+
+BLEU-1
+
+BLEU-4
+
+ROUGE-1
+
+ROUGE-2
+
+ROUGE-L
+
+ROUGE-LSUM
+
+METEOR
+
+gemma-3n-E4B-it
+medgemma-4b-it
+Llama-3.1-8B-Instruct
+Qwen3-4B-Instruct-2507
+
+0.0095 ± 0.0344
+0.1624 ± 0.1729
+0.2045 ± 0.1452
+0.1818 ± 0.0988
+
+0.0017 ± 0.0057
+0.0489 ± 0.1401
+0.0501 ± 0.1179
+0.0285 ± 0.0555
+
+0.0396 ± 0.0604
+0.2108 ± 0.1917
+0.2143 ± 0.1691
+0.2059 ± 0.1190
+
+0.0012 ± 0.0057
+0.0612 ± 0.1872
+0.0603 ± 0.1694
+0.0393 ± 0.0969
+
+0.0256 ± 0.0389
+0.1460 ± 0.1858
+0.1454 ± 0.1687
+0.1271 ± 0.1082
+
+0.0259 ± 0.0395
+0.1487 ± 0.1861
+0.1485 ± 0.1690
+0.1300 ± 0.1087
+
+0.0228 ± 0.0385
+0.1535 ± 0.1831
+0.1838 ± 0.1645
+0.2069 ± 0.1080
+
+CELM-SCC
+CELM
+
+0.3381 ± 0.1900 0.1291 ± 0.1832 0.3826 ± 0.1854 0.1601 ± 0.1935 0.2650 ± 0.1841 0.2687 ± 0.1840 0.2875 ± 0.1833
+0.4907 ± 0.1834 0.2841 ± 0.1911 0.5631 ± 0.1607 0.3483 ± 0.1987 0.4727 ± 0.1813 0.4745 ± 0.1809 0.4798 ± 0.1873
+
+gemma-3n-E4B-it
+medgemma-4b-it
+Llama-3.1-8B-Instruct
+Qwen3-4B-Instruct-2507
+
+0.0212 ± 0.0508
+0.0015 ± 0.0117
+0.0786 ± 0.1185
+0.0574 ± 0.0919
+
+CELM-SCC
+CELM
+
+0.2870 ± 0.3051 0.1862 ± 0.2173 0.3392 ± 0.2614 0.2104 ± 0.2319 0.3233 ± 0.2597 0.3221 ± 0.2598 0.2717 ± 0.2560
+0.3172 ± 0.3472 0.2061 ± 0.2641 0.3881 ± 0.2967 0.2401 ± 0.2796 0.3600 ± 0.2902 0.3607 ± 0.2897 0.3222 ± 0.3107
+
+gemma-3n-E4B-it
+medgemma-4b-it
+Llama-3.1-8B-Instruct
+Qwen3-4B-Instruct-2507
+
+0.0440 ± 0.0909
+0.0000 ± 0.0000
+0.0318 ± 0.0706
+0.2172 ± 0.1394
+
+CELM-SCC
+CELM
+
+0.1494 ± 0.1142 0.0266 ± 0.0281 0.2442 ± 0.0629 0.0441 ± 0.0252 0.1670 ± 0.0521 0.1670 ± 0.0521 0.1355 ± 0.0524
+0.1825 ± 0.1225 0.0332 ± 0.0244 0.2703 ± 0.0536 0.0701 ± 0.0476 0.1935 ± 0.0530 0.1935 ± 0.0530 0.1786 ± 0.0655
+
+gemma-3n-E4B-it
+medgemma-4b-it
+Interictal Epileptiform Abnormalities Llama-3.1-8B-Instruct
+Qwen3-4B-Instruct-2507
+
+Events/Seizures
+
+Seizures
+
+Impression/Interpretation
+
+0.0207 ± 0.0414
+0.0000 ± 0.0000
+0.0891 ± 0.0899
+0.1594 ± 0.0755
+
+0.0081 ± 0.0201
+0.0008 ± 0.0064
+0.0343 ± 0.0596
+0.0150 ± 0.0240
+
+0.0058 ± 0.0113
+0.0000 ± 0.0000
+0.0047 ± 0.0102
+0.0302 ± 0.0202
+
+0.0096 ± 0.0192
+0.0000 ± 0.0000
+0.0125 ± 0.0126
+0.0251 ± 0.0092
+
+0.0256 ± 0.0642
+0.0043 ± 0.0330
+0.0954 ± 0.1437
+0.0772 ± 0.1201
+
+0.0954 ± 0.1133
+0.0000 ± 0.0000
+0.1093 ± 0.1004
+0.1984 ± 0.1289
+
+0.0255 ± 0.0318
+0.0000 ± 0.0000
+0.1200 ± 0.1008
+0.1856 ± 0.1088
+
+0.0048 ± 0.0181
+0.0034 ± 0.0265
+0.0422 ± 0.0860
+0.0273 ± 0.0473
+
+0.0071 ± 0.0175
+0.0000 ± 0.0000
+0.0102 ± 0.0181
+0.0396 ± 0.0306
+
+0.0075 ± 0.0150
+0.0000 ± 0.0000
+0.0228 ± 0.0221
+0.0334 ± 0.0218
+
+0.0212 ± 0.0529
+0.0043 ± 0.0330
+0.0858 ± 0.1337
+0.0568 ± 0.0808
+
+0.0584 ± 0.0679
+0.0000 ± 0.0000
+0.0759 ± 0.0690
+0.1158 ± 0.0752
+
+0.0255 ± 0.0318
+0.0000 ± 0.0000
+0.0672 ± 0.0550
+0.0985 ± 0.0502
+
+0.0217 ± 0.0539
+0.0043 ± 0.0330
+0.0863 ± 0.1347
+0.0578 ± 0.0830
+
+0.0584 ± 0.0679
+0.0000 ± 0.0000
+0.0759 ± 0.0690
+0.1158 ± 0.0752
+
+0.0255 ± 0.0318
+0.0000 ± 0.0000
+0.0708 ± 0.0581
+0.1048 ± 0.0539
+
+0.0193 ± 0.0563
+0.0030 ± 0.0234
+0.0992 ± 0.1523
+0.0759 ± 0.0942
+
+0.0534 ± 0.0685
+0.0000 ± 0.0000
+0.0443 ± 0.0433
+0.1492 ± 0.0969
+
+0.0159 ± 0.0182
+0.0000 ± 0.0000
+0.0863 ± 0.0781
+0.1253 ± 0.0472
+
+CELM-SCC
+CELM
+
+0.0100 ± 0.0133 0.0027 ± 0.0039 0.0739 ± 0.0444 0.0228 ± 0.0140 0.0635 ± 0.0361 0.0666 ± 0.0338 0.0457 ± 0.0217
+0.0765 ± 0.0815 0.0135 ± 0.0129 0.1166 ± 0.1240 0.0236 ± 0.0232 0.0787 ± 0.0779 0.0787 ± 0.0779 0.0650 ± 0.0559
+
+gemma-3n-E4B-it
+medgemma-4b-it
+Llama-3.1-8B-Instruct
+Qwen3-4B-Instruct-2507
+
+0.0316 ± 0.0632
+0.0000 ± 0.0000
+0.0448 ± 0.0551
+0.0511 ± 0.0465
+
+CELM-SCC
+CELM
+
+0.0481 ± 0.0674 0.0257 ± 0.0353 0.1617 ± 0.1375 0.0004 ± 0.0009 0.1571 ± 0.1414 0.1578 ± 0.1407 0.0290 ± 0.0309
+0.0110 ± 0.0220 0.0090 ± 0.0181 0.1606 ± 0.1248 0.0024 ± 0.0033 0.1512 ± 0.1322 0.1531 ± 0.1305 0.0288 ± 0.0119
+
+gemma-3n-E4B-it
+medgemma-4b-it
+Llama-3.1-8B-Instruct
+Qwen3-4B-Instruct-2507
+
+0.0168 ± 0.0352
+0.0000 ± 0.0000
+0.0273 ± 0.0489
+0.0388 ± 0.0558
+
+CELM-SCC
+CELM
+
+0.0631 ± 0.1319 0.0551 ± 0.1180 0.0773 ± 0.1057 0.0000 ± 0.0000 0.0725 ± 0.1075 0.0735 ± 0.1072 0.0336 ± 0.0502
+0.0272 ± 0.0489 0.0253 ± 0.0471 0.1390 ± 0.2061 0.0005 ± 0.0012 0.1285 ± 0.2088 0.1329 ± 0.2081 0.0419 ± 0.0545
+
+gemma-3n-E4B-it
+medgemma-4b-it
+Llama-3.1-8B-Instruct
+Qwen3-4B-Instruct-2507
+
+0.0172 ± 0.0725
+0.0000 ± 0.0000
+0.0809 ± 0.1339
+0.0885 ± 0.1173
+
+CELM-SCC
+CELM
+
+0.2194 ± 0.2899 0.1465 ± 0.2993 0.2687 ± 0.2946 0.1531 ± 0.3116 0.2190 ± 0.2929 0.2215 ± 0.2929 0.2206 ± 0.2996
+0.2493 ± 0.3481 0.2103 ± 0.3515 0.3581 ± 0.3381 0.2473 ± 0.3793 0.3358 ± 0.3434 0.3372 ± 0.3428 0.2829 ± 0.3428
+
+0.0086 ± 0.0172
+0.0000 ± 0.0000
+0.0225 ± 0.0302
+0.0167 ± 0.0138
+
+0.0032 ± 0.0070
+0.0000 ± 0.0000
+0.0169 ± 0.0328
+0.0121 ± 0.0180
+
+0.0108 ± 0.0622
+0.0000 ± 0.0000
+0.0294 ± 0.0774
+0.0201 ± 0.0328
+
+22
+
+0.0497 ± 0.0696
+0.0000 ± 0.0000
+0.0544 ± 0.0495
+0.0955 ± 0.0374
+
+0.0405 ± 0.0588
+0.0000 ± 0.0000
+0.0294 ± 0.0432
+0.0790 ± 0.1025
+
+0.0237 ± 0.0949
+0.0000 ± 0.0000
+0.1148 ± 0.1863
+0.1069 ± 0.1399
+
+0.0012 ± 0.0016
+0.0000 ± 0.0000
+0.0124 ± 0.0211
+0.0040 ± 0.0071
+
+0.0005 ± 0.0013
+0.0000 ± 0.0000
+0.0010 ± 0.0026
+0.0085 ± 0.0149
+
+0.0125 ± 0.0876
+0.0000 ± 0.0000
+0.0489 ± 0.1334
+0.0308 ± 0.0570
+
+0.0286 ± 0.0341
+0.0000 ± 0.0000
+0.0528 ± 0.0497
+0.0749 ± 0.0315
+
+0.0256 ± 0.0343
+0.0000 ± 0.0000
+0.0279 ± 0.0427
+0.0502 ± 0.0552
+
+0.0207 ± 0.0923
+0.0000 ± 0.0000
+0.0883 ± 0.1654
+0.0675 ± 0.0910
+
+0.0291 ± 0.0341
+0.0000 ± 0.0000
+0.0528 ± 0.0497
+0.0758 ± 0.0300
+
+0.0300 ± 0.0409
+0.0000 ± 0.0000
+0.0294 ± 0.0432
+0.0544 ± 0.0606
+
+0.0207 ± 0.0923
+0.0000 ± 0.0000
+0.0895 ± 0.1663
+0.0693 ± 0.0945
+
+0.0364 ± 0.0610
+0.0000 ± 0.0000
+0.0212 ± 0.0201
+0.0677 ± 0.0648
+
+0.0187 ± 0.0273
+0.0000 ± 0.0000
+0.0286 ± 0.0542
+0.0464 ± 0.0543
+
+0.0193 ± 0.0990
+0.0000 ± 0.0000
+0.0876 ± 0.1499
+0.0996 ± 0.1172
+
+D.6
+
+Score Distribution
+
+Figure 12: Distribution of various metrics for overall report generation in the S0002 dataset.
+
+23
+
+Figure 13: Distribution of various metrics for overall report generation in the S0001 dataset.
+
+24
+
+D.7
+
+Qualitative Analysis and Case Studies
+
+Qwen3-4B (Unimodal + Text + EEG Features)
+
+Linear Projector
+
+Ours
+
+Ground Truth
+
+a.
+
+b.
+
+Figure 14: Examples of generated reports on S0002. Comparisons between the unimodal baseline
+(text + EEG features), the linear-projector alignment variant, CELM, and the ground-truth reports. (a)
+EEG description/details; (b) Impression/interpretation.
+Figure 14 presents qualitative comparisons on S0002 between the best-performing unimodal baseline
+(text with EEG features), the linear projector variant, and CELM, alongside ground truth reports.
+Figure 14a shows the EEG description/details section, while Figure 14b shows the impression/interpretation section. Across these examples, CELM produces reports that are more closely aligned
+with the ground truth, correctly identifying clinically relevant findings such as moderate bilateral
+beta activity, intermittent drowsiness, and bilateral slowing in the theta and delta ranges. In contrast,
+the linear projector and unimodal baselines fail to capture these. In the impression section, CELM
+identifies the recording as abnormal, whereas the linear projector variant incorrectly predicts it as
+normal. These results demonstrate the promise of ELMs in learning to generate clinical reports from
+unstructured notes paired with long EEG recordings. At the same time, they underscore the need for
+more rigorous and standardized benchmarking to assess these models. Additional examples spanning
+both sites, diverse report sections, and varying performance levels are provided below to further
+illustrate model strengths and failure modes. In Figure 15, 16, 17, and 18, we compare generated
+reports from the unimodal baseline, CELM-SCC, and CELM against ground-truth reports across
+multiple EEG report sections and datasets.
+Qwen3-4B (Unimodal + Text + EEG Features)
+
+Ours - SCC
+
+Ours
+
+Ground Truth
+
+a.
+
+b.
+
+c.
+
+d.
+
+Figure 15: Impression/interpretation generation examples on S0001. Examples are ordered from (a)
+to (d) by decreasing ROUGE-1 score. We compare outputs from the unimodal baseline (text + EEG
+features), CELM-SCC, CELM, and the ground-truth reports.
+
+25
+
+Qwen3-4B (Unimodal + Text + EEG Features)
+
+Ours - SCC
+
+Ours
+
+Ground Truth
+
+a.
+
+b.
+
+c.
+
+d.
+
+Figure 16: Section-wise generation examples on S0001. (a) Epileptiform abnormalities, (b) Interictal
+epileptiform abnormalities, (c) Seizures, and (d) Background activity. We compare outputs from the
+unimodal baseline (text + EEG features), CELM-SCC, CELM, and the ground-truth reports.
+
+Qwen3-4B (Unimodal + Text + EEG Features)
+
+Ours - SCC
+
+Ours
+
+Ground Truth
+
+a.
+
+b.
+
+c.
+
+d.
+
+Figure 17: EEG description/details generation examples on S0001. Examples are ordered from (a) to
+(d) by decreasing ROUGE-1 score. We compare outputs from the unimodal baseline (text + EEG
+features), CELM-SCC, CELM, and the ground-truth reports.
+
+26
+
+Qwen3-4B (Unimodal + Text + EEG Features)
+
+Linear Projector
+
+Ours
+
+Ground Truth
+
+a.
+
+b.
+
+c.
+
+d.
+
+Figure 18: EEG description/details generation examples on S0002. Examples are ordered from (a) to
+(d) by decreasing ROUGE-1 score. We compare outputs from the unimodal baseline (text + EEG
+features), CELM-SCC, CELM, and the ground-truth reports.
+
+27
+
+E
+
+Discussion, Limitations and Implications for Future work
+
+In this work, we demonstrate the feasibility of end-to-end clinical EEG–language modeling for
+generating structured reports directly from long-duration EEG recordings. The strong performance
+gains over competitive baselines highlight the potential of ELMs for clinical report generation.
+However, several limitations remain. ☞Evaluation limitations. ELM development is constrained
+by the lack of rigorous benchmarks and clinically grounded evaluation protocols, as common text
+generation metrics mainly capture lexical similarity rather than clinical correctness. ☞Memory
+scalability. Memory remains a key bottleneck. While our approach supports EEG recordings of up to
+approximately 3 hours, further advances in memory-efficient representations are needed to scale to
+longer recordings. ☞Human-in-the-loop potential. ELMs offer opportunities for human-in-the-loop
+workflows, where clinicians guide generation via targeted prompts instead of fixed templates, enabling
+better alignment with clinical intent.
+
+F
+
+Broader Impact Statement
+
+This work advances machine learning research by introducing the first clinical EEG–language model
+that integrates long-duration clinical EEG signals with large language models to generate structured
+clinical reports. The proposed approach has the potential to support clinical workflows; however,
+this work is intended as a research contribution rather than a deployable clinical system. Any realworld application would require extensive validation, regulatory approval, and careful oversight by
+medical professionals. All data used in this study were deidentified by the dataset providers to protect
+participants’ protected health information (PHI). In addition, we strictly adhered to the data-use
+agreements and conducted all experiments using local large-language models.
+
+28
+
+

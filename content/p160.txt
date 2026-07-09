@@ -1,0 +1,1877 @@
+PLOS ONE
+RESEARCH ARTICLE
+
+A scoping review on the use of consumergrade EEG devices for research
+Joshua Sabio ID1,2*, Nikolas S. Williams ID3,4, Genevieve M. McArthur3, Nicholas
+A. Badcock ID2,3
+1 School of Psychology, University of Queensland, St Lucia, Queensland, Australia, 2 School of
+Psychological Science, University of Western Australia, Perth, Western Australia, Australia, 3 School of
+Psychological Science, Macquarie University, Sydney, New South Wales, Australia, 4 Emotiv Inc., San
+Francisco, California, United States of America
+* jsabio28@outlook.com
+
+a1111111111
+a1111111111
+a1111111111
+a1111111111
+a1111111111
+
+Abstract
+Background
+
+OPEN ACCESS
+Citation: Sabio J, Williams NS, McArthur GM,
+Badcock NA (2024) A scoping review on the use of
+consumer-grade EEG devices for research. PLoS
+ONE 19(3): e0291186. https://doi.org/10.1371/
+journal.pone.0291186
+Editor: Yuvaraj Rajamanickam, Nanyang
+Technological University, SINGAPORE
+Received: December 28, 2022
+
+Commercial electroencephalography (EEG) devices have become increasingly available
+over the last decade. These devices have been used in a wide variety of fields ranging from
+engineering to cognitive neuroscience.
+
+Purpose
+The aim of this study was to chart peer-review articles that used consumer-grade EEG
+devices to collect neural data. We provide an overview of the research conducted with these
+relatively more affordable and user-friendly devices. We also inform future research by
+exploring the current and potential scope of consumer-grade EEG.
+
+Accepted: August 23, 2023
+Published: March 6, 2024
+Copyright: © 2024 Sabio et al. This is an open
+access article distributed under the terms of the
+Creative Commons Attribution License, which
+permits unrestricted use, distribution, and
+reproduction in any medium, provided the original
+author and source are credited.
+Data Availability Statement: The data for this
+manuscript is available from OSF: https://osf.io/
+nqb4s/.
+Funding: This work was funded by a joint grant
+between Macquarie University, the University of
+Western Australia, and Emotiv, the Macquarie
+University Co-Funded Research Fellowship
+Scheme (2018-2020), held by NB and GM
+[83673928]. The initial work on this review was
+conducted by NW while they were employed under
+this co-funded grant. The specific roles of these
+
+Methods
+We followed a five-stage methodological framework for a scoping review that included a
+systematic search using the Preferred Reporting Items for Systematic Reviews and MetaAnalyses Extension for Scoping Reviews (PRISMA-ScR) guidelines. We searched the following online databases: PsycINFO, MEDLINE, Embase, Web of Science, and IEEE
+Xplore. We charted study data according to application (BCI, experimental research, validation, signal processing, and clinical) and location of use as indexed by the first author’s
+country.
+
+Results
+We identified 916 studies that used data recorded with consumer-grade EEG: 531 were
+reported in journal articles and 385 in conference papers. Emotiv devices were used most,
+followed by the NeuroSky MindWave, OpenBCI, interaXon Muse, and MyndPlay Mindband.
+The most common usage was for brain-computer interfaces, followed by experimental
+research, signal processing, validation, and clinical purposes.
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+1 / 22
+
+PLOS ONE
+
+authors are articulated in the ‘author contributions’
+section.
+Competing interests: The authors have read the
+journal’s policy and have the following competing
+interests: Nicholas A. Badcock and Genevieve
+McArthur were recipients of the Macquarie
+University Co-Funded Research Fellowship
+Scheme (2018-2020) which is co-funded by
+Macquarie University and Emotiv. Nikolas S.
+Williams was subsequently employed as a
+postdoctoral on the grant. There are no patents,
+products in development or marketed products
+associated with this research to declare. This does
+not alter our adherence to PLOS ONE policies on
+sharing data and materials.
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+Conclusions
+Consumer-grade EEG is a useful tool for neuroscientific research and will likely continue to
+be used well into the future. Our study provides a comprehensive review of their application,
+as well as future directions for researchers who plan to use these devices.
+
+Introduction
+Electroencephalography (EEG) is the continuous measurement of electrical activity generated
+by neurons firing in the brain. This involves placing metal electrodes at multiple scalp sites to
+record fluctuations in voltage at millisecond-level temporal resolution. Such recordings can
+then be processed to produce spectral analyses of electrical activity or generate event-related
+potentials (ERPs) that represent the averaged response to a task or stimulus. Today, EEG is
+one of the most popular neuroscientific tools for academics and medical professionals due to
+its non-invasiveness and ease-of-use [1]. More recently, several companies have developed
+consumer-grade EEG devices. These devices are compact, wireless, and have a streamlined
+setup, making them particularly attractive to novice researchers or those looking to collect
+data outside the traditional laboratory setting [2]. More importantly, consumer-grade devices
+are cheaper than research-grade devices, allowing those with limited funding an affordable
+means to collect neurophysiological data.
+Due to its accessibility, consumer-grade EEG has been used for a wide variety of purposes
+across different fields. Software engineers and computer scientists use consumer-grade EEG to
+collect high resolution time-series data. This data is then processed to create or optimise
+machine learning and signal processing algorithms [3–5]. In turn, these algorithms can be
+used in conjunction with the device to develop brain-computer interface (BCI) systems. Those
+in engineering and robotics can train machines to respond in real time to patterns in neural
+data [6]. Once synchronised, a human user can configure a BCI to control a multitude of electronic devices including wheelchairs [7], drones [8], smart homes [9–11], and web browsers
+[12]. Clinicians report using the technology to administer neurofeedback therapy [13], facilitate learning [14], assess patient sleep quality [15, 16], and determine affective states [17–20].
+Scientists increasingly use consumer-grade devices to collect neural data to address a variety of
+theoretical and practical research questions [2, 21, 22].
+The proliferation of research with consumer-grade EEG has inspired several non-systematic reviews (see Table 1). For instance, some reviews compared the performance of a single
+consumer-grade EEG device to non-EEG biosensors in the domains of seizure detection [23],
+BCI systems [24], and stress recognition [25]. Other reviews have compared multiple consumer-grade EEG devices within a single domain [2, 21, 26–28]. For instance, Dadebayev et al.
+[29] focused their review on emotion recognition; Asl et al. [30] focused on drowsiness detection and Khurana et al. [31] focused on neuromarketing. One of the most thorough reviews
+considered around 100 “handpicked” [22] studies that used four consumer-grade devices–the
+NeuroSky MindWave, Emotiv EPOC+, interaXon Muse, and OpenBCI neuroheadset–in the
+domains of cognition, BCI, education research, and game development.
+While these non-systematic reviews provide insights into the domain-specific functions of
+certain EEG devices, the current literature on this topic is, at best, fragmented. Indeed, it is surprising that, to date, there has been no systematic scoping review on the research-related use
+of currently available and commonly used consumer-grade EEG devices. Thus, the aim of this
+paper is to chart the large volume of studies that have used consumer-grade EEG to collect
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+2 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+Table 1. List of literature reviews that include consumer-grade EEG devices.
+First Author
+
+Year
+
+Domain
+
+Devices Reviewed
+
+Rechy-Ramirez et al.
+
+2018
+
+BCI
+
+Emotiv
+
+Xu et al.
+
+2018
+
+Educational research
+
+Emotiv; NeuroSky MindWave
+
+Aldridge et al.
+
+2019
+
+P300 speller task
+
+OpenBCI
+
+Kurada et al.
+
+2019
+
+Seizure detection
+
+Emotiv
+
+Roy et al.
+
+2019
+
+Deep learning
+
+Emotiv; interaXon Muse; Myndplay Mindband; NeuroSky MindWave; OpenBCI
+
+LaRocco et al.
+
+2020
+
+Drowsiness detection
+
+Emotiv; interaXon Muse; NeuroSky MindWave; OpenBCI
+
+Vasiljevic et al.
+
+2020
+
+BCI gamification
+
+Emotiv; Myndplay Mindband; NeuroSky MindWave; OpenBCI
+
+2021 [33]
+
+Seizure detection
+
+Emotiv; NeuroSky MindWave
+
+Castro-Garcia et al.
+
+2022
+
+Stress recognition
+
+OpenBCI
+
+Khurana et al.
+
+2021
+
+Neuromarketing
+
+Emotiv; NeuroSky MindWave; MyndPlay Mindband; OpenBCI
+
+Dadebayev et al.
+
+2022
+
+Emotion recognition
+
+Emotiv; OpenBCI; NeuroSky MindWave
+
+Asl et al.
+
+2022
+
+Drowsiness detection
+
+MyndPlay Mindband; NeuroSky MindWave; Emotiv
+
+Shum et al.
+
+Note. These reviews were excluded from the present review for reasons outlined in Method and Results.
+https://doi.org/10.1371/journal.pone.0291186.t001
+
+neural data. We categorise each of these studies by domain or category to provide a domaingeneral snapshot of the work conducted with this emerging technology. Note that the purpose
+of this scoping review is to detail the range of consumer-grade EEG usage in the current literature. We do not provide an exhaustive critical analysis of each device, as per the remit of a
+scoping review in [32].
+
+Method and results
+We followed the Preferred Reporting Items for Systematic Reviews and Meta-analyses Extension for Scoping Reviews (PRISMA-ScR) guidelines [32]. Scoping reviews report the “extent,
+range, and nature of research activity” [p. 21] in five stages: (1) identify the research question;
+(2) identify relevant studies; (3) select the studies; (4) chart the data; (5) collate, summarise,
+and report the results.
+
+Step 1: Identify the research question
+We aimed to explore the extent to which consumer-grade EEG has been applied to research
+domains in locations around the world. Regarding EEG devices, our goal was to identify the
+EEG systems produced by companies that manufacture the most commonly used consumergrade devices. Regarding research domains, our goal was to identify the primary research fields
+that these consumer-grade EEG systems have been applied to. Finally, regarding research location, our goal was to answer the question of where the devices have been used globally.
+
+Stage 2: Identifying relevant studies
+We conducted a systematic literature search by retrieving records from five online databases:
+(a) PsycINFO, (b) MEDLINE, (c) Embase, (d) Web of Science, and (e) IEEE Xplore. These
+databases contain studies from multiple fields including neuroscience, psychology, medicine,
+and engineering. Searches included studies published from 2010, as this is the year the first
+studies examining consumer-grade EEG were published. Studies also had to be conducted
+with human subjects and written in English. To find records in each database, we used search
+strings to capture keyword variations (see Table 2). These were subsequently adjusted to fit the
+search syntax of each database.
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+3 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+Table 2. Search strings used for each device.
+Device
+
+Device-specific Search String
+
+Domain-general Search String
+
+Emotiv
+
+(“emotiv” or “epoc”)
+
+(“electroenceph*” or “electrophys*” or “eeg” or “event-related” or “event related” or “erp”)
+
+interaXon Muse
+
+(“interaxon” or “muse”)
+
+Myndplay Mindband
+
+(“myndplay” or “mindband”)
+
+NeuroSky MindWave
+
+(“neurosky” or “mindwave”)
+
+OpenBCI
+
+(“openbci” or “cyton” or “daisy”)
+
+Note. Each device-specific search string was linked to the domain-general search string using the “AND” logical operator. Asterisks indicate truncation wildcards.
+https://doi.org/10.1371/journal.pone.0291186.t002
+
+Stage 3: Study selection
+The initial search was conducted in April 2022, completed in May 2022, and yielded 1260 articles. We excluded 265 duplicates and screened the remaining using systematic review software,
+SYRAS [34]. After screening, we excluded a further 79 studies as they met one or more of the
+following exclusion criteria: no device was used, or no EEG was data collected (N = 53); not
+written in English (N = 6); had inaccessible PDFs (N = 20). The final number included was
+916, consisting of 531 journal articles and 385 conference proceedings. Fig 1 depicts the flow
+chart of the screening process.
+
+Stage 4: Charting the data
+We charted 916 included articles by recording the following information: EEG device, research
+domain, authors, first author’s country, year of publication. Country information was obtained
+from the first author’s affiliation as listed in the article. If this could not be found, the first
+author’s most recent affilation was used.
+
+Stage 5: Collating, summarising, and reporting the results
+Consumer-grade EEG devices. The devices used by articles included in this scoping
+review were produced by five companies: Emotiv (67.69%), NeuroSky MindWave (24.56%),
+and OpenBCI, interaXon, and MyndPlay (7.75% collectively for these three devices). Emotiv
+has released three versions of a 14-channel EEG device: EPOC, EPOC+, and EPOC-X. For
+simplicity, all three devices will hereon be referred to as “Emotiv.” The EPOC+ and EPOC-X
+can capture data at both 128 and 256 Hz sampling rates, whereas EPOC captures data at 128
+Hz. The EPOC-X includes an updated amplifier configuration, sensor housing, and rotating
+headband. OpenBCI provides two highly customisable EEG systems: the four-electrode Ganglion board and the eight-electrode Cyton board. Again, for simplicity, both boards will
+hereon be referred to as “OpenBCI.” Users can configure an assembly of eight electrodes
+around an OpenBCI Cyton processing circuit board and daisy-chain it to another Cyton
+board for a 16-channel system. The interaXon Muse is a headband-shaped device that records
+at 256 Hz from four electrodes located above the eyes (AF7, AF8) and above the ears (TP9,
+TP10). The MyndPlay MyndBand records at 512 Hz from three electrodes on the forehead.
+The NeuroSky MindWave is shaped like a gaming headset, records at 512 Hz from a single
+electrode on the forehead (FP1), and pairs with a mobile application that can detect power
+spectra and other metrics such as meditation and attention using built-in signal processing
+techniques.
+Research and consumer-grade EEG devices typically differ in their electrode count.
+Whereas research-grade EEG devices typically comprise dozens of electrodes fitted over the
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+4 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+Fig 1. PRISMA flowchart of the screening process.
+https://doi.org/10.1371/journal.pone.0291186.g001
+
+scalp with saline gel or solution, consumer-grade EEG devices have fewer electrodes and use
+minimal or no conductive medium. However, despite their low electrode count, consumergrade EEG devices have been validated for scientific research in a broad range of paradigms.
+Table 3 lists the technical specifications of currently available devices.
+Research domains. The included articles fell into five categories of use: BCI, experimental
+research, validation, signal processing, and clinical. Table 4 lists a description and an example
+for each usage category, and Fig 2 provides a visual depiction of device usage by category and
+over time. It should be noted that these categories are not mutually exclusive. For example, a
+study that compared the performance of inexpensive, wireless, and dry EEG systems in classifying common neural responses [35] would be “validation.” In cases where a device could be
+classified under multiple categories, the authors made a joint decision about the most appropriate category.
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+5 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+Table 3. Technical specifications of all currently available commercial EEG devices.
+Release Year
+
+Channels
+
+Sample rate (Hz)
+
+Resolution
+
+Emotiv
+
+Manufacturer
+EPOC+
+
+Model
+
+2013
+
+14
+
+128 or 256
+
+14-bit
+
+MyndPlay
+
+Mindband
+
+2014
+
+1
+
+512
+
+*
+
+OpenBCI
+
+Ganglion board
+
+2014
+
+4
+
+200
+
+24-bit
+
+OpenBCI
+
+Cyton board
+
+2014
+
+8
+
+250
+
+24-bit
+
+OpenBCI
+
+Cyton-Daisy board
+
+2014
+
+16
+
+125
+
+24-bit
+
+Emotiv
+
+Insight
+
+2015
+
+5
+
+128
+
+14-bit
+
+InteraXon
+
+Muse 2
+
+2016
+
+4
+
+256
+
+12-bit
+
+NeuroSky
+
+MindWave Mobile 2
+
+2018
+
+1
+
+512
+
+12-bit
+
+Emotiv
+
+EPOC-X
+
+2019
+
+14
+
+128 or 256
+
+14-bit
+
+Note. Emotiv also manufactures the EPOC Flex that contains 32 channels. This device is not included as it is explicitly marketed as a research device—not a commercial
+or consumer-grade device.
+https://doi.org/10.1371/journal.pone.0291186.t003
+
+Brain-computer interfaces. The majority (44.54%) of included studies used consumer-grade
+EEG as an interface between a human user and computer. Through the application of machine
+learning algorithms, users are given the ability to control computers (software) or computerbased machines (hardware) and perform a variety of functions [27]. This is typically achieved
+in two steps. Firstly, data from a user is collected to train a classifier to recognise and extract
+features (i.e., spikes or longer pattern irregularities) from a continuous EEG signal, usually in
+response to a target visual or auditory stimulus. These features can then be evoked by the user
+to control a configured BCI system. How well the BCI system performs depends on multiple
+factors that include the chosen algorithm, the quality of the signal, electrode location, and the
+feature to be extracted [36–38].
+The two earliest BCI-based studies were published in 2010. Using Emotiv, Ranky and Adamovich [39] trained subjects over three weeks to move a robotic arm in three dimensions and
+grip certain objects using only facial movements. Likewise, Kwang-Ok et al. [40] used Emotiv
+to collect data for a paraplegic subject’s use of an emergency call system. These early studies
+speak to the functional and clinical applicability of portable BCI systems, particularly for communication with and the motor improvement of paralysed patients.
+One of the most common methods to configure a BCI system using consumer-grade EEG
+is with the steady-state visual evoked potential (SSVEP). SSVEPs are the typical neural
+response to visual stimuli that appear at matching frequencies [41]. In a recent study, Garcia
+et al. [42] used the interaXon Muse and SSVEPs (along with other signal processing algorithms) to decode and reconstruct stimuli in subjects’ visual field with remarkable accuracy. In
+Table 4. Usage category descriptions and examples.
+Usage Category
+
+Description
+
+Brain-computer
+Interface (BCI)
+
+Studies that facilitated interaction between human Realtime control of a wheelchair.
+user and computer (or machine).
+
+Example
+
+Experimental Research Studies that used the device as a theory
+development tool
+
+Examining EEG signatures in
+cognitive tasks.
+
+Validation
+
+Studies that aimed to validate use of the device
+
+Comparing consumer-grade to
+research-grade EEG systems.
+
+Signal Processing
+
+Studies that collected data to refine EEG signals.
+
+Creating a classification algorithm to
+reduce artefacts.
+
+Clinical
+
+Studies that used the device as a clinical tool
+
+Assessing drowsiness in drivers.
+
+https://doi.org/10.1371/journal.pone.0291186.t004
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+6 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+Fig 2. Charting the number of publications for each device and usage category. Note. For all plots, the y-axis
+denotes the number of publications per category. (A) depicts a bar plot of the total number of publications categorised
+by usage and subcategorised by device in a single bar. (B) charts the inverse: total number of publications categorised
+by device and subcategorised by usage in a single bar. (C) and (D) are frequency plots that chart the number of
+publications over time since 2010 by device and usage, respectively.
+https://doi.org/10.1371/journal.pone.0291186.g002
+
+a similar study, Shi et al. [43] examined SSVEP image decoding applied to mobile phones.
+Chumerin et al. [44] designed a maze-navigating game that used SSVEPs and Emotiv; and,
+together with an eye-tracker, Brennan et al. [45] used Emotiv to control a smart home with
+SSVEPs. Given the frequent use of SSVEPs, future researchers may also choose to take advantage of this feature’s high signal-to-noise ratio when implementing consumer-grade EEG into
+BCI systems.
+Another easily identifiable ERP feature is the P300, a positive spike occurring roughly 300
+ms after the presentation of an irregular, or “oddball”, stimulus in a stream of otherwise regular stimuli [46]. Due to its consistent latency, the P300 is commonly used as a target response
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+7 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+in BCI-based applications [47]. Jijun et al. [48] used an Emotiv to capture P300 components
+and created a hands-free dialling system. Indeed, one of the most frequently observed applications of consumer-grade EEG is in P300 speller paradigms [49–53]. To illustrate, a matrix of
+letters is shown to an observer. To spell out a word, the observer must sequentially focus their
+attention on a single letter while each row and column in the matrix is rapidly highlighted. As
+one can imagine, combined with a portable device, P300 spellers prove extremely useful for
+those with verbal and motor difficulties.
+Motor-imagery is a purely mental process that involves the imagined execution of motion
+without explicit muscular or peripheral action [54]. There has been almost three decades of
+research involving BCI systems and motor imagery [55, 56], with more recent implementations using consumer-grade EEG. By training an algorithm to detect specific EEG patterns
+reflecting imagined motor functions, users can operate artificial limbs [39, 57–61] and wheelchairs [62–67]. Motor imagery with consumer-grade EEG has also been used to control electric vehicles [68] and aerial drones [8, 69, 70]. Parikh and George [71] designed a BCI system
+that uses motor imagery to control a quadcopter, and Das et al. [72] designed a BCI system to
+control a quadcopter with a user’s directional intentions.
+Some of the most innovative BCI applications involved an interaction between a human
+user and software, rather than hardware. Shankar and Rai [73] used Emotiv to facilitate 3D
+computer-aided design (CAD) modelling, where user-evoked responses can activate various
+commands. Consumer-grade EEG has also been used to control web browsers [12]. Yehia
+et al. [74], for example, designed an SSVEP-based website interface that presents options that
+can be selected with visual attention according to available functions on the current page.
+More recent studies have explored the use of consumer-grade EEG in biometrics. Much like
+a fingerprint or password, algorithms can identify individuals based on neural patterns: Moctezuma et al. [75] identified subjects via their EEG responses using imagined speech; Do et al.
+[76] identified subjects according to their responses to images; and Saini et al. [77] collected
+responses while subjects handwrote signatures to generate unique individual biomarkers.
+Experimental research. Studies classified under experimental research used consumer-grade
+devices to collect EEG data outside of BCI applications. These studies comprised 31.22% of
+included articles and spanned a wide range of paradigms. For instance, the Emotiv was used in
+studies examining pilots’ reactions to unexpected events [78], reaction time [79], and mental
+fatigue and alertness [80]. Similarly, many experimental studies aimed to detect drowsy states
+[16, 81–85]. Such paradigms have been adopted to improve road safety with the creation of
+early warning systems that alert drivers to their own fatigue before an accident can occur [86–
+89]. These studies expand the application of EEG outside the laboratory for purely experimental purposes. Further studies have been conducted with consumer-grade EEG on students in
+the classroom [90–92]. Dikker et al. [93] used the Emotiv to measure the synchronised neural
+activity across students in a class, and found that this measure predicted overall classroom
+engagement and social dynamics.
+Consumer-grade EEG has also been used to augment experiments testing athletes’ performance and mental states. Borisov et al. [94] used the Emotiv together with other biological
+indicators to examine athletes’ attention and stress levels. Liu et al. [95] correlated rifle-shooting accuracy with EEG signatures to find optimal states for good shots. Using the NeuroSky
+MindWave, Azunny et al. [96] found that meditation moderated athletes’ attention and working memory. Finally, Sultanov and Ismailova [97] determined power spectra during football
+players’ training and resting states.
+While these studies report the performance of consumer-grade EEG across different experimental paradigms, we advise caution in applying consumer-grade devices to experiments that
+require excessive motion. EEG signals are inherently noisy. In cognitive and perceptual
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+8 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+studies, researchers must typically remove trials where a subject’s movements introduce artefacts. In extreme cases, to avoid spurious results, a large portion of subjects must be removed
+from analyses due to such artefacts. There are many in-house tutorials for popular toolboxes
+such as EEGLAB [98] and MNE [99], amongst other best-practice guidelines for cleaning EEG
+data [100–103]. We refer the reader to these guidelines to ensure the collection of high-quality
+neural signals for publication and replication.
+Signal processing. Signal processing studies comprised 12.01% of included articles. These
+were studies that used consumer-grade EEG to create or improve signal processing algorithms
+or pipelines. Multiple studies have used an array of clustering and component analytic methods
+to remove eyeblinks and clean the signal recorded with consumer-grade EEG [104–111]. For
+instance, Szibbo et al. [112] proposed a novel algorithm to remove blink artefacts with logarithmic smoothing methods. Trigui et al. [113] used the Emotiv to accurately detect SSVEPs with
+the multivariate synchronisation index, an algorithm that characterises the synchronisation
+between recording and reference electrodes. Trigui et al. [114] also used the Emotiv to evaluate
+classification accuracy using inter-battery factor analysis. While the authors did not test for significance, this method produced numerically greater accuracy compared to two other methods:
+canonical correlation analysis and multivariate synchronisation index. Finally, Elsawy et al.
+[115] proposed a principal components analysis classifier to use with P300 spellers.
+Given the relatively lower signal quality of consumer-grade compared to research-grade
+EEG devices, future research aiming to improve signal processing methods may apply existing
+algorithms to data collected with research-grade EEG devices. This can assist further experimental EEG work by validating the algorithms’ robustness when applied to higher-quality data.
+Clinical. Clinical experiments comprised 6.22% of included articles. These studies involved
+the diagnosis and treatment of various physical and mental illnesses. Three recent clinical
+studies show reliable applications in stroke patients. After observing good test-retest reliability
+[116], Rogers et al. used the NeuroSky MindWave to determine distinct EEG profiles for
+patients who have experienced transient ischemic attack, ischemic stroke, or neither [117];
+Wilkinson et al. [118] used the interaXon Muse to accurately identify patients with large vessel
+occlusions, a diagnostic predictor of acute stroke; and Ishaque et al. [119] used the interaXon
+Muse to characterise neuronal function and clinical recovery of stroke patients post-treatment.
+Recording abnormal neural responses to stimuli can further assist in creating clinical profiles. Terracciano et al. [120] designed smart glasses configured with an OpenBCI Cyton board
+to generate a distinct visual checkerboard pattern that elicits the pattern-reversal visual-evoked
+potential in neurotypical populations. The onset of this component is significantly delayed in
+multiple sclerosis and traumatic brain injury [121]. Consumer-grade devices coupled with
+diagnostic tools can facilitate more accurate diagnoses, evident from studies on insomnia
+[122], attention-deficit hyperactivity disorder [123], and epilepsy [124].
+Seizure detection is a particularly promising application for consumer-grade EEG [125–
+127]. Signals collected by EEG devices can employ a variety of signal processing techniques and
+provide convergent evidence of early seizure onset. While this application is in its early stages
+(see [128]), seizure detection is possible by using algorithms that are trained on an epileptic
+patient’s profile. In future, perhaps a portable alert system combined with an EEG headband or
+headset can warn patients (and others nearby) to move to a safe place prior to seizure onset.
+Lastly, a potential clinical application for consumer-grade EEG devices is in neurofeedback
+therapy. Neurofeedback is a form of operant conditioning that involves showing a patient
+their neural signals in real time to reinforce optimal and extinguish negative mental states
+[129]. Using consumer-grade EEG devices, various neurofeedback systems have been designed
+for the treatment of Parkinson’s disease [13], central neuropathic pain [130], attention-deficit
+hyperactivity disorder [131, 132], dyslexia [133], and depression [134].
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+9 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+Validation. Validation studies comprised 6.18% of included articles in this review. The
+most informative of these involved comparing recordings between consumer and researchgrade EEG devices. Grummett et al. [35] report that the Emotiv could reliably demonstrate the
+Berger effect (relative increase in alpha wave amplitude from electrodes placed above occipital
+and parietal cortex) compared to other inexpensive, wireless, and dry EEG systems. They also
+found that the Emotiv’s capacity to detect visual steady-state responses was comparable to a
+research-grade g.Hlamp. However, the Emotiv displayed a significantly higher noise floor than
+other systems, prompting the authors to caution its use in studies that examine lower frequency spectra. Kotowski et al. [135] reported reliable measurement of the early-posterior negativity when subjects responded to different emotional stimuli. Multiple studies comparing the
+Emotiv to a Neuroscan system provide evidence that the Emotiv performs remarkably well at
+recording research-grade ERPs in multi-trial experiments. De Lissa et al. [136] observed reliable recordings of the face-sensitive N170 component. Badcock et al. [137] found that the
+Emotiv can reliably record a series of late auditory ERP components: P100, N100, P200, N200
+and P300. Barham et al. [138] found that N200 and P300 did not differ between the two systems—though, they also found that significantly more trials were rejected from the Emotiv
+during preprocessing. Additionally, Ries et al. [139] found that the Emotiv was comparable to
+a research-grade BioSemi ActiveTwo after correcting for low frequencies. In terms of event
+timing, Hairston et al. [140] observed only slight jitter and delay in the Emotiv’s serially-ported
+event timing, while Williams et al. [141] recorded comparable event timing between Emotiv
+and Neuroscan.
+Only a single study reported disparities between the waveforms of the Emotiv and a medical-grade Advanced Neuro Technology system: Duvinage et al. [142] found differences in
+their recording of P300 responses. However, as might be expected, consumer-grade EEG
+devices display considerably poorer signal-to-noise ratios than their research-grade counterparts. Mahdid et al. [143] found that the functional connectivity of both Emotiv and OpenBCI
+systems compared poorly to research-grade EEG systems; Raduntz [144] found that the signal
+reliability of the Emotiv was poor if the device did not exactly fit the subject’s head; and Ekandem et al. [145] observed that the signal quality of an Emotiv, specifically the EPOC+, declines
+over time as it uses a built-in rechargeable battery.
+There were few validation studies for the remaining devices. Two studies compared the
+NeuroSky MindWave’s performance to research-grade systems. Johnstone et al. [146] found
+very minor differences in signal quality between a NeuroSky MindWave and a Neuroscan; and
+Rogers et al. [116] found good test-retest reliability in eyes-closed paradigms, with slightly
+lower reliability in eyes-open paradigms. Frey [147] compared the OpenBCI’s spectral and
+temporal features to a medical-grade g.USBamp and found negligible differences. No validation studies were found for the MyndPlay Mindband or the interaXon Muse.
+Research location. Fig 3 shows a geographical heatmap of the number of publications by
+each country. In sum, the 916 studies that used consumer-grade EEG since 2010 were conducted across 83 countries spread across six continents. The top ten countries accounted for
+46.72% of included studies. In order, these were: India (9.72%), United States (8.73%), China
+(4.48%), Malaysia (4.04%), Poland (3.82%), Indonesia (3.49%), United Kingdom (3.49%),
+Pakistan (3.06%), Mexico (2.95%), and Turkey (2.95%).
+
+Discussion
+The aim of this scoping review was to explore the extent to which consumer-grade EEG
+devices have been applied to research domains in locations around the world. We identified
+916 peer-reviewed studies that used consumer-grade EEG to collect neural data from human
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+10 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+Fig 3. Geographical heatmap of publications that used consumer-grade EEG for research by country. Note. This heatmap shows the number of
+consumer-grade EEG articles published in each country. We recommend viewing this paper online for the full colour version the Fig 3.
+https://doi.org/10.1371/journal.pone.0291186.g003
+
+subjects. We expand on device-specific information, location, and usage across research
+domains in turn.
+Regarding consumer-grade EEG devices, Emotiv devices were the most widely used. We
+speculate that this was primarily due to its easy setup, relative comfort compared to other
+devices, and capacity to record quality ERPs. Emotiv devices require no engineering or technical expertise and configuring event markers is relatively easy using a serial port cable. However, there are a few caveats researchers should be aware of when using Emotiv. Firstly, the
+device has quite a low noise floor. We do not recommend using Emotiv for single-trial experiments. We also advise against using Emotiv in studies that require localising activity (e.g.,
+functional connectivity experiments), as the plastic arms do not accommodate every head
+shape or size. Beyond these caveats, the Emotiv has proven useful in experiments that involve
+multiple trials: psychophysical or cognitive tasks. Additionally, by applying task-appropriate
+algorithms, users can compensate for the Emotiv’s low noise floor, and the device can be
+implemented in BCI systems.
+Despite only having a single electrode, the NeuroSky MindWave has also been widely used
+for research. The NeuroSky MindWave was particularly popular in BCI systems, market
+research, and gamification. However, there is conflicting evidence for its utility. Maskeliunas
+et al. [148] found that the MindWave displays poor accuracy at recognising the meditative and
+attentive states it claims to have built-in metrics for. Meanwhile, Rogers et al. [149] found that
+the device can assist in predicting functional outcomes after stroke. Thus, the NeuroSky MindWave may be useful in experiments that strictly examine the time-course of recordings from
+FP1 as its signal quality has been shown to be equal to or even greater than an Emotiv device.
+Further, the MindWave is an affordable EEG device for clinicians to complement data from
+other diagnostic metrics. These are rich avenues for future use of the MindWave as a research
+tool.
+As for the three remaining devices, it is evident that more research is required to explore
+and perhaps validate their further experimental use. While OpenBCI has contributed to studies
+in engineering and robotics, more experiments are needed for an informed evaluation of
+OpenBCI’s applicability to cognitive neuroscience. Both the interaXon Muse and the
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+11 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+MyndPlay Mindband have been used in general experimental and clinical studies. Future
+research may address this notable gap in the literature by comparing these under-utilised
+devices to research-grade EEG devices. Validation studies, in particular, can present the advantages and challenges associated with each device and pave the way for better-informed, specialised application of consumer-grade EEG devices. From our review, addressing the most
+notable research gap would involve more well-powered within-subjects studies that compare
+signal-noise indices for each device. Future researchers may find Table 5 useful, as it highlights
+some general recommendations from our synthesis.
+Focusing now on research domains, this review revealed that the primary research-related
+use for consumer-grade EEG devices is for BCI systems. This may be due to the relatively low
+cost of administering large-N studies with these devices. Additionally, given enough training
+data, probabilistic models can now be configured for an individual output signal with impressive accuracy [150, 151]. With more powerful computers and better classification algorithms,
+we expect that this application will only continue to grow as neuroscientists increasingly use
+machine learning to solve problems.
+The second most frequent research-related use was for general experimental research, spanning from cognitive tasks and recording athletic performance to low-level auditory or visual
+perception studies. This is further evidence that the scope of consumer-grade EEG includes a
+wide range of fields. Perhaps future research may focus on adding to the relatively low number
+of validation and signal processing studies, as these are crucial in informing users of the
+devices’ performance across different contexts. We also highlight the potential for consumergrade EEG devices to be applied to clinical studies. We observe that BCI research has provided
+evidence of the devices’ proficiency in creating biometric profiles for users, as well as prototypes for artificial robotic limbs, drowsiness detection systems, and mobility aides. With the
+advent of further clinical research, we may see more frequent use of the devices in hospitals
+and clinics, where neural augmentation has the potential to improve patient identification,
+diagnosis, and treatment outcomes.
+As well as providing information about the scope of consumer-grade EEG devices, research
+domains, and research location, we note that the studies included in this review revealed an
+interesting trend in terms of date of publication: The number of publications using consumergrade EEG devices peaked in 2018, then dropped slightly in 2019 the year before the COVID19 pandemic. During the peak years of the pandemic in 2020 and 2021, this number dropped
+Table 5. General recommendations for each device.
+Device
+
+Key Advantages
+
+Disadvantages
+
+Emotiv
+
+Useful in cognitive tasks involving multiple
+trials; records quality ERPs.
+
+Poor localisation; low noise floor; requires
+rigorous preprocessing pipeline to yield clean
+signal.
+
+interaXon
+Muse
+
+Potential use in clinical/therapeutic
+applications.
+
+Requires further validation research.
+
+Myndplay
+Mindband
+
+Comfortable–designed like a gaming headset.
+
+Requires further validation research.
+
+NeuroSky
+MindWave
+
+Can record relatively accurate signals from
+FP1; comfortable.
+
+No reference electrodes for component analytic
+preprocessing.
+
+OpenBCI
+
+Up to 16 electrodes and flexible configuration; Requires further validation research.
+documented effectiveness in BCI control.
+
+Note. These recommendations are overarching themes that became apparent through the present charting. A more
+rigorous investigation regarding signal comparison and application to different paradigms is required for a detailed
+understanding of each individual device’s capabilities.
+https://doi.org/10.1371/journal.pone.0291186.t005
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+12 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+substantially (see Fig 3C and 3D). This is unsurprising, as researchers’ ability to administer
+EEG studies to human subjects was adversely affected by the imposition of lockdowns and
+travel restrictions worldwide [152–154]. While the number of studies using consumer-grade
+EEG devices was reduced during the pandemic, few EEG studies continued globally in diagnostic COVID-19 experiments [155–157]. If consumer-grade EEG devices were more wellrecognised by the wider scientific community, the devices may have found utility in large-scale
+EEG experiments during a time when such neural data could augment epidemiological studies
+[158]. They may also have proved useful to cutting costs associated with the usage and maintenance of research-grade machines. This is particularly true for Emotiv systems as the company
+provides a platform for the construction, deployment, and data collection of online EEG
+experiments [159].
+Regarding research location, it was encouraging to discover that the use of consumergrade EEG devices is not limited to Western, industrialised countries [160, 161]. We found
+that studies were reasonably spread across multiple countries. The same consumer-grade EEG
+device used across different locations can record with roughly equivalent quality, which
+increases the reliability of replication EEG studies.
+A core limitation of our review is the use of five databases: unlisted articles would have been
+missed. As such, we may not have included the full scope of studies that used consumer-grade
+EEG. We also only included articles published in English, and articles referring to their respective consumer-grade EEG device by a different name would also have been missed. Finally, we
+acknowledge the limitations of a scoping review in general in not aiming to provide detailed
+criticism nor inferences on charted articles. Given the high number of consumer-grade EEG
+articles, this paper instead provides grounds for a future meta-analysis to subset from this wide
+range, collect effect-sizes, and compare device signal quality within specific experimental
+paradigms.
+
+Conclusion
+Despite being marketed for commercial purposes, we present evidence that consumer-grade
+EEG devices have found considerable utility in scientific research. These devices have been
+used in non-traditional research settings and applied in innovative ways. In this paper, we provide a structured review of the current state of the literature and provide some general guidelines for their scope of use, aggregated from a large subset of consumer-grade EEG studies.
+Significant and impactful future research for consumer-grade EEG span multiple fields from
+cognitive neuroscience to engineering. Consumer-grade EEG can be used for BCI research, as
+well as multi-trial experimental, clinical, and validation paradigms that take advantage of the
+devices’ relative portability and affordability.
+From these observations, affordable and accessible neuroscientific solutions are becoming
+more available to those outside of research spheres. The use of consumer-grade EEG devices is
+a particularly salient issue given our increasingly technologically augmented lifestyles. Indeed,
+it is not outside the realm of possibility to see EEG being used in everyday life within the next
+few decades. Thus, to help inform scientists, practitioners, and the general public on the appropriate use of consumer-grade EEG devices, we encourage researchers to further explore the
+capabilities of this technology.
+
+Acknowledgments
+We would like to acknowledge Nikolas Williams’ equal contributions to this manuscript as a
+first author.
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+13 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+JS, NW, GM, and NB designed the study. JS, NW, GM, and NB wrote the manuscript. We
+thank GM, NW, and NB for their useful comments and editing. JS collected the data and
+screened the publications.
+
+Author Contributions
+Conceptualization: Joshua Sabio, Nikolas S. Williams, Genevieve M. McArthur, Nicholas A.
+Badcock.
+Data curation: Joshua Sabio, Nikolas S. Williams, Genevieve M. McArthur, Nicholas A.
+Badcock.
+Formal analysis: Joshua Sabio, Nikolas S. Williams, Genevieve M. McArthur, Nicholas A.
+Badcock.
+Funding acquisition: Joshua Sabio, Nikolas S. Williams, Genevieve M. McArthur, Nicholas A.
+Badcock.
+Investigation: Joshua Sabio, Nikolas S. Williams, Genevieve M. McArthur, Nicholas A.
+Badcock.
+Methodology: Joshua Sabio, Nikolas S. Williams, Genevieve M. McArthur, Nicholas A.
+Badcock.
+Project administration: Joshua Sabio, Nikolas S. Williams, Genevieve M. McArthur, Nicholas
+A. Badcock.
+Resources: Joshua Sabio, Nikolas S. Williams, Genevieve M. McArthur, Nicholas A. Badcock.
+Software: Joshua Sabio, Nikolas S. Williams, Genevieve M. McArthur, Nicholas A. Badcock.
+Supervision: Nikolas S. Williams, Genevieve M. McArthur, Nicholas A. Badcock.
+Validation: Joshua Sabio, Nikolas S. Williams, Genevieve M. McArthur, Nicholas A. Badcock.
+Visualization: Joshua Sabio, Nikolas S. Williams, Genevieve M. McArthur, Nicholas A.
+Badcock.
+Writing – original draft: Joshua Sabio, Nikolas S. Williams, Genevieve M. McArthur, Nicholas A. Badcock.
+Writing – review & editing: Joshua Sabio, Nikolas S. Williams, Genevieve M. McArthur,
+Nicholas A. Badcock.
+
+References
+1.
+
+Stone JL, Hughes JR. Early history of electroencephalography and establishment of the American
+Clinical Neurophysiology Society. Journal of Clinical Neurophysiology. 2013; 30(1):28–44. https://doi.
+org/10.1097/WNP.0b013e31827edb2d PMID: 23377440
+
+2.
+
+Xu J, Zhong B. Review on portable EEG technology in educational research. Computers in Human
+Behavior. 2018; 81:340–9.
+
+3.
+
+Ancau D., Roman N.-M., Ancau M. Analyzing Error Potentials Using Stacking Algorithms. J Med Biol
+Eng. 2020; 40(4):575–81.
+
+4.
+
+Lysiak A, Paszkiel S. A Method to Obtain Parameters of One-Column Jansen–Rit Model Using
+Genetic Algorithm and Spectral Characteristics. Applied Sciences. 2021; 11(2):677.
+
+5.
+
+Tao W, Linyan W, Yanping L, Nuo G, Weiran Z. Learning Advanced Brain Computer Interface Technology: Comparing CSP Algorithm and WPA Algorithm for EEG Feature Extraction. International Journal of Technology and Human Interaction (IJTHI). 2019; 15(3):14–27.
+
+6.
+
+Stock V.N., Balbinot A. Movement imagery classification in EMOTIV cap based system by Naive
+Bayes. Conf Proc IEEE Eng Med Biol Soc. 2016; 2016:4435–8.
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+14 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+7.
+
+Al-Qaysi Z, Zaidan B, Zaidan A, Suzani M. A review of disability EEG based wheelchair control system:
+Coherent taxonomy, open challenges and recommendations. Computer methods and programs in biomedicine. 2018; 164:221–37. https://doi.org/10.1016/j.cmpb.2018.06.012 PMID: 29958722
+
+8.
+
+S. Sun, J. Ma. Brain Wave Control Drone. In: 2019 International Conference on Artificial Intelligence
+and Advanced Manufacturing (AIAM). 2019. p. 300–4.
+
+9.
+
+Alrajhi W, Alaloola D, Albarqawi A. Smart home: toward daily use of BCI-based systems. In: 2017
+International Conference on Informatics, Health & Technology (ICIHT). IEEE; 2017. p. 1–5.
+
+10.
+
+G. Selvamathiseelan, N. V. S. Pradyumna, N. N. V. Sai Prakash, V. Sudharsan Reddy, S. Yadav.
+Brain Controlled Smart Home Automation System. In: 2022 IEEE Fourth International Conference on
+Advances in Electronics, Computers and Communications (ICAECC). 2022. p. 1–5.
+
+11.
+
+Gao Q., Zhao X., Yu X., Song Y., Wang Z. Controlling of smart home system based on brain-computer
+interface. Technol Health Care. 2018; 26(5):769–83. https://doi.org/10.3233/THC-181292 PMID:
+30103356
+
+12.
+
+Bose J, Singhai A, Trisal A, Keshav V, Dubey U. A hands free browser using EEG and voice Inputs. In:
+2015 International Joint Conference on Neural Networks (IJCNN). IEEE; 2015. p. 1–8.
+
+13.
+
+Lavermicocca V., Dellomonaco A.R., Tedesco A., Notarnicola M., Di Fede R., Battaglini P.P. Neurofeedback in Parkinson’s disease: Technologies in speech and language therapy. Recenti Prog Med.
+2018; 109(2):130–2.
+
+14.
+
+Munteanu D, Munteanu N. Comparison Between Assisted Training and Classical Training in Nonformal Learning Based on Automatic Attention Measurement Using a Neurofeedback Device. eLearning
+& Software for Education. 2019; 1.
+
+15.
+
+B. Van Hal, S. Rhodes, B. Dunne, R. Bossemeyer. Low-cost EEG-based sleep detection. In: 2014
+36th Annual International Conference of the IEEE Engineering in Medicine and Biology Society. 2014.
+p. 4571–4.
+
+16.
+
+Khai LQ, Thuy LNN, Kien T, Anh PTT, Hang NTD, Linh HQ. Sleep Onset Detection using the LowCost Emotiv EPOC Neuroheadset. In: International Conference on the Development of Biomedical
+Engineering in Vietnam. Springer; 2018. p. 657–60.
+
+17.
+
+Martı́nez F, Barraza C, González N, González J. KAPEAN: understanding affective states of children
+with ADHD. Journal of Educational Technology & Society. 2016; 19(2):18–28.
+
+18.
+
+Pireva K, Tahir R, Imran AS, Chaudhary N. Evaluating learners’ emotional states by monitoring brain
+waves for comparing game-based learning approach to pen-and-paper. In: 2019 IEEE Frontiers in
+Education Conference (FIE). IEEE; 2019. p. 1–8.
+
+19.
+
+Sánchez-Reolid R, Garcı́a AS, Vicente-Querol MA, Fernández-Aguilar L, López MT, FernándezCaballero A, et al. Artificial neural networks to assess emotional states from brain-computer interface.
+Electronics. 2018; 7(12):384.
+
+20.
+
+C. O. Sosa Jimenez, H. G. A. Mesa, G. Rebolledo-Mendez, S. de Freitas. Classification of cognitive
+states of attention and relaxation using supervised learning algorithms. In: 2011 IEEE International
+Games Innovation Conference (IGIC). 2011. p. 31–4.
+
+21.
+
+LaRocco J, Le MD, Paeng DG. A Systemic Review of Available Low-Cost EEG Headsets Used for
+Drowsiness Detection. Front Neuroinformatics. 2020; 14(101477957):553352.
+
+22.
+
+Sawangjai P., Hompoonsup S., Leelaarporn P., Kongwudhikunakorn S., Wilaiprasitporn T. Consumer
+Grade EEG Measuring Sensors as Research Tools: A Review. IEEE Sensors Journal. 2020 Apr 15;
+20(8):3996–4024.
+
+23.
+
+Kurada A.V., Srinivasan T., Hammond S., Ulate-Campos A., Bidwell J. Seizure detection devices for
+use in antiseizure medication clinical trials: A systematic review. Seizure. 2019; 66((Kurada) Department of Biomedical Engineering, Columbia University School of Engineering and Applied Science,
+New York, NY, United States):61–9. https://doi.org/10.1016/j.seizure.2019.02.007 PMID: 30802844
+
+24.
+
+Rechy-Ramirez EJ, Marin-Hernandez A, Rios-Figueroa HV. Impact of commercial sensors in human
+computer interaction: a review. Journal of Ambient Intelligence and Humanized Computing. 2018; 9
+(5):1479–96.
+
+25.
+
+Castro-Garcı́a JA, Molina-Cantero AJ, Gómez-González IM, Lafuente-Arroyo S, Merino-Monge M.
+Towards Human Stress and Activity Recognition: A Review and a First Approach Based on Low-Cost
+Wearables. Electronics. 2022; 11(1):155.
+
+26.
+
+A. Aldridge, E. Barnes, C. L. Bethel, D. W. Carruth, M. Kocturova, M. Pleva, et al. Accessible Electroencephalograms (EEGs): A Comparative Review with OpenBCI’s Ultracortex Mark IV Headset. In:
+2019 29th International Conference Radioelektronika (RADIOELEKTRONIKA). 2019. p. 1–6.
+
+27.
+
+Roy Y, Banville H, Albuquerque I, Gramfort A, Falk TH, Faubert J. Deep learning-based electroencephalography analysis: a systematic review. Journal of neural engineering. 2019; 16(5):051001.
+https://doi.org/10.1088/1741-2552/ab260c PMID: 31151119
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+15 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+28.
+
+Vasiljevic GAM, de Miranda LC. Brain–computer interface games based on consumer-grade EEG
+Devices: A systematic literature review. International Journal of Human–Computer Interaction. 2020;
+36(2):105–42.
+
+29.
+
+Dadebayev D, Goh WW, Tan EX. EEG-based emotion recognition: Review of commercial EEG
+devices and machine learning techniques. Journal of King Saud University-Computer and Information
+Sciences. 2022; 34(7):4385–401.
+
+30.
+
+Asl NS, Baghdadi G, Ebrahimian S, Haghighi SJ. Toward Applicable EEG-Based Drowsiness Detection Systems: A Review. Frontiers in Biomedical Technologies. 2022.
+
+31.
+
+Khurana V, Gahalawat M, Kumar P, Roy PP, Dogra DP, Scheme E, et al. A survey on neuromarketing
+using EEG signals. IEEE Transactions on Cognitive and Developmental Systems. 2021; 13(4):732–
+49.
+
+32.
+
+Tricco AC, Lillie E, Zarin W, O’Brien KK, Colquhoun H, Levac D, et al. PRISMA extension for scoping
+reviews (PRISMA-ScR): checklist and explanation. Annals of internal medicine. 2018; 169(7):467–73.
+https://doi.org/10.7326/M18-0850 PMID: 30178033
+
+33.
+
+Shum J, Friedman D. Commercially available seizure detection devices: A systematic review. Journal
+of the Neurological Sciences. 428:117611-undefined. 2021. https://doi.org/10.1016/j.jns.2021.117611
+PMID: 34419933
+
+34.
+
+Jones P, Badcock N. SYRAS| Systematic Review Assistant. 2017.
+
+35.
+
+Grummett T.S., Leibbrandt R.E., Lewis T.W., DeLosAngeles D., Powers D.M., Willoughby J.O., et al.
+Measurement of neural signals from inexpensive, wireless and dry EEG systems. Physiol Meas. 2015;
+36(7):1469–84. https://doi.org/10.1088/0967-3334/36/7/1469 PMID: 26020164
+
+36.
+
+Nicolas-Alonso LF, Gomez-Gil J. Brain computer interfaces, a review. sensors. 2012; 12(2):1211–79.
+https://doi.org/10.3390/s120201211 PMID: 22438708
+
+37.
+
+Lemm S, Blankertz B, Dickhaus T, Müller KR. Introduction to machine learning for brain imaging.
+Neuroimage. 2011; 56(2):387–99. https://doi.org/10.1016/j.neuroimage.2010.11.004 PMID:
+21172442
+
+38.
+
+Wierzga\la P, Zapa\la D, Wojcik GM, Masiak J. Most popular signal processing methods in motorimagery BCI: a review and meta-analysis. Frontiers in neuroinformatics. 2018; 12:78.
+
+39.
+
+Ranky G, Adamovich S. Analysis of a commercial EEG device for the control of a robot arm. In: Proceedings of the 2010 IEEE 36th Annual Northeast Bioengineering Conference (NEBEC). IEEE; 2010.
+p. 1–2.
+
+40.
+
+Kwang-Ok A, Jong-Bae K, Won-Kyoung S, In-Ho L. Development of an emergency call system using
+a brain computer interface (BCI). In: 2010 3rd IEEE RAS & EMBS International Conference on Biomedical Robotics and Biomechatronics. 2010. p. 918–23.
+
+41.
+
+Middendorf M, McMillan G, Calhoun G, Jones KS. Brain-computer interfaces based on the steadystate visual-evoked response. IEEE transactions on rehabilitation engineering. 2000; 8(2):211–4.
+https://doi.org/10.1109/86.847819 PMID: 10896190
+
+42.
+
+Garcia DE, Zheng KW, Tao Y, Liu Y, Mann S, Ieee. Capturing Pictures from Human Vision Using
+SSVEP and Lock-in Amplifier. 2020 33RD SIBGRAPI CONFERENCE ON GRAPHICS, PATTERNS
+AND IMAGES (SIBGRAPI 2020).172–9.
+
+43.
+
+M. Shi, X. Liu, C. Zhou, F. Chao, C. Liu, X. Jiao, et al. Towards portable SSVEP-based brain-computer
+interface using Emotiv EPOC and mobile phone. In: 2018 Tenth International Conference on
+Advanced Computational Intelligence (ICACI). 2018. p. 249–53.
+
+44.
+
+Chumerin N, Manyakov NV, Van Vliet M, Robben A, Combaz A, Van Hulle MM. Steady-state visual
+evoked potential-based computer gaming on a consumer-grade EEG device. IEEE transactions on
+computational intelligence and ai in games. 2012; 5(2):100–10.
+
+45.
+
+Brennan C, McCullagh P, Lightbody G, Galway L, Feuser D, González JL, et al. Accessing tele-services using a hybrid bci approach. In: International Work-Conference on Artificial Neural Networks.
+Springer; 2015. p. 110–23.
+
+46.
+
+Picton TW. The P300 wave of the human event-related potential. Journal of clinical neurophysiology.
+1992; 9(4):456–79. https://doi.org/10.1097/00004691-199210000-00002 PMID: 1464675
+
+47.
+
+Fazel-Rezai R, Allison BZ, Guger C, Sellers EW, Kleih SC, Kübler A. P300 brain computer interface:
+current challenges and emerging trends. Frontiers in neuroengineering. 2012; 14. https://doi.org/10.
+3389/fneng.2012.00014 PMID: 22822397
+
+48.
+
+T. Jijun, Z. Peng, X. Ran, D. Lei. The portable P300 dialing system based on tablet and Emotiv Epoc
+headset. In: 2015 37th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC). 2015. p. 566–9.
+
+49.
+
+G. T. Tsenov, V. M. Mladenov. EEG alphabet speller with Neural Network classifier for P300 signal
+detection. In: 2018 14th Symposium on Neural Networks and Applications (NEUREL). 2018. p. 1–6.
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+16 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+50.
+
+A. Tahmasebzadeh, M. Bahrani, S. K. Setarehdan. Development of a robust method for an online
+P300 Speller Brain Computer Interface. In: 2013 6th International IEEE/EMBS Conference on Neural
+Engineering (NER). 2013. p. 1070–5.
+
+51.
+
+N. N. Nashed, S. Eldawlatly, G. M. Aly. A deep learning approach to single-trial classification for P300
+spellers. In: 2018 IEEE 4th Middle East Conference on Biomedical Engineering (MECBME). 2018.
+p. 11–6.
+
+52.
+
+A. M. Mijani, M. B. Shamsollahi, M. S. Hassani, S. Jalilpour. Comparison between Single, Dual and Triple Rapid Serial Visual Presentation Paradigms for P300 Speller. In: 2018 IEEE International Conference on Bioinformatics and Biomedicine (BIBM). 2018. p. 2635–8.
+
+53.
+
+M. R. Meshriky, S. Eldawlatly, G. M. Aly. An Intermixed Color Paradigm for P300 Spellers: A Comparison with Gray-Scale Spellers. In: 2017 IEEE 30th International Symposium on Computer-Based Medical Systems (CBMS). 2017. p. 242–7.
+
+54.
+
+Decety J. The neurophysiological basis of motor imagery. Behavioural brain research. 1996; 77(1–
+2):45–52. https://doi.org/10.1016/0166-4328(95)00225-1 PMID: 8762158
+
+55.
+
+Beisteiner R, Höllinger P, Lindinger G, Lang W, Berthoz A. Mental representations of movements.
+Brain potentials associated with imagination of hand movements. Electroencephalography and Clinical
+Neurophysiology/Evoked Potentials Section. 1995; 96(2):183–93. https://doi.org/10.1016/0168-5597
+(94)00226-5 PMID: 7535223
+
+56.
+
+Pfurtscheller G, Neuper C. Motor imagery and direct brain-computer communication. Proceedings of
+the IEEE. 2001; 89(7):1123–34.
+
+57.
+
+A. J. Abougarair, H. M. Gnan, A. Oun, S. O. Elwarshfani. Implementation of a Brain-Computer Interface for Robotic Arm Control. In: 2021 IEEE 1st International Maghreb Meeting of the Conference on
+Sciences and Techniques of Automatic Control and Computer Engineering MI-STA. 2021. p. 58–63.
+
+58.
+
+Casey A, Azhar H, Grzes M, Sakel M. BCI controlled robotic arm as assistance to the rehabilitation of
+neurologically disabled patients. Disabil rehabil, Assist technol. 2019;(101255937):1–13.
+
+59.
+
+D. Prince, M. Edmonds, A. Sutter, M. Cusumano, W. Lu, V. Asari. Brain machine interface using Emotiv EPOC to control robai cyton robotic arm. In: 2015 National Aerospace and Electronics Conference
+(NAECON). 2015. p. 263–6.
+
+60.
+
+Ayodele K.P., Akinboboye E.A., Komolafe M.A. The performance of a low-cost bio-amplifier on 3D
+human arm movement reconstruction. Biomed Tech. 2020; 65(5):577–85. https://doi.org/10.1515/
+bmt-2019-0085 PMID: 32463379
+
+61.
+
+D. Bright, A. Nair, D. Salvekar, S. Bhisikar. EEG-based brain controlled prosthetic arm. In: 2016 Conference on Advances in Signal Processing (CASP). 2016. p. 479–83.
+
+62.
+
+A. Dev, M. A. Rahman, N. Mamun. Design of an EEG-Based Brain Controlled Wheelchair for Quadriplegic Patients. In: 2018 3rd International Conference for Convergence in Technology (I2CT). 2018.
+p. 1–5.
+
+63.
+
+Djeha M, Sbargoud F, Guiatni M, Fellah K, Ababou N. A combined EEG and EOG signals based
+wheelchair control in virtual environment. In: 2017 5th International Conference on Electrical Engineering-Boumerdes (ICEE-B). IEEE; 2017. p. 1–6.
+
+64.
+
+A. Maksud, R. I. Chowdhury, T. T. Chowdhury, S. A. Fattah, C. Shahanaz, S. S. Chowdhury. Low-cost
+EEG based electric wheelchair with advanced control features. In: TENCON 2017–2017 IEEE Region
+10 Conference. 2017. p. 2648–53.
+
+65.
+
+A. Carrasquilla-Batista, K. QuirÃ3s-Espinoza, C. GÃ3mez-Carrasquilla. An Internet of Things (IoT)
+application to control a wheelchair through EEG signal processing. In: 2017 International Symposium
+on Wearable Robotics and Rehabilitation (WeRob). 2017. p. 1–1.
+
+66.
+
+E. J. Rechy-Ramirez, H. Hu, K. McDonald-Maier. Head movements based control of an intelligent
+wheelchair in an indoor environment. In: 2012 IEEE International Conference on Robotics and Biomimetics (ROBIO). 2012. p. 1464–9.
+
+67.
+
+H. Younis, F. Ramzan, J. Khan, M. U. Ghani Khan. Wheelchair Training Virtual Environment for People with Physical and Cognitive Disabilities. In: 2019 15th International Conference on Emerging Technologies (ICET). 2019. p. 1–6.
+
+68.
+
+J. Zhuang, G. Yin. Motion control of a four-wheel-independent-drive electric vehicle by motor imagery
+EEG based BCI system. In: 2017 36th Chinese Control Conference (CCC). 2017. p. 5449–54.
+
+69.
+
+A. Chiuzbaian, J. Jakobsen, S. Puthusserypady. Mind Controlled Drone: An Innovative Multiclass
+SSVEP based Brain Computer Interface. In: 2019 7th International Winter Conference on Brain-Computer Interface (BCI). 2019. p. 1–5.
+
+70.
+
+I M, M. J. H AB, N G. Drone Control based on Mental Commands and Facial Expressions. In: 2020
+12th International Conference on Electronics, Computers and Artificial Intelligence (ECAI). 2020.
+p. 1–4.
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+17 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+71.
+
+Parikh D, George K. Quadcopter Control in Three-Dimensional Space Using SSVEP and Motor Imagery-Based Brain-Computer Interface. In: 2020 11th IEEE Annual Information Technology, Electronics
+and Mobile Communication Conference (IEMCON). IEEE; 2020. p. 0782–5.
+
+72.
+
+A. K. Das, T. T. Leong, S. Suresh, N. Sundararajan. Meta-cognitive interval type-2 fuzzy controller for
+quadcopter flight control- an EEG based approach. In: 2016 IEEE International Conference on Fuzzy
+Systems (FUZZ-IEEE). 2016. p. 2501–7.
+
+73.
+
+Shankar SS, Rai R. Human factors study on the usage of BCI headset for 3D CAD modeling. Computer-Aided Design. 2014; 54:51–5.
+
+74.
+
+A. G. Yehia, S. Eldawlatly, M. Taher. WeBB: A brain-computer interface web browser based on
+steady-state visual evoked potentials. In: 2017 12th International Conference on Computer Engineering and Systems (ICCES). 2017. p. 52–7.
+
+75.
+
+Moctezuma LA, Torres-Garcı́a AA, Villaseñor-Pineda L, Carrillo M. Subjects identification using EEGrecorded imagined speech. Expert Systems with Applications. 2019; 118:201–8.
+
+76.
+
+H. Do, V. Truong, K. George, B. Shirke. EEG-Based Biometrics Utilizing Image Recognition for Patient
+Identification. In: 2019 IEEE 10th Annual Ubiquitous Computing, Electronics & Mobile Communication
+Conference (UEMCON). 2019. p. 0591–5.
+
+77.
+
+Saini R, Kaur B, Singh P, Kumar P, Roy PP, Raman B, et al. Don’t just sign use brain too: A novel
+multimodal approach for user identification and verification. Information Sciences. 2018;
+430:163–78.
+
+78.
+
+Binias B., Myszor D., Cyran K.A. A Machine Learning Approach to the Detection of Pilot’s Reaction to
+Unexpected Events Based on EEG Signals. Comput Intell Neurosci. 2018;2018((Binias) Institute of
+Automatic Control, Silesian University of Technology, ul. Akademicka 16, Gliwice 44–100,
+Poland):2703513.
+
+79.
+
+Binias B, Myszor D, Palus H, Cyran KA. Prediction of pilot’s reaction time based on EEG signals. Frontiers in neuroinformatics. 2020; 14:6. https://doi.org/10.3389/fninf.2020.00006 PMID: 32116630
+
+80.
+
+B. Binias, D. Myszor, M. Niezabitowski, K. A. Cyran. Evaluation of alertness and mental fatigue among
+participants of simulated flight sessions. In: 2016 17th International Carpathian Control Conference
+(ICCC). 2016. p. 76–81.
+
+81.
+
+Yaacob S, Muhamad’Arif NIZ, Krishnan P, Rasyadan A, Yaakop M, Mohamed F. Early driver drowsiness detection using electroencephalography signals. In: 2020 IEEE 2nd International Conference on
+Artificial Intelligence in Engineering and Technology (IICAIET). 2020. p. 1–4.
+
+82.
+
+Pham TTA, Nguyen TDH, Le QK, Huynh QL. Application of portable EEG device in detection and classification drowsiness by support vector machine. In: International Conference on the Development of
+Biomedical Engineering in Vietnam. Springer; 2018. p. 521–6.
+
+83.
+
+Rahma O., Rahmatillah A. Drowsiness analysis using common spatial pattern and extreme learning
+machine based on electroencephalogram signal. J Med Signals Sens. 2019; 9(2):130–6. https://doi.
+org/10.4103/jmss.JMSS_54_18 PMID: 31316907
+
+84.
+
+Chaabene S, Bouaziz B, Boudaya A, Hökelmann A, Ammar A, Chaari L. Convolutional neural network
+for drowsiness detection using EEG signals. Sensors. 2021; 21(5):1734. https://doi.org/10.3390/
+s21051734 PMID: 33802357
+
+85.
+
+Karuppusamy NS, Kang BY. Driver fatigue prediction using eeg for autonomous vehicle. Advanced
+Science Letters. 2017; 23(10):9561–4.
+
+86.
+
+Hwang JH, Ahn SW, Kim JY, Chi JH. Drowsy Driving Prevention Service Using EEG. INTERNATIONAL JOURNAL OF GRID AND DISTRIBUTED COMPUTING. 2018; 11(10):1–10.
+
+87.
+
+Wan Z, He J, Voisine A. An attention level monitoring and alarming system for the driver fatigue in the
+pervasive environment. In: International Conference on Brain and Health Informatics. Springer; 2013.
+p. 287–96.
+
+88.
+
+Salimuddin MK, Panbude S, others. Driver drowsiness monitoring system using fusion of facial features & EEG. In: 2018 Second International Conference on Intelligent Computing and Control Systems
+(ICICCS). IEEE; 2018. p. 1506–10.
+
+89.
+
+Lim CKA, Chia WC, Chin SW. A mobile driver safety system: Analysis of single-channel EEG on
+drowsiness detection. In: 2014 International Conference on Computational Science and Technology
+(ICCST). IEEE; 2014. p. 1–5.
+
+90.
+
+Ghasemy H, Momtazpour M, Sardouie SH. Detection of sustained auditory attention in students with
+visual impairment. In: 2019 27th Iranian Conference on Electrical Engineering (ICEE). IEEE; 2019.
+p. 1798–801.
+
+91.
+
+Nieto-Vallejo AE, Camacho JE, Cuervo-Pulido R, Hernández-Mihajlovic E. Dynamic lighting system to
+increase the attention of design students in the classroom. Revista Facultad de Ingenierı́a. 2021; 30
+(55).
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+18 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+92.
+
+Sezer A, Inel Y, Seçkin AÇ, Uluçinar U. The relationship between attention levels and class participation of first-year students in classroom teaching departments. International Journal of Instruction.
+2017; 10(2):55–68.
+
+93.
+
+Dikker S, Wan L, Davidesco I, Kaggen L, Oostrik M, McClintock J, et al. Brain-to-brain synchrony
+tracks real-world dynamic group interactions in the classroom. Current biology. 2017; 27(9):1375–80.
+https://doi.org/10.1016/j.cub.2017.04.002 PMID: 28457867
+
+94.
+
+Borisov V, Syskov A, Kublanov V. Functional state assessment of an athlete by means of the BrainComputer Interface multimodal metrics. In: World Congress on Medical Physics and Biomedical Engineering 2018. Springer; 2019. p. 71–5.
+
+95.
+
+Liu Y., Sourina O., Shah E., Chua J., Ivanov K. EEG-based monitoring of the focused attention related
+to athletic performance in shooters. Int J Psychophysiol. 2018; 131(Supplement):S55.
+
+96.
+
+Azunny A.A., Rahim N.A., Mohamad Shalan N.A.A. Mindfulness meditation improves athletes’ attention, working memory and emotional state of depression, anxiety and stress. Eur J Mol Clin Med.
+2020; 7(2):4028–39.
+
+97.
+
+M. B. Sultanov, K. Y. Ä˚smailova. Wireless EEG system for Sport Science: quantitative analysis of
+movement. In: 2020 7th International Conference on Behavioural and Social Computing (BESC).
+2020. p. 1–4.
+
+98.
+
+Delorme A, Makeig S. EEGLAB: an open source toolbox for analysis of single-trial EEG dynamics
+including independent component analysis. Journal of neuroscience methods. 2004; 134(1):9–21.
+https://doi.org/10.1016/j.jneumeth.2003.10.009 PMID: 15102499
+
+99.
+
+Gramfort A, Luessi M, Larson E, Engemann DA, Strohmeier D, Brodbeck C, et al. MNE software for
+processing MEG and EEG data. Neuroimage. 2014; 86:446–60. https://doi.org/10.1016/j.neuroimage.
+2013.10.027 PMID: 24161808
+
+100.
+
+Bigdely-Shamlo N, Mullen T, Kothe C, Su KM, Robbins KA. The PREP pipeline: standardized preprocessing for large-scale EEG analysis. Frontiers in neuroinformatics. 2015; 9:16. https://doi.org/10.
+3389/fninf.2015.00016 PMID: 26150785
+
+101.
+
+Islam MK, Rastegarnia A, Yang Z. Methods for artifact detection and removal from scalp EEG: A
+review. Neurophysiologie Clinique/Clinical Neurophysiology. 2016; 46(4–5):287–305. https://doi.org/
+10.1016/j.neucli.2016.07.002 PMID: 27751622
+
+102.
+
+Delorme A, Sejnowski T, Makeig S. Enhanced detection of artifacts in EEG data using higher-order
+statistics and independent component analysis. Neuroimage. 2007; 34(4):1443–9. https://doi.org/10.
+1016/j.neuroimage.2006.11.004 PMID: 17188898
+
+103.
+
+Urigüen JA, Garcia-Zapirain B. EEG artifact removal—state-of-the-art and guidelines. Journal of neural engineering. 2015; 12(3):031001. https://doi.org/10.1088/1741-2560/12/3/031001 PMID:
+25834104
+
+104.
+
+A. Kawala-Sterniuk, N. Browarska, J. Zygarlicki, M. KamiÅski, B. Grochowicz, M. Pelc. The Use of
+Counting Peaks Method for the Purpose of Smoothing Filtering Efficiency Assessment in Analysis of
+Electroencephalography Data. In: 2021 25th International Conference on Methods and Models in
+Automation and Robotics (MMAR). 2021. p. 73–8.
+
+105.
+
+N. Browarska, J. Zygarlicki, M. Pelc, M. Niemczynowicz, M. Zygarlicka, A. Kawala-Sterniuk. Pilot
+Study on Using Innovative Counting Peaks Method for Assessment Purposes of the EEG Data
+Recorded from a Single-Channel Non-Invasive Brain-Computer Interface. In: 2021 25th International
+Conference on Methods and Models in Automation and Robotics (MMAR). 2021. p. 68–72.
+
+106.
+
+Alam MT, Farooq H, Khalid MN, Kumar T, Rasheed K. Artefacts Removal from EEG Recordings in
+Urban Environment. In: International Conference on Intelligent Technologies and Applications.
+Springer; 2018. p. 757–68.
+
+107.
+
+Browarska N, Kawala-Sterniuk A, Zygarlicki J, Podpora M, Pelc M, Martinek R, et al. Comparison of
+Smoothing Filters’ Influence on Quality of Data Recorded with the Emotiv EPOC Flex Brain–Computer
+Interface Headset during Audio Stimulation. Brain Sciences. 2021; 11(1):98. https://doi.org/10.3390/
+brainsci11010098 PMID: 33451080
+
+108.
+
+Kubacki A, Jakubowski A, Sawicki \Lukasz. Detection of artefacts from the motion of the eyelids created during EEG research using artificial neural network. In: International Conference on Automation.
+Springer; 2016. p. 267–75.
+
+109.
+
+Mutasim AK, Bashar MR, Tipu RS, Islam MK, Amin MA. Effect of Artefact Removal Techniques on
+EEG Signals for Video Category Classification. In: 2018 24th International Conference on Pattern Recognition (ICPR). IEEE; 2018. p. 3513–8.
+
+110.
+
+Khatwani M, Rashid HA, Paneliya H, Horton M, Waytowich N, Hairston WD, et al. A flexible
+multichannel eeg artifact identification processor using depthwise-separable convolutional neural
+networks. ACM Journal on Emerging Technologies in Computing Systems (JETC). 2021; 17
+(2):1–21.
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+19 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+111.
+
+Dhindsa K. Filter-bank artifact rejection: High performance real-time single-channel artifact detection
+for EEG. Biomedical Signal Processing and Control. 2017; 38:224–35.
+
+112.
+
+Szibbo D, Luo A, Sullivan TJ. Removal of blink artifacts in single channel EEG. In: 2012 Annual International Conference of the IEEE Engineering in Medicine and Biology Society. IEEE; 2012. p. 3511–4.
+
+113.
+
+Trigui O, Zouch W, Messaoud MB. A comparison study of SSVEP detection methods using the Emotiv
+Epoc headset. In: 2015 16th International Conference on Sciences and Techniques of Automatic Control and Computer Engineering (STA). IEEE; 2015. p. 48–53.
+
+114.
+
+O. Trigui, W. Zouch, M. Ben Messaoud. Frequency recognition based on the Inter-Battery Factor Analysis for SSVEP-based BCIs. In: 2016 2nd International Conference on Advanced Technologies for
+Signal and Image Processing (ATSIP). 2016. p. 354–8.
+
+115.
+
+Elsawy A.S., Eldawlatly S., Taher M., Aly G.M. Performance analysis of a Principal Component Analysis ensemble classifier for Emotiv headset P300 spellers. Conf Proc IEEE Eng Med Biol Soc. 2014;
+2014:5032–5. https://doi.org/10.1109/EMBC.2014.6944755 PMID: 25571123
+
+116.
+
+Rogers J.M., Johnstone S.J., Aminov A., Donnelly J., Wilson P.H. Test-retest reliability of a singlechannel, wireless EEG system. Int J Psychophysiol. 2016; 106((Rogers, Aminov, Wilson) School of
+Psychology, Australian Catholic University, Australia):87–96. https://doi.org/10.1016/j.ijpsycho.2016.
+06.006 PMID: 27318008
+
+117.
+
+Rogers J.M., Bechara J., Middleton S., Johnstone S.J. Acute EEG Patterns Associated With Transient
+Ischemic Attack. Clin EEG Neurosci. 2019; 50(3):196–204. https://doi.org/10.1177/
+1550059418790708 PMID: 30045636
+
+118.
+
+Wilkinson C.M., Burrell J.I., Thangeswaran J., Ishaque N., Fairall P., Kate M.P., et al. Low cost, portable electroencephalograph may improve the accuracy of prehospital stroke diagnosis and detection of
+large vessel occlusion. Stroke. 2022; 53(SUPPL 1).
+
+119.
+
+Ishaque N., Thangeswaran J., Burrell J., Wilkinson C., Buck B.H., Mathewson K., et al. Quantitative
+electroencephalogram to assess neurovascular coupling post endovascular thrombectomy. Stroke.
+2022; 53(SUPPL 1).
+
+120.
+
+R. Terracciano, A. Sanginario, L. Puleo, D. Demarchi. Live Demonstration: Smart Glasses-based Portable System for Pattern-Reversal Visual Evoked Potential clinical evaluations. In: 2019 IEEE Biomedical Circuits and Systems Conference (BioCAS). 2019. p. 1–1.
+
+121.
+
+Walsh P, Kane N, Butler S. The clinical role of evoked potentials. Journal of neurology, neurosurgery & psychiatry. 2005; 76(suppl 2):ii16–22. https://doi.org/10.1136/jnnp.2005.068130 PMID:
+15961863
+
+122.
+
+N. P. Raju, U. Venkatesh, S. Yadhav. Diagnosing Insomnia Using Single Channel EEG Signal. In:
+2019 International Conference on Communication and Electronics Systems (ICCES). 2019. p. 570–3.
+
+123.
+
+Chu KC, Lu HK, Huang MC, Lin SJ, Liu WI, Huang YS, et al. Using mobile electroencephalography
+and actigraphy to diagnose attention-deficit/hyperactivity disorder: case-control comparison study.
+JMIR Mental Health. 2020; 7(6):e12158. https://doi.org/10.2196/12158 PMID: 32558658
+
+124.
+
+Titgemeyer Y., Surges R., Altenmuller D.-M., Fauser S., Kunze A., Lanz M., et al. Can commercially
+available wearable EEG devices be used for diagnostic purposes? An explorative pilot study. Epilepsy
+Behav. 2020; 103((Titgemeyer, Ramos, Kutafina) Department of Medical Informatics, RWTH Aachen
+University Hospital, Pauwelsstrasse 30, Aachen 52057, Germany):106507.
+
+125.
+
+Aghaei-Lasboo A., Fisher R.S. Methods for Measuring Seizure Frequency and Severity. Neurol Clin.
+2016; 34(2):383–94. https://doi.org/10.1016/j.ncl.2015.11.001 PMID: 27086985
+
+126.
+
+Malik A.S., Shakir M., Kamel N., Qidwai U. Fuzzification of epileptic data: An application for prediction
+and identification of partial seizure. J Neurol. 2013; 260(SUPPL. 1):S193–4.
+
+127.
+
+Verdru J., Van Paesschen W. Wearable seizure detection devices in refractory epilepsy. Acta Neurol
+Belg. 2020; 120(6):1271–81. https://doi.org/10.1007/s13760-020-01417-z PMID: 32632710
+
+128.
+
+Acharya UR, Sree SV, Swapna G, Martis RJ, Suri JS. Automated EEG analysis of epilepsy: a review.
+Knowledge-Based Systems. 2013; 45:147–65.
+
+129.
+
+Hammond DC. What is neurofeedback? Journal of neurotherapy. 2007; 10(4):25–36.
+
+130.
+
+Vuckovic A., Altaleb M.K.H., Fraser M., McGeady C., Purcell M. EEG correlates of self-managed neurofeedback treatment of central neuropathic pain in chronic spinal cord injury. Front Neurosci. 2019;
+13(JUL):762. https://doi.org/10.3389/fnins.2019.00762 PMID: 31404253
+
+131.
+
+Khan MUG, Naz Z, Khan J, Saba T, Abunadi I, Rehman A, et al. Cognitive Skill Enhancement System
+Using Neuro-Feedback for ADHD Patients. CMC-COMPUTERS MATERIALS & CONTINUA. 2021;
+68(2):2363–76.
+
+132.
+
+G. S. Rajshekar Reddy, L GM. A Brain-Computer Interface and Augmented Reality Neurofeedback to
+Treat ADHD: A Virtual Telekinesis Approach. In: 2020 IEEE International Symposium on Mixed and
+Augmented Reality Adjunct (ISMAR-Adjunct). 2020. p. 123–8.
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+20 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+133.
+
+Eroğlu G, Aydın S, Çetin M, Balcisoy S. Improving cognitive functions of dyslexies using multi-sensory
+learning and EEG neurofeedback. In: 2018 26th Signal Processing and Communications Applications
+Conference (SIU). IEEE; 2018. p. 1–4.
+
+134.
+
+Ramirez R, Palencia-Lefler M, Giraldo S, Vamvakousis Z. Musical neurofeedback for treating depression in elderly people. Frontiers in neuroscience. 2015; 354. https://doi.org/10.3389/fnins.2015.00354
+PMID: 26483628
+
+135.
+
+Kotowski K., Stapor K., Leski J., Kotas M. Validation of Emotiv EPOC+ for extracting ERP correlates
+of emotional face processing. Biocybern Biomed Eng. 2018; 38(4):773–81.
+
+136.
+
+de Lissa P., Sorensen S., Badcock N., Thie J., McArthur G. Measuring the face-sensitive N170 with a
+gaming EEG system: A validation study. J Neurosci Methods. 2015; 253((de Lissa, Sorensen, Badcock, McArthur) Department of Cognitive Science, ARC Centre of Excellence in Cognition and its Disorders, Macquarie University, Sydney, NSW, Australia):47–54. https://doi.org/10.1016/j.jneumeth.
+2015.05.025 PMID: 26057115
+
+137.
+
+Badcock NA, Mousikou P, Mahajan Y, De Lissa P, Thie J, McArthur G. Validation of the Emotiv
+EPOC® EEG gaming system for measuring research quality auditory ERPs. PeerJ. 2013; 1:e38.
+
+138.
+
+Barham M.P., Clark G.M., Hayden M.J., Enticott P.G., Conduit R., Lum J.A.G. Acquiring researchgrade ERPs on a shoestring budget: A comparison of a modified Emotiv and commercial SynAmps
+EEG system. Psychophysiology. 2017; 54(9):1393–404. https://doi.org/10.1111/psyp.12888 PMID:
+28497557
+
+139.
+
+Ries A.J., Touryan J., Vettel J., McDowell K., Hairston W.D. A comparison of electroencephalography signals acquired from conventional and mobile systems. J Neurosci Neuroengineering. 2014; 3
+(1):10–20.
+
+140.
+
+Hairston W.D., Whitaker K.W., Ries A.J., Vettel J.M., Bradford J.C., Kerick S.E., et al. Usability of four
+commercially-oriented EEG systems. J Neural Eng. 2014; 11(4):046018. https://doi.org/10.1088/
+1741-2560/11/4/046018 PMID: 24980915
+
+141.
+
+Williams N.S., McArthur G.M., Badcock N.A. It s all about time: Precision and accuracy of Emotiv
+event-marking for ERP research. PeerJ. 2021; 9((Williams, McArthur, Badcock) Department of Cognitive Science, Macquarie University, Sydney, NSW, Australia):10700.
+
+142.
+
+Duvinage M, Castermans T, Petieau M, Hoellinger T, Cheron G, Dutoit T. Performance of the Emotiv
+Epoc headset for P300-based applications. Biomedical engineering online. 2013; 12(1):1–15. https://
+doi.org/10.1186/1475-925X-12-56 PMID: 23800158
+
+143.
+
+Mahdid Y, Lee U, Blain-Moraes S. Assessing the Quality of Wearable EEG Systems Using Functional
+Connectivity. IEEE Access. 2020; 8:193214–25.
+
+144.
+
+Raduntz T. Signal quality evaluation of emerging EEG devices. Front Physiol. 2018; 9(FEB):98.
+https://doi.org/10.3389/fphys.2018.00098 PMID: 29491841
+
+145.
+
+Ekandem J.I., Davis T.A., Alvarez I., James M.T., Gilbert J.E. Evaluating the ergonomics of BCI
+devices for research and experimentation. Ergonomics. 2012; 55(5):592–8. https://doi.org/10.1080/
+00140139.2012.662527 PMID: 22506831
+
+146.
+
+Johnstone S.J., Blackman R., Bruggemann J.M. EEG from a single-channel dry-sensor recording
+device. Clin EEG Neurosci. 2012; 43(2):112–20. https://doi.org/10.1177/1550059411435857 PMID:
+22715485
+
+147.
+
+Frey J. Comparison of an open-hardware electroencephalography amplifier with medical grade device
+in brain-computer interface applications. arXiv preprint arXiv:160602438. 2016;
+
+148.
+
+Maskeliunas R, Damasevicius R, Martisius I, Vasiljevas M. Consumer-grade EEG devices: are they
+usable for control tasks? PeerJ. 2016; 4:e1746. https://doi.org/10.7717/peerj.1746 PMID: 27014511
+
+149.
+
+Rogers J., Middleton S., Wilson P.H., Johnstone S.J. Predicting functional outcomes after stroke: an
+observational study of acute single-channel EEG. Top Stroke Rehabil. 2020; 27(3):161–72. https://doi.
+org/10.1080/10749357.2019.1673576 PMID: 31707947
+
+150.
+
+Zhu X, Li P, Li C, Yao D, Zhang R, Xu P. Separated channel convolutional neural network to realize
+the training free motor imagery BCI systems. Biomedical Signal Processing and Control. 2019;
+49:396–403.
+
+151.
+
+Aggarwal S, Chugh N. Signal processing techniques for motor imagery brain computer interface: A
+review. Array. 2019; 1:100003.
+
+152.
+
+Myers KR, Tham WY, Yin Y, Cohodes N, Thursby JG, Thursby MC, et al. Unequal effects of the
+COVID-19 pandemic on scientists. Nature human behaviour. 2020; 4(9):880–3. https://doi.org/10.
+1038/s41562-020-0921-y PMID: 32669671
+
+153.
+
+Krukowski RA, Jagsi R, Cardel MI. Academic productivity differences by gender and child age in science, technology, engineering, mathematics, and medicine faculty during the COVID-19 pandemic.
+Journal of Women’s Health. 2021; 30(3):341–7.
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+21 / 22
+
+PLOS ONE
+
+A scoping review on the use of consumer-grade EEG devices for research
+
+154.
+
+Strujo E, Sanders M, Fiscella K, Thomas M, Johnson B, Deets A, et al. COVID-19 impact on multi-site
+recruitment and enrollment. Clinical Trials. 2020; 17(5):501–4. https://doi.org/10.1177/
+1740774520946270 PMID: 32815379
+
+155.
+
+Kubota T, Gajera PK, Kuroda N. Meta-analysis of EEG findings in patients with COVID-19. Epilepsy &
+Behavior. 2021; 115:107682. https://doi.org/10.1016/j.yebeh.2020.107682 PMID: 33342709
+
+156.
+
+Petrescu AM, Taussig D, Bouilleret V. Electroencephalogram (EEG) in COVID-19: a systematic retrospective study. Neurophysiologie Clinique. 2020; 50(3):155–65. https://doi.org/10.1016/j.neucli.2020.
+06.001 PMID: 32653111
+
+157.
+
+Antony AR, Haneef Z. Systematic review of EEG findings in 617 patients diagnosed with COVID-19.
+Seizure. 2020; 83:234–41. https://doi.org/10.1016/j.seizure.2020.10.014 PMID: 33121875
+
+158.
+
+Asadi-Pooya AA, Simani L. Central nervous system manifestations of COVID-19: a systematic review.
+Journal of the neurological sciences. 2020; 413:116832. https://doi.org/10.1016/j.jns.2020.116832
+PMID: 32299017
+
+159.
+
+Williams NS, King W, Mackellar G, Randeniya R, McCormick A, Badcock NA. Crowdsourced EEG
+Experiments: A proof of concept for remote EEG acquisition using EmotivPRO Builder and EmotivLABS. bioRxiv. 2022;2022–02.
+
+160.
+
+Choy T, Baker E, Stavropoulos K. Systemic racism in EEG research: Considerations and potential
+solutions. Affect. Sci. 3, 14–20. 2022. https://doi.org/10.1007/s42761-021-00050-0 PMID: 36042782
+
+161.
+
+Henrich J, Heine SJ, Norenzayan A. The weirdest people in the world? Behavioral and brain sciences.
+2010; 33(2–3):61–83. https://doi.org/10.1017/S0140525X0999152X PMID: 20550733
+
+PLOS ONE | https://doi.org/10.1371/journal.pone.0291186 March 6, 2024
+
+22 / 22
+
+

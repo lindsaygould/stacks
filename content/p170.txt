@@ -1,0 +1,347 @@
+EEG microstates: from methodological foundations to clinical translation 
+
+Trends Neurosciences in OPEN ACCESS
+
+Review EEG microstates: from methodological foundations to clinical translation
+
+Christoph M. Michel 1 ,2 , \* and
+
+Lucie Bréchet 3
+
+Electroencephalography (EEG) microstates represent discrete topographic
+
+Highlights configurations persisting approximately 50–120 ms before transitioning to new
+
+Electroencephalography microstates patterns. These transient states provide unique insights into large-scale brain
+
+represent discrete brain states lasting organization in health and disease, capturing reference-independent, zero- lag, synchronized networks at timescales matching cortical communication constraints. This review addresses critical methodological challenges in EEG
+
+approximately 50–120 ms. These tran- sient states reveal fundamental principles of brain dynam ics and large-scale brain organization. microstates, including data-driven cluster optimization, template derivation strategies for group comparisons, and interpretive frameworks based on conver- gent evidence rather than premature functional consensus. Future advances will require transitioning from arbitrary conventions to optimization-based
+
+Clinical applications show both promise and limitations. In schizophrenia, robust alterations are observed in patients and unaffected siblings, establishing micro- approaches, characterizing higher-order temporal dynamics, establishing multi-
+
+states as candidate endophenotypes. modal integration, and building validation standards th at prioritize convergent evidence. With methodological rigor, microstate analysis can advance our under-
+
+Alzheimer’s disease reveals systematic microstate changes paralleling cognit ive standing of brain dynamics and their role in cognition, consciousness, and brain
+
+decline. disorders.
+
+Sleep and consciousness studies vali- date microstates as fundamental brain state markers, but they also challenge Conceptual foundation: why microstat es matter
+
+simplistic functional interpretations. The electrical activity of the human brain, as measured through electroencephalography (EEG), shows a remarkable organizational principle: scalp topographic patterns remain stable for
+
+Future progress would require methodo- logical consensus on optimization criteria approximately 50–120 ms, then switch abruptly in discrete steps to new configurations \[1\].
+
+and group comparison approaches, as These transient periods of stable topography (see Glossary), termed EEG microstates, indicate that large-scale neural activity proceeds through sequential transitions among reproducible
+
+well as a community commitment to sharing templates and datasets.
+
+spatial patterns rather than continuous fluctuations \[2,3\], operating at a timescale that aligns with cortical communication and perceptual integration \[4–6\].
+
+EEG microstates represent distinct configurations of global brain electrical fields that recur across time and individuals, providing reference-inde pendent measures that enable robust cross- laboratory comparisons \[7\]. This discretization suggests that neural dynamics follow organized patterns rather than chaotic or continuously varying processes \[6,8\].
+
+Yet the field’s progress is hampered by methodological pitfalls, including the widespread
+
+1 Department of Fundamental adoption of the four-microstate convention for ‘comparability’ \[3\]. Functional interpretations have
+
+Neuroscience, University of Geneva, often solidified through citation chains rather than systematic validation, and clinical applications show promise but remain limit ed by methodological inconsistencies.
+
+Geneva , Switzerland 2 All Here SA, Geneva, Swit zerland 3 Department of Clinical Neurosciences, University of Geneva, Geneva , This review aims to address these challenges while highlighting the potential of microstate
+
+Switzerland
+
+analysis. We establish conceptual foundations, provide data-driven methodological frameworks for tional informed interpretations. decision-making, We also evaluate and demonstrate clinical applications, how convergent distinguishing evidence validated supports patterns robust func- from
+
+\*Correspondence: christoph.michel@unige.ch preliminary findings.
+
+(C.M. Michel).
+
+Trends in Neurosciences, June 2026, Vol. 49, No. 6 https://doi.org/10.1016/j.tins.2026.04.003 433 © 2026 The Author(s). Published by Elsevier Ltd. This is an open access article under the CC BY license (http://creativecommons.org/licenses/by/4.0/).
+
+Trends OPEN ACCESS in Neurosciences The construction of conscious experience involves discrete te mporal building blocks This section examines how EEG microstates provide a temporal framework for understanding consciousness, exploring their relationship to theoretical models of brain organization and their unique capacity to capture synch ronized neural activity at behaviorally relevant time- scales.
+
+Brain activity unfolds not as random fluctuations but as organized sequences. This discretization aligns with theories proposing that consciousness operates through seque ntial processing— from Bernard Baars’ Global Workspace Theory \[9\] to more recent frameworks describing discrete temporal windows in perception and cognition \[8,10–17\]. EEG microstates may provide the neural substrate for these theorized units \[6,18\]. Yet, consciousness emerges not from indi- vidual microstates but from their temporal syntax. Conscious experience putatively arises from specific microstate transitions that follow probabilistic rules, varying across cognitive states, task demands, and individuals \[19–22\].
+
+Microstates as neurophysiological units of brain dynamics Zero-lag synchronization defines functi onal brain states A defining feature of microstates is their capacity to capture genuine neurophysiological synchronization across distributed brain networks. Each spatial pattern reveals which neural networks engage and their relative configurations—cr itically, all active brain areas synchro- nize at a quasi-zero phase lag during a microstate \[3\], that is, the underlying sources exhibit the same temporal dynamics (Figure 1). While conventional connectivity analyses exclude zero-lag relationships due to concerns about volume conduction, microstate analysis is thought to capture genuine neurophysiological synchronization aris ing from diverse coupling mechanisms \[25–27\], revealing a network organization fundamentally different from traditio nal time-lagged connectivity analyses \[4,28,29\]. The temporal dynamics observed using micro- state analysis, including transition sequences, microstate durations, and occurrence rates, thereby show how these synchronized configurations orchestrate brain function over time.
+
+Microstates and oscillatory brain activity The relationship between microstates and EEG oscillations in different frequency bands is complex and not yet fully resolved (for an extended discussion, see \[3\]). An early attempt to bridge these two perspectives introduced topographic time-frequency decomposition, which assigns a characteristic time-frequency representation to each topographic class \[30\]. While microstate topographies are largely invariant across frequency bands, their temporal parameters and sequence dynamics differ markedly and are informationally ne ar-independent between bands \[31\]. This means that broadband microstate dynamics cannot be reduced to any single frequency band, and conversely, that a given f requency band is not generated by a single stable brain network over time \[32\]. Importantly, the spectral context is relevant to the functional interpretation of microstate changes: while topographies remain stable across vigilance states, each micro- state’s dominant frequency shifts fundamentally—from higher frequencies during wakefulness to low-frequency power during non-rapid eye movement (NREM) sleep \[33–35\]. This spectral context may therefore carry functional meaning: it has been proposed that a microstate occurring predominantly in a low-frequency regime reflects deactivation rather than active engagement of the underlying network, and that the prolong ed durations observed during sleep and propofol anesthesia may thus indicate sustained suppression of functional integration \[33,34\]. In conclu- sion, microstates are dynamic phenomena coupled to, yet not reducible to, ongoing oscillatory brain activity.
+
+Glossary
+
+Clustering algorithm: a data-driven algorithm that partitions data points into distinct clusters by iteratively assigning each observation to the nearest cluster centroid, minimizing within-cluster variance. Co mmon implementations include k-means and AAHC. Coverage: the proportion of total recording time occupied by each microstate class, integrating both duration and occurrence rate as a measure of temporal dominance. EEG microstate: a period of quasi- stable topography of scalp EEG activity lasting approximately 50–120 ms, representing a discrete brain state characterized by zero-lag syn chronized neural activity across distributed networks. Global field power (GFP): the spatial standard deviation of the electric potential across all EEG electrodes at each time point, representing the strength of the scalp’s electric field. GFP peaks indicate moments of maximum topographic stability and an optimal signal-to-noise ratio for microstate identification. Microstate duration: the mean time each microstate class remains stable before transitioning to another state, reflecting the temporal stability of specific network configurations. Occurrence rate: frequency per unit time at which each microstate class appears, indicating the relative dominance or accessibility of different brain states. Reference-independence: the property that microstate topographies remain invariant regardless of EEG reference electrode choice, reflecting the intrinsic spatial configuration of the brain’s electrical field rath er than arbitrary measurement conventions. Template maps: the representative topographic patterns for each microstate class, derived through clustering, and used for classifying ongoing EEG data int o discrete brain states. Topography: the spatial distribution pattern of electrical potentials across the scalp at a given moment, characterized by the relative configuration of positive and negative vol tage regions rather than absolute amplitude values. Transition sequence: the ordered succession of microstate occurrences over time, characterized by non-random transition probabilities between states (microstate syntax). Transition sequences can be analyzed at multiple levels, including first- and higher-order Markov statistics, complexity measures,
+
+434 Trends in Neurosciences, June 2026, Vol. 49, No. 6
+
+Trends in Neurosciences OPEN ACCESS
+
+Microstates operate at the brain’s fundam ental integration window
+
+and entropy, revealing the temporal The temporal resolution of microstate analysis aligns with the fundamental timescale at which cortical networks integrate information, positioning microstates as particularly relevant for
+
+organization of brain dynamics beyond simple occurren ce rates and durations. Winner-takes-all: the procedure for understanding the neural basis of perceptual and cognitive processes. The approximately
+
+assigning template maps to continuous 10 0 ms microstate duration is functionally meaningful at both neurophysiological and cognitive levels \[36\]. Neurophysiologically, this timescale aligns with cortical communication constraints: cortical axons conduct at 0.1–2 m/s, necessitating tens of millis econds for signals to travel
+
+EEG data, where, at each time point, the template with the highest spatial correlation is exclusively assigned, ensuring that only one microstate class between distant areas \[37\], while long-range corticothalamic connections exhibit conduction
+
+is activ e at any moment and enforcing delays of 40–50 ms \[38\]. Cognitively, the auditory cortex integrates inputs within approximately 160–170 ms \[39\], and neural sources with a latency of approximately 100 ms constrain dynamic perceptual tracking \[40\]. Microstates thus bridge millisecond-scale neural events and s econd-
+
+the discretization of brain activity. Zero-lag synchronization: simultaneous activation of distributed brain regions with no temporal delay, scale cognitive processes.
+
+captured by microstate analysis as a stable topographic configuration,
+
+Microstate topographies remain invariant across reference choices
+
+reflecting genuine neurophysiological co upling rather than volume conduction Microstate analysis offers a crucial advantage: reference-independence. While EEG ampli-
+
+artifacts. tudes and spectral power depend critically on the choice of reference electrode, topographic patterns—the spatial configuration of positive and negative regions—remain invariant \[41–43\]. This independence enables direct comparison across laboratories using different recording montages, eliminates artifacts related to the reference, and ensures that spatial patterns reflect genuine brain activity rather than reference-related distortions, making microstate analysis partic- ularly valuable for multi-site studies and clinical translation.
+
+Critical methodological conside rations Rigorous microstate analysis requires careful attention to the a priori assumptions and methodo- logica l choices that profoundly impact results and interpretations.
+
+Box 1 outlines the essential recording and preprocessing steps for microstate analysis. Figure 2 illustrates the hierarchical analysis strategy for comparing microstates between groups and/or conditions. Technical terms used throughout this section are defined in the Glossary.
+
+Assumptions underlying EEG microstates Before addressing specific methodological choices, it is worth noting that microstate analysis rests on a set of a priori assumptions: (i) that EEG topographic data contain meaningful cluster structure; (ii) that restricting clustering to global field power (GFP) peaks adequately captures the relevant brain states; (iii) that brain dynamics are better described as discrete quasi-stable states than as a conti nuous flow; and (iv) that a single dominant network configuration can be meaningfully assigned at each moment in time. These assumptions have been challenged \[52–55\], and they cannot be substantiated from the data alone. However, converging lines of evidence support their validity as a working model. First, the same canonical microstate topogra- phies recur across laboratories, datasets, age groups , and recording systems—a degree of cross-study reproducibility that is difficult to reconcile with an absence of genuine cluster struc- ture \[7,56\]. Second, while different clustering algorithms may yield slightly different template maps, the information-theoretical quantities derived from the resulting microstate se quences are largely invariant across methods \[57\], and microstate temporal parameters show good to excellent test–retest reliability \[3,44,45,58–60\], collectively suggesting that the derived structure reflects properties of the data rather than algorithmic choices. Third, topographic stability at GFP peaks—the empirical basis for discretization—has been directly demonstrated \[23,24\]. Fourth, the assumption of discrete quasi-stable states finds strong support in theoretical and computational neuroscience: metastable dynamics emerge naturally from biologically realistic neural network models and have been identified across multiple spatial and temporal scales of
+
+Trends in Neurosciences, June 2026, Vol. 49, No. 6 435
+
+Trends in Neurosciences OPEN ACCESS
+
+TrendsTrends inin Neurosciences Neurosciences
+
+Figure 1. Comparison of zero-phase synchronization (left) versus time-lagged synchronization (right). (A) For illustrative purposes, synthetic data were generated in which two dipoles oscillate at 10 Hz either in-phase (left panels) or out-of-phase (right panels). (B) Brain regions generating the simulated activity (red dots indicate source locations) with a new pair of dipoles activated every 200 ms. (C) Resulting scalp-level EEG of the four time periods with the four different active brain networks. (D) Topographic maps derived from k-means cluster analysis of the simulated EEG (applied to all time points without GFP-peak selection) with four maps being optimal in both conditions. (E) Result of fitting the four cluster maps to the EEG at all time points. GFP is colored by the assigned mic rostate class. Zero-phase synchronization produces discrete temporal epochs with stable microstate assignments (left), while time-lagged synchronization yields rapid, irregular switching between unstable configurations (right). Importantly, in the time-lagged case, microstate switches occur preferentially at GFP peaks, contrary to empirical observations showing that topographic maps are maximally stable at GFP peaks \[23,24\]. The figure illustrates the notion that EEG microstates capture genuine neurophysiological synchronization across distributed networks, rather than arbitrary segmentation of continuous signals. EEG: electroencephalography; GFP: global field power.
+
+brain organizatio n \[6,8,10,11,61–63\]. Fifth, the winner-takes-all assumption corresponds to functional theories proposing that only one global fun ctional state occurs at any given moment \[61,64\], supported empirically by the observation that the assigned map remains dominant during a coherent time period rather than randomly fluctuating (for more discussion, see \[3\]). The critical methodological discussions that follow therefore address how to optimize and validate this framework rather than whether its foundational assumptions are tenable.
+
+Data-driven clustering reveals more than four brain states The widespread practice of fixing cluster numbers to four (labele d as microstates A, B, C, and D \[65\]) for ‘comparability’ goes against data-driven principles. This approach results in systemati- cally missing naturally occurring states and obscuring meaningful neural dynamics. It has been demonstrated that if four microstates are maintained, ‘microstate C’ actually conflates two
+
+436 Trends in Neurosciences, June 2026, Vol. 49, No. 6
+
+Trends in Neurosciences OPEN ACCESS
+
+Box 1. Essential methodological steps in EE G microstate analysis
+
+Data acquisition
+
+· Electrode coverage: Minimum 19–32 electrodes with uniform distribution across scalp regions \[44,45\]; denser arrays improve spatial resolution and allow better source localization \[46\].
+
+· Recording: Typically 3–5 min of resting-state data; parameters should be stable across recording lengths \[45,47\].
+
+Preprocessing
+
+· Filtering: Broadband 1–40 Hz for standard analysis; lower high-pass for studies where slow oscillations are expected or observed. Band-specific analysis can be included if the research question requires it —microstate topographies remain spatially similar across frequency bands, though occurrence patterns may differ \[31\].
+
+· Artifacts: Eye-blink correction based on independent component analysis is sufficient for good-quality data to maintain temporal continuity essential for sequence analysis; canonical microstate topographies are robust to muscle and other artifacts, showing minimal change with more aggressive artifact rejection \[48\].
+
+Clustering
+
+· Algorithm: A clustering algorithm \[e.g., modified k-means or atomize-and-agglomerate hierarchical clustering (AAHC)\] is applied to GFP peaks—moments of maximum topographic stability and optimal signal-to-noise ratio.
+
+· Normalization: Each map is normalized to unit strength (divided by GFP) to capture the spatial configuration rather than the amplitude.
+
+· Polarity: Ignored, as ongoing oscillations make positive and negative versions functionally equivalent.
+
+· Stability: For k-means, multiple random initializations (≥50) are essential, as results depend on random starting points; AAHC is deterministic and does not require this step.
+
+· Cluster number: Data-driven optimization using multiple criteria (explained variance, BIC/AIC, Krzanowski-Lai, silhouette, etc.) is recommended. Forcing four clusters may obscure functionally distinct states—the optimal number varies by population and condition.
+
+Fitting templates to data
+
+· Fitting approach: While some studies fit only at GFP peaks, we recommend fitting to all time points for a complete understanding of temporal dynamics.
+
+· Procedure: Winner-takes-all assignment using spatial correlation – at each time point, the template with the highest correlation (after normalization to unit strength) is exclusively assigned.
+
+· Temporal smoothing: Two approaches are in common use: a penalty-based method \[49\] and a minimum duratio n threshold \[50\]; both reduce spurious transitions at GFP minima.
+
+· Correlation threshold: Time points below the threshold should remain unlabeled; depending on smoothing parameters, these may be redistributed to neighboring states or retained as a separate unlabeled class.
+
+· Critical reporting: Smoothing parameters and correlation thresholds should be explicitly reported.
+
+· Reference-independence: Spatial correlation is computed on average-referenced, normalized maps, making the results invariant to the recording reference and enabling cross-laboratory comparison.
+
+Group comparison s
+
+Researchers should first test for topographic differences; separate group templates inflate Type I errors, while forced standard templates confound topographic and temporal effects \[51\].
+
+Temporal parameters of microstates
+
+· Duration: mean stability time before transition.
+
+· Occurrence: frequency per unit of time.
+
+· Coverage: proportion of total recording time.
+
+· Transitions: sequential organization reflecting brain state ‘syntax’.
+
+· Complexity and entropy measures: determine the randomne ss of microstate sequences.
+
+Source localization: it should be applied to all original time points labeled with each microstate, rather than to template maps, to preserve natural variability.
+
+functionally distinct brain states with different sources \[66\]. Recent evidence argues for seven- microstate frameworks that sharpen canonical maps while revealing previo usly hidden states \[7,56\].
+
+Trends in Neurosciences, June 2026, Vol. 49, No. 6 437
+
+Trends in Neurosciences OPEN ACCESS
+
+TrendsTrends inin Neurosciences Neurosciences
+
+Figure 2. Hierarchical analysis strategy for comparing microstates between groups and/or conditions. (A) The analytical workflow proceeds through four hierarchical steps to enable valid statistical comparisons while accounting for inter-individual variability. First, clustering is performed on EEG topographies at GFP peaks for each subject separately using a data-driven determination of the optimal number of clusters. Second, group-level clustering combines all individual cluster maps from subjects within each experimental group or condition, yielding a representative set of template maps for each group. The spatial similarity of maps is
+
+(Figure legend continued at the bottom of the next page.)
+
+438 Trends in Neurosciences, June 2026, Vol. 49, No. 6
+
+Trends in Neurosciences OPEN ACCESS
+
+It has been recommended that the optimal cluster numbers should be determined for each dataset using multiple optimization crite ria, including cross-validation, explained variance curves, and information criteria \[3\]. Advanced approaches combine these into meta-criteria for princip led selection \[66,67\]. We acknowledge, however, that meta-criteria represent an ad-hoc solution insofar as they presuppose the existence of a single optimal cluster number and may yield inconsistent recommendations when the individual contributing metrics diverge. In such cases, an informative alternative is to demonstrate that key findings remain consistent across a range of plausible cluster numbers, providing robust evidence that does not depend on any single optimization solution. The optimal number of clusters varies with recording parameters, popula- tion characteristics, cognitive states, and preprocessing choices. Researchers should always report optimization procedures and justify their chosen numbers.
+
+Template choice can create or mask group differences The decision to use separate template maps for different groups versus a common set of template maps across all participants has profound implications for detecting genuine differences versus introducing statistical artifacts. Using separate microstate templates for differen t groups inflates Type I error rates when no actual group differences exist, as even subtle topographic vari- ations create artificial differences in temporal parameters \[51\]. Conversely, forcing single templates across groups that differ topographically confounds spatial and temporal effects— masking genuine group differences or creating spurious ones. These considerations suggest that researchers should carefully consider their analysis strategy based on the research questions at hand: whether groups differ primarily in temporal dynamics (favoring shared maps) or in funda- mental topog raphic organization (requiring more sophisticated approaches). Before comparing temporal parameters in clinical or comparative studies, we recommend testing for and reporting topographic group differences and designing analysis strategies accordingly (Figure 2).
+
+Temporal parameter reveals reliable brain state dynamics After establishing microstate templates and fitting them to the data, temporal parameters typically characterize brain state dynamics with strong across-subject stability \[65,68\] and test–retest reli- ability \[45–47,58,69–72\]. ‘Duration’ refers to the period during which the brain maintains specific network configurations. Longer durations suggest stable processing states or deeper attentional engagement, while shorter durations reflect rapid cognitive switching or unstable neural dynam- ics \[73\]. ‘Occurrence’ (or ‘density’) quantifies how frequently each microstate class appears. The notion of ‘coverage’ combines ‘duration’ and ‘occurrence’, measuring the proportion of time each microstate class occupies. Since coverage equals the product of duration and occurrence, the same coverage value can arise from different combinations of these two parameters. Researchers should therefore report and interpret all three parameters independently and should avoid the blanket conclusion that a microstate was more or less ‘active’ without specifying which parameter changed and in which direction.
+
+Sequential organization of microstates reveals the syntax of brain states. Microstate sequences follow non-random patterns and long-range dependencies, suggesting grammatical rules
+
+assessed between groups. Third, clustering is performed simultaneously across all groups and conditions, incorporating all individual cluster maps to derive a common set of template maps applicable to all subjects. Alternatively, a normative template database can be used at this stage. Fourth, the resulting template maps are fitted to each individual subject’s continuous EEG data using spatial correlation. During fitting, short segments below a minimum duration threshold are typically rejected, and optional temporal smoothing can be applied to reduce rapid microstate alternations. Template maps can then be assigned to canonical microstate classes and interpreted using a common reference database. Temporal parameters (GEV, duration, coverage, occurrence, transitions, complexity, and entropy) are computed for statistical comparison between groups and conditions. Additional parameters such as the Hurst exponent can be derived to characterize the long-range temporal dependence of microstate sequences. (B) Representative examples of microstate fitting output for individual subjects in each group, showing the color-coded microstate sequence superimposed on the GFP time course. EEG: electroencephalography; GFP: global field power; GEV: global explained variance.
+
+Trends in Neurosciences, June 2026, Vol. 49, No. 6 439
+
+Trends OPEN ACCESS in Neurosciences that reflect cognitive or neural constraints \[19,74,75\]. While first-order Markov analyses are often applied, growing evidence indicates that the most helpful information resides in higher-order temporal structure, whi ch can be quantified by complexity and entropy measures \[19,20,33,57,76,77\], and shows good short-term and long-term reliability \[60\].
+
+The challenge of function al interpretation Establishing robust functional interpretations of microstates requires converging evidence from multiple complementary methodologies. This section examines how source localization, simultaneous EEG-fMRI recordings, and behavioral/clinical studies each contribute distinct but complementary insights that together build a comprehensive functional characterization.
+
+Source localization reveals the neural networks behind topographies Source localization methods transform scalp topographies into estimates of underlying neural generators, providing essential spatial information about which brain networks produce each microstate configuration \[34,66,67,78–80\]. With adequate sensor numbers and proper head models, EEG source localization can reliably identify the sources of scalp-recorded electrical activity \[78,81–83\]. Recent advances demonstrate that high-density EEG source imaging can accurately localize even deep brain sources \[84\]. Yet, source localization remains underutilized; many studies lack sufficient electrode density or fail t o apply available localization methods. Figure 3 illustrates a pipeline of microstate source analysis applied in var ious studies \[34,47,67,80,86–89\]. While this pipeline applies source localization as a post-hoc step to microstate-labeled time points, alternative approaches apply source localizati on more directly, including topographic electrophysiological state source-imaging \[66,90\] and direct clustering in source space after parcellation into regions of interest—an approach particularly used in magnetoencephalography \[79,91–93\].
+
+Simultaneous recordings capture networks across timescales Concurrent EEG-fMRI recordings link microstate dynamics with slower hemodynamic processes, though technical challenges require careful interpretation \[94,95\]. EEG microstates operate on millisecond timescales, while blood oxygen level-dependent ( BOLD) responses unfold over seconds \[74,96,97\]. Emerging fast fMRI acquisition and novel analysis methods \[97,98\] enable better temporal matching between millisecond-scale microstates and hemody- namics. However, the MRI environment introduces practical constraints, including gradient artifacts and movement restrictions, which can alter natural microstate dynamics. Alternative approaches include comparing microstate source localizations with independently derived network maps from high-resolution fMRI studies in the same subjects performing similar tasks \[67\].
+
+Functional interpretations: from citation chains to convergent evidence Behavioral and clinical studies link microstates to cognitive processes and pathological conditions, yet correlations between microstate parameters and behavioral measures do not automatically indicate direct functional roles. A concerning trend has emerged where complex functional interpretations have become prematurely solidified: many s tudies routinely assign labels such as ‘auditory’, ‘visual’, ‘salience/default mode network’, or ‘attention’ by citing founda- tional EEG-fMRI \[96\] and source localizati on \[66\] studies, extending beyond what the original evidence supports. Foundational studies provided critical starting points for microstate-network correspondences rather than definitive functional mappings, and some of the interpretive frame- works in microstate analysis have been built through citation repetition rather than systematic validation. While these methodological considerations require careful attention, they do not dimin- ish the value of microstate research. Robust and reproducible findings consistently emerge in
+
+440 Trends in Neurosciences, June 2026, Vol. 49, No. 6
+
+Trends in Neurosciences OPEN ACCESS
+
+TrendsTrends inin Neurosciences Neurosciences
+
+Figure 3. Illustration of EEG microstate analysis pipeline for source localization. (A) Contin uous multichannel EEG recording filtered and artifact-corrected (from \[80\]). (B) Global field power (GFP) over time, calculated as the spatial standard deviation of the average-reference EEG. (C) Average template maps derived from k-means cluster analysis of all topographic maps at GFP peaks. (D) Assignment of labels (A–E) to template maps based on canonical maps described in the literature \[7\]. (E) Temporal sequence of fitted microstate maps shown as color-coded segments, with all time frames assigned to map C highlighted below. Backfitting was applied to all time points (not GFP peaks only). Temporal smoothing was performed using the method described in \[49\], with a smoothing window of three time frames and a strength factor of 3. Segments shorter than four time frames (16 ms) were ignored and attributed equally to the preceding and following state. (F) Source lo calization procedure: all time frames labeled with map C are concatenated, and a distributed linear inverse solution (LORETA \[85\]) is calculated for each time frame. These individual source maps are then averaged to derive the estimated neural sources of microstate (C) The small source maps shown at the bottom are illustrative examples from a single subject. The averaged source map and associated brain regions (precuneus, angula r gyrus, hippocampus, and parahippocampal gyrus) are taken from the published group-level analysis of 150 subjects recorded with 256-channel EEG \[80\]. EEG: electroencephalography.
+
+Trends in Neurosciences, June 2026, Vol. 49, No. 6 441
+
+Trends OPEN ACCESS in Neurosciences pathological conditions and experimental manipulations, confirming that microstates cap ture meaningful neural dynamics \[3,56,99–106\].
+
+Current evidence links microstates to cognitive networks A comprehensive review of the existing literature reveals emerging patterns linking specific microstates to distinct cognitive networks and functions, though the strength of evidence varies considerably across different microstate classes \[56\]. Microstate A is often associated with auditory/verbal processing, including inner speech \[107–110\], with generators tentatively localized to the left frontal and temporal lobes \[66,96,111\]. However, some studies showed no links between microstate A and auditory/verbal functions \[112\] or even links to visua l functions \[69,113\], and the arousal state appears to influence the occurrence of this microstate \[109,114\]. Microstate B most often correlates with visual imagery, s elf-visualization, and visuo-spatial attention \[69,112,115–117\], with source localization primarily pointing to the visual cortex \[66,67,86,96\], and secondarily to the right temporal lobe \[80\]. Microstate C best illustrates converging evidence from different studies. Behaviorally, it increases during rest and memory tasks \[67,101,115,117–120\]. Clinically, it decreases with (i) self-referential thought reduction in mild cognitive impairment (MCI) patients \[80\]; (ii) cognitive decline in the elderly \[116\]; and (iii) abnormal self-experiences in bipolar patients \[121\]; and it increases during ps ychosis in schizophrenia \[99\]. Source localization identified generators in parietal and t emporal areas, including the hippocampus \[66,67,80,86,89,122\], which are brain areas associated with the memory sub-system of the default mode network \[123\]. Converging evidence links microstate C directly to mind-wandering: it is specifically associated with self-referential thoughts \[89,110\] and self-reported mind-wandering episodes during sustained attention tasks \[118\]; it predicts slower reaction times \[124\]; and it is reduced during focal attention meditation \[122\]. Collectively, microstate C appears to be involved in processing personally significant informa- tion, self-referential mentation, and self-reflection, functions typically dominating during mind- wandering and activation of the default mode network \[125\].
+
+Microstate D is primarily associated with executive functions, including working memory, cognitive control, and attentional reorientation \[67,112,115,119,126,127\]. It increases during focused attention meditation \[122\] and is linked to faster reaction times durin g sustained attention tasks \[124\]. Localization studies associate it with the attention network \[66,67,89,96,122\]. A transcranial magnetic stimulation (TMS) study reported increased temporal properties after rTMS over the intraparietal sulcus, a crucial hub in the dorsal attention network \[120\]. Clinical studies indicate an increase in microstate D in attention-deficit/hyperactivity disorder \[128\] and a decrease in schizophrenia \[99,129\]. Microstate E shows emerging evidence for a role in higher cognitive functions: it is related to controlled thinking \[89\], predominates during on-task focused attention relative to mind-wandering \[110\], predicts faster reaction times \[124\], and increases during breath-focused meditation \[122\]. Its generators are localized to the temporoparietal junction, precuneus, and dorsolateral prefrontal cortex, supporting its role in attentional focus and self-awareness \[80,89,122\].
+
+It is important to note that all functional associations reviewed here were established in wakeful, alert participants. Whether these cognitive labels remain valid when the same microstate topog- raphies appear in fundamentally different states of consciousness (e.g., during sleep, anesthesia, disorders of consciousness, meditation, and hypnosis) remains an open question.
+
+Building systematic consensus through quanti tative comparison Addressing the interpretive inconsistencies arising from subjective ‘eyeballing’ of template similarities requires systematic, quantitative approaches that enable the objective identification
+
+442 Trends in Neurosciences, June 2026, Vol. 49, No. 6
+
+Trends in Neurosciences OPEN ACCESS
+
+of convergent findings across studies. A systematic tool was developed to address this major source of interpretive inconsistency \[7\]. The approach collects actual template data from published studies and generates spatial similarity matrices, enabling the objective identification of convergent findings. Analysis of 40 template map sets revealed: (i) high cross-study similarity when properly quantified, (ii) convergent empirical findings for spatially similar template maps, and (iii) extractable meta-microstates capturing consistent literature-wide patterns. This system- atic approach moves the field beyond subjective visual matching toward objecti ve, data-driven consensus. As more researchers contribute template maps and findings to this systematic framework, evidence-based interpretive guidelines could be developed that reflect genuine consensus rather than premature generalizations.
+
+Clinical applications: mechanistic insights Microstate analysis provides mechanistic insights into brain dynamics across diverse conditions, from neuropsychiatric disorders to altered states of consciousness. This section examines how specific microstate patterns reveal underlying pathophysiology in schizophrenia and Alzheimer’s disease, as well as fundamental changes in brain organization during sleep and other altered states of consciousness, highlighting throughout the importance of methodological rigor in interpreting these findings.
+
+Microstates in schizophrenia track pathophysiology Schizophrenia research has produced the field’s most robust clinical findings. Recent meta- analyses converge on a double dissociation: in schizophrenia, microstate C increases in duration, occurrence, and coverage, while microstate D decreases across all three temporal parameters \[99,100,130\]. This pattern transcends clinical heterogeneity and methodological variation. Effects of medication reveal further insights: microstate C increases persist in both medicated and unmedicated patients, suggesting an association with active psychosis, while microstat e D decreases appear only in unmedicated patients, indicating a trait marker \[100\]. Notably, this C/D dissociation appears in unaffected siblings of schizophrenia patients \[99\], establishing microstate dynamics as a candidate endophenotype—heritable markers of genetic vulnerability independent of illness expression. This convergent evidence suggests that the C/D patterns are fundamental to the pathophysiology rather than epiphenomenal consequences of chronic illness, medication, or long-term hospitalization. The presence of this pattern in at-risk individuals positions microstate analysis as potentia lly valuable for early detection or risk stratification, though prospective validation remains necessary.
+
+As a critical methodological note, it should be added that nearly all schizophrenia microstate stud- ies so far have used four-microstate frameworks. Given evidence that microstate C topograph y might comprise distinct subcomponents when only four microstate clusters are defined \[66\], the observed increase in microstate C may reflect differential alterations in these subcomponents. Data-driven clustering could reveal whether specific C-related networks sh ow disproportionate dysfunction, potentially mapping onto distinct symptom dimensions or illness subtypes.
+
+Alzheimer’s disease: tracking netwo rk degradation Along the Alzheimer’s disease continuum, from MCI to confirmed Alzheimer’s disease, micro- state alterations follow a strikingly different pattern from schizophrenia, with changes that track disease progression and intensify with cognitive impairment severity. Consistent findings show increases in microstates A and B and decreases in C and D acr oss temporal parameters and complexity measures, spanning studies of both MCI \[80,131–133\] and confirmed Alzheimer’s disease \[134\], a pattern now confirmed by meta-analyses \[135,136\]. Notably, a large sample (n = 945) covering the full MCI-to-Alzheimer’s disease spectrum demonstrated gradient-like
+
+Trends in Neurosciences, June 2026, Vol. 49, No. 6 443
+
+Trends OPEN ACCESS in Neurosciences changes that intensify with cognitive impairment severity \[137\]. Some studies also reported changes in the topography of microstates C and B associated with cerebrospinal fluid amyloid beta 42 and phosphorylated tau levels, respectively \[133,138\], highlighting the importance of inves- tigating disease-related topographic shifts rather than assuming template stability across the disease continuum. Together, these findings suggest fundamentally different mechanisms of network dysfunction in Alzheimer’s disease compared with schizophrenia: schizophrenia may reflect altered network switching or coordination, while Alzheimer’s disease involves progressive loss of specific networks. These changes could reflect compensatory mechanisms, direct conse- quences of cortical degeneration disrupting neural substrates of microstates C and D, or network reorganization preserving function despite neurodegeneration.
+
+Critical methodological note: While microstate parameters correlate with disease progression, interpretation remains fundamentally limited by an incomplete understanding of what microstates functionally represent. Without stronger functional validation, clinical interpretation risks circularity: researchers may observe altered microstates in a disease, infer what cognitive functions are impaired based on assumed microstate roles, and then use these impairments to explain why the microstates changed. Essentially, unvalidated assumptions about microstate function are used in this process as the basis for interpre ting clinical changes and as evidence supporting those same assumptions. This highlights the need for independent functional validation before clinical translation.
+
+Microstate functional interpretations: insights and challenges from sleep and consciousness states Sleep, anesthesia, and disorders of consciousness provide compelling evidence that microstates capture state-dependent changes in brain dynamics, while simultaneously posing some of the most serious challenges to their cognitive functional interpretations \[104\]. Systematic changes across sleep stages demonstrate that microstates track fundamental changes in conscious state. These include prolonged duration of all microstates in N3 sleep \[139\] and increased global explained variance and duration of microstates C and D in N2 sleep \[34\]. Critically, particular microstates during NREM sleep predict subsequent dream recall \[34\], demonstrating that microstate patterns correlate with internal mental states (dreaming vs. non-dreaming) indepen- dently of external behavior or arousal level. Like sleep, surgical an esthesia induces increased duration of microstates \[140\]. However, examining EEG microstates during different levels of propofol-induced sedation reveals ‘U-shaped’ complexity patterns \[33\]—a paradoxical increase in complexity at moderate sedation, followed by a decrease at deep sedation—showing micro- state sensitivity to pharmacologically induced alterations in consciousness. Complexity measures might be particularly suited to capture loss of consciousness. It has been shown that measures of randomness and structure of microstate sequences are inversely related to the loss of conscious- ness, independent of whether propofol or S-ketamine was used as anesthetics \[21\]. This aligns with proposals that microstates function as ‘words’, where anesthetic-induced composit ional errors lead to incorrect semantic output \[22\]. This fits well with a recent observation that patients with disorders of consciousness show increased entropy of microstate sequences, with transi- tion patterns capturing subtler differences between patient groups than the conventional ‘static’ measures \[141\]. Nevertheless, several studies showed changes in the duration and occurrence of specific microstates \[142,143\], particularly when microstate analysis was performed i n frequency-band filtered data \[144\].
+
+A particularly striking finding is that canonical microstate topographies are highly reproducible in disor- ders of consciousness, including vegetative and minimally conscious states \[141,143,145,146\]. The persistence of these topographies under profoundly reduced conscious experience raises
+
+444 Trends in Neurosciences, June 2026, Vol. 49, No. 6
+
+Trends in Neurosciences OPEN ACCESS
+
+the following important question: do canonical microstate topographies primarily reflect intrinsic, structurally constrained, and anatomically determined patterns of large-scale neural connectivity, similar to fMRI resting-state networks \[147,148\], rather than the specific cognitive functions attributed to them during wakefulness? Yet both possibilities must be reconciled with the equally robust finding that microstate temporal dynamics change systematically with cognitive demands, pharmacological interventions, and clinical state. A parsimonious resolution is that microstate topographies reflect fixed structural scaffolding, while their temporal dynamics are modulated by functional and cognitive context, analogous to the distinction between the spatial architecture of fMRI resting-state networks and the fluctuations in their connectivity strength.
+
+Methodological challenges and future directio ns in microstate research Advancing microstate research requires addressing fundamental methodological challenges, exploring higher-order temporal dynamics, and leveraging multimodal recording technologies to bridge timescales a nd validate findings across measurement modalities. The ‘Outstanding questions’ box highlights key unresolved issues that will shape future research directions.
+
+Methodological consensus requires system atic validation The field must resolve persistent methodological debates. While data-driven optimization should replace four-microstate conventions, consensus on which optimization criteria to use is lacking. Available metrics yield conflicting recommendations, requiring systematic investigation across different data characteristics and populations. Simulation studies with known source configurations could provide valuable validation. The group template problem identified in \[51\] revealed issues with both separate group templates and forced standard templates. Principled approaches are required for determining when topographic differences warrant separate templates. This becomes particularly acute for clinical translation, which requires individual-level classification, where machine learning can map indivi dual topographies to outcomes, offering potential paths forward.
+
+Beyond first-order transitions: the grammar of brain states Current analyses typically employ first-order Markov models, but meaningful information resides in higher-order temporal structures—patterns spanning multiple transitions that reflect the ‘grammar’ of brain state organization (for reviews, see \[20,53,60\]). Methods for characterizing higher-order structure (entropy measures, complexity metrics, and pattern mining) have been developed and applied to microstates \[19,33,74–77,149,150\], but critical questions await resolution: What is the appropriate order for Markov models to capture relevant dependencies? Do different cognitive states alter the order of temporal dependencies? Can we identify recurring sequence motifs linked to specific cognitive operations?
+
+Bridging timescales through multimo dal recording Fast fMRI acquisition and novel analyses enable better temporal matching between millisecond microstates and hemodynamic dynamics \[97,98\]. Key questions emerge: Do BOLD responses lock to microstate onsets or lag transitions? Can we identify hierarchical relationships between slow BOLD fluctuations and fast microstate dynamics? Simultaneous electrocorticography or depth electrode recordings in epilepsy patients could reveal the neural population dynamics that underlie microstate topographies, thereby validating source localization and exposing the synchronization mechanisms that create stable brain states.
+
+From group statistics to indiv idual prediction Clinical utility requires moving beyond group-level statistics to individual classification. Machine learning analyses that combine microstate parameters with clinical variables could enhance
+
+Trends in Neurosciences, June 2026, Vol. 49, No. 6 445
+
+Trends OPEN ACCESS in Neurosciences prediction but demand large training datasets, careful cross-validation, and independent replica- tion. A priority going forward should be the development of shared, well-characterized clinical datasets with comprehensive microstate and clinical phenotyping. Moving beyond cross- sectional research to pros pective studies that examine whether baseline microstate parameters predict treatment response, symptom trajectories, or disease conversion is essential for estab- lishing clinical utility.
+
+Community-based infrastructure can accele rate progress A recently developed consensus tool \[7\] systematically collects template maps from published studies and represents them as a matrix of spatial similarity, enabling objective cross-study comparison and extraction of findings associated with specific microstate topographies, replacing the informal ‘eyeballing’ of printed maps that has long limited cross-study synthesis. This infrastruc- ture provides a foundation for systematic template comparison but requires broad community participation to strengthen evidence for robust patterns. More generally, the field would benefit from shared datasets with standardized preprocessin g pipelines, open-source tools, preregistra- tion of analysis plans, and large-scale, multi-site collaborative studies with standardized protocols.
+
+Concluding remarks EEG microstate research stands at a critical juncture. Some of the commonplace methodological practices emerged from arbitrary conventions and reflect a premature consensus on functional interpretation. Reaching genuine insights into brain dynamics would require coordinated effort and progress toward evidence-based practices.
+
+In the preceding sections, we outlined key methodological challenges and ways to address them. Realizing the full potential of microstate analysis would require community commitment to data- driven approaches, systematic consensus building through contributed template maps, cautious interpretation that acknowledges evidence levels and context dependency, and prioritizing vali- dation over the dissemination of preliminary findings presented as corroborated outcomes. The opportunities are substantial. Microsta tes offer a unique temporal resolution for understanding large-scale brain dynamics, capture fundamental organizational properties of neural activity, and exhibit consistent alterations in conditions affecting consciousness and cognition.
+
+Acknowledgments L.B. was supported by Dementia Research Switzerland – Synapsis Foundation and the Swiss National Science Foundation (No. PZ00P1\_208686).
+
+Declaration of inte rests C.M.M. is the founder of FBM-Ana lytics Sàrl, Geneva, Switzerland.
+
+C.M.M. is an independent contractor for All Here SA, Geneva, Switzerland.
+
+The authors declare no additi onal competing interests.
+
+Declaration of Generative AI and AI-assisted technologies in the writing process During the preparation of this work, the authors used Claude AI in order to improve readability and language. After using this tool, the authors reviewed and edited the content as needed and take full responsibility for the content of the publication.
+
+Outstanding questions
+
+What analytical principles should guide the choice of the optimal microstate number across populations and conditions? Which optimization criteria are t he most robust to data characteristics and preprocessing choices?
+
+Which objective criteria could determine when groups’ microstate topographies are sufficiently similar to justify shared templates and interpret temporal parameters as reflecting comparable brain states? Current practices lack principled similarity thresholds, yet this decision fundamentally impacts all group comparisons.
+
+What is the appropriate order of temporal dependencies in microstate sequences? Do higher-order patterns beyond first-order Markov transitions reveal recurring ‘motifs’ or ‘gramma ti- cal rules’ corresponding to specific cognitive operations?
+
+What mechanisms support the stability of microstates and control transitions between them? Can computational neural models that reproduce empirical dynamics reveal why the brain m aintains microstate stability before rapid reorganization?
+
+How do microstates relate to oscillatory power across frequency bands? Does the co-occurrence of microstates with slow versus fast oscil- lations reflect cortical inhibition versus activation, respectively, and how does this shape interpretation across brain states (wakefulness, sleep, anesthesia, and coma)?
+
+Can microstate-defined subgroups within heterogeneous clinical popula- tions identify biologically distinct enti- ties or predict treatment responses? Could prospective studies validate microstate paramete rs as clinically useful biomarkers for individual-level predictions?
+
+Can normative databases be established across various life stages, including development and aging, and across diverse populations
+
+References
+
+1\. Lehmann, D. et al. (1987) EEG alpha map series : brain micro-states
+
+differing in demographic and cultural backgrounds? by space-oriented adaptive segmentation. Elect roencephalogr. Clin. Neurophysiol. 67, 271 –288
+
+2\. Lehmann, D. (1990) Brain electric microstates and cognition: the atoms of thought. In Machinery of the M ind (John, E.R., ed.), pp. 209–244, Birkhäuser
+
+446 Trends in Neurosciences, June 2026, Vol. 49, No. 6
+
+Trends in Neurosciences OPEN ACCESS
+
+3\. Michel, C.M. and Koenig, T. (2018) EEG microstates as a tool for studying the temporal dynamics of whole-brain neuronal networks: a review. Neuroimage 180, 577–593 4. Koenig, T. et al. (2005) Brain connectivity at diff erent time- scales measured with EEG. Philos. Trans. R. S oc. Lond. B Biol. Sci. 360, 1015 –1024 5. Lehmann, D. and Michel, C.M. (2011) EEG-defi ned functional microstates as basic building blocks of mental processes. Clin. Neurophysiol. 122, 1073 –1074 6. Meehan, T.P. and Bressler, S.L. (2012) Ne urocognitive networks: findings, models, and theory. Neurosci. Bi obehav. Rev. 36, 2232 –2247 7. Koenig, T. et al. (2024) EEG-Meta-Microst ates: towards a more objective use of resting-state EEG microstate find ings across studies. Brain Topogr. 37, 218–231 8. Rabinovich, M.I. and Varona, P. (2018) Discrete sequential information coding: heteroclinic cognitive dynamic s. Front. Comput. Neurosci. 12, 73 9. Baars, B.J. (1997) In the Theater of Co nsciousness: The
+
+Workspace of the Mind, Oxford University Press 10. Bressler, S.L. and Kelso, J.A.S. (2001) Cortical coo rdination
+
+dynamics and cognition. Trends Cogn. Sci. 5, 26–36 11. Bressler, S.L. and Tognoli, E. (2006) Operationa l principles of
+
+neurocognitive networks. Int. J. Psychophysiol. 60, 139–148 12. Tognoli, E. and Kelso, J.A.S. (2014) The metastable brain.
+
+Neuron 81, 35 –48 13. Rabinovich, M.I. et al. (2015) Dynamical bridg e between brain
+
+and mind. Trends Cogn. Sci. 19, 453–461 14. Pöppel, E. (1997) A hierarchical model of temporal perception.
+
+Trends Cogn. Sci. 1, 56–61 15. VanRullen, R. and Koch, C. (2003) Is perc eption discrete or
+
+continuous? Trends Cogn. Sci. 7, 207–213 16. Dehaene, S. and Naccache, L. (2001) Towar ds a cognitive neuroscience of consciousness: basic evidenc e and a workspace framework. Cognition 79, 1–37 17. Deco, G. and Kringelbach, M.L. (2016 ) Metastability and coherence: extending the communication through c oherence hypothesis using a whole-brain computational pe rspective. Trends Neurosci. 39, 125 –135 18. Changeux, J.-P. and Michel, C.M. (2004) Mechanisms of neural integration at the brain-scale level: the neuronal workspace and microstate models. In Microcircuits (Grillner, S. and Graybiel, A.M., eds), pp. 347–370, MIT Press 19. Artoni, F. et al. (2023) Microsynt: exploring the syntax of EEG
+
+microstates. Neuroimage 277, 120196 20. von Wegner, F. et al. (2024) Co mplexity measures for EEG microstate sequences: concepts and algori thms. Brain Topogr. 37, 296– 311 21. Liang, Z. et al. (2024) State-related electroe ncephalography microstate complexity during propofol- an d esketamine- induced unconsciousness. Anesthesiology 140, 935–949 22. Sleigh, J.W. and Voss, L. (2024) What langu age is the brain
+
+speaking? Anesthesiology 140, 881 –883 23. Koenig, T. and Brandeis, D. (2016) Inappropriate assumptions about EEG state changes and their impact on the quantification of EEG state dynamics. Neuroimage 125, 1104–1106 24. Zanesco, A.P. (2020) EEG electric field top ography is stable during moments of high field strengt h. Brain Topogr. 33, 450– 460 25. Fries, P. (2005) A mechanism for cognit ive dynamics: neuronal communication through neuronal coherence. Trends Cogn. Sci. 9, 474 –480 26. Singer, W. (1999) Neuronal synchrony: a versatile code for the
+
+definition of relations? Neuron 24, 49–65 27. Varela, F. et al. (2001) The brainweb: phase syn chronization
+
+and large-scale integration. Nat. Rev. Neuros ci. 2, 229–239 28. Koenig, T. and Valdes-Sosa, P.A. (2018) Res ults obtained by combining different estimators of EEG connectivity become uninterpretable if the underlying models are inc ompatible. Brain Connect. 8, 57 –59 29. Seeber, M. and Michel, C.M. (2021) Synchron ous brain dynamics establish brief states of communa lity in distant neuronal populations. eNeuro 8 ENEUR O

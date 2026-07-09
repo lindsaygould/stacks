@@ -1,0 +1,659 @@
+Naturalistic Outcomes with fMRI-Guided and Non-fMRI-Guided Accelerated TMS for Depression 
+
+. (which was not certified by peer review) is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. It is made available under a CC-BY-NC-ND 4.0 International license medRxiv preprint doi: https://doi.org/10.1101/2025.09.03.25334813 ; this version posted September 5, 2025. The copyright holder for this preprint Naturalistic Outcomes with fMRI-Guided and Non-fMRI-Guided
+
+Accelerated TMS for Depression
+
+Danielle D. DeSouza, Ph.D.,1 Nathan F. Meng, M.D.,1 Noah P. DeGaetano, M.D.,1 Erica Nakano, B.S.1, Vivian Hoang, B.A.,1 Teresa Nguyen, B.A.,1 David S. Ling, B.S.,1 \*David M. Carreon, M.D.,1 \*Shan H. Siddiqi, M.D.2,3
+
+\*indicates co-last-authorship.
+
+Affiliations: 1Acacia Clinics, Sunnyvale, California 2Department of Psychiatry, Mass General Brigham, Boston, MA 3Departments of Psychiatry and Neuroscience, Harvard Medical School, Boston, MA
+
+Corresponding Author: Name: Danielle D. DeSouza Institution: Acacia Clinics Address: 877 W. Fremont Ave., Suite N-3, Sunnyvale CA, 94087 Email: danielledesouza@acaciaclinics.com Phone: 650-993-9397
+
+Word Counts: Abstract (≤250 words): 248 Manuscript text (≤3500 words): 3502 Tables: 2 Figures: 2 Supplemental data: Yes
+
+NOTE: This preprint reports new research that has not been certified by peer review and should not be used to guide clinical practice.
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+Previous Presentation: None
+
+Disclosures: D.D.D., N.F.M., N.P.D., E.N., V.H., T.N., D.S.L., and D.M.C. receive a salary from Acacia Clinics. D.D.D., N.F.M., N.P.D., E.N., T.N., D.S.L., D.M.C. have equity/stock options in Acacia Clinics. S.H.S. is an owner of intellectual property involving the use of individualized resting-state network mapping to target TMS, which was filed in 2016, has yielded under $200 in royalties, and was not employed in the present work. S.H.S. is also a scientific consultant for Magnus Medical, received investigator-initiated research funding from Neuronetics (2019) and Brainsway (2022), and received speaking fees from Brainsway (2021) and Otsuka (for PsychU.org, 2021). S.H.S. is also a former shareholder in Brainsway (publicly traded) and a current shareholder in Magnus Medical (not publicly traded). S.H.S. is also a clinical consultant for Acacia Clinics, Kaizen Brain Center, and Boston Precision Neurotherapeutics.
+
+Acknowledgements: We are thankful to the patients whose clinical data were included in this study. We also acknowledge discussions to conceptualize this project in collaboration with Nolan Williams, Brandon Bentzley, Owen Muir, and Michael Fox. We appreciate the contributions of the dedicated technicians, administrative, and other staff at Acacia Clinics, whose day-to-day efforts in patient care and data collection made this work possible. In addition, the investigators were funded by the following sources: S.H.S.: the NIH (PI on grants K23MH121657 and R01MH136248, co-I on grant R01MH113929), BrainsWay (Investigator-initiated grant), and Brigham Ignite. 2
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+ABSTRACT
+
+Objective: To estimate the effects of accelerated transcranial magnetic stimulation (aTMS) with and without functional MRI (fMRI) guidance in a naturalistic clinic setting.
+
+Methods: We retrospectively analyzed data on patients who received aTMS for depression at a single subspecialty clinic between 2019 and 2025, most completing a five-day course (up to 10 treatments per day). fMRI-guided targets were selected from resting-state connectivity to the subgenual cingulate cortex. Non-fMRI-guided targeting was done using scalp-based measurement procedures. Response was defined as a Clinical Global Impression-Improvement score ≤2 within one month post-TMS. Logistic regression evaluated predictors of response and propensity score matching was used to create comparable groups of fMRI-guided and non-fMRI-guided patients while controlling for baseline heterogeneity. Predictors included age, sex, baseline severity, past electroconvulsive therapy, past TMS, previous antidepressant trials, number of sessions, comorbidities, and fMRI guidance.
+
+Results: Of 195 patients receiving aTMS, 115 received fMRI guidance and 80 did not. The overall response was 72.8% (77.4% with fMRI guidance, 66.3% without). Logistic regression identified fMRI guidance as the only independent predictor of response (p=0.038). In 71 pairs matched using propensity scores, response rates were 77.5% with fMRI guidance and 62.2% without (OR=2.30, 95% CI=1.05–5.41, p=0.035), yielding a number needed to treat of 6.5 to achieve one added response with fMRI guidance.
+
+Conclusions: In this large naturalistic sample, aTMS was an effective, rapid-acting antidepressant with or without fMRI guidance. fMRI-guided targeting significantly improved outcomes.
+
+3
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+INTRODUCTION
+
+Accelerated transcranial magnetic stimulation (aTMS) protocols, in which two or more TMS stimulation sessions are delivered per day, have emerged as a promising therapeutic strategy for major depression (1–6). These approaches can accelerate the onset of therapeutic benefit by delivering a full treatment course in only five days. Early clinical trials reported remission rates as high as 86% after five days of aTMS in patients with highly treatment-resistant depression (7).
+
+Some of the most successful aTMS studies have employed resting-state functional MRI (fMRI) to identify personalized stimulation targets (7–9). For depression, fMRI can be used to identify a target within the left dorsolateral prefrontal cortex (L-DLPFC) that shows the strongest negative functional connectivity with the subgenual cingulate cortex (SGC) (10). Multiple retrospective studies have shown that TMS was more effective when the stimulation site was incidentally closer to this fMRI-derived target (11–14). However, fMRI guidance requires specialized expertise, image processing software, and neuronavigation equipment, creating a logistical hurdle for most clinics. As a result, the added value of fMRI-guided targeting is a growing topic of interest, with results from a recent randomized trial forthcoming (15).
+
+Importantly, findings from small highly controlled trials with carefully selected patient populations may not generalize to real-world clinical populations across diverse demographic profiles, clinical characteristics, and treatment protocol variations (16–18). Here, we report clinical outcomes with fMRI-guided and non-fMRI-guided accelerated rTMS in a large, naturalistic clinical cohort. We applied multivariate logistic regression and propensity score matching to account for baseline differences between the two groups. We aimed to estimate naturalistic outcomes of aTMS and to test the hypothesis that fMRI-guided accelerated rTMS would improve the odds of clinical response.
+
+METHODS
+
+Study Design:
+
+We conducted a retrospective analysis of adult patients with depression who received aTMS at a single outpatient clinic between July 2018 and April 2025. aTMS was delivered as multiple daily sessions (≥2 per day on average) using intermittent theta-burst stimulation (iTBS) protocols. Targets included the L-DLPFC, either alone or in combination with secondary targets. fMRI guidance was introduced as an option in November 2021; no patients received fMRI guidance prior to this date. Treatment was delivered using a figure-eight coil for fMRI-guided treatments, and either a figure-eight coil or H-coil for non-fMRI-guided treatments. Pearl Institutional Review Board determined this study met exemption criteria as secondary research, and informed consent was not required.
+
+4
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+Participants:
+
+Eligible participants were adults (≥18 years) with unipolar or bipolar depression, meeting DSM-5 criteria for a major depressive episode without psychotic features. Diagnoses were established through semi-structured clinical interviews. Patients were included if this was their first accelerated iTBS course at the clinic. Prior conventional once-daily TMS was permitted if completed at least two weeks before the current course. Exclusion criteria included TMS or MRI contraindications and comorbid psychiatric conditions deemed more symptomatic than the depressive episode. Patients with primary anxiety-related disorders (including obsessive-compulsive disorder and posttraumatic stress disorder) were generally treated with dorsomedial prefrontal cortex (19,20) targeting and were excluded from this analysis.
+
+Target Generation:
+
+For patients who had resting-state fMRI-guided targets, different scanners were used depending on the patient’s geographic preference. To reconcile this discrepancy, minimum quality standards were applied, including at least 20 minutes in scan duration, 3T magnetic field, at least 45 mT/m magnetic gradient, up to 3 second repetition time, and up to 3.5 x 3.5 x 4 mm spatial resolution. Incidentally, all scans were conducted on a Siemens MAGNETOM MRI scanner (Verio, Trio, Skyra, or Prisma), although this was not an a priori quality criterion.
+
+High-resolution T1-weighted anatomical scans were also acquired. Prior to resting-state connectivity analysis, scans were preprocessed as described previously (21). Steps included spatial alignment, atlas registration, ART-based motion censoring (framewise displacement threshold of 0.5 mm), global signal regression, temporal bandpass filtering (0.009 to 0.08 Hz), and spatial smoothing (6mm FWHM kernel), using SPM12 and the CONN toolbox (22). Voxel-wise (Fig. 1a) resting-state functional connectivity (rsFC) was computed from the SGC (Fig. 1b) as defined by the default mask in CONN for specific regions of interest. The resulting connectivity map (Fig. 1c) was reviewed manually by a neuropsychiatrist with expertise in MRI-guided TMS (S.H.S.). Targets were chosen based on several factors: magnitude of negative connectivity to SGC, size/shape of the target cluster relative to a TMS coil, anticipated tolerability of coil position, accessibility with TMS, and other case-by-case factors (Fig. 1c). TMS was then applied to this optimized target (Fig. 1d) using the Localite TMS Navigator system.
+
+In patients who did not use fMRI-guided targeting, the L-DLPFC stimulation site was identified using the Beam F3 method (23), which estimates the F3 location of the 10-20 system for standardized placement of electroencephalogram (EEG) electrodes (Fig. 1c). This approach accounts for individual variability in head size but does not require neuroimaging guidance for target localization. For a subset of patients, an H-coil was used. Patients were typically allocated to Beam F3 or H-coil based on schedule availability, not on clinical factors.
+
+In both groups, some patients also received stimulation to another target in addition to L-DLPFC, when deemed clinically appropriate.
+
+5
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+Clinical Assessments:
+
+The clinical global impressions improvement (CGI-I) scale was completed by board-certified clinicians at baseline, immediately post-TMS, 1 week post-TMS, and 1 month post-TMS. Evaluations were conducted in-person whenever feasible. Remission, response, and non-response were defined a priori as CGI-I scores of 1, ≤2, and ≥ 3 (24), respectively. The primary outcome was response or remission at one or more time points after treatment, following the clinical trial that led to FDA clearance of aiTBS (9). Baseline self-reported measures included the Patient Health Questionnaire-9 (PHQ-9) and the Generalized Anxiety Disorder 7-item scale (GAD-7).
+
+Adverse events (AEs) were systematically monitored throughout treatment and follow-up. Patients were asked to fill out self-report surveys at the beginning of each treatment day and after each stimulation session during treatment courses. Post-treatment AEs were documented during clinical follow-up visits. Proportions of AEs experienced in various clinical categories (see Supplemental Table S1 for more details) were calculated for each group.
+
+Predictors of Treatment Response:
+
+We completed a binary logistic regression analysis to examine baseline predictors of response. Candidate predictors included: age, sex at birth, baseline PHQ-9 and GAD-7 scores, bipolar disorder diagnosis, fMRI-guidance, past electroconvulsive therapy (ECT), past TMS, number of previous antidepressant trials, mean number of TMS treatment sessions per day, and diagnosis group. This latter variable coded individuals with MDD only (no comorbidities), allowing us to examine the MDD-only group to emulate clinical trials that typically exclude the other categories. Continuous variables were modeled in their original units, and categorical variables as factors with prespecified level coding.
+
+As the non-fMRI-guided group included an additional variable, TMS coil type, we did a subgroup analysis excluding individuals who had aTMS using an H-coil to remove this potential confound.
+
+Prior to model fitting, we applied a complete-case filter, excluding participants with missing values in the outcome or any candidate predictors. To address multicollinearity, we used an iterative variance inflation factor (VIF) pruning procedure. At each iteration, we calculated VIFs from a dummy-coded design matrix to remove any predictors with VIF \> 5. The final model included the treatment indicator (fMRI-guided vs. non-fMRI-guided) and all retained predictors after pruning. The model was fit using a logistic regression with a binomial family and logit link, and odds ratios (ORs) with 95% Wald confidence intervals were computed for all predictors.
+
+Comparative Effectiveness of fMRI Guidance Using Matched Analysis:
+
+A propensity score analysis was used to compare outcomes between the fMRI-guided and non-fMRI-guided groups while matching cases (fMRI guidance) against controls (scalp-based
+
+6
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+targeting) based on measured factors. This approach created matched pairs across the two groups, emulating the balance of a randomized study design (25). The propensity score was defined as the probability of receiving fMRI-guided treatment using the same covariates included in the logistic regression model. Propensity scores were estimated using a logistic regression model (binomial family, logit link) with maximum likelihood estimation.
+
+Matching was performed using nearest neighbor matching with replacement, applying a caliper width of 0.20 on the logit of the propensity score (25,26), and restricting any participant to be matched no more than twice (27). We additionally conducted sensitivity analyses testing caliper widths of 0.25, 0.30, 0.40, and 0.50, to examine the stability of matched samples and estimated treatment effects across a range of caliper specifications. Covariate balance after matching was assessed using standardized mean differences (SMDs) for each covariate. An SMD \<0.10 was considered adequate balance between the fMRI-guided and non–fMRI-guided groups, whereas SMD values \>0.20 were considered evidence of serious imbalance (25,28). Between-group differences in the primary outcome in the matched sample were compared using McNemar’s exact test for paired binary data, and odds ratios with 95% confidence intervals were calculated.
+
+As in the logistic regression analysis, we performed an exploratory subgroup propensity score analysis limited to patients who received aTMS with a figure-eight coil, excluding those in the non-fMRI-guided group who had been treated with an H-coil to remove this potential confound.
+
+All analyses were conducted in R (version 4.5.1).
+
+RESULTS
+
+Participant Characteristics:
+
+A total of 246 participants met inclusion and exclusion criteria (135 fMRI-guided, 111 non–fMRI-guided). For hypothesis testing, analyses were restricted to the 195 participants (115 fMRI-guided, 80 non-fMRI-guided) with complete data on all variables of interest, to ensure robust and unbiased estimation (Table 1). These participants were included in both the logistic regression and propensity score analyses.
+
+Treatment Outcomes:
+
+The overall response rate (CGI-I ≤ 2) was 72.8%. Response was higher in the fMRI-guided group (77.4%, n=115) than the non-fMRI-guided group (66.3%, n=80) (Fig. 2a); however this difference was not statistically significant (Fisher’s exact test: 95% CI=0.92–3.30, p=0.10). More than half of all patients (51.8%) achieved a CGI-I score of 1 (very much improved). Within the non-fMRI-guided group, response rates were 69.1% among patients treated with a figure-eight coil (n=55) and 60.0% among those treated with an H-coil (n=25). Of those treated with an H-coil, the majority (n=22, 88%) were treated with an H1-coil, while the remainder received treatment using an H7-coil tilted to stimulate the L-DLPFC.
+
+7
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+Predictors of Clinical Outcome:
+
+In the logistic regression analysis, fMRI-guided targeting was associated with greater odds of achieving response on the CGI-I compared with non-fMRI-guided treatment (OR = 2.13, 95% CI = 1.05–4.34, p=0.038). Greater number of previous antidepressant trials showed a trend toward lower odds of response (OR=0.93, 95% CI=0.87–1.00, p=0.065). No other baseline variables were significantly associated with outcome (all p\>0.05) (Fig. 3).
+
+In a subgroup analysis limited to patients treated with a figure-eight coil (n = 170), the number of previous antidepressant trials was significantly associated with outcome, with lower odds of response observed for patients with more prior trials (OR=0.91, 95% CI=0.84–0.99, p=0.029). No other baseline variables were significant (all p\>0.05).
+
+Propensity Score Results:
+
+All covariates met the \<0.10 balance criterion, with post-match SMDs ≤0.09, except for baseline GAD-7 score. The GAD-7 SMD was 0.13, slightly above the threshold but well below the \>0.20 benchmark for serious imbalance, indicating that matching effectively minimized baseline differences between groups.
+
+For the full-sample analysis (n=195), propensity score matching (caliper = 0.20, reuse limited to 2) yielded 71 matched pairs. On the pair scale (n=142 observations; 71 fMRI-guided, 71 non-fMRI-guided), the response rate was 77.5% (55/71) with fMRI guidance and 53.5% (38/71) without. The proportion in the non-fMRI-guided group reflects the reuse of some patients across pairs (due to smaller sample size in this group), with reused controls more often being non-responders. When calculated on a unique-patient basis, ensuring that non-responders were not overrepresented in the non-fMRI group, the corresponding proportions were 77.5% (55/71) for the fMRI-guided group and 62.2% (28/45) for the non-fMRI-guided group (Fig. 2b), representing an absolute risk reduction of 15.3% and a number needed to treat of 6.6 to achieve one response. McNemar’s exact test indicated that the odds of response were 2.3 times higher with fMRI-guided targeting (95% CI, 1.05–5.41; p=0.035). In sensitivity analyses, widening the caliper up to 0.50 yielded identical matched samples (71 pairs), covariate balance (maximum SMD=0.13), and effect estimates (OR=2.30; 95% CI 1.05–5.41), confirming the robustness of the primary findings.
+
+In the subgroup treated with a figure-eight coil (n=170), all covariates met the \<0.10 balance criterion, with post-match SMDs ≤ 0.09 except for the number of previous antidepressants (SMD =0.10). Matching with the same parameters (caliper = 0.20, reuse limited to 2) yielded 56 matched pairs. On the pair scale (n=112 observations; 56 fMRI-guided, 56 non-fMRI-guided), 76.8% (43/56) of the fMRI guided group and 46.4% of the non-fMRI-guided group (26/56) achieved a response. When calculated for unique patients, the corresponding proportions were 83.9% (47/56) for the fMRI-guided group and 66.7% (22/33) for the non-fMRI-guided group, representing an absolute risk reduction of 17.2% and a number needed to treat of 5.8 to achieve
+
+8
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+a response. McNemar’s exact test indicated that the odds of response were 3.4 times higher with fMRI-guided targeting (95% CI, 1.20–11.79; p=0.017).
+
+Safety
+
+Treatment was well-tolerated with no adverse event (AE)-related discontinuations (Table 2). The most common AEs were headache, fatigue, and treatment-emergent anxiety. Having any AE was more common in the fMRI-guided group (p=0.016), as were headache (p=0.026), cognitive effects (p=0.046), and stimulation site pain (p=0.046). In secondary analysis, somatic symptoms and treatment-emergent anxiety were combined, consistent with prior work suggesting that these symptoms may be exacerbated by the anti-SGC target (19). This combined category was more common in the fMRI-guided group (24.3% vs 12.2%, OR 2.32 \[1.02–5.28\] p=0.041). In all but two cases, treatment-emergent anxiety self-resolved before the end of treatment week. The remaining two patients improved within one month after right Beam TMS to right Beam and therapy. Two older participants experienced falls: an individual in their 70s with a prior history of falls fell during treatment week, and an individual in their 90s fell two days post-treatment. Neither reported dizziness or unsteadiness during stimulation, and neither were directly attributable to TMS. One participant tragically completed suicide two days post-treatment. This individual had been recognized as very high-risk at baseline, with two prior serious suicide gestures. A detailed case review by three board-certified psychiatrists, determined it unrelated to direct TMS effects.
+
+DISCUSSION
+
+Since the recent emergence of aTMS as a rapid-acting antidepressant treatment, there have been growing questions about its utility in a naturalistic sample of patients with multiple comorbidities. In this large, single-site observational cohort of patients, aTMS produced a 72.8% response rate within one month despite a high degree of baseline treatment resistance (mean \>5 medication failures). Additionally, more than half of patients experienced remission of symptoms. After propensity matching, response rates were high with and without fMRI guidance, although fMRI guidance led to significantly better outcomes. These findings support the view of aTMS as a highly effective rapid-acting treatment for patients with treatment-resistant major depression.
+
+These response rates are modestly lower than rates previously reported with fMRI-guided aTMS (29,30). There are several possible explanations for this observation. First, our results are consistent with the well-known tendency of large naturalistic studies to report smaller effects than early clinical trials (31). Second, our sample included patients with multiple comorbidities, and often the primary diagnosis was less clearly defined. As a result, many of these patients would have been excluded from prospective clinical trials. Third, our fMRI guidance algorithm was not identical to the one used in prior clinical trials, although it was similar to approaches associated with better antidepressant efficacy reported in retrospective studies (12,14).
+
+9
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+The value of fMRI guidance for TMS targeting has been debated. Some retrospective studies have shown that treatment outcomes are better when stimulation sites are incidentally closer to a retrospectively-derived fMRI-guided target (32). Other work has demonstrated only modest effect sizes of personalization when based on relatively brief scans on older scanners with lower signal-to-noise in the SGC (33). These findings highlight the value of high-quality fMRI acquisition and analysis. Here, we observed that the odds of clinical response or remission were significantly greater in patients with personalized fMRI-based targeting than similar patients without fMRI-based targeting. However, response rates were high in both groups, suggesting that aTMS may still be a valuable treatment when MRI guidance is unavailable.
+
+This result should be interpreted with caution given baseline group differences. fMRI-guided targeting was introduced midway through data collection, raising the possibility of chronological bias from unobserved time trends (34). Early aTMS adopters may have been more susceptible to placebo effects and fMRI guidance itself could also contribute to placebo response. Still, the intensity, cost, and novelty of aTMS may already approach the upper limit of placebo response regardless of fMRI. Other factors such as treatment resistance, personality traits, or financial constraints may have impacted treatment decisions or outcomes. This concern is partly mitigated by the consistent fMRI advantage across both analytic approaches: logistic regression offered greater power through covariate adjustment, whereas propensity score matching emulated certain features of randomization. Nevertheless, unmeasured confounders may remain, and head-to-head randomized trials are required to confirm these findings.
+
+Importantly, we used fMRI to optimize targets, but not to identify biomarkers that predict or track treatment response. This decision was made for several reasons. First, localization of specific sites with fMRI (requisite for targeting) is more reliable than measuring the magnitude of functional connectivity (requisite for biomarkers). Second, in a treatment-seeking patient, treatment targets are modifiable based on fMRI localization, while the role of biomarkers in treatment decision-making is less clear. Third, SGC connectivity has been replicated in multiple clinical trials to predict efficacy of stimulation sites, while different biomarker studies yield different candidate predictors (35,36). Finally, fMRI-guided targeting was employed in the aTMS clinical trial that led to FDA clearance, while biomarkers were not. Future studies in larger samples may reveal useful biomarkers.
+
+Treatment was generally well-tolerated, with no AE-related discontinuations (37). Transient treatment-emergent anxiety and somatic side effects were significantly elevated in the fMRI-guided group and were higher than we expected in absolute terms. In the present analysis, patients with more severe anxiety systems were excluded, making this finding even more surprising. Similar rates have been reported with neuronavigated TMS to similar targets, and anxiety exacerbations have been linked to incidental stimulation of a circuit that largely overlaps with the target employed in the present study (38). Headaches and site pain were also more common in the fMRI-guided group, although target-dependent headaches have not previously been reported to our knowledge. These findings raise the possibility that greater precision in stimulation may be associated with both enhanced efficacy and a higher incidence
+
+10
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+of certain AEs. This also mitigates concern regarding placebo effects with fMRI guidance, as there was no expectancy of differences in adverse effects.
+
+One patient unfortunately died by suicide within one month of neuronavigated treatment. This patient was identified as high-risk before treatment, including a history of two serious suicide gestures. After extensive review of the case by three board-certified psychiatrists (D.M.C., N.P.D., S.H.S.), this death was determined to be likely unrelated to treatment. However, this case highlights the importance of ongoing suicide risk monitoring after failure of an intensive treatment that may have been perceived as a last resort.
+
+Study strengths include the large, naturalistic sample, application of two complementary statistical approaches to address baseline heterogeneity, and consistent effect estimates across methods and sensitivity analyses. Perhaps the most important limitation in the analysis of fMRI effects, as discussed above, is the potential for unmeasured confounders, which can only be addressed by a prospective clinical trial. The fMRI analysis is also limited by the fact that all participants were stimulated at the anti-SGC target, but different targets may benefit patients with distinct comorbidities (19,39). Precision of effect sizes is also limited by the single-site design and reliance on observational data with subjective clinician-report scales. Generalizability is constrained by data collection prior to third-party payer reimbursement for aTMS, resulting in a cohort that disproportionately included individuals with greater financial resources. These limitations may be addressed by prospectively enrolling patients in a pre-registered externally-funded multi-site study with a detailed phenotyping and multiple stimulation targets. This study is now underway (NCT06376734) (40).
+
+Overall, these results suggest that aTMS is a highly effective intervention for patients with treatment-resistant major depression. fMRI guidance led to improved rates of clinical response and transient adverse effects. In combination with randomized clinical trials, these data may support more widespread adoption of aTMS with or without fMRI guidance.
+
+11
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+REFERENCES
+
+1\. van Rooij SJH, Arulpragasam AR, McDonald WM, Philip NS. Accelerated TMS - moving
+
+quickly into the future of depression treatment. Neuropsychopharmacol. 2023 May 22;1–10.
+
+2\. Caulfield KA, Fleischmann HH, George MS, McTeague LM. A transdiagnostic review of
+
+safety, efficacy, and parameter space in accelerated transcranial magnetic stimulation. Journal of Psychiatric Research. 2022 Aug;152:384–96.
+
+3\. Chen L, Klooster DCW, Tik M, Thomas EHX, Downar J, Fitzgerald PB, et al. Accelerated
+
+Repetitive Transcranial Magnetic Stimulation to Treat Major Depression: The Past, Present, and Future. Harv Rev Psychiatry. 2023 May;31(3):142–61.
+
+4\. Theleritis C, Sakkas P, Paparrigopoulos T, Vitoratou S, Tzavara C, Bonaccorso S, et al. Two
+
+Versus One High-Frequency Repetitive Transcranial Magnetic Stimulation Session per Day for Treatment-Resistant Depression: A Randomized Sham-Controlled Trial. J ECT. 2017 Sep;33(3):190–7.
+
+5\. Roth Y, Hanlon CA, Pell G, Zibman S, Harmelech T, Muir OS, et al. Real world efficacy and
+
+safety of various accelerated deep TMS protocols for major depression. Psychiatry Research. 2023 Oct 1;328:115482.
+
+6\. Sonmez AI, Camsari DD, Nandakumar AL, Voort JLV, Kung S, Lewis CP, et al. Accelerated TMS for Depression: A systematic review and meta-analysis. Psychiatry Research. 2019 Mar;273:770–81.
+
+7\. Cole EJ, Stimpson KH, Bentzley BS, Gulser M, Cherian K, Tischler C, et al. Stanford
+
+Accelerated Intelligent Neuromodulation Therapy for Treatment-Resistant Depression. AJP. 2020 Aug;177(8):716–26.
+
+8\. Williams NR, Sudheimer KD, Bentzley BS, Pannu J, Stimpson KH, Duvio D, et al. High-dose
+
+spaced theta-burst TMS as a rapid-acting antidepressant in highly refractory depression. Brain. 2018 Mar 1;141(3):e18–e18.
+
+9\. Cole EJ, Phillips AL, Bentzley BS, Stimpson KH, Nejad R, Barmak F, et al. Stanford
+
+Neuromodulation Therapy (SNT): A Double-Blind Randomized Controlled Trial. Am J Psychiatry. 2022 Feb;179(2):132–41.
+
+10\. Fox MD, Liu H, Pascual-Leone A. Identification of reproducible individualized targets for
+
+treatment of depression with TMS based on intrinsic connectivity. NeuroImage. 2013 Feb;66:151–60.
+
+11\. Siddiqi SH, Trapp NT, Hacker CD, Laumann TO, Kandala S, Hong X, et al. Repetitive
+
+Transcranial Magnetic Stimulation with Resting-State Network Targeting for Treatment-Resistant Depression in Traumatic Brain Injury: A Randomized, Controlled, Double-Blinded Pilot Study. Journal of Neurotrauma. 2019 Apr 15;36(8):1361–74.
+
+12\. Cash RFH, Cocchi L, Lv J, Fitzgerald PB, Zalesky A. Functional Magnetic Resonance
+
+Imaging-Guided Personalization of Transcranial Magnetic Stimulation Treatment for Depression. JAMA Psychiatry. 2021 Mar 1;78(3):337–9.
+
+13\. Siddiqi SH, Weigand A, Pascual-Leone A, Fox MD. Identification of Personalized
+
+12
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+Transcranial Magnetic Stimulation Targets Based on Subgenual Cingulate Connectivity: An Independent Replication. Biological Psychiatry. 2021 Nov 15;90(10):e55–6.
+
+14\. Cash RFH, Zalesky A. Personalized and Circuit-Based Transcranial Magnetic
+
+Stimulation: Evidence, Controversies, and Opportunities. Biological Psychiatry. 2024 Mar;95(6):510–22.
+
+15\. Taylor J, Haj-Darwish D, Kare M, Leach J, Sanderson L, Jones E, et al. The AINT Trial: Imaging- versus scalp-targeted accelerated TMS for DepressionThe AINT Trial: Imaging- versus scalp-targeted accelerated TMS for Depression. Brain Stimulation: Basic, Translational, and Clinical Research in Neuromodulation. 2025 Jan 1;18(1):245.
+
+16\. Carpenter LL, Janicak PG, Aaronson ST, Boyadjis T, Brock DG, Cook IA, et al.
+
+Transcranial magnetic stimulation (TMS) for major depression: a multisite, naturalistic, observational study of acute treatment outcomes in clinical practice. Depress Anxiety. 2012 Jul;29(7):587–96.
+
+17\. Massé-Leblanc C, Desbeaumes Jodoin V, Nguyen DK, Fournier-Gosselin MP, Stip E,
+
+Lespérance P, et al. Evaluating real-world effectiveness of accelerated transcranial magnetic stimulation for treatment-resistant depression in a tertiary referral center based in Quebec, Canada. Psychiatry Res. 2024 Feb;332:115685.
+
+18\. Matsuda Y, Kito S, Hiraki F, Izuno T, Yoshida K, Nakamura M, et al. A multisite
+
+observational real-world study on the effectiveness of repetitive transcranial magnetic stimulation therapy for patients with treatment-resistant depression in Japan. Psychiatry Research. 2024 Dec 1;342:116263.
+
+19\. Siddiqi SH, Taylor SF, Cooke D, Pascual-Leone A, George MS, Fox MD. Distinct
+
+Symptom-Specific Treatment Targets for Circuit-Based Neuromodulation. AJP. 2020 May;177(5):435–46.
+
+20\. Taylor J, Li J, Lin C, Jones E, Frandsen S, Becker C, et al. Are the anxiolytic effects of
+
+prefrontal TMS circuit-specific? Brain Stimulation: Basic, Translational, and Clinical Research in Neuromodulation. 2025 Jan 1;18(1):320.
+
+21\. Siddiqi SH, Trapp NT, Shahim P, Hacker CD, Laumann TO, Kandala S, et al.
+
+Individualized Connectome-Targeted Transcranial Magnetic Stimulation for Neuropsychiatric Sequelae of Repetitive Traumatic Brain Injury in a Retired NFL Player. J Neuropsychiatry Clin Neurosci. 2019 Summer;31(3):254–63.
+
+22\. Nieto-Castanon, A, Whitfield-Gabrieli, S. CONN functional connectivity toolbox: RRID
+
+SCR\_009550, release 22. 2022;doi:10.56441/hilbertpress.2246.5840.
+
+23\. Beam W, Borckardt JJ, Reeves ST, George MS. An efficient and accurate new method
+
+for locating the F3 position for prefrontal TMS applications. Brain Stimulation. 2009 Jan;2(1):50–4.
+
+24\. Riedel M, Möller HJ, Obermeier M, Schennach-Wolff R, Bauer M, Adli M, et al.
+
+Response and remission criteria in major depression – A validation of current practice. Journal of Psychiatric Research. 2010 Nov 1;44(15):1063–8.
+
+25\. Chen JW, Maldonado DR, Kowalski BL, Miecznikowski KB, Kyin C, Gornbein JA, et al.
+
+13
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+Best Practice Guidelines for Propensity Score Methods in Medical Research: Consideration on Theory, Implementation, and Reporting. A Review. Arthroscopy. 2022 Feb;38(2):632–42.
+
+26\. Greifer N, Stuart EA. Matching Methods for Confounder Adjustment: An Addition to the
+
+Epidemiologist’s Toolbox. Epidemiol Rev. 2022 Jan 14;43(1):118–29.
+
+27\. Austin PC. Statistical criteria for selecting the optimal number of untreated subjects
+
+matched to each treated subject when using many-to-one matching on the propensity score. Am J Epidemiol. 2010 Nov 1;172(9):1092–7.
+
+28\. Seppala LJ, van de Loo B, Schut M, van Schoor NM, Stricker BH, Kenny RA, et al. A Propensity Score Matched Approach to Assess the Associations of Commonly Prescribed Medications with Fall Risk in a Large Harmonized Cohort of Older Ambulatory Persons. Drugs & Aging. 2021 Sep 1;38(9):797–805.
+
+29\. Fitzgerald PB. Targeting repetitive transcranial magnetic stimulation in depression: do we
+
+really know what we are stimulating and how best to do it? Brain Stimulation. 2021 May;14(3):730–6.
+
+30\. Siddiqi SH, Philip NS. Hitting the Target of Image-Guided Psychiatry? AJP. 2023 Mar
+
+1;180(3):185–7.
+
+31\. Primbs MA, Pennington CR, Lakens D, Silan MAA, Lieck DSN, Forscher PS, et al. Are
+
+Small Effects the Indispensable Foundation for a Cumulative Psychological Science? A Reply to Götz et al. (2022). Perspect Psychol Sci. 2023 Mar;18(2):508–12.
+
+32\. Cash RFH, Weigand A, Zalesky A, Siddiqi SH, Downar J, Fitzgerald PB, et al. Using
+
+Brain Imaging to Improve Spatial Targeting of Transcranial Magnetic Stimulation for Depression. Biological Psychiatry. 2021 Nov;90(10):689–700.
+
+33\. Elbau IG, Lynch CJ, Downar J, Vila-Rodriguez F, Power JD, Solomonov N, et al.
+
+Functional Connectivity Mapping for rTMS Target Selection in Depression. AJP. 2023 Mar 1;180(3):230–40.
+
+34\. Tamm M, Hilgers RD. Chronological bias in randomized clinical trials arising from
+
+different types of unobserved time trends. Methods Inf Med. 2014;53(6):501–10.
+
+35\. Liston C, Chen AC, Zebley BD, Drysdale AT, Gordon R, Leuchter B, et al. Default mode
+
+network mechanisms of transcranial magnetic stimulation in depression. Biol Psychiatry. 2014 Oct 1;76(7):517–26.
+
+36\. Drysdale AT, Grosenick L, Downar J, Dunlop K, Mansouri F, Meng Y, et al. Resting-state
+
+connectivity biomarkers define neurophysiological subtypes of depression. Nat Med. 2017;23(1):28–38.
+
+37\. Blumberger DM, Vila-Rodriguez F, Thorpe KE, Feffer K, Noda Y, Giacobbe P, et al.
+
+Effectiveness of theta burst versus high-frequency repetitive transcranial magnetic stimulation in patients with depression (THREE-D): a randomised non-inferiority trial. The Lancet. 2018 Apr;391(10131):1683–92.
+
+38\. Siddiqi SH, Klingbeil J, Webler R, Kratter IH, Blumberger DM, Fox MD, et al. Causal
+
+network localization of brain stimulation targets for trait anxiety. United States; 2024.
+
+14
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+39\. Siddiqi SH, Philip NS, Palm ST, Carreon DM, Arulpragasam AR, Barredo J, et al. A
+
+potential target for noninvasive neuromodulation of PTSD symptoms derived from focal brain lesions in veterans. Nat Neurosci \[Internet\]. 2024 Sep 24 \[cited 2024 Oct 11\]; Available from: https://www.nature.com/articles/s41593-024-01772-7
+
+40\. Aquadro E, Bomer L, Webler R, Pines A, DeSouza DD, Carreon D, et al. Expedition for new symptom-specific TMS targets: Protocol for the first randomized causal circuit mapping trial. Contemporary Clinical Trials. 2025 Aug 1;155:107978.
+
+15
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+FIGURES
+
+Figure 1: fMRI guidance procedure. (A) fMRI was used to measure spontaneous fluctuations in thousands of individual brain voxels in the DLPFC; five examples are depicted here. (B) These fluctuations were compared with the subgenual cingulate using Pearson correlations, yielding a map (C) of subgenual connectivity across the DLPFC. These maps were reviewed by an expert clinician to identify a TMS target (D). 16
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+Figure 2: Accelerated TMS Treatment Outcomes by Targeting Approach. (A) Overall response rates were higher in the fMRI-guided aTMS group compared with the non-fMRI-guided group, but this difference was not statistically significant. (B) After balancing baseline characteristics using propensity score matching, fMRI-guided patients demonstrated significantly greater likelihood of achieving response (OR=2.3). Matched response rates shown for unique patient proportions. Asterisk indicates p\<0.05.
+
+17
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+Figure 3: Adjusted Odds Ratios for Predictors of Treatment Response. Forest plot showing adjusted odds ratios (ORs) and 95% confidence intervals for each predictor from the multivariable logistic regression model in the full sample (n= 195). Confidence intervals crossing OR=1 suggest no statistically significant association.
+
+18
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+TABLES
+
+Table 1: Patient Characteristics in the fMRI-guided and Non-fMRI-guided groups
+
+fMRI-guided (N = 115) Non-fMRI-guided (N = 80)
+
+Variable Mean SD Mean SD p
+
+Age 45.4 19.2 43.0 18.1 0.44
+
+Number of previous antidepressants
+
+Baseline demographic and clinical characteristics of patients receiving fMRI-guided and non-fMRI-guided rTMS. Continuous variables are presented as mean ± SD; categorical variables as patient count (n) and proportion (%). Analyses were performed on the full sample unless otherwise indicated in parentheses, reflecting reduced sample sizes due to missing data. For two patients, treatment was provided for MDD but comorbidity data were unavailable. Between-group comparisons used Welch’s t-test or Wilcoxon rank-sum tests for continuous variables and χ² or Fisher’s exact tests for categorical variables.
+
+19 5.8 5.3 5.1 3.7 0.74
+
+Mean \# of sessions per day
+
+9.8 0.8 8.4 2.7 \< 0.01
+
+Baseline PHQ-9 16.9 5.1 17.2 5.0 0.70
+
+Baseline GAD-7 11.4 5.6 11.5 5.2 0.91
+
+Variable n % n % p
+
+Female 56 48.7 47 58.8 0.17
+
+Past TMS 23 20.0 22 27.5 0.22
+
+Past ECT 11 9.6 10 12.5 0.52
+
+Bipolar disorder diagnosis
+
+11 9.6 14 17.5 0.10
+
+MDD only 53 46.1 31 38.8 0.31
+
+Unilateral, L-DLPFC protocol
+
+84 73.0 50 62.5 0.12
+
+. CC-BY-NC-ND 4.0 International license It is made available under a is the author/funder, who has granted medRxiv a license to display the preprint in perpetuity. (which was not certified by peer review) The copyright holder for this preprint this version posted September 5, 2025. ; https://doi.org/10.1101/2025.09.03.25334813 doi: medRxiv preprint
+
+Table 2: Adverse Events by Treatment Group
+
+Outcome
+
+fMRI-
+
+Non-fMRI- Guided (%)
+
+guided (%)
+
+(N = 111)
+
+(N = 74)
+
+Risk difference (%)
+
+\[95% CI\] p
+
+Any adverse event 78.4 62.2 16.2 \[2.8, 29.7\] 0.016\*
+
+Headache 61.3 44.6 16.7 \[2.2, 31.2\] 0.026\*
+
+Fatigue 31.5 29.7 1.8 \[-11.7, 15.3\] 0.795
+
+Anxiety 15.3 6.8 8.6 \[-0.3, 17.4\] 0.078
+
+Gastrointestinal 14.4 12.2 2.3 \[-7.7, 12.2\] 0.661
+
+Somatic Sensations 13.5 5.4 8.1 \[-0.1, 16.3\] 0.075
+
+Dizziness / Lightheaded 9.9 5.4 4.5 \[-3.1, 12.1\] 0.272
+
+Mood Dip 9.0 9.5 -0.5 \[-9.0, 8.1\] 0.917
+
+Cognitive 8.1 1.4 6.8 \[1.0, 12.5\] 0.046\*
+
+Sensory Change 8.1 5.4 2.7 \[-4.5, 9.9\] 0.481
+
+Site Pain 8.1 1.4 6.8 \[1.0, 12.5\] 0.046\*
+
+Twitching 6.3 5.4 0.9 \[-6.0, 7.8\] 0.800
+
+Irritability / Agitation 5.4 8.1 -2.7 \[-10.2, 4.8\] 0.465
+
+Tinnitus 4.5 4.1 0.5 \[-5.5, 6.4\] 0.883
+
+Sleep Change 3.6 4.1 -0.5 \[-6.1, 5.2\] 0.875
+
+Jaw Pain 1.8 2.7 -0.9 \[-5.3, 3.5\] 0.680
+
+Adverse events (AEs) among patients who received fMRI-guided and non-fMRI-guided aTMS. Group proportions were compared with a two‑sided pooled two‑proportion z‑test. \* p\<0.05.
+
+20
+
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://www.zotero.org/google-docs/?tVasuo>   
+<https://www.zotero.org/google-docs/?LKVwAf>   
+<https://www.zotero.org/google-docs/?KuH66Y>   
+<https://www.zotero.org/google-docs/?rQToru>   
+<https://www.zotero.org/google-docs/?9NWCZl>   
+<https://www.zotero.org/google-docs/?Ujl8pT>   
+<https://www.zotero.org/google-docs/?h4YuzZ>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://www.zotero.org/google-docs/?1blOTs>   
+<https://www.zotero.org/google-docs/?EJm3Ug>   
+<https://www.zotero.org/google-docs/?hoUMmX>   
+<https://www.zotero.org/google-docs/?OHO5xR>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://www.zotero.org/google-docs/?WgtKek>   
+<https://www.zotero.org/google-docs/?jftL3O>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://www.zotero.org/google-docs/?kG3pIt>   
+<https://www.zotero.org/google-docs/?XWwU7L>   
+<https://www.zotero.org/google-docs/?U4SEsK>   
+<https://www.zotero.org/google-docs/?g9eGPl>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://www.zotero.org/google-docs/?p7QPaX>   
+<https://www.zotero.org/google-docs/?0ek68V>   
+<https://www.zotero.org/google-docs/?Ci6QmL>   
+<https://www.zotero.org/google-docs/?xfXfXH>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://www.zotero.org/google-docs/?vQMhuZ>   
+<https://www.zotero.org/google-docs/?YzX1BM>   
+<https://www.zotero.org/google-docs/?PqKV2G>   
+<https://www.zotero.org/google-docs/?QhBhXz>   
+<https://www.zotero.org/google-docs/?1NBpLN>   
+<https://www.zotero.org/google-docs/?22POTp>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://www.zotero.org/google-docs/?MtbbL8>   
+<https://www.zotero.org/google-docs/?1cICv5>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://www.zotero.org/google-docs/?Xa5lUK>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   
+<https://doi.org/10.1101/2025.09.03.25334813>   
+<http://creativecommons.org/licenses/by-nc-nd/4.0/>   

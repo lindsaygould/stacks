@@ -1,0 +1,1107 @@
+BENDR: USING TRANSFORMERS AND A CONTRASTIVE
+SELF - SUPERVISED LEARNING TASK TO LEARN FROM MASSIVE
+AMOUNTS OF EEG DATA .
+
+arXiv:2101.12037v1 [cs.LG] 28 Jan 2021
+
+Demetres Kostas
+University of Toronto, Toronto, Canada
+Vector Institute, Toronto, Canada
+demetres@cs.toronto.edu
+
+Stéphane Aroca-Ouellette
+University of Toronto, Toronto, Canada
+Vector Institute, Toronto, Canada
+
+Frank Rudzicz
+University of Toronto, Toronto, Canada
+Vector Institute, Toronto, Canada
+Li Ka Shing Knowledge Institute, Toronto, Canada
+
+A BSTRACT
+Deep neural networks (DNNs) used for brain-computer-interface (BCI) classification are commonly
+expected to learn general features when trained across a variety of contexts, such that these features
+could be fine-tuned to specific contexts. While some success is found in such an approach, we
+suggest that this interpretation is limited and an alternative would better leverage the newly (publicly)
+available massive EEG datasets. We consider how to adapt techniques and architectures used for
+language modelling (LM), that appear capable of ingesting awesome amounts of data, towards the
+development of encephalography modelling (EM) with DNNs in the same vein. We specifically
+adapt an approach effectively used for automatic speech recognition, which similarly (to LMs) uses
+a self-supervised training objective to learn compressed representations of raw data signals. After
+adaptation to EEG, we find that a single pre-trained model is capable of modelling completely novel
+raw EEG sequences recorded with differing hardware, and different subjects performing different
+tasks. Furthermore, both the internal representations of this model and the entire architecture can be
+fine-tuned to a variety of downstream BCI and EEG classification tasks, outperforming prior work in
+more task-specific (sleep stage classification) self-supervision.
+
+1
+
+Introduction
+
+To classify raw electroencephalography (EEG) using deep neural networks (DNNs), discriminative models need to
+both extract useful features from raw sequences, and classify those features. This frames both the promise and the
+challenge of using DNNs: feature engineering could be almost entirely avoided, without introducing limitations
+on classifier complexity, but both feature extraction and classification need to be learned from a limited supply of
+(relevant) high-dimensional data. This challenge is evident in brain-computer interface (BCI) applications, where
+DNNs can struggle to determine good features. A large degree of data variability within and between different users
+
+BENDR
+
+A P REPRINT
+
+causes the classification performance of many model types to vary [1, 2, 3, 4]. Fundamentally, this reveals that these
+models lack generality, and instead rely on characteristics specific to particular subjects (and/or sessions). Furthermore,
+beyond these inter- and intra-personal variations, different features are relevant for different BCI tasks in the first place.
+Hand-selected features (sets possibly pruned later on) are distinct under different BCI paradigms, as different features
+better discriminate different tasks1 [2], e.g., P300 versus motor imagery. In other words, unlike domains such as
+computer vision where there is a clearer understanding that nearly all DNNs tend to learn “low-level” features in earlier
+layers (e.g., edge-detector-like primitives) [6, 7, 8], there is no such understanding with DNNs used to process raw
+EEG. There are no known transferable DNN properties or operations that are easily extended to any subject, session, or
+task. Importantly however, the determination of which “low-level” features DNNs developed in computer vision was
+revealed through models that had transferable performance from general to specific tasks[6, 7]. The development of
+transferable DNNs for raw EEG then appears to be a promising classification tool on the one hand, but could also serve
+to validate existing techniques, and perhaps even suggest novel methods (if early layers do or do not correspond to
+existing methodologies respectively).
+The difficulty of learning both “lower-level” features and an expressive classifier simultaneously may help explain
+why work using DNNs to classify raw BCI data has tended to prefer shallower networks [9, 10, 2, 11, 12]. With
+these shallower networks, the range of learnable features is relatively limited. By design, these employ constrained
+linear operations, and a limited few of these layers include subsequent non-linear activations [9], an otherwise crucial
+feature of DNN complexity. Fundamentally, their inability to uniformly outperform feature-engineering approaches [2]
+indicate that these limited features are not entirely sufficient, and more importantly, they may not always be desirable
+in a DNN approach [9]. In prior work we presented evidence that, if inter-personal variability had been adjusted for,
+the performance of shallower models more quickly saturates to lower performance levels as compared to a deeper
+network alternative [9], suggesting that more complex raw-BCI-trial features could be developed using DNNs with
+sufficient data, notably such that these data provide a reasonable empirical estimate of the data distribution in question.
+Inter/intra-person variability sabotages this approach, limiting the inter-applicability of data from all people and sessions
+of an entire dataset. This is disappointing since the labelling process is much more difficult than in other domains of
+DNN research to begin with2 .
+In this work, we argue that self-supervised sequence learning would be an effective approach for developing and
+deploying more complex DNNs in BCI, as it can learn from many more people, sessions, and tasks using unlabelled
+data, thus promising to better model the input distribution of EEG data; it affords the possibility to learn features
+with little variability across traditionally confounding factors. Specifically, we investigate techniques inspired by
+language modelling (LM), that have found recent success in self-supervised end-to-end speech recognition and image
+recognition. We begin by comparing fully supervised transfer learning (which has been frequently looked to as an
+EEG/BCI TL solution) to self-supervised approaches, finding inconsistency in the extension of computer vision-style
+pre-training to BCI (and by extension the data domain of EEG). We then evaluate a simple adaptation of previous
+work in self-supervised speech recognition called wav2vec 2.0[13] to EEG. With this framework, arbitrary EEG
+segments are encoded as a sequence of learned feature vectors we call BErt-inspired Neural Data Representations (or
+‘BENDR’). We ask whether BENDR are: transferable to novel EEG recorded from unseen subjects, different hardware,
+and different tasks, and if BENDR are generally suitable (both as-is or fine-tuned) to a battery of downstream EEG
+classification tasks.
+1.1
+
+Pre-training with DNNs
+
+For inspiration on tackling DNN pretraining in BCI, one can look to successful applications in other domains. The
+modern deep learning (DL) “revolution” was ushered in on the back of computer vision and image recognition [14, 15].
+1
+
+While this is typical, some procedures, like covariance-based Riemannian classification schemes, do not necessarily need
+different features for different tasks [2, 5].
+2
+Consider the difficulty of collecting and labelling 100 more BCI trials as compared to the same for 100 more images.
+
+2
+
+BENDR
+
+A P REPRINT
+
+The successes of DL in this domain have stemmed from a lineage of massive labelled datasets [15], such as the
+ImageNet dataset [16]. These datasets were used to train deep convolutional neural networks, often one of the variants
+or progeny of ResNet [17] and DenseNet [18]. Crucially, these are labelled datasets, featuring – especially in the case
+of ImageNet – an enormous number of unique possible classification targets (1000 is common with ImageNet3 , but
+more are possible4 ). As mentioned above, leveraging labelled data (especially for a particular task) of a similar scale in
+BCI is impractical but, despite this, a sizeable amount of prior work tries to fashion a transfer learning strategy after
+the successes of ImageNet pre-training. These take the form of transferring knowledge from a network trained with
+more data, typically more subjects, to a target domain with less data, typically a single subject [9, 19, 20, 3, 21, 22],
+with some work transferring between entire datasets of the same paradigm, rather than subjects [23]. On the surface,
+these embody a general-to-specific supervised transfer learning scheme reminiscent of ImageNet pre-training. However,
+these particular framings lack diversity in pre-training targets. Instead, the number and type of targets remains the same
+in both the pre-training and fine-tuning stages. We remain unaware of any work that pre-trains a DNN with a wide
+gamut of BCI-relevant targets to a more narrow target set, as would be common when using ImageNet as pre-training
+for more specific computer vision tasks5 . This is noteworthy, as this is part of what makes ImageNet a general task.
+Evidence suggests that pre-training label diversity is important for effective ImageNet transfer learning [24], though
+an excess could be detrimental [25, 24]. More fundamentally, however, this pre-training paradigm has begun to be
+questioned altogether, with some work finding that it does not necessarily improve downstream performance, where
+commonly it has been assumed that it should (e.g., in medical images or object localization; though it speeds up training
+considerably) [26, 6, 27, 25].
+What has begun to emerge as a potential alternative in computer vision – and markedly so when there is limited labelled
+downstream data – is self-supervised learning [28, 29, 30, 31] 6 . These works are inspired by the recent success in
+natural language processing (NLP) using LMs, which can be used for transfer learning, but also for few-shot and
+zero-shot learning [33, 34]. We propose that DNN transfer learning in BCI and neuroimaging analysis generally could
+follow a similar line, with encephalography models (EM) in place of LMs. The important question being how best to
+construct such an EM, so that it learns features that are general enough while remaining usable for any analysis task?
+Prior work has developed approaches for (EEG) self-supervised sleep stage classification (SSC) through contrastive
+learning[35]. Contrastive learning in its most general form consists of identifying positive representations from a set
+that also includes incorrect or negative distractor representations [36]. Banville et al. proposed two potential contrastive
+learning tasks – a “relative positioning” task and an extension they termed “temporal shuffling”[35]. Underlying
+both tasks is the notion that neighbouring representations share a label. This is a fair assumption for SSC, where
+sleep stages change slowly, and is generally reasonable for continuous problems, where some notion of smoothness is
+assumed. Their proposed “relative positioning” task is a binary classification problem distinguishing whether a pair
+of representations are within a local or positive window τpos , or outside a long-range or negative window τneg (when
+τneg > τpos , those falling within τneg but outside τpos are ignored). The representations themselves are a learned
+mapping (in their case, a convolutional neural network) of raw EEG time-windows to a feature vector. Their alternative
+“temporal shuffling” method adds a third window or representation with which to contrast that is within τpos of one
+(arbitrary) window called the ‘anchor’, and again learns the representations through a binary classification task. In this
+case, the classification determines whether the three representations are ordered sequentially, or are out of order. These
+tasks ultimately both improved downstream SSC performance over the same network trained in a fully supervised
+3
+
+image-net.org/challenges/LSVRC/2012/
+http://image-net.org/about-stats
+5
+It is also worth noting that our own prior work does not consider or identify this.
+6
+Terminology here can be somewhat fuzzy. What is meant by self-supervision is a supervision-like task that requires domainrelevant understanding in some sense. Sometimes, ‘semi-supervised’ is used instead, as it is often also a semi-supervised procedure
+[28], since the task is learned in an unsupervised fashion first and then classic supervised learning is used with labels. Typically,
+though, semi-supervision involves inferring labels for unlabelled data during training. Instead, self-supervision is loosely a particular
+case of representation learning, which is not historically uncommon in BCI [32]. Though this work is different given that typically
+the loss is domain or data agnostic.
+4
+
+3
+
+BENDR
+
+A P REPRINT
+
+manner with randomly initialized weights (with self-supervision being distinctly better when limiting fine-tuning data, a
+common theme in the recent wave of self-supervision literature [37, 33]) and a variant of the same network but trained
+under an autoencoder paradigm (alternative pretraining option; the network was pretrained to reconstruct the original
+waveform). “Relative positioning” performed better on average (and no statistical significance expressed) as compared
+to its counterpart, but a linear classification of simple hand-crafted features was still highest performing overall. These
+results demonstrate the promise of self-supervised learning with DNNs for EEG over a supervised approach. This is all
+the more valuable, as it appeared that the self-supervised time-window representations (learned features of a window),
+when projected into a 2D visualization, also appeared to model some sleep-stage information and information about
+subject age [35] purely through the contrastive task without use of sleep-stage labels. The major concern with these
+particular schemes though are the lengths of the time windows (τpos and τneg ). The shortest windows employed were
+2 minutes for τpos and τneg , which seems prohibitively long. As it is assumed that representations within τpos are
+similarly labelled, it may be difficult to expand the use of this technique to time scales closer to that of a BCI trial
+(across any paradigm), which tend to be no more than several seconds at most. Instead, we focus our efforts on adapting
+a relevant strategy from the wider ML literature that could develop features on smaller time scales.
+Returning to transfer learning successes in NLP, the masked language model (MLM) is a slight variation on the typical
+LM which models the probability of encountering a language token given previous (or, in some cases, also subsequent)
+tokens. The MLM scheme instead learns to reconstruct language token(s) given surrounding context (fashioned after
+the Cloze task), and is employed by BERT [38] and its lineage [34] of similar models, which embody part of the recent
+wave of successful NLP transfer learning. This family of models may deploy a variety of auxiliary tasks [39] for transfer
+learning, but the task currently at the heart of this family is as follows: given a sequence of N tokens t1 , ...tN , and a
+subset of token indexes Im , for each token index i ∈ Im , tokens are masked with some mask M so that:
+(
+qi =
+
+M ; i ∈ Im
+ti ; otherwise
+
+, ∀i ∈ N
+
+(1)
+
+A transformer encoder [38, 40] then reconstructs the original sequence of tokens from the masked sequence (ti and
+qi , ∀i ∈ N respectively in eq. 1). M could be a single learned token [13], or in the case of BERT: 80% of the time a
+fixed [MASK] token, 10% a random token or 10% the original token (with 15% of tokens masked within each sequence)
+[38].
+Could an EM be developed in this vein, using individual samples rather than tokens (i.e., direct application of BERT
+to raw EEG)? Unfortunately, the highly correlated nature of neighbouring samples in EEG (or most other continuous
+data for that matter), is not conducive to this approach. The likely result would be that, instead of an EM, a method for
+interpolation would be learned, as has been argued in similar work in self-supervised learning with speech [41]. In
+other words, the smoothness of these data would make it hard to produce general features simply through recovering
+missing points. Masking a contiguous span of tokens instead, which is beneficial in NLP [42, 34], could avoid simply
+learning to interpolate missing samples, but the reconstruction of time-series data is difficult, due to the difficulty
+(among other things) of capturing the degree of error in time (within contiguous sequences) [43]. The losses used for
+such reconstruction, commonly mean squared error (or mean absolute error), erroneously assume independence in
+the error between elements in the series, causing inappropriate error signals when (among other things) when simply
+shifting a reconstruction in time [43].
+Contrastive predictive coding (CPC), is a contrastive learning-based task that retains the character of sequence learning
+provided by masked language model-like approaches, but is not as susceptible to degeneration into interpolation, or
+similarly affected by the issues of time-series reconstruction [31]. With CPC, the correct learned representation for a
+particular sequence offset is predicted relative to distractor representations, typically those of other positions in the same
+sequence [31]. This task enables learning both a good feature representation and an understanding of the progression of
+
+4
+
+BENDR
+
+A P REPRINT
+
+those features end-to-end. Interestingly, both the representations alone [37], and the addition of the sequence model
+[13] have proven potentially useful for supervised fine-tuning after pre-training.
+Prior work in self-supervised speech recognition has begun to synthesize parts of CPC and MLM to produce methodologies for self-learning with raw waveforms [13, 44, 45, 41, 31]. In our work, we adapt one of these approaches called
+wav2vec 2.0 [13] (its particular formulation is detailed in section 2.4.1) to EEG, and investigate how effective the
+representations (BENDR) are for downstream tasks.
+
+2
+
+Materials and methods
+
+All experiments are implemented using the deep neural networks for neurophyisiology (DN3) library 7 . The source
+code and pre-trained BENDR models can be found at https://github.com/SPOClab-ca/BENDR.
+2.1
+
+Datasets
+
+The ideal pre-training dataset for our purposes would feature many subjects, each recorded over many sessions. These
+sessions would also ideally be distributed across large time-scales and consist of a variety of performed tasks. In
+other words, the pre-training dataset should consist of a representative sample of EEG data in the most general sense.
+This also means that these data should include multiple different recording hardware and configurations. The closest
+publicly accessible dataset, to our current knowledge, was the Temple University Hospital EEG Corpus (TUEG) [46].
+It consists of clinical recordings using a mostly conventional recording configuration (monopolar electrodes in a 10-20
+configuration) of over 10,000 people, some with recording sessions separated by as much as eight months apart. The
+subjects were 51% female, and ages range from under 1 years old to over 90 [46]. We focused specifically on versions
+1.1 and 1.2 of this dataset which amounted to approximately 1.5 TB of European-data-format (EDF) EEG recordings
+before preprocessing.
+Furthermore, we compiled a non-exhaustive battery of publicly accessible EEG data classification tasks summarized in
+table 1. Most of these were BCI task datasets, which could readily be compared to previous work with DNNs trained
+without any additional unlabelled data [9, 11]. We also included one of the sleep stage classification (SSC) tasks used
+by Banville et al. [35] in their work on sleep stage self-supervision described above, for comparison. This dataset
+afforded some further insight into generality, as BCI data are typically classified in the context of particular trials or
+events, and SSC is a more continuous problem, requiring that large spans of time are labelled with the particular sleep
+stage a subject is undergoing. These segments are distinctly longer than the BCI trials we considered in the remaining
+battery (an order of magnitude difference in our case when compared to the largest BCI task sequence length), and are
+distinctly closer in length to the pre-training task. This allowed us to consider how effective our approach was to such a
+different time-scale. Another notable difference with the SSC dataset was the scale of available labels, which seems to
+have enabled prior work to consider deeper and more complex models [47]. We segmented these sequences into 30
+second periods as in prior work, and focused on 5 labels as in prior work [47, 35].
+2.2
+
+Preprocessing
+
+The focus of the preprocessing stage was to create a maximally consistent representation of EEG sequences across
+datasets, so that the pre-trained network was well-suited to a variety of “downstream” tasks. More or less, this amounted
+to modifying downstream datasets to match the configuration of the pre-training dataset. The first aspect of this was to
+remove spurious differences in channel amplitude. Each sequence gathered for training was linearly scaled and shifted
+(a weight and offset for each sequence adjusts every sample in the sequence) so that the maximum and minimum values
+within each sequence equal 1 and −1 respectively. To account for the lost relative (to the entire dataset) amplitude
+7
+8
+
+https://github.com/SPOClab-ca/dn3
+https://www.kaggle.com/c/inria-bci-challenge
+
+5
+
+BENDR
+
+A P REPRINT
+
+Dataset
+
+Paradigm
+
+sfreq. Hz
+
+# Ch.
+
+Subjects
+
+Targets
+
+Folds
+
+MMI [48, 49]
+
+MI (L/R)
+
+160
+
+64
+
+105
+
+2
+
+5
+
+BCIC [50]
+
+MI (L/R/F/T)
+
+250
+
+22
+
+9
+
+4
+
+9
+
+ERN [51]
+
+Error Related Negativity
+
+200
+
+56
+
+26 (10)
+
+2
+
+4
+
+Donchin Speller
+
+2048
+
+64
+
+9
+
+2
+
+9
+
+P300 [52, 53, 49]
+
+SSC [54, 55, 49]
+Sleep Staging
+100
+2
+83
+5
+10
+Table 1: Summary of downstream dataset battery and number of cross-validation folds used. Cross validation splits were
+in a leave-multiple-subjects-out configuration if F olds < Subjects, or leave-one-subject-out if F olds = Subjects (as
+in prior work [9]). The ERN dataset was featured in an online competition8 which featured 10 held-out test subjects
+(not used during training), which we used as a test dataset for all four validation splits of this dataset.
+
+max(si )−min(si )
+information, a single channel was added with the constant value max(S
+, where Sds is the set of all samples
+ds )−min(Sds )
+in the dataset and si ⊂ Sds is a particular sub-sequence (i.e., trial). We additionally addressed the differences in
+sampling frequency and electrode sets of the different dataset. Our solutions to these problems were similarly minimalist
+and were achieved using standard features in DN3 [56]. Specifically, we over- or under-sampled (by whole multiples,
+for lower and higher sampling frequencies respectfully) to get nearest to the target sampling frequency of 256 Hz. Then,
+nearest-neighbour interpolation was used to obtain the precise frequency (described further in [56]). Additionally, the
+P300 dataset was low-pass filtered below 120 Hz to avoid aliasing due to its higher sampling rate (and associated higher
+original low pass filter). Furthermore, the SSC dataset featured two bi-polar electrodes: FPz-Cz and Pz-Oz, which were
+simply mapped to FPz and Pz, respectively. The TUEG dataset also features some higher sampling rate signals; we
+included those with low-pass filters that did not violate the Nyquist criterion (and subsequently re-sampled them as
+above), and ignored the rest.
+
+A reduced subset of the Deep1010 channel mapping from DN3 [56] was used throughout. This ensured that particular
+channels were mapped to a consistent index for each loaded trial. The original mapping was designed to be more
+inclusive, and thus assumed up to 77 possible EEG electrodes. In the interest of minimizing unnecessary electrodes
+for an already high-dimensional problem, we focused on the 19 EEG channels of the unambiguously illustrated 10/20
+channel set (UI 10/20) [57], as the TUEG dataset recordings were done using a roughly 10/20 channel scheme. We
+simply ignored reference electrodes, electro-oculograms, and any other auxiliary channels. When also accounting for
+the additional relative amplitude channel described above, every sequence from every dataset used 20 channels. All
+surplus channels were ignored, and missing channels set to 0.
+During pre-training, we extracted sequences of 60 seconds (every 60 seconds) from each usable sequence, which
+amounted to 15, 360 samples per subsequence. We observed in early testing that there was better performance with
+larger sequences (see figure 2 for more). As can be seen in table 2, the downstream datasets all used sequence lengths
+shorter than this, but the architecture we employed (see section 2.3) was ostensibly agnostic to sequence length (see
+section 4 for caveats).
+2.3
+
+Model architecture
+
+The model architecture closely follows that of wav2vec 2.0 [13] and is comprised of two stages. A first stage takes
+raw data and dramatically downsamples it to a new sequence of vectors using a stack of short-receptive-field 1D
+convolutions. The product of this stage is what we call BENDR (specifically in our case, when trained with EEG). A
+second stage uses a transformer encoder [40] (layered, multi-head self-attention) to map BENDR to some new sequence
+that embodies the target task.
+Raw data is downsampled through the stride (number of skipped samples) of each convolution block in the first stage
+(rather than pooling, which would require greater memory requirements). Each of our convolution blocks comprised of
+6
+
+BENDR
+
+A P REPRINT
+
+the sequence: 1D convolution, GroupNorm [58], and GELU activation [59]. Our own encoder features six sequential
+blocks, each with a receptive fields of 2, except for the first, which was 3. Strides matched the length of the receptive
+field for each block. Thus, the effective sampling frequency of BENDR is 96 times smaller (≈ 2.67 Hz) than the original
+sampling frequency (256 Hz). Each block consists of 512 filters, meaning each vector has a length of 512.
+The transformer follows the standard implementation of Vaswani et. al [40], but with internal batch normalization layers
+removed and with an accompanying weight initialization scheme known as T-Fixup [60]. Our particular transformer
+architecture uses 8 layers, with 8 heads, model dimension of 1536 and an internal feed-forward dimension of 3076. As
+with wav2vec 2.0, we use GELU activations [59] in the transformer, and additionally include LayerDrop [61] and
+Dropout at probabilities 0.01 and 0.15, respectively, during pre-training but neither during fine-tuning. We represent
+position using an additive (grouped) convolution layer [13, 62] with a receptive field of 25 and 16 groups before the
+input to the transformer. This allows the entire architecture to be sequence-length independent, although it may come at
+the expense of not properly understanding position for short sequences.
+Originally, the downstream target of the wav2vec 2.0 process was a downstream speech recognition sequence (it
+was fine-tuned on characters and phonemes) [13]. Instead, here the entire sequence is classified. To do this using a
+transformer, we adopt the common practice [38] of feeding a fixed token (a.k.a. [CLS] in the case of BERT or, in our
+case, a vector filled with an arbitrary value distinct from the input signal range, in this case: −5) as the first sequence
+input (prepended to BENDR). The transformer output of this initial position was not modified during pre-training, and
+only used for downstream tasks.
+The most fundamental differences in our work as compared to that of the speech-specific architecture that inspired
+it are: 1. we do not quantize BENDR for creating pre-training targets, and 2. we have many incoming channels. In
+wav2vec 2.0, a single channel of raw audio was used. While a good deal of evidence [9, 63, 11, 64, 2, 12] supports
+the advantage of temporally-focused stages (no EEG channel mixing) separate from a stage (or more) that integrates
+channels, we elected to preserve the 1D convolutions of the original work to minimize any additional confound and to
+N ilters
+reduce complexity (compute and memory utilization ∝ Nf ilters with 2D rather than ∝ NfEEG
+for 1D convolutions).
+This seemed fair, as there is also evidence that 1D convolutions are effective feature extractors for EEG, particularly
+with large amounts of data [65, 56]. Notably, wav2vec 2.0 downsampled raw audio signals by a much larger factor
+(320) than our own scheme, but speech information is localized at much higher frequencies than encephalographic
+data is expected to be. The new effective sampling rate of BENDR is ≈ 2.67 Hz, or a feature-window (no overlap) of
+≈ 375 ms. We selected this downsampling factor as it remained stable (i.e., it did not degenerate to an infinite loss, or
+simply memorize everything immediately) during training.
+
+2.4
+
+Training
+
+We used the Adam [66] optimizer throughout training, with weight decay set to 0.01. We additionally used a cosine
+learning rate decay with linear warmup for 5% and 10% of total training steps (batches) for pre-training and fine-tuning
+respectively. The peak learning rate itself varied by dataset; this, and other variable hyperparameters, are further
+documented in appendix A.
+
+2.4.1
+
+Pre-training
+
+The pre-training procedure largely follows wav2vec 2.0, but we make some notable hyperparameter changes. Specifically, the self-supervised loss for a masked token localized at BENDR position t, is defined as:
+L = −log P
+
+exp(cossim(ct , bt ))/κ
+bi ∈BD exp(cossim(ct , bi ))/κ
+7
+
+(2)
+
+BENDR
+
+A P REPRINT
+
+Where ct is the output of the transformer at position t, bi is the BENDR vector at some offset i, and BD is a set
+of 20 uniformly selected distractors from the same sequence, plus bt . We use the cosine similarity cossim(x, y) =
+xT y/(|x||y|) function to determine how similar vectors are, and the sensitivity of this is adjusted by a temperature
+factor κ, set to 0.1. In essence, this loss operates by adjusting the output of the transformer at position t to be most
+similar to the encoded representation at t, despite that this input to the transformer is masked. We also added the mean
+squared activation of the BENDR to the loss, as was similarly done previously [13], but set the weight of this additional
+term to 1 (rather than 10).
+We learn a single mask vector during pre-training of the same length as each BENDR vector, and use this as the
+transformer input to masked positions. Contiguous sequences of 10 are masked with probability pmask = 0.065, such
+that, for each sample, the likelihood of being the beginning of a contiguous section was pmask , and overlap is allowed.
+The number of negatives/distractors was set to 20 and uniformly sampled from the same sequence as the masked vector,
+i.e., negatives do not cross trials or sequences.
+After pre-training, we examined how generalizable the sequence model and vectors were to unseen data, by evaluating
+the contrastive task, expressed as the transformer accuracy in constructing ct to be most similar to bt rather than the
+distractors. During evaluation, we masked half the amount expected during training, but such that masked spans were
+evenly spaced through the sequence (so that there were no overlapping sequences, and sufficient context was available).
+That is, for ja sequence
+length of NS , we masked 0.5 × NS × pmask = Nm contiguous sequences (of 10), and spaced
+k
+NS
+them every Nm steps (starting at the first sample). NS first remained at 15, 360 (60 seconds as in training, no overlap
+between subsequent sequence representations) for all datasets except P300, where sessions were too short and instead
+5120 (20 seconds) was used. We then evaluated the change in performance across the downstream datasets, excluding
+P300, as NS varied from 20-60 seconds.
+2.4.2
+
+Downstream fine-tuning
+
+Ultimately, our aims for subject-, session-, and dataset-generalizable representations were not simply to accurately
+mimic the correct input, but with the intent that these representations – and potentially the sequence model itself – could
+be effectively transferred to specific and arbitrary tasks. We considered six different variations of TL across the battery
+of EEG classification tasks presented in table 1:
+1. Add a new softmax classification layer to the first (pre-pended position) output token of the transformer and
+train the entire model to classify the downstream targets.
+2. Ignore the pre-trained transformer, average pool the BENDR to four concatenated vectors, add a new classification layer and train the model (only the first stage and new layer) to classify the downstream targets.
+3. The same as (1.), but without pre-training
+4. The same as (1.), but keep the BENDR fixed and continue training the transformer.
+5. The same as (2.), but without pre-training
+6. The same as (2.), but keep the first stage weights fixed and train only the new classification layer.
+We considered these permutations so that we could speak to the effect each stage had on downstream performance, at
+least to some degree. First, we were interested in 1) determining whether the new sequence representation (BENDR)
+contained valuable features as-is (as they appear to for speech [13]) or if they required some further training, and 2)
+whether the sequence model learned characteristics of the BENDR that were informative to the classification task.
+Finally, ignoring pre-training all-together, of course, was to examine how effective the network would be at learning the
+task otherwise, without pre-training or transfer learning.
+8
+
+BENDR
+
+A P REPRINT
+
+Accuracy of Contrastive Task on Downstream Data
+
+Accuracy
+
+0.90
+0.85
+0.80
+0.75
+ERN
+
+BCIC
+
+SSC
+Dataset
+
+MMI
+
+P300
+
+Figure 1: Violin plot (inner lines for quartile divisions) of test-subject-wise accuracy for each downstream dataset.
+Specifically, accuracy of the sequence model (transformer stage) at creating a representation that is closest to the correct
+representation at masked sequence positions. The P300 dataset is distinctly lower performing than the remaining
+datasets, though this was likely due to its shorter evaluation context (see figure 2). Nonetheless, there is minimal
+test-subject-wise variation, particularly when compared to classifier performance generally.
+
+The P300, ERN, and SSC datasets all had imbalanced class distributions; we adjusted for these imbalances by
+undersampling points of the more frequent classes with replacement so that the number of samples drawn – per epoch –
+of each class was equal to the number of examples of the least frequent target class.
+We also included the sequence regularization proposed by wav2vec 2.0 [13], though we adjusted it for our more
+varied trial lengths. That is, in all 6 fine-tuning configurations, contiguous sections of 10% of the entire BENDR of a
+trial were masked with the mask token learned during pre-training (not changed after pre-training) at a probability of
+0.01. In other words, this was the likelihood of a sample being the beginning of a contiguous masked section, as in
+pre-training. Additionally across the BENDR (throughout each vector in the sequence), a similar procedure dropped
+features to 0, where contiguous sections of 10% of the channels (51) were dropped with a probability of 0.005.
+
+3
+
+Results
+
+3.1
+
+Pre-training generalization
+
+Figure 1 shows how accurate the transformer stage is at producing an appropriately similar BENDR when compared to
+distractor representations. There are two key observations in this figure, the first is that there is little variability across the
+9
+
+BENDR
+
+A P REPRINT
+
+Dataset
+
+Start (s)
+
+Length (s)
+
+Metric
+
+Best
+
+Model config.
+
+MMI
+
+0
+
+6
+
+BAC
+
+86.7
+
+Linear (2.)
+
+BCIC
+
+-2
+
+6
+
+Accuracy
+
+42.6
+
+Linear (2.)
+
+ERN
+
+-0.7
+
+2
+
+AUROC
+
+0.65
+
+Linear (2.)
+
+SSC
+
+0
+
+30
+
+BAC
+
+0.72
+
+Linear (2.)
+
+P300
+-0.7
+2
+AUROC 0.72
+BENDR (1.)
+Table 2: Performances of downstream datasets. Start and length refer to length of trials and start with respect to
+event markers in seconds. Best performance specifies average performance across all subjects (and therefore folds)
+for best performing model configuration. BAC: class balanced accuracy; AUROC: area under the receiver operating
+characteristic curve. Model configurations are numbered in accordance with the list presented in section 2.4.2.
+
+first four datasets, and within each of the five datasets. The latter point implies that this accuracy is not radically variable
+across different subjects, as it tends to be when considering classifier performance [1, 3] (though, when fine-tuning for
+classification, this variability returns; see figure 3). This could be because a) the transformer adequately learns a general
+model of how BENDR sequences of novel persons and equipment progressed, b) the BENDR themselves are invariant
+to different people, hardware, and tasks, c) some combination of the last two possibilities, or d) the problem is being
+solved via some non-signal characteristics. We return to this question shortly. The second observation was alluded to
+already: the P300 dataset distinctly under-performs the other downstream datasets. However, this coincided with the
+shortest evaluation sequence. Looking at figure 2, we see that all five datasets have consistently similar performance
+when evaluated with 20 seconds of data, so the dip in P300 performance of figure 1 seems less remarkable. Taken
+together, 1 and 2 clearly indicate that a longer evaluation context makes the contrastive task easier. This suggests that
+the contrastive task is, in fact, solved by learning signal-relevant features, rather than some more crude solution like
+interpolation, or by simply creating a sequence of recognizable position representations (both of which have no reason
+to exhibit this dependence on sequence length). We believe the most likely explanation for the rise in performance with
+more context is that local representations are more difficult distractors, implying that the new effective sampling rate
+remains too high (and there is still redundant information encoded in local BENDR). Notwithstanding, there is a strong
+uniformity of performance across datasets and subjects (in both figures 1 and 2), meaning this scheme develops features
+(whether through the transformer itself, or the BENDR) that generalize to novel subjects, hardware, and tasks, though
+their applicability to downstream contexts remains to be seen.
+3.2
+
+Downstream fine-tuning
+
+Figure 3 and table 2 present a picture of how effectively BENDR could be adapted to specific tasks. Overall, the
+fine-tuned linear classification (listed as downstream configuration 2. above) that bypassed the transformer entirely after
+pre-training was highest performing four out of five times, though using the transformer for classification (1.) performed
+consistently similarly (confidence intervals always overlapped), and surpassed the bypassed transformer (2.) with the
+P300 dataset (and was highest performing for this dataset). Deploying the full network (initial stage and transformer)
+without pre-training was generally ineffective, though this was not the case with the SSC dataset, which may have been
+due to the larger data availability. In fact, for both the full and linear model architectures trained with the SSC data,
+fine-tuning the pre-trained model is mostly on par with the randomly initialized counterpart. Considering our results
+with the SSC data relative to those of Banville et. al’s [35] proposed contrastive learning for sleep staging (described in
+section 1.1), their reported results show that the fine-tuned variants of our own model (1. and 2.) achieved a higher
+mean balanced accuracy relative to their two proposed schemes. Taken in concert with our own approach’s wider
+applicability and more fine-grained temporal feature development, we believe this demonstrates that ours is a promising
+alternative. Interestingly, with and without pre-training (2. and 5.) achieved similar performance to Banville et. al’s
+fully supervised results (where our configurations and their architecture employ similar 1D convolution-based schemes),
+10
+
+BENDR
+
+A P REPRINT
+
+Contrastive Task vs. Sequence Length
+Dataset
+ERN
+BCIC
+MMI
+SSC
+
+0.900
+0.875
+Accuracy
+
+0.850
+0.825
+0.800
+0.775
+0.750
+2 × 101
+
+3 × 101
+4 × 101
+Sequence Length (s)
+
+6 × 101
+
+Figure 2: Contrastive accuracy versus evaluation length in seconds (x-axis logarithmic). Performance is distinctly
+similar for all datasets, rising for longer sequences. We suggest that this implies that samples that are further apart are
+easier to distinguish between than neighbouring samples. Thus, while BENDR encode local signal characteristics well,
+there is redundancy.
+
+which is notable as with this dataset, both their “temporal-shuffling” and “relative-positioning” tasks under-performed
+full supervision when utilizing the full SSC dataset.
+Our fine-tuned approaches similarly appear reasonably competitive with prior work on the MMI dataset [9, 3],
+particularly when considering that only 19 channels (rather than the full set of 64) were being used. In all considered
+configurations, despite heavy regularization (and the very low learning rates) the randomly initialized parameters were
+consistently prone to overfitting, all the more so with the full model architecture. Conversely, the pre-trained networks
+were slow to fit to the downstream training data (under the exact same training scheme for fine-tuning). Ultimately,
+though most of these results are not necessarily state-of-the-art, this single pre-training scheme nonetheless shows a
+breadth of transferability which is apparently unique.
+
+4
+
+Discussion
+
+We are unaware of any prior work assessing transformer-based [40] DNNs with EEG data (raw or otherwise). This is
+perhaps consistent with the ineffectiveness we observed with the randomly initialized full architecture (3.) and could
+imply that effective use of this powerful emerging architecture requires pre-training (or at least enough data, given the
+11
+
+BENDR
+
+A P REPRINT
+
+Performance Metrics as Multiple of Chance-level By Dataset and Model
+Models
+
+BCIC
+
+(1.) Full
+(2.) Linear
+(3.) Full Random Init
+(4.) Full Frozen Encoder
+(5.) Linear Random Init
+(6.) Linear Frozen Encoder
+
+Dataset
+
+ERN
+MMI
+P300
+SSC
+0.2
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+Normalized Performance Metric
+
+0.8
+
+1.0
+
+Figure 3: Performance of all downstream datasets for each of the six model configurations considered. Metrics vary
+by dataset, see table 2. Metrics were normalized to range from chance (0) to perfect (1). Individual translucent
+points are performances of single subjects (within each test fold), solid diamonds indicate mean performance across
+all subjects/folds, with surrounding bars showing .95 confidence intervals using n = 1000 bootstrap sampling. The
+discretized pattern of the MMI dataset is due to the limited trials per subject, which resulted in limited distribution of
+performance levels. Notably here, (1.) or (2.) were consistently among the best performing, yet both remained within
+the confidence levels of each other. The randomly initialized average-pooled BENDR with linear classifier (5.) also
+performed well, though less consistently. Model configurations are numbered in accordance with the list presented in
+section 2.4.2.
+
+better looking SSC performance). Future work should continue to evaluate this architecture, particularly as it appears to
+be more widely applicable than the NLP applications it was originally proposed for [67, 13].
+We believe that our approach can be improved through adjusting the neural network architecture and pre-training
+configuration such that it becomes more data-domain (EEG) appropriate. Future work will prioritize effective integration
+of spatial information, likely by better isolating temporal and spatial operations. Evaluation using large downstream
+datasets that also feature many channels, such as the Montreal Archive of Sleep Studies (MASS)9 will be considered.
+Though available for public access at the time of writing, these data were unavailable while experiments were prepared
+and conducted. Prior work shows that DNN approaches effective for EEG leverage spatial information [64], and it
+is presently unclear to what degree this is the case with BENDR. In terms of data-appropriate temporal modelling,
+which we have considered with relatively more zeal in this work, recall that figure 2 presents the possibility that local
+representations may be retaining redundant information, further improvements may be found in better compressing the
+9
+
+http://massdb.herokuapp.com/en/
+
+12
+
+BENDR
+
+A P REPRINT
+
+temporal resolution of BENDR. Future work will consider larger downsampling factors in the initial stage, along with
+longer sequences, balancing the more difficult problem of summarizing more data (in effect, further data compression),
+with the apparent increased effectiveness of the contrastive task (as observed in figure 2) on longer sequences. A small
+but potentially fruitful avenue for further improvement includes reconsidering the additive convolutional layer as a
+substitute for explicit position encodings, which are in fact more common [34, 38, 40]. Recall that this was originally
+for two reasons: wav2vec 2.0 did the same, and we felt it best to limit excessive changes to the architecture on a first
+iteration, and because it seamlessly supported flexible input lengths. This latter point comes, however, with a trade-off –
+our particular position encoder had a receptive field of 25 (stride of 1), which means a little over 9 seconds of input.
+While it seems that convolutional position encodings offer better performance [62], this input width exceeded the entire
+length of all but the sleep classification task (the length we chose was optimized for pre-training behaviour).
+After considering these possible avenues for improving BENDR, we still do not fully discount the validity of some of
+the transfer learning paths we appear to exclude above in our introduction. We will reconsider these paths in future
+work. Particularly, given the success we had in crossing boundaries of hardware in this work, and in prior work [56],
+it may be possible to construct an aggregate dataset featuring a variety of EEG classification tasks, towards better
+ImageNet-like pre-training. The construction of a more coherent label set that crosses several BCI paradigms would
+no doubt be a significant effort (e.g., problems may include: is a rest period before one task paradigm the same as
+rest before another? What about wakeful periods in sleep?). This would no doubt be imbalanced; the labels would
+be distributed in a long-tailed or Zipfian distribution that would likely require well thought-out adjustment [68, 69].
+Furthermore, the value of ImageNet pre-training seems to be localized to very early layers and the internalization
+of domain-relevant data statistics [70, 6]. Future work could look into which of these may be leveraged with a new
+aggregate (multiple subjects and tasks) pre-training, or the common subject-specific fine-tuning. This may provide
+insight into better weight initialization, or integration of explicit early layers similar to [6] (one could also argue that
+SincNet layers [71] are some such layers that could factor here). Additionally, as temporally-minded reconstruction
+losses continue to develop [43], reconsidering the effectiveness of signal reconstruction as a pre-training objective
+(and/or regularization) is warranted, whether this is within an MLM-like scheme similar to BENDR, or a seq2seq model
+[72].
+
+5
+
+Conclusion
+
+We have proposed MLM-like training as a self-supervised pre-training step for BCI/EEG DNNs. This is in the interest
+of diversifying the investigations into successful transfer learning schemes for DNNs applied to BCI and EEG. While
+previous approaches fashioned DNN transfer learning after ImageNet pre-training, we find this approach inadequate
+as there is limited applicable data availability and it is questionably analogous to its forebear. While our proposed
+alternative might similarly suffer from this latter point to some degree (the most distinct MLM success is with discrete
+sequences, not continuous ones), it is more conducive to leveraging potentially immense amounts of unlabelled data, it
+is not limited to long-term feature developments as with previous proposals, and it seems to produce representations
+equally suited to different users and sessions, which is a problem ImageNet pre-training appears less suited to solving.
+In summary, we see strong paths for the effective deployment of powerful computation and massive data scales with
+EEG and BCI. Effective solutions in these specific applications could help drive application and analysis solutions in
+neuroimaging and perhaps physiology generally.
+
+References
+[1] Claudia Sannelli, Carmen Vidaurre, Klaus-Robert Müller, and Benjamin Blankertz. A large scale screening
+study with a SMR-based BCI: Categorization of BCI users and differences in their SMR activity. PLOS ONE,
+14(1):e0207351, 1 2019.
+13
+
+BENDR
+
+A P REPRINT
+
+[2] F Lotte, L Bougrain, A Cichocki, M Clerc, M Congedo, A Rakotomamonjy, and F Yger. A review of classification algorithms for EEG-based brain-computer interfaces: a 10 year update. Journal of neural engineering,
+15(3):031005, 2018.
+[3] Hauke Dose, Jakob S. Møller, Helle K. Iversen, and Sadasivan Puthusserypady. An end-to-end deep learning
+approach to MI-EEG signal classification for BCIs. Expert Systems with Applications, 114:532–542, 2018.
+[4] Minkyu Ahn and Sung Chan Jun. Performance variation in motor imagery brain-computer interface: A brief
+review. Journal of Neuroscience Methods, 243:103–110, 2015.
+[5] Paolo Zanini, Marco Congedo, Christian Jutten, Salem Said, and Yannick Berthoumieu. Transfer Learning:
+A Riemannian Geometry Framework with Applications to Brain-Computer Interfaces. IEEE Transactions on
+Biomedical Engineering, 65(5):1107–1116, 2018.
+[6] Maithra Raghu, Chiyuan Zhang, Jon Kleinberg, and Samy Bengio. Transfusion: Understanding transfer learning
+for medical imaging. arXiv, (NeurIPS), 2019.
+[7] Jason Yosinski, Jeff Clune, Anh Nguyen, Thomas Fuchs, and Hod Lipson. Understanding Neural Networks
+Through Deep Visualization. 6 2015.
+[8] Alex Krizhevsky, Ilya Sutskever, and Geoffrey E Hinton. ImageNet Classification with Deep Convolutional
+Neural Networks. In Proceedings of the 25th International Conference on Neural Information Processing Systems
+- Volume 1, NIPS’12, pages 1097–1105, USA, 2012. Curran Associates Inc.
+[9] Demetres Kostas and Frank Rudzicz. Thinker invariance: Enabling deep neural networks for BCI across more
+people. Journal of Neural Engineering, 17(5):56008, 2020.
+[10] Yannick Roy, Hubert Banville, Isabela Albuquerque, Alexandre Gramfort, Tiago H Falk, and Jocelyn Faubert.
+Deep learning-based electroencephalography analysis: a systematic review. Journal of Neural Engineering,
+16(5):051001, 2019.
+[11] Vernon J. Lawhern, Amelia J. Solon, Nicholas R. Waytowich, Stephen M. Gordon, Chou P. Hung, and Brent J.
+Lance. EEGNet: A compact convolutional neural network for EEG-based brain-computer interfaces. Journal of
+Neural Engineering, 15(5):aace8c, 2018.
+[12] Robin Tibor Schirrmeister, Jost Tobias Springenberg, Lukas Dominique Josef Fiederer, Martin Glasstetter,
+Katharina Eggensperger, Michael Tangermann, Frank Hutter, Wolfram Burgard, and Tonio Ball. Deep learning
+with convolutional neural networks for EEG decoding and visualization. Human Brain Mapping, 38(11):5391–
+5420, 11 2017.
+[13] Alexei Baevski, Henry Zhou, Abdelrahman Mohamed, and Michael Auli. wav2vec 2.0: A Framework for
+Self-Supervised Learning of Speech Representations. 2020.
+[14] Terrence J. Sejnowski. The unreasonable effectiveness of deep learning in artificial intelligence. Proceedings of
+the National Academy of Sciences, page 201907373, 1 2020.
+[15] Yann LeCun, Yoshua Bengio, Geoffrey Hinton, Lecun Y., Bengio Y., and Hinton G. Deep learning. Nature,
+521(7553):436–444, 2015.
+[16] J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei. ImageNet: A Large-Scale Hierarchical Image
+Database. In CVPR09, 2009.
+[17] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep Residual Learning for Image Recognition.
+Multimedia Tools and Applications, pages 1–17, 12 2015.
+[18] Gao Huang, Zhuang Liu, Laurens van der Maaten, and Kilian Q Weinberger. Densely Connected Convolutional
+Networks. CoRR, 8 2016.
+14
+
+BENDR
+
+A P REPRINT
+
+[19] Fatemeh Fahimi, Zhuo Zhang, Wooi Boon Goh, Tih-Shi Lee, Kai Keng Ang, and Cuntai Guan. Inter-subject
+transfer learning with an end-to-end deep convolutional neural network for EEG-based BCI. Journal of Neural
+Engineering, 16(2):026007, 2019.
+[20] Gaowei Xu, Xiaoang Shen, Sirui Chen, Yongshuo Zong, Canyang Zhang, Hongyang Yue, Min Liu, Fei Chen, and
+Wenliang Che. A Deep Transfer Convolutional Neural Network Framework for EEG Signal Classification. IEEE
+Access, 7:112767–112776, 2019.
+[21] Michael A. Schwemmer, Nicholas D. Skomrock, Per B. Sederberg, Jordyn E. Ting, Gaurav Sharma, Marcia A.
+Bockbrader, and David A. Friedenberg. Meeting brain–computer interface user performance expectations using a
+deep neural network decoding framework, 2018.
+[22] Yuan-Pin Lin and Tzyy-Ping Jung. Improving EEG-Based Emotion Classification Using Conditional Transfer
+Learning. Frontiers in Human Neuroscience, 11(June):1–11, 2017.
+[23] Apiwat Ditthapron, Nannapas Banluesombatkul, Sombat Ketrat, Ekapol Chuangsuwanich, and Theerawit Wilaiprasitporn. Universal Joint Feature Extraction for P300 EEG Classification Using Multi-Task Autoencoder. IEEE
+Access, 7:68415–68428, 2019.
+[24] Minyoung Huh, Pulkit Agrawal, and Alexei A. Efros. What makes ImageNet good for transfer learning? CoRR,
+pages 1–10, 2016.
+[25] Jiquan Ngiam, Daiyi Peng, Vijay Vasudevan, Simon Kornblith, Quoc V. Le, and Ruoming Pang. Domain adaptive
+transfer learning with specialist models. arXiv, 2018.
+[26] Kaiming He, Ross Girshick, and Piotr Dollar. Rethinking imageNet pre-training. Proceedings of the IEEE
+International Conference on Computer Vision, 2019-Octob(i):4917–4926, 2019.
+[27] Simon Kornblith, Jonathon Shlens, and Quoc V. Le. Do better imagenet models transfer better? In Proceedings of
+the IEEE Computer Society Conference on Computer Vision and Pattern Recognition, volume 2019-June, pages
+2656–2666, 2019.
+[28] Kan Chen, Jiang Wang, Liang-Chieh Chen, Haoyuan Gao, Wei Xu, and Ram Nevatia. ABC-CNN: An Attention
+Based Convolutional Neural Network for Visual Question Answering. arXiv, 2016.
+[29] Jean-Bastien Grill, Florian Strub, Florent Altché, Corentin Tallec, Pierre H. Richemond, Elena Buchatskaya,
+Carl Doersch, Bernardo Avila Pires, Zhaohan Daniel Guo, Mohammad Gheshlaghi Azar, Bilal Piot, Koray
+Kavukcuoglu, Rémi Munos, and Michal Valko. Bootstrap Your Own Latent: A New Approach to Self-Supervised
+Learning. 200, 2020.
+[30] Olivier J. Hénaff, Ali Razavi, Carl Doersch, S. M. Ali Eslami, and Aaron Van Den Oord. Data-efficient image
+recognition with contrastive predictive coding, 2019.
+[31] Aaron van den Oord, Yazhe Li, and Oriol Vinyals. Representation Learning with Contrastive Predictive Coding.
+2018.
+[32] Xiang Zhang, Lina Yao, Xianzhi Wang, Jessica J. M. Monaghan, David Mcalpine, and Yu Zhang. A survey on
+deep learning-based non-invasive brain signals: recent advances and new frontiers. Journal of Neural Engineering,
+2020.
+[33] Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger,
+Tom Henighan, Rewon Child, Aditya Ramesh, Daniel M. Ziegler, Jeffrey Wu, Clemens Winter, Christopher Hesse,
+Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam
+McCandlish, Alec Radford, Ilya Sutskever, and Dario Amodei. Language Models are Few-Shot Learners. CoRR,
+5 2020.
+[34] Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li
+Peter, and J. Liu. Exploring the limits of transfer learning with a unified text-to-text transformer, 2019.
+15
+
+BENDR
+
+A P REPRINT
+
+[35] Hubert Banville, Isabela Albuquerque, Aapo Hyvarinen, Graeme Moffat, Denis-Alexander Engemann, and
+Alexandre Gramfort. Self-Supervised Representation Learning from Electroencephalography Signals. In 2019
+IEEE 29th International Workshop on Machine Learning for Signal Processing (MLSP), pages 1–6. IEEE, 10
+2019.
+[36] Sanjeev Arora, Hrishikesh Khandeparkar, Mikhail Khodak, Orestis Plevrakis, and Nikunj Saunshi. A theoretical
+analysis of contrastive unsupervised representation learning. In 36th International Conference on Machine
+Learning, ICML 2019, volume 2019-June, pages 9904–9923, 2019.
+[37] Ting Chen, Simon Kornblith, Kevin Swersky, Mohammad Norouzi, and Geoffrey Hinton. Big Self-Supervised
+Models are Strong Semi-Supervised Learners. arXiv, (NeurIPS):1–18, 2020.
+[38] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. BERT: Pre-training of Deep Bidirectional
+Transformers for Language Understanding. CoRR, 2018.
+[39] Stéphane Aroca-Ouellette and Frank Rudzicz. On Losses for Modern Language Models. pages 4970–4981, 2020.
+[40] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Lukasz Kaiser, and
+Illia Polosukhin. Attention Is All You Need. 2017.
+[41] Dongwei Jiang, Wubo Li, Ruixiong Zhang, Miao Cao, Ne Luo, Yang Han, Wei Zou, and Xiangang Li. A Further
+Study of Unsupervised Pre-training for Transformer Based Speech Recognition. 5 2020.
+[42] Mandar Joshi, Danqi Chen, Yinhan Liu, Daniel S Weld, Luke Zettlemoyer, and Omer Levy. SpanBERT: Improving
+Pre-training by Representing and Predicting Spans. Transactions of the Association for Computational Linguistics,
+8:64–77, 7 2020.
+[43] Francois Rivest and Richard Kohar. A New Timing Error Cost Function for Binary Time Series Prediction. IEEE
+Transactions on Neural Networks and Learning Systems, 31(1):174–185, 2020.
+[44] Alexei Baevski and Abdelrahman Mohamed. Effectiveness of Self-Supervised Pre-Training for ASR. In ICASSP
+2020 - 2020 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), pages
+7694–7698. IEEE, 5 2020.
+[45] Yu-An Chung, Hao Tang, and James Glass. Vector-Quantized Autoregressive Predictive Coding. In Interspeech
+2020, volume arXiv, pages 3760–3764, ISCA, 10 2020. ISCA.
+[46] Iyad Obeid and Joseph Picone. The temple university hospital EEG data corpus. Frontiers in Neuroscience,
+10(May), 2016.
+[47] Sajad Mousavi, Fatemeh Afghah, and U. Rajendra Acharya. SleepEEGNet: Automated sleep stage scoring with
+sequence to sequence deep learning approach. PloS one, 14(5):e0216456, 2019.
+[48] Gerwin Schalk, Dennis J Mcfarland, Thilo Hinterberger, Niels Birbaumer, Jonathan R Wolpaw, and A Braincomputer Interface B C I Technology. BCI2000 : A General-Purpose Brain-Computer Interface ( BCI ) System.
+IEEE Transactions on Biomedical Engineering, 51(6):1034–1043, 2004.
+[49] Ary L Goldberger, L. A. Amaral, Leon Glass, Jeffrey M Hausdorff, Plamen Ch Ivanov, Roger G Mark, Joseph E
+Mietus, George B Moody, C. K. Peng, and H Eugene Stanley. PhysioBank, PhysioToolkit, and PhysioNet:
+components of a new research resource for complex physiologic signals. Circulation, 101(23), 2000.
+[50] Michael Tangermann, Klaus Robert Müller, Ad Aertsen, Niels Birbaumer, Christoph Braun, Clemens Brunner,
+Robert Leeb, Carsten Mehring, Kai J. Miller, Gernot R. Müller-Putz, Guido Nolte, Gert Pfurtscheller, Hubert
+Preissl, Gerwin Schalk, Alois Schlögl, Carmen Vidaurre, Stephan Waldert, and Benjamin Blankertz. Review of
+the BCI competition IV. Frontiers in Neuroscience, 6(JULY):1–31, 2012.
+[51] Perrin Margaux, Maby Emmanuel, Daligault Sébastien, Bertrand Olivier, and Mattout Jérémie. Objective and
+Subjective Evaluation of Online Error Correction during P300-Based Spelling. Advances in Human-Computer
+Interaction, 2012:1–13, 2012.
+16
+
+BENDR
+
+A P REPRINT
+
+[52] Luca Citi, Riccardo Poli, and Caterina Cinel. Documenting, modelling and exploiting p300 amplitude changes
+due to variable target delays in donchin's speller. Journal of Neural Engineering, 7(5):056006, sep 2010.
+[53] Luca Citi, Riccardo Poli, and Caterina Cinel. Erp-based brain-computer interface recordings, 2014.
+[54] Bastiaan Kemp, Aeilko H. Zwinderman, Bert Tuk, Hilbert A.C. Kamphuisen, and Josefien J.L. Oberyé. Analysis
+of a sleep-dependent neuronal feedback loop: The slow-wave microcontinuity of the EEG. IEEE Transactions on
+Biomedical Engineering, 47(9):1185–1194, 2000.
+[55] Bastiaan Kemp, Aeilko Zwinderman, Bert Tuk, Hilbert Kamphuisen, and Josefien Oberyé. The sleep-edf database
+[expanded], 2018.
+[56] Demetres Kostas and Frank Rudzicz. Dn3: An open-source python library for large-scale raw neurophysiology
+data assimilation for more flexible and standardized deep learning. bioRxiv, 2020.
+[57] Valer Jurcak, Daisuke Tsuzuki, and Ippeita Dan. 10/20, 10/10, and 10/5 systems revisited: Their validity as
+relative head-surface-based positioning systems. NeuroImage, 34(4):1600–1611, 2007.
+[58] Yuxin Wu and Kaiming He. Group Normalization. International Journal of Computer Vision, 128(3):742–755,
+2020.
+[59] Dan Hendrycks and Kevin Gimpel. Gaussian Error Linear Units (GELUs). pages 1–9, 2016.
+[60] Xiao Shi Huang, Felipe Perez, Jimmy Ba, and Maksims Volkovs. Improving transformer optimization through
+better initialization. Proceedings of Machine Learning and Systems 2020, pages 9868–9876, 2020.
+[61] Angela Fan, Edouard Grave, and Armand Joulin. Reducing transformer depth on demand with structured dropout.
+arXiv, 103:1–15, 2019.
+[62] Abdelrahman Mohamed, Dmytro Okhonko, and Luke Zettlemoyer. Transformers with convolutional context for
+ASR. arXiv, 4 2019.
+[63] Demetres Kostas, Elizabeth W Pang, and Frank Rudzicz. Machine learning for MEG during speech tasks.
+Scientific Reports, 9(1):1609, 12 2019.
+[64] Stanislas Chambon, Mathieu N. Galtier, Pierrick J. Arnal, Gilles Wainrib, and Alexandre Gramfort. A Deep
+Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series.
+IEEE Transactions on Neural Systems and Rehabilitation Engineering, 26(4):758–769, 2018.
+[65] Lukas A.W. Gemein, Robin T. Schirrmeister, Patryk Chraba̧szcz, Daniel Wilson, Joschka Boedecker, Andreas
+Schulze-Bonhage, Frank Hutter, and Tonio Ball. Machine-learning-based diagnostics of EEG pathology. NeuroImage, 220, 10 2020.
+[66] Diederik P. Kingma and Jimmy Lei Ba. Adam: A method for stochastic optimization. 3rd International Conference
+on Learning Representations, ICLR 2015 - Conference Track Proceedings, pages 1–15, 2015.
+[67] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner,
+Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, Jakob Uszkoreit, and Neil Houlsby. An
+Image is Worth 16x16 Words: Transformers for Image Recognition at Scale. pages 1–21, 2020.
+[68] Kaihua Tang, Jianqiang Huang, and Hanwang Zhang. Long-Tailed Classification by Keeping the Good and
+Removing the Bad Momentum Causal Effect. (NeurIPS):1–12, 2020.
+[69] Kaidi Cao, Colin Wei, Adrien Gaidon, Nikos Arechiga, and Tengyu Ma. Learning imbalanced datasets with
+label-distribution-aware margin loss. Advances in Neural Information Processing Systems, 32(NeurIPS):1–18,
+2019.
+[70] Behnam Neyshabur, Hanie Sedghi, and Chiyuan Zhang. What is being transferred in transfer learning? arXiv,
+(NeurIPS):1–12, 2020.
+[71] Mirco Ravanelli and Yoshua Bengio. Interpretable Convolutional Filters with SincNet. Arxiv, (Nips), 11 2018.
+17
+
+BENDR
+
+A P REPRINT
+
+[72] Alex Graves. Supervised Sequence Labelling with Recurrent Neural Networks. Springer, c2012, Berlin ; New
+York, 2012.
+
+18
+
+BENDR
+
+A
+
+A P REPRINT
+
+Downstream hyperparameters
+Dataset
+
+Batch Size
+
+Epochs
+
+Learning Rate
+
+MMI
+
+4
+
+7
+
+1 × 10−5
+
+BCIC
+
+60
+
+15
+
+5 × 10−5
+
+ERN
+
+32
+
+15
+
+1 × 10−5
+
+P300
+
+80
+
+20
+
+1 × 10−5
+
+SSC
+64
+40
+5 × 10−5
+Table 3: Hyperparameters that varied between datasets, these were not changed between different model configurations
+(see list in section 2.4.2).
+
+19
+
+

@@ -1,0 +1,727 @@
+Noninvasive decoding of typed sentences from human brain activity 
+
+nature neuroscience
+
+Article https://doi.org/10.1038/s41593-026-02303-2 Noninvasive decoding of typed sentences from human brain activity
+
+Received: 21 March 2025
+
+Jarod Lévy 1 , Mingfang Zhang 2,3, Svetlana Pinet4,5, Jérémy Rapin1,
+
+Accepted: 16 April 2026
+
+Hubert Banville1, Stéphane d’Ascoli 1,6 & Jean-Rémi King 1,6
+
+Published online: xx xx xxxx
+
+Modern neuroprostheses can now restore communication in patients who have lost the ability to speak or move. However, implanting these invasive devices comes with risks inherent to neurosurgery. Here we introduce a noninvasive method to decode the production of sentences from brain activity and demonstrate its efficacy in a cohort of 35 healthy volunteers. For this, we present Brain2Qwerty, a new deep learning architecture trained to decode sentences from either electro- or magnetoencephalography, while participants typed briefly memorized sentences on a QWERTY keyboard. With magnetoencephalography, Brain2Qwerty reaches, on average, a character error rate of 29% and substantially outperforms electroencephalography (character error rate: 65%). For the best participants, the model achieves a character error rate of 18%, and can perfectly decode a variety of sentences outside of the training set. Overall, these results narrow the gap between invasive and noninvasive methods and thus open the path for developing safe brain–computer interfaces for noncommunicating patients.
+
+The past decade has been marked by rapid progress in brain–computer interfaces (BCIs) for individuals who, after a brain lesion, have lost their ability to speak or communicate. In particular, several patients suffer- ing from anarthria1,2, amyotrophic lateral sclerosis3 or severe paralysis4 have now been able to produce full sentences via a neuroprosthesis, which records and decodes neural activity from motor regions in the brain. Originally limited to decoding small sets of linguistic features2,5–8, words1 and gestures9, the recent development of artificial intelligence (AI) models has improved the precision and rapidity of brain-to-text decoding to the point of enabling natural language production at rates close to normal speech10,11.
+
+However, such invasive neuroprostheses require a neurosurgical procedure, and thus expose patients to nonnegligible risks of brain hemorrhage and infection12–15. Additionally, maintaining functional cortical implants over extended time periods remains challenging16–18. As a result, in their current form, invasive BCIs are not easily scalable for diagnosing or restoring communication in the large groups of non- or poorly responsive patients19,20.
+
+Noninvasive BCIs could potentially address this challenge. How- ever, they are usually based on scalp electroencephalography (EEG), whose limited signal-to-noise ratio21 requires users to perform complex tasks. For example, EEG-based BCIs typically require individuals to maintain their attention on flickering stimuli22 or to imagine mov- ing their hand or foot over long time periods23—two tasks known to produce EEG patterns that can be relatively easily detected by a linear classifier. Even so, decoding performance remains moderate. For instance, a public BCI benchmark24 using EEG achieves an accuracy of only 43.3% on a four-class classification task with a motor imagery dataset25. In sum, current noninvasive methods fall short of providing a fast and reliable BCI.
+
+Two elements could address these challenges. First, magnetoen- cephalography (MEG), which measures the fluctuations of magnetic fields elicited in the cortex, has a higher signal-to-noise ratio than EEG26–28. Second, deep learning models trained to reconstruct nat- ural language from MEG signals in language comprehension para- digms have recently demonstrated major improvements, especially
+
+Nature Neuroscience
+
+1Meta AI, Paris, France. 2École Normale Supérieure, Université PSL, CNRS, Paris, France. 3Hospital Foundation Adolphe de Rothschild, Paris, France. 4Univ. Lille, CNRS, UMR 9193 -SCALab-Sciences Cognitives et Sciences Affectives, Lille, France. 5Basque Center on Cognition, Brain and Language, San Sebastian, Spain. 6These authors contributed equally: Stéphane d’Ascoli, Jean-Rémi King. e-mail: jarod@meta.com; sdascoli@meta.com; jeanremi@meta.com
+
+Check for updates
+
+Article https://doi.org/10.1038/s41593-026-02303-2
+
+Brain2Qwerty performance Having established the presence of exploitable information with linear models, we next ask how well a deep learning approach can decode the full sequence of characters. We trained Brain2Qwerty, a new deep learning architecture, to decode individual characters from these MEG or EEG signals (see ‘Decoder’ section in Methods) and evaluated both the hand error rate (HER) and CER. Model inputs are defined as 0.5-s time windows, extracted from −0.2 s to +0.3 s relative to each keystroke. Brain2Qwerty achieves a CER of 29 ± 1.7% with MEG and 65 ± 0.7% with EEG. This performance reflects a substantial difference across recording devices (P = 1.0 × 10−7). The best and worst EEG subjects reach CERs of 61 ± 1.9% and 69 ± 1.8% across sentences, respectively. Similarly, the best and worst MEG subjects reach CERs of 18 ± 2.3% and 47 ± 3.2%, respectively.
+
+Comparing Brain2Qwerty to baseline models How does Brain2Qwerty perform in comparison to classic baseline architectures? To address this issue we trained a linear model as well as EEGNet—a popular architecture used in BCIs36—with the same approach, and compared their decoding performance to Brain2Qwerty’s with a Wilcoxon test across subjects (Fig. 2e–h).
+
+EEGNet outperforms the linear model on both HER and CER for both MEG and EEG (P \< 10−5). However, EEGNet remains less effective than our model, which, in comparison, achieves a 1.2-fold improvement in CER with EEG (P = 1.9 × 10−6) and a 2.5-fold improvement in CER with MEG (P = 3.8 × 10−6).
+
+Brain2Qwerty ablations To validate our design choices, we then retrained different ablated versions of our model. Specifically, we retrained and evaluated (1) the convolutional module (that is, no transformer, no language model; Conv) and (2) the convolutional and transformer mod- ules (that is, no language model; Conv+Trans) with the same hyperparameters.
+
+Conv alone outperforms EEGNet on MEG (HER: P = 1.9 × 10−5, CER: P = 3.8 × 10−6) and on the CER for EEG (P = 2.0 × 10−3). Adding Trans only appears significantly beneficial to CER, both for EEG (P = 5.9 × 10−4) and MEG (P = 2.7 × 10−5). Finally, the use of a language model module leads to an additional improvement of the CER for EEG (P = 8.5 × 10−4) and MEG (P = 3.8 × 10−6).
+
+Overall, these results show that the sentence-level contextualiza- tion provided by the transformer together with the leverage of natural language’s statistical regularities effectively improves the decoding of individual characters.
+
+–200 +300 ms
+
+Read Wait Type
+
+R
+
+128 sentences per session
+
+Target 5–8 words per sentence
+
+Conv
+
+Trans EL MOTOR
+
+CONSUME +
+
+MEG or EEG
+
+0.565 ± 0.565 ±
+
+0.565 ± 0.1 s
+
+1.5 s E L
+
+Brain2Qwerty
+
+PredQWERTY
+
+Character error rate: 2/27 = 7%
+
+Fig. 1 | Approach. Recordings from 35 healthy participants were obtained using EEG and MEG. Sentences were displayed word-by-word on a screen. Following the final word, a visual cue prompted them to begin typing this sentence, without visual feedback. Our Brain2Qwerty model includes three core stages to decode text from brain activity: (1) a convolutional module, input with 500 ms windows
+
+Language Module
+
+of MEG or EEG signals, (2) a transformer module trained at the sentence level and (3) a pretrained language model to correct the outputs of the transformer. Performance is assessed using CER at the sentence level. An analysis of how the brain performs typing is described in a companion paper30. Illustration adapted from the MEGIN TRIUX neo system.
+
+in comparison to EEG29. Together, these elements indicate that, with modern AI techniques, high-quality MEG signals and natural language tasks could be combined to decode the production of language from noninvasive recordings of the brain.
+
+In this study, we introduce Brain2Qwerty, an AI model trained to decode text production from noninvasive recordings of brain activity (Fig. 1). For this, we tasked 35 participants to type briefly memorized sentences on a keyboard, while their brain activity was recorded with either EEG or MEG. We then train Brain2Qwerty, a three-stage deep neural network trained to decode text from these brain signals and evaluate it on both EEG (20 participants, 146,000 characters, 23,000 words and 4,000 sentences) and MEG recordings (20 participants, 193,000 characters, 30,000 words and 5,000 sentences). Our results demonstrate that MEG significantly outperforms EEG, achieving an average character error rate (CER) of 29% compared to 65% for EEG. For the most proficient participants using MEG, the model reaches a CER as low as 18%, successfully decoding a wide variety of sentences entirely outside the training set. Note that the present study does not delve into how the brain produces language during typing. This neuroscientific issue is addressed in a companion paper30.
+
+Results Linear decoding To verify that our typing protocol leads to the expected brain responses, we first focus on the differences in evoked responses elicited by left- and right-handed key presses (Fig. 2a,b). The resulting topographies are typical of those associated with motor activity in the cortex31. In addition, we trained a linear ridge classifier per subject to categorize left- versus right-handed responses at each time sample independently relative to key presses. The classification accuracy peaks at t = 40 ms after the keystroke (Fig. 2). This latency is consistent with the physi- ological convergence of the efferent motor command and the afferent somatosensory feedback in EEG and MEG31,32. Furthermore, previous work has also shown that this execution window involves the dynamics of activating the correct finger, and sustaining the activation during the action while actively inhibiting the opposing hand33,34. MEG achieves a peak accuracy of 74 ± 1.3% (± reports standard error of the mean (s.e.m.) across subjects), significantly outperforming EEG, which achieves 64 ± 0.8% (two-sided Mann–Whitney, P = 8.9 × 10−7). We then trained the same model to classify the keys pressed. Character accuracy peaks around the same time, reaching a value of 22 ± 0.8% for MEG and 16 ± 0.5% for EEG, significantly above the chance level (14%). Overall, these findings confirm that the present protocol leads to the expected brain responses to key presses35.
+
+Nature Neuroscience
+
+Article https://doi.org/10.1038/s41593-026-02303-2
+
+a e
+
+g EEG (–100 ms)
+
+1.6
+
+\*\*\* \*\*\* \*
+
+0.8
+
+0
+
+–0.8
+
+0.35 –1.6 1
+
+)V00.15
+
+0.09
+
+–1
+
+0.09 0.08–500
+
+–250 0
+
+250 Time (ms) bMEGgrad (–50 ms)
+
+h \*\*\* \*\*\* \*\*\* \*\*\* 1.2
+
+84010 m cT f1.6
+
+f
+
+0.9
+
+\*\*\* \*\* \*\*\* \*\* 0.78
+
+0.72
+
+R EC0.49
+
+0.3600.29
+
+–100.1
+
+–500 –250 0
+
+250 Time (ms)
+
+Linear
+
+EEGNet
+
+ConvConv+TraBnrsain2Qwerty
+
+Linear
+
+EEGNet
+
+ConvConv+TraBnrsain2Qwerty
+
+Fig. 2 | Decoding performance across models. a, Difference in EEG evoked responses between left- versus right-hand key presses. Each black line is the differential voltage of a sensor relative to key press. b, Same as a but for MEG (using gradiometers: MEGgrad). c, Linear classifiers are trained, at each time sample between −0.5 s and +0.5 s around each button press event, to predict the left versus right hand relative to each key press. Data are presented as mean ± s.e.m. across participants (EEG: n = 20; MEG: n = 19 participants). Significant time points (two-sided one-sample Wilcoxon signed-rank test against a model always predicting the most common class, P \< 0.05, uncorrected) are marked
+
+Analyses of decoded sentences To go beyond aggregate metrics and qualitatively assess the model’s output, we inspected specific examples of decoded sentences. The CER of all sentences for three representative participants recorded with MEG, along with two example sentences from these participants, are displayed in Fig. 3. More decoding examples show that several sen- tences can be perfectly decoded for MEG (Fig. 4, top right). Interest- ingly, some of these examples show that Brain2Qwerty’s language model can correct the typographical errors of the participant. For example, EL BENEFICIO SUPERA LOS RIESGOS was perfectly decoded, even though the participants typed: EK BENEFUCUI SYOERA KIS RUES- GIS. In comparison, the poor EEG decoding (Fig. 4, top left) rarely led to comprehensible text.
+
+Consistent with the statistical effects reported earlier, the examples in Fig. 4 (bottom) highlight the impact of each module of our model, which together leads to perfect decoding after the language model.
+
+Impact of word type and frequency In this section, we analyze the factors impacting the performance of our model. To exclude the error-correcting effects of the language model, all analyses are conducted using the Conv+Trans output (before the n-gram model).
+
+A potential concern in language decoding is that performance metrics might be artificially inflated by the accurate prediction of high-frequency, low-information tokens (for example, spaces or deter- miners). To rule this out, we first dissect the model’s performance by grammatical category. We evaluated the CER for each part-of-speech category separately (Fig. 5a). All part-of-speech categories are
+
+0.84 0.7
+
+0.78 0.75
+
+0.670.65 0.5
+
+0.3
+
+with an asterisk (\*). d, Same as c but for character classification. e–h, Comparison of baselines (linear and EEGNet) and ablations of the Brain2Qwerty model (Conv, Conv+Trans, Conv+Trans+N-gram) for hand error rate (HER) (e,g) and CER (f,h). Each dot represents the mean score of a single participant (n = 20 participants for EEG (e,f), n = 19 participants for MEG (g,h); each participant constitutes an independent biological replicate). The horizontal black line indicates the group mean. Statistical comparisons between adjacent models were performed using two-sided Wilcoxon signed-rank tests (paired) without adjustment for multiple comparisons. Significance levels: \*P \< 0.05, \*\*P \< 0.01, \*\*\*P \< 0.001.
+
+significantly better decoded than chance (two-sided one-sample Wil- coxon signed-rank test, all P \< 10−5, uncorrected), with determiners exhibiting a remarkably low CER (16 ± 1.8%). We then analyzed the impact of word frequency on CER (Fig. 5b). The results confirm that frequent words are better decoded than rare words (two-sided paired Wilcoxon signed-rank test: P = 3.81 × 10−6). Interestingly, we verify that the words absent from the training set (out-of-vocabulary words) can also be decoded, although with a relatively poor CER (70 ± 1.2%). Note that this may be due to the fact that on a random partition of train, vali- dation and test splits, out-of-vocabulary words tend to be rare words. Second, we evaluated whether the frequency of each character also impacts decoding. The results show a significant negative correla- tion between character frequency and error rate: r = −0.87, P = 2.07 × 10−9 (Pearson correlation, n = 28 characters; Fig. 5c). Rare characters, such as ‘z,’ ‘k’ and ‘w’ in Spanish, are not decoded above chance level but only account for 0.08%, 0.08% and 0.05% of the characters in our sentences. These results suggest that the number of repetitions (of words and characters) encountered during training directly affects performance. To confirm this, we explore how decoding performance scales with the amount of data. For this, we retrained our model on uniformly sampled subsets of the training set (Fig. 5d). Our results show that CER decreases as a function of the amount of training data: r = − 0.93, P = 4.95 × 10−8 (Pearson correlation, n = 20 training subsets).
+
+Impact of keyboard layout Our results indicate that the decoder primarily relies on motor rep- resentations, as its mistakes are most frequently confused with keys physically close to the target letter on the QWERTY keyboard. If Brain- 2Qwerty relies on brain activity from the motor cortex (as opposed to
+
+Nature Neuroscience
+
+c
+
+0.8 \*y caruccad naHMEG
+
+0.7
+
+\*
+
+EEG
+
+0.6
+
+−0.5 0 0.5 Time (s) d
+
+\*y caruccar etcarahC0.22
+
+EEG
+
+MEG
+
+0.18
+
+\*
+
+0.14
+
+−0.5 0 0.5 Time (s)
+
+0.6
+
+R EH0.4
+
+00.2
+
+\*\*\* \*\*
+
+Chance 0.41
+
+0.27 0.26 0.270.29
+
+Article https://doi.org/10.1038/s41593-026-02303-2
+
+a Best MEG subject
+
+Median MEG subject
+
+Worst MEG subject
+
+0.8
+
+0.6
+
+REC0.4
+
+0.2
+
+00 20 40 60 80 100
+
+0 20 40 60 80 100
+
+0 20 40 60 80 100
+
+No. of sorted sentences
+
+No. of sorted sentences
+
+No. of sorted sentences
+
+b
+
+True:
+
+las teorias reducen los numeros
+
+True:
+
+la estadistica sigue la distribucion
+
+Best subject:
+
+las teorias reducen los numeros
+
+Best subject:
+
+la estadistica sigue la distribucion
+
+Median subject:
+
+las teorias exigen los hombros
+
+Median subject:
+
+stamistosa sigue la distribucion
+
+Worst subject:
+
+las rancias revisen los numerad
+
+Worst subject:
+
+la estadistica figura de petrilla lo
+
+Correct Incorrect
+
+Fig. 3 | Sentence-level performance for best, median and worst MEG subjects. Three representative participants were selected from the cohort (n = 19 participants) based on their overall mean CER (best: 0.26; median: 0.38; worst: 0.47). a, CER for each unique sentence, sorted by ascending mean CER. Each dot
+
+amodal representations of language), we expect its decoding errors to tightly relate to this specific layout. To test this hypothesis, we evalu- ated the confusion patterns of incorrectly predicted characters by analyzing the keyboard distance between the decoded and actual key presses. The results show a strong Pearson correlation between physi- cal distance and confusion rate: r = 0.73, P = 0.02, n = 19 participants; Fig. 6a). To complement this analysis, we further perform a clustering of the last-layer embeddings of the Conv using scikit-learn’s K-means clustering algorithm. When trained on two clusters, this unsupervised model fully separates the left-hand and right-hand keys. When using up to ten clusters, the resulting partition remains consistent with the keyboard layout (Fig. 6b). This demonstrates that the spatial layout of
+
+represents a unique sentence; error bars indicate the s.e.m. across recording sessions. b, Decoding predictions for two sentences. Several splitting seeds were used to obtain the predictions across sentences.
+
+EEG
+
+Read: la ciencia de la idea rompe la vision
+
+Typed: la ciencia de la idea rompe la bision
+
+Decode: la ciencia de la idealas mas de esos
+
+Read: el procesador ejecuta la instruccion
+
+Typed: ordenador ejecuta la instruccion
+
+Decode: las corrida perita la instruccion
+
+Read: la presencia de los tipos impone los retos
+
+Typed: la presencia de los tipos impone los retos
+
+Decode: la declarada de los celos eran a los actos
+
+Read: las teorias reducen los numeros
+
+Typed: las teorias reducen los numeros
+
+Conv: las tangpas re udnndl slindiis
+
+Conv+Trans: las geoolas redicen los numeios
+
+Brain2Qwerty: las teorias reducen los numeros
+
+MEG
+
+Read: la silla ocasiona las lesiones
+
+Typed: la silla ocasioma las lesiomes
+
+Decode: la silla ocasiona las lesiones
+
+Read: las teorias reducen los numeros
+
+Typed: las teorias reducen los numeros
+
+Decode: las teorias reducen los numeros
+
+Read: el beneficio supera los riesgos
+
+Typed: ek benefucui syoera kis ruesgis
+
+Decode: el beneficio supera los riesgos
+
+Read: el beneficio supera los riesgos
+
+Typed: el bemeficio supera los riesfos
+
+Conv: el gefedisio suiera noariestii
+
+Conv+Trans: el geneficoncupera los riesgoo
+
+Brain2Qwerty: el beneficio supera los riesgos
+
+Fig. 4 | Examples of decoded sentences. Rows 1–3: Best-decoded sentences across subjects for EEG data (left) and MEG data (right). Correct characters are highlighted in blue, mistakes in red and typing errors are underlined; correct
+
+versus incorrect spaces are not visualized. Rows 4,5: Examples of decoded sentences across ablations for MEG data, using the same color coding.
+
+the keyboard is well encoded in the high-dimensional representations learned by our model.
+
+Impact of typing errors Finally, to determine whether decoding relies on the precise execution of the motor command, we investigated the impact of behavioral errors on performance. Typing errors account for 3.9% of the keystrokes and are present in 65% of the sentences. Furthermore, they are associated with a specific behavior (Fig. 6c): the time taken to type a character—as measured by the interkey interval—doubles between correctly (49 ± 8 ms) and incorrectly typed characters (111 ± 13 ms; two-sided Wilcoxon signed-rank test, P = 7.63 × 10−6). This well-known phenomenon37 likely
+
+Nature Neuroscience
+
+Article https://doi.org/10.1038/s41593-026-02303-2
+
+a
+
+b
+
+c
+
+Space
+
+OOV Rare Frequent
+
+0 0.5 1.0 Word frequency quartile
+
+Normalized frequency
+
+reflects hesitation or the monitoring of mistakes. To evaluate the impact of typing error on decoding performance, we separately evaluated CER for correctly and incorrectly typed characters (Fig. 6d).
+
+The results show that with our Conv+Trans model, correctly typed characters lead to a better CER (36%) than incorrectly typed characters (69%; two-sided Wilcoxon signed-rank test, P = 3.81 × 10−6). This result, however, may be partly driven by the contextualization enabled by the transformer. To minimize the impact of sentence context on this error analysis, we thus evaluate the performance of the Conv model (Fig. 6d, right). Again, correctly typed characters leads to a better CER (49%) than incorrectly typed characters (72%; two-sided Wilcoxon signed-rank test, P = 1.91 × 10−5). This result suggests that decoding per- formance diminishes when motor processes are inaccurately executed. The significant discrepancy in decoding performance between correct keystrokes and typing errors can be interpreted in several ways. Rather than reflecting a purely mechanical failure, this gap could indicate signal interference: during a typing error, the neural state presumably captures a conflict where both the intended target and the erroneous keystroke are simultaneously activated. While the current protocol cannot definitively isolate execution precision from cogni- tive intent, the performance drop confirms that the decoded signal is significantly degraded during behavioral errors.
+
+d
+
+0.8
+
+\*\*\* \*\*\* \*\*\* \*\*\* \*\*\*
+
+\* \*
+
+x
+
+h
+
+w j 0.8 R EC\*\*\* \*\*\*
+
+y vR ECui
+
+l
+
+0 5 10 15 20
+
+Total time (h)
+
+Fig. 5 | The results presented are specific to MEG data processed using the Conv+Trans model. a, CER evaluated across part-of-speech categories: adjectives (ADJ), prepositions (ADP), determiners (DET), nouns and verbs. Each bar represents the group mean; each dot represents the mean CER of a single participant (n = 19 participants; each participant constitutes an independent biological replicate). The gray line indicates the chance level corresponding to always predicting the most frequent class. All part-of-speech categories are significantly below chance (two-sided one-sample Wilcoxon signed-rank test, P = 3.81 × 10−6, uncorrected for multiple comparisons). b, CER as a function of word frequency quartile (n = 19 participants). Out-of-vocabulary (OOV) decoding
+
+R ECADJ ADP DET
+
+Noun
+
+Verb
+
+0.8 \*\*\*
+
+0.8
+
+b
+
+m
+
+d p t
+
+c n
+
+e
+
+0.6 r o 0.4
+
+0.4
+
+0.4
+
+s
+
+a
+
+0.4
+
+0 0
+
+0
+
+0.2
+
+tests whether Brain2Qwerty can decode words absent from the training set. Data are presented as mean ± s.e.m. across participants. Significance levels (one-sided Wilcoxon signed-rank test against chance, uncorrected): \*P \< 0.05, \*\*P \< 0.01, \*\*\*P \< 0.001. c, CER as a function of normalized character frequency (Pearson correlation: r = −0.87, P = 2.07 × 10−9; n = 28 characters). The gray line indicates chance level; the shaded band shows the 95% confidence interval of the linear fit. d, CER as a function of recording time included in the training set (Pearson correlation: r = −0.93, P = 4.95 × 10−8; n = 20 training subsets). The shaded area represents the interpolation uncertainty.
+
+a b c d
+
+0.4
+
+e tarn oisufnoC1 2 3 4 5 6 7 8 9
+
+Keyboard distance
+
+Correct characters Typing mistakes
+
+Fig. 6 | Impact of keyboard layout and typing mistakes. The results presented are specific to MEG data processed using the Conv+Trans model. Data are presented as mean values; individual participant data points are overlaid. a, Keyboard distance effect. Normalized confusion rate as a function of keyboard distance between the decoded and actual key presses (Pearson r = 0.73, P = 0.02, n = 19 participants). b, Clustering analysis. K-means clustering (k = 2, top; k = 10, bottom) of the last-layer embeddings of Conv. c, Key press interval analysis. Preceding interkey interval for correct keystrokes (49 ± 8 ms) and typing
+
+0.20 Q W E R T Y U I O P
+
+A S D F G H J K L
+
+Z X C V B N M
+
+Q W E R T Y U I O P
+
+A S D F G H J K L
+
+Z X C V B N M
+
+) s(l avretnis serpy eK\*\*\*
+
+1.0
+
+\*\*\* \*\*\*
+
+0.3
+
+0.15
+
+0.8
+
+0.2
+
+0.10
+
+R EC0.6 0.4
+
+0.1
+
+0.05
+
+0.2
+
+0.36 0.68 0.49 0.71 00
+
+0Correct Typos Conv+Trans Conv
+
+errors (111 ± 13 ms; two-sided Wilcoxon signed-rank test, P = 7.63 × 10−6, n = 19 participants). d, Typing mistake performance. CER for correctly typed versus incorrectly typed characters. Conv+Trans model (two-sided Wilcoxon signed- rank test, P = 3.81 × 10−6, n = 19 participants); Conv model (P = 1.91 × 10−5, n = 19). Dashed line corresponds to chance level. Statistical significance: \*P \< 0.05, \*\*P \< 0.01, \*\*\*P \< 0.001. Each participant corresponds to an independent biological replicate.
+
+Discussion The present study introduces a new method to decode the produc- tion of sentences from noninvasive brain recordings. With MEG, our Brain2Qwerty model achieves an average CER of 29 ± 1.7% across sub- jects, with the best-performing participants reaching a CER as low as 18%. Our analyses indicate that this decoding benefits from two main factors. First, the use of MEG instead of EEG signals resulted in more than a two-fold improvement. Second, our deep learning architecture, combined with a pretrained character-level language model, substan- tially outperforms standard models.
+
+This work directly stems from the recent progress in decoding natural language from noninvasive recordings of brain activity. In par- ticular, ref. 29 showed that the perception of natural speech segments could be decoded from MEG signals, with up to 41% top-10 accuracy (chance level = 0.1%). Similarly, ref. 38 showed that the meaning of perceived sentences could be decoded from functional magnetic resonance imaging. Our Brain2Qwerty model shares several elements with these approaches, notably through the use of both a subject layer29 and a language model38, although here restricted to a pretrained 9-gram character-level model. However, these two studies, which focus on decoding the perception of language rather than its production, remained limited in their downstream clinical applications.
+
+Nature Neuroscience
+
+Article https://doi.org/10.1038/s41593-026-02303-2
+
+Studies that directly decode text production from noninvasive recordings remain rare. For example, ref. 39 employed EEG to decode only 10 letters and achieved a CER of 75.8%, substantially higher than our 68% in the EEG setting with 29 characters. Similarly, EEG-based BCI benchmarks currently emphasize the constraints of poor signal quality and variability across subjects24. Our EEG findings are consistent with these observations. Beyond its mere metric performance, our approach is more efficient than the traditional protocols used in noninvasive BCIs, such as the P300-speller40, SSVEP41 and functional magnetic resonance imaging localizer19. These methods have historically relied on handcrafted signal processing and shallow classifiers. In contrast, our approach is based on a task that is comparatively easier to use.
+
+While the decoding performance of Brain2Qwerty narrows the gap between noninvasive and invasive BCIs, this gap remains significant. In particular, for speech decoding ref. 10 achieved a rate of 79 words per minute and reported a CER of 15.2% on a dataset with 372 unique words, a vocabulary size comparable to ours. Ref. 9 demonstrated typing speeds of 90 characters per minute with a CER below 6% and an offline CER under 1% when using a correction model. Both approaches rely on intracortical setups and require extensive recording sessions (11 hours per participant for ref. 9). Consequently an important research avenue will be to scale and adapt those tasks for MEG experiments.
+
+Several challenges remain to be addressed before the present method can be adapted for clinical applications. First, our model does not currently operate in real time; the transformer and language model operate at the sentence level and thus require the trial to conclude before an output can be produced. Furthermore, the input of Brain- 2Qwerty currently requires MEG segments to be aligned to specific keystroke onsets. Given the inherently low signal-to-noise ratio of non- invasive modalities, the path toward achieving continuous decoding without these explicit triggers remains uncertain. Consequently, future iterations must move toward a real-time architecture that eliminates the dependency on sentence-level correction and known keystroke tim- ings (Supplementary Fig. 2), akin to the continuous decoding methods used in electromyography42 and speech recognition29.
+
+Another critical limitation to address is the translation from healthy participants performing overt movements to paralyzed patients utilizing motor imagery or attempted movements. The cur- rent setup may be immediately suitable for patients with neurodegen- erative conditions who retain some motor abilities, but bridging the gap to locked-in individuals will likely involve adapting our task into a motor imagery paradigm and designing AI systems capable of robust generalization across participants43. Indeed, while invasive studies have successfully transferred decoding models from execution to ‘attempted’ movement9, validating this transfer with noninvasive sig- nals remains a necessary next step.
+
+However, we view the present study as a proof-of-concept designed to efficiently test the capabilities and limits of noninvasive decoding before deploying better-suited approaches (for example, imagery spelling). In particular, the present keyboard approach enables the collection of a vast number of keystroke events per participant, facilitating the training of a supervised decoder—a significantly more efficient strategy than standard EEG BCI paradigms.
+
+Finally, a central objective of this study was to quantify the impact of the recording modality on decoding performance. While we expected MEG to surpass EEG, the magnitude of the observed difference was substantial. This demonstration suggests that future BCIs may benefit not only from optimizing the task (keyboard versus P300-speller) and decoder (AI versus Riemannian approaches), but also from prioritizing MEG over EEG. This transition may be further facilitated by the development of new MEG sensors based on optically pumped magnetometers44–46, which might someday offer the sensitiv- ity of MEG in a wearable form.
+
+Overall, the present results serve as a stepping-stone toward devel- oping safer and more accessible noninvasive BCIs, ultimately enabling
+
+solutions for individuals who have partially or completely lost the ability to communicate.
+
+Online content Any methods, additional references, Nature Portfolio reporting sum- maries, source data, extended data, supplementary information, acknowledgements, peer review information; details of author contri- butions and competing interests; and statements of data and code avail- ability are available at https://doi.org/10.1038/s41593-026-02303-2.
+
+References 1. Metzger, S. L. et al. Generalizable spelling using a speech
+
+neuroprosthesis in an individual with severe limb and vocal paralysis. Nat. Commun. 13, 6510 (2022). 2. Moses, D. A. et al. Neuroprosthesis for decoding speech in a
+
+paralyzed person with anarthria. N. Engl. J. Med. 385, 217–227 (2021). 3. Willett, F. R. et al. A high-performance speech neuroprosthesis.
+
+Nature 620, 1031–1036 (2023). 4. Hochberg, L. et al. Reach and grasp by people with tetraplegia
+
+using a neurally controlled robotic arm. Nature 485, 372–375 (2012). 5. Herff, C. et al. Generating natural, intelligible speech from brain
+
+activity in motor, premotor, and inferior frontal cortices. Front. Neurosci. 13, 1267 (2019). 6. Angrick, M. et al. Speech synthesis from ECOG using densely
+
+connected 3D convolutional neural networks. J. Neural Eng. 16, 036019 (2019). 7. Anumanchipalli, G. K., Chartier, J. & Chang, E. F. Speech synthesis from neural decoding of spoken sentences. Nature 568, 493–498 (2019). 8. Card, N. S. et al. An accurate and rapidly calibrating speech neuroprosthesis. N. Engl. J. Med. 391, 609–618 (2024). 9. Willett, F. R., Avansino, D. T., Hochberg, L. R., Henderson, J. M. &
+
+Shenoy, K. V. High-performance brain-to-text communication via handwriting. Nature 593, 249–254 (2021). 10. Metzger, S. L. et al. A high-performance neuroprosthesis for speech
+
+decoding and avatar control. Nature 620, 1037–1046 (2023). 11. Wairagkar, M. et al. An instantaneous voice-synthesis
+
+neuroprosthesis. Nature 644, 145–152 (2025). 12. Chung, J. E. et al. High-density, long-lasting, and multi-region
+
+electrophysiological recordings using polymer electrode arrays. Neuron 101, 21–31 (2019). 13. Bullard, A., Hutchison, B., Lee, J., Chestek, C. & Patil, P.
+
+Estimating risk for future intracranial, fully implanted, modular neuroprosthetic systems: a systematic review of hardware complications in clinical deep brain stimulation and experimental human intracortical arrays. Neuromodulation 23, 411–426 (2020). 14. Leuthardt, C., Moran, D. W. & Mullen, T. Defining surgical
+
+terminology and risk for brain-computer interface technologies. Front. Neurosci. 15, 599549 (2021). 15. Baranauskas, G. What limits the performance of current invasive
+
+brain machine interfaces?. Front. Syst. Neurosci. 8, 68 (2014). 16. Fekete, Z. et al. Transparent neural interfaces: challenges and solutions of microengineered multimodal implants designed to measure intact neuronal populations using high-resolution electrophysiology and microscopy simultaneously. Microsyst. Nanoeng. 9, 66 (2023). 17. Zhou, C. et al. Through-polymer, via technology-enabled, flexible,
+
+lightweight, and integrated devices for implantable neural probes. Microsyst. Nanoeng. 10, 54 (2024). 18. Yasar, T. et al. Months-long tracking of neuronal ensembles
+
+spanning multiple brain areas with ultra-flexible tentacle electrodes. Nat. Commun. 15, 4822 (2024). 19. Owen, A. M. et al. Detecting awareness in the vegetative state.
+
+Science 313, 1402 (2006).
+
+Nature Neuroscience
+
+Article https://doi.org/10.1038/s41593-026-02303-2
+
+20\. Claassen, J. et al. Detection of brain activation in unresponsive
+
+patients with acute brain injury. N. Engl. J. Med. 380, 2497–2505 (2019). 21. Mak, J. & Wolpaw, J. Clinical applications of brain-computer
+
+interfaces: Current state and future prospects. IEEE Rev. Biomed. Eng. 2, 187–199 (2009). 22. Abiri, R., Borhani, S., Sellers, E., Jiang, Y. & Zhao, X. A
+
+comprehensive review of EEG-based brain-computer interface paradigms. J. Neural Eng. 16, 011001 (2019). 23. Bodien, Y. G. et al. Cognitive motor dissociation in disorders of
+
+consciousness. N. Engl. J. Med. 391, 598–608 (2024). 24. Chevallier, S. et al. The largest EEG-based BCI reproducibility
+
+study for open science: the MOABB benchmark. J. Neural Eng. 21, 036038 (2024). 25. Yi, W. et al. Evaluation of EEG oscillatory patterns and cognitive
+
+process during simple and compound limb motor imagery. PLOS ONE 9, e114853 (2014). 26. Hämäläinen, M., Hari, R., Ilmoniemi, R., Knuutila, J. & Lounasmaa,
+
+O. Magnetoencephalography-theory, instrumentation, and applications to noninvasive studies of the working human brain. Rev. Mod. Phys. 65, 413–497 (1993). 27. Goldenholz, D. et al. Mapping the signal-to-noise ratios
+
+of cortical sources in magnetoencephalography and electroencephalography. Hum. Brain Mapp. 30, 1077–1086 (2009). 28. Baillet, S. Magnetoencephalography for brain electrophysiology
+
+and imaging. Nat. Neurosci. 20, 327–339 (2017). 29. Défossez, A., Caucheteux, C., Rapin, J., Kabeli, O. & King, J.-R.
+
+Decoding speech perception from non-invasive brain recordings. Nat. Mach. Intell. 5, 1097–1107 (2023). 30. Zhang, M. et al. From thought to action: how the hierarchy of
+
+neural dynamics supports language production. Preprint at https://arxiv.org/abs/2502.07429 (2025). 31. Donner, T. H., Siegel, M., Fries, P. & Engel, A. K. Buildup of
+
+choice-predictive activity in human motor cortex during perceptual decision making. Curr. Biol. 19, 1581–1585 (2009). 32. Vidal, F., Grapperon, J., Bonnet, M. & Hasbroucq, T. The nature
+
+of unilateral motor commands in between-hand choice tasks as revealed by surface Laplacian estimation. Psychophysiology 40, 796–805 (2003). 33. Pinet, S., Hamamé, C. M., Longcamp, M., Vidal, F. & Alario, F.-X.
+
+Response planning in word typing: evidence for inhibition. Psychophysiology 52, 524–531 (2015). 34. Pinet, S., Dell, G. S. & Alario, F.-X. Tracking keystroke sequences at the cortical level reveals the dynamics of serial order production. J. Cogn. Neurosci. 31, 1030–1043 (2019). 35. Pinet, S. & Nozari, N. Electrophysiological correlates of
+
+monitoring in typing with and without visual feedback. J. Cogn. Neurosci. 32, 603–620 (2020). 36. Lawhern, V. J. et al. EEGNet: a compact convolutional neural
+
+network for EEG-based brain-computer interfaces. J. Neural Eng. 15, 056013 (2018).
+
+37\. Logan, G. D. & Crump, M. J. C. Cognitive illusions of authorship
+
+reveal hierarchical error detection in skilled typists. Science 330, 683–686 (2010). 38. Tang, J., LeBel, A., Jain, S. & Huth, A. G. Semantic reconstruction
+
+of continuous language from non-invasive brain recordings. Nat. Neurosci. 26, 858–866 (2023). 39. Crell, M. & Müller-Putz, G. Handwritten character classification
+
+from eeg through continuous kinematic decoding. Comput. Biol. Med. 182, 109132 (2024). 40. Marchetti, M. & Priftis, K. Effectiveness of the P3-speller in
+
+brain-computer interfaces for amyotrophic lateral sclerosis patients: a systematic review and meta-analysis. Front. Neuroeng. 7, 12 (2014). 41. Cheng, M., Gao, X., Gao, S. & Xu, D. Design and implementation
+
+of a brain-computer interface with high transfer rates. IEEE Trans. Biomed. Eng. 49, 1181–1186 (2002). 42. Sivakumar, V. et al. emg2qwerty: a large dataset with baselines
+
+for touch typing using surface electromyography. GitHub https:// github.com/facebookresearch/emg2qwerty (2024). 43. Scotti, S. P. et al. Mindeye2: shared-subject models enable
+
+fMRI-to-image with 1 hour of data. Preprint at https://arxiv.org/ abs/2403.11207 (2024). 44. Shah, V. K. & Wakai, R. T. A compact, high performance atomic
+
+magnetometer for biomedical applications. Phys. Med. Biol. 58, 8153–8161 (2013). 45. Schofield, H. et al. Quantum enabled functional neuroimaging:
+
+the why and how of magnetoencephalography using optically pumped magnetometers. Contemp. Phys. 63, 161–179 (2022). 46. Brickwedde, M. et al. Applications of OPM-MEG for translational
+
+neuroscience: a perspective. Transl. Psychiatry 14, 341 (2024).
+
+Publisher’s note Springer Nature remains neutral with regard to jurisdictional claims in published maps and institutional affiliations.
+
+Open Access This article is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License, which permits any non-commercial use, sharing, distribution and reproduction in any medium or format, as long as you give appropriate credit to the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if you modified the licensed material. You do not have permission under this licence to share adapted material derived from this article or parts of it. The images or other third party material in this article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the material. If material is not included in the article’s Creative Commons licence and your intended use is not permitted by statutory regulation or exceeds the permitted use, you will need to obtain permission directly from the copyright holder. To view a copy of this licence, visit http://creativecommons.org/licenses/by-nc-nd/4.0/.
+
+© The Author(s) 2026
+
+Nature Neuroscience
+
+Article https://doi.org/10.1038/s41593-026-02303-2
+
+Methods We aim to decode language production from noninvasive brain record- ings. To achieve this, participants typed sentences on a keyboard while their brain activity was recorded using EEG or MEG. These two devices measure neural activity at a millisecond level, with EEG capturing electric fields and MEG detecting magnetic fields. These fields are both generated by cortical neurons and activity is recorded using sensors distributed across the scalp.
+
+Experimental protocol Cohort. We recruited 35 healthy adult volunteers to participate in our study at the Basque Center on Cognition, Brain and Language in Spain. This group was composed of 23% men and 77% women with an average age of 31.6 ± 5.2 years. All participants were right-handed and skilled at typing. Participants had to type the words they heard on a keyboard that was covered with a cardboard box. They were selected if their typing accuracy was above or equal to 80%. All participants were native Spanish speakers with no declared prior history of neuro- logical or psychiatric disorders. Their brain activity was recorded with either EEG or MEG for 0.88 ± 0.02 and 0.93 ± 0.01 hours, respectively, amounting to a total of 17.7 and 21.5 hours of typing. Five participants took part in both EEG and MEG sessions. One participant was excluded from the MEG study due to the presence of a metallic component dur- ing the recording. Participants gave their informed consent and were compensated 12 euros per hour for their participation. This study was approved by the local ethics committee. The same dataset is used to investigate the underlying neural mechanisms driving this task in a companion paper30.
+
+Devices. The MEG system is a MEGIN system with 306 channels (102 magnetometers and 204 planar gradiometers) recording at a sampling rate of 1 kHz, with an online high-pass filter set at 0.1 Hz and a low-pass filter at 330 Hz. The EEG system is an actiCAP slim from BrainVision (https://brainvision.com/products/acticap-slim-acticap-snap/), with 64 channels (61 EEG channels and 3 ocular channels) and a BRAINAMP DC amplifier, sampling at 1 kHz with an online high-pass filter set at 0.02 Hz.
+
+Standard keyboards contain electronic and metallic parts that generate artifacts in the MEG. Consequently, we used a custom magnetic-resonance-compatible QWERTY keyboard from HybridMojo and further modified it to replace the standard metallic springs with nonferromagnetic silver-spring mechanisms.
+
+Task. Participants were seated in front of a projected screen (100 cm away from their eyes for MEG and 70 cm for EEG) with our custom keyboard placed on a stable platform. The distance between the MEG or EEG sensors and the keyboard was 70 cm. This setup ensured par- ticipants could type in a natural position. Each trial consisted of three steps: read, wait and type. First, a sentence was presented on the screen using a rapid serial visual presentation (RSVP) protocol (that is, one word at a time). Each word was presented in a black font, in all upper- case, on a 50% gray background for a random duration of between 465 and 665 ms without intervals between words. Second, after the disappearance of the last word of each sentence, a black fixation cross was displayed on the screen for 1.5 s. Third, the disappearance of the fixation cross signaled the start of the typing phase. No letters were presented on the screen during typing. Nevertheless, we added minimal visual feedback: a small black square at the center of the screen rotated clockwise by 10 degrees on every keystroke. This feedback ensured that eye movements were not correlated with linguistic features, as is usually the case in left-to-right reading. Each session consisted of two blocks of 64 sentences each. The first four sentences of each ses- sion were training sentences and were different from the 128 unique sentences in the protocol. During the first two training sentences, participants received visual feedback while typing. The other two
+
+sentences were used to train them on the task (typing with minimal visual feedback).
+
+Instruction and stimuli. Participants were instructed to type the sen- tence that was presented in the RSVP protocol as accurately as pos- sible without using backspaces to correct errors and while fixating on the center of the screen. To avoid using diacritic marks that occur in Spanish (for example, é, á, í, ó, ú, ü and ñ), all words were presented in uppercase and participants were instructed to think of writing in uppercase and without accents. Participants pressed the return key at the end of the trial. Each session consisted of 128 unique Spanish sen- tences. All sentences were declarative Spanish sentences that contained between 5 and 8 words. They consisted of determiners, nouns, adjec- tives, prepositions and verbs. This led to a total of 4,000 sentences and 146,000 characters across participants for EEG, and 5,100 sentences and 193,000 characters for MEG.
+
+MEG and EEG preprocessing. In our pipeline, the EEG and MEG record- ings were bandpass filtered between 0.1 and 20 Hz and resampled to 50 Hz using MNE-Python’s default parameters47. These continu- ous recordings were then segmented into 0.5-s time windows around each key press from −0.2 s to +0.3 s. We applied baseline correction by subtracting the average channelwise value in the (−0.2, 0) interval from each window. To ensure that the data were on the same scale, a RobustScaler was applied across time from scikit-learn48, fol- lowed by a clamping operation. The scaler removes the median and scales the data according to the interquartile range.
+
+Text preprocessing. We removed sentences that contained strictly more than ten typographical errors (less than 5% for both EEG and MEG). To determine whether the participants had made typographical errors, we first used the SequenceMatcher from difflib (https:// docs.python.org/3/library/difflib.html) to align the typed sentence to the original sentence using a Gestalt pattern-matching algorithm49 that determines the minimal number of character edits. This approach yields two variables for each keystroke event: the key pressed and the key that should have been pressed (target). Unless stated otherwise, all analyses are based on the target key. On average, participants typed 152.0 ± 3.2 characters per minute, leading to an average sentence pro- duction time of 5.7 ± 0.2 s. A total of 3.6 ± 0.7% of the keystrokes were typographical errors.
+
+Train, validation and test splits. To ensure that our AI model does not memorize sentences, we divided the unique sentences into train (80%), validation (10%) and test (10%) splits. As sentences may be simi- lar (for example, same sentence with an additional component), we adopted a maximally diverse splitting strategy by implementing a cus- tom data splitter based on sklearn’s AgglomerativeClustering48. This method clusters unique sentences into groups of similar data points, where similarity is determined using term frequency–inverse document frequency50 cosine similarity with a threshold of 0.5 (that is, sentences with a similarity score above 0.5 are grouped in the same split). These clusters are then assigned to the training, validation and testing splits with relative ratios of 80/10/10. This approach prevents the model from artificially improving test performance by memorizing similar sentences across participants. Throughout the study, we pre- sented our results using a fixed splitting seed, except in Fig. 3 where we evaluated performance across sentences. For this figure, we aggregated results from multiple models with different splitting seeds to ensure broader sentence coverage, similar to a cross-validation approach.
+
+Decoder The goal for our decoding model is to predict each keystroke based on 0.5-s windows of MEG or EEG signals. Formally, the objective is to learn a mapping from brain recordings to class probabilities: f ∶ ℝs×t →\[0,1\]C,
+
+Nature Neuroscience
+
+Article https://doi.org/10.1038/s41593-026-02303-2
+
+where s represents the number of MEG or EEG sensors, t denotes the number of MEG or EEG time samples in the window and C is the number of available keys. We consider C = 29 distinct classes, which include all the letters of the Latin alphabet as well as three special classes: one for space, another for numbers and the last for all other special characters.
+
+Architecture. Our Brain2Qwerty model is composed of three succes- sive modules (Fig. 1).
+
+Convolutional module. The first building block is a modified convolu- tional model (Conv) originally introduced in ref. 29. This model consists of four main parts. The first component employs a spatial attention mechanism to encode the relative positions of the sensors. The second introduces a subject-specific linear layer to account for differences between subjects. The third component is a convolutional neural network architecture comprising eight sequential blocks that employ a kernel size of 3 and a dilation period of 3, as well as incorporating skip connections, dropout regularization and Gaussian error linear unit activation functions. Finally, the temporal dimension is pooled with a single-head self-attention layer. Thus, for each window X ∈ ℝs×t, the convolutional neural network outputs z ∈ ℝh, with the embedding dimension h = 2, 048. For clarity, this module is referred to as Conv throughout the Article.
+
+Transformer module. The outputs of Conv are then input to a trans- former module (Trans). The receptive field of the transformer is restricted to a unique sentence: Z ∈ ℝn×h. The transformer is used to refine the keystroke predictions by exploiting contextual information and consists of four layers with two attention heads per layer, maintain- ing consistent input and output dimensions. Finally, a linear layer pro- jects the transformer’s outputs to obtain the logits of each character Y ˜∈ ℝn×C.
+
+Language model. Finally, the output of the transformer Y ˜is fed into a language model so as to leverage the statistical regularities of natural language. For this, we used a 9-gram character-level model constructed using the KenLM library51 and pretrained on the Spanish Wikipedia Corpus (https://dumps.wikimedia.org). This library optimizes both speed and memory efficiency by employing a prefix tree structure.
+
+At inference time, the language model is input with a sequence of predicted characters and causally predicts the most likely next char- acter given the preceding predicted ones.
+
+Formally, let i ∈ \[1, 2, …, n\] denote the position of the character in a sequence of up to n characters and m = 9 be the order of the m-gram model. The probability of the next character ci given its preceding predictions ci−m,…,ci−1 is estimated as a weighted combination between the transformer’s logits and the probabilities of the language model:
+
+P(ci|ci−m,…,ci−1) = Ptrans(ci) + α × Plm(ci|ci−m,…,ci−1),
+
+where Ptrans(ci) = log(softmax\[(Y)\]˜i) represents the contribution from the core model, Plm(ci|ci−m,…,ci−1) represents the probabilities from the language model and α is the language model weight. We use a beam search of size 30 and a language model weight of 5 found using a grid search, ensuring a tradeoff between inference time and decoding accuracy. This language modeling module outputs a sequence of n characters that aim to regularize the predictions of the transformer with the statistics of natural language. Brain2Qwerty’s final prediction is denoted as Y ˆ∈ ℝn×C.
+
+Training. The Conv and Trans modules are trained jointly with an unweighted cross-entropy loss in an end-to-end manner across all subjects, with the same hyperparameters for EEG and MEG recordings. This leads to a total of \~400 million parameters (258 million for Conv, 138 million for Trans). The model is trained for 100 epochs without early
+
+stopping, with a batch size of 128 using the AdamW optimizer52 with early stopping. We use the OneCycleLR scheduler53 (weight decay = 10−4; pct\_start = 0.1), warming up the learning rate to 10−4 over the first ten epochs then decaying linearly. Model training was conducted on a single Quadro GV100 Volta GPU (32 GB VRAM) utilizing CUDA 12.4, with approximately 8 GB of system RAM required for dataset loading. The total runtime for training one model is \~18 hours.
+
+Evaluation. HER. For analysis purposes and comparison with the classic BCI literature (for example, ref. 54), we first consider HER. This metric estimates whether the target and predicted characters correspond to the same left/right-hand split of the keyboard. Specifically, keys to the left of Y, H and B are assigned to the left-hand category, while those to the right (including Y, H and B) are assigned to the right-hand category. For this evaluation, special characters, numbers and space are excluded, as participants may use either hand to type them.
+
+CER. CER is based on the Levenshtein distance, which quantifies the minimum number of single-character edits required to transform the predicted sequence of keystrokes into the target sentence. A CER of 0 indicates perfect character-level accuracy. The formula for the CER is given deletions by CER and = additions (s + d + a) × in n1the , where n-character s, d and a sentence, stand for substitutions, respectively. Unless stated otherwise, we compute the CER at the sentence level using the Levenshtein (https://pypi.org/project/Levenshtein/) python library and report the average CER across sentences.
+
+Model comparison. Statistics. For statistical comparisons, we employed the nonparametric tests provided by the scipy package55. For comparison across models within the same subjects, we used the Wilcoxon test. For comparison across subjects (for example, for EEG versus MEG), we used the Mann–Whitney U test. For time-course decod- ing, we further applied a false-discovery-rate correction for multiple comparisons across time samples.
+
+Baseline models. We consider three different models. The first one is a linear model implemented using the RidgeClassifierCV func- tion from the scikit-learn library48. The model was trained to predict characters from a single time sample of recording for each subject separately. The regularization parameter α was selected through a nested cross-validation using a grid search logarithmic spanning from 10−2 to 108. This operation was repeated for each time sample between −0.5 and 0.5 s relative to the character onset.
+
+While the initial scikit-learn model serves to validate the presence of decodable information using random splits, it does not allow for a direct comparison with our deep learning framework. To ensure a fair assessment, we introduced a second linear baseline that is trained jointly on all subjects using the identical data splitting strategy as our proposed model. Implemented in PyTorch, this model consists of a simple linear layer augmented with a subject-specific component to condition the model on the participant identity. This architecture is referred to as ‘Linear’ in Fig. 2 and Supplementary Fig. 5.
+
+As a second baseline, we need a model that uses the same setup as Brain2Qwerty, that is, where all subjects are trained collectively and the temporal dimension is collapsed. We used EEGNet36, a highly parameter-efficient model classically used in BCIs. We trained EEGNet with the same approach as our model. For our experiments, EEGNet is configured with a depth of 6 and a dropout rate of 0.3, with these parameters selected based on a grid search over the validation set. EEGNet does not incorporate a subject-specific linear layer, which may compromise its performance in this particular setup where all subjects were trained collectively. To compute the chance level while accounting for the imbalance across characters, we evaluated the performance of a dummy model that always predicts the most frequent character.
+
+Nature Neuroscience
+
+Article https://doi.org/10.1038/s41593-026-02303-2
+
+Companion paper. We explore how the brain produces a hierarchy of language representations in a companion paper30. Note that Fig. 1 (left) and Fig. 2b are shared between these two studies.
+
+Reporting summary Further information on research design is available in the Nature Portfolio Reporting Summary linked to this article.
+
+Data availability Due to legal constraints, we will share data to academic researchers upon request. Requests should be sent to svetlana.pinet@univ-lille.fr. Source data are provided with this paper.
+
+Code availability The code used in this paper is provided as Supplementary Information (Supplementary Code).
+
+References 47. Gramfort, A. et al. MNE software for processing MEG and EEG
+
+data. Neuroimage 86, 446–460 (2014). 48. Pedregosa, F. et al. Scikit-learn: machine learning in Python.
+
+J. Mach. Learn. Res. 12, 2825–2830 (2011). 49. Ratcliff, W. J. & Metzener, E. D. Pattern matching: the gestalt
+
+approach. Dr. Dobb’s Journal 13, 46–51 (1988). 50. Jones, S. K. A statistical interpretation of term specificity and its
+
+application in retrieval. J. Doc. 28, 11–21 (1972). 51. Heafield, K. KenLM: faster and smaller language model queries.
+
+In Proc. 6th Workshop on Statistical Machine Translation (eds Callison-Burch, C. et al.) 187–197 (Association for Computational Linguistics, 2011). 52. Loshchilov, I. & Hutter, F. Decoupled weight decay regularization.
+
+In International Conference on Learning Representations (2019). 53. Smith, L. N. & Topin, N. Super-convergence: very fast training of
+
+neural networks using large learning rates. In Proc. SPIE 11006, Artificial Intelligence and Machine Learning for Multi-Domain Operations Applications (ed. Pham, T.) 1100612, 369–386 (SPIE, 2019). 54. Lebedev, M. A. & Nicolelis, M. A. Brain-machine interfaces: past,
+
+present and future. Trends Neurosci. 29, 536–546 (2006). 55. Virtanen, P. et al. SciPy 1.0: fundamental algorithms for scientific
+
+computing in Python. Nat. Methods 17, 261–272 (2020).
+
+Acknowledgements We thank M. Kaltzakorta, M. Lete, J. Jacobsen, D. Nieto, J. Iraeta, A. Garnika, J. Bengoetxea, N. Louleli, N. Miralles, E. Zeberio, C. Richter, A. Esnal and O. Andonegui, as well as A. Charnalia and P.-L. Xech for their critical help. This research is supported by the Basque Government through the BERC 2022-2025 program and Funded by the Spanish State Research Agency through Basque Center on Cognition, Brain and Language Severo Ochoa excellence accreditation CEX2020-001010/AEI/10.13039/501100011033. Parts of this research were carried out within the European Union’s Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement No 945304—Cofund AI4theSciences hosted by PSL University.
+
+Author contributions S.P. and J.-R.K. conceived and designed the study. M.Z. performed data processing and contributed to the analyses. J.L. designed the principal codebase and model, executed the model training and carried out the analyses. H.B. and J.R. provided methodological advice and contributed to the codebase. S.d'A. and J.-R.K. supervised the research. J.L. wrote the manuscript with input and revisions from all authors.
+
+Competing interests J.L., J.R., H.B., S.d’A. and J.-R.K. are employed by Meta. The other authors declare no competing interests.
+
+Additional information Supplementary information The online version contains supplementary

@@ -1,0 +1,27 @@
+A 1000-hour EEG-EMG-audio dataset of Japanese speech production
+
+A 1000-hour EEG–EMG–audio dataset of Japanese speech production
+
+Motoshige Sato1,†, Ilya Horiguchi1, Masakazu Inoue1, Kenichi Tomeoka1, Eri Hatakeyama1, Yuya Kita1, Atsushi Yamamoto1, Ippei Fujisawa1, Shuntaro Sasai1,* 1Araya Inc., Tokyo, Japan
+
+Abstract
+
+We present a multimodal dataset of 1020 hours of simultaneously recorded scalp electroen- cephalography (EEG), facial electromyography (EMG), and speech audio from three healthy native Japanese speakers during open-vocabulary overt speech. Recordings were acquired with three EEG systems—an ultra-high-density system (g.Pangolin) and two cap-type systems (g.SCARABEO and eego™sports), spanning 62–128 channels—across many sessions over sev- eral months. Each session provides time-synchronized EEG, facial EMG, and audio, together with speech-event annotations and transcriptions. Although collected with speech decoding as a primary motivation, the dataset also supports work on multimodal signal processing, artifact modeling, longitudinal and cross-device adaptation, and EEG representation learning. Technical validation included power spectral density and event-related potential analyses across participants, devices, and tasks, which showed the expected 1/f spectral profile, task-related alpha-band attenuation, and time-locked evoked responses. The dataset is released in Brain Imaging Data Structure (BIDS) format via OpenNeuro under a CC0 waiver to support both speech-related and broader EEG research.
+
+Background & Summary
+
+Scalp electroencephalography (EEG) remains one of the most accessible non-invasive neural record- ing modalities and is widely used in neuroscience, clinical neurophysiology, and brain-computer interface research1. Within this landscape, speech is a particularly important target because the loss of voluntary speech severely limits communication, while implanted speech neuroprostheses, although increasingly effective, require neurosurgical intervention2–7. EEG-based speech studies therefore, occupy a useful middle ground: they motivate communication-oriented applications8–14 while also producing multimodal neural data that can support broader work on signal processing, representation learning, and transfer across devices and sessions.
+
+At the same time, many EEG methods have become increasingly data hungry15,16. Large public EEG corpora have already accelerated work on clinical modeling, visual representation analysis, and transfer learning, as illustrated by resources such as the TUH EEG Corpus, THINGS-EEG, and large-scale M/EEG language datasets17–20. These resources have also motivated pretrained and foundation-style models for EEG21–25. However, generalization across subjects, sessions, and recording hardware remains a central challenge in EEG research26–31. Dataset design matters not only in terms of participant count, but also in terms of repeated recordings, device diversity, and the availability of synchronized auxiliary signals.
+
+For speech-related EEG, public data remain relatively limited. Existing datasets have substantially expanded the field, but many are still focused on small prompt sets, imagined rather than overt speech, single-device recordings, or languages other than Japanese32–40. Overt speech also presents a characteristic challenge because articulatory muscle activity contaminates scalp recordings41,42. For this reason, simultaneous facial EMG and audio are valuable parts of the dataset rather than ancillary metadata: they support artifact characterization, multimodal alignment, and analyses of neural signals relative to the temporal structure of speech.
+
+JapanEEG was assembled to address this combination of needs. The released dataset consists of 1020 hours of synchronized EEG, facial EMG, and audio acquired during open-vocabulary overt Japanese speech from three healthy participants across many ses- sions and three EEG systems spanning 62–128 channels. It substantially expands the scale of our earlier 175-hour EEG speech dataset43. The data were collected with speech decoding as a central motivation, but their reuse value extends beyond speech decoding. Because the recordings are lon- gitudinal, multimodal, and cross-device, they can support a broad range of studies, including EEG preprocessing and artifact removal, EMG-aware modeling, speech-envelope alignment, representa- tion learning, session and device adaptation, and robustness analyses.
+
+Three healthy male participants (aged 22–44) took part in this study. All were native Japanese speakers with no history of neurological or psychiatric illness. The study was approved by the Ethics Review Committee of Shiba Palace Clinic.
+
+Three scalp EEG systems: g.Pangolin (g.tec; 128 channels, 1200 Hz), g.SCARABEO (g.tec; 62 channels, 1200 Hz), eego™sports (ANT Neuro; 63 channels, 1024 Hz). Three channels of facial EMG (upper lip, lower lip, eye) recorded in bipolar configuration.
+
+Audio recorded with lavalier microphone at 48 kHz, downsampled to 16 kHz. Speech intervals identified using Silero VAD. The dataset is publicly available via OpenNeuro (https://openneuro.org/datasets/ds007808) in BIDS format. Total dataset size ~955 GB. Code at https://github.com/Motoshige496/JapanEEG. Released under CC0 waiver. Supported by JST Moonshot R&D Grant JPMJMS2012.
+
+[Full text truncated to summary — inline content captured; references omitted here.]

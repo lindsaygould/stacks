@@ -13,7 +13,7 @@ typed covers otherwise).
 
 No third-party dependencies (stdlib only). Run:  python3 build.py
 """
-import csv, json, re, os, datetime
+import csv, json, re, os, datetime, glob
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, "data", "source")
@@ -420,6 +420,25 @@ def main():
                         it["title"] = a["title"]
     print("abstracts", sum(1 for it in items if it["abstract"]))
 
+    # full text (content/<item-id>.txt) + reading status
+    content_ids = set(os.path.splitext(os.path.basename(p))[0]
+                      for p in glob.glob(os.path.join(HERE, "content", "*.txt")))
+    # true open-access hosts only — PubMed (ncbi .../<PMID>) is abstract-only, so require PMC
+    OA_HOSTS = ["arxiv.org", "biorxiv.org", "medrxiv.org", "ncbi.nlm.nih.gov/pmc", "osf.io",
+                "pnas.org", "plos.org", "elifesciences.org", "frontiersin.org"]
+    for it in items:
+        it["content"] = ""
+        it["read_status"] = ""
+        if it["id"] in content_ids:
+            it["content"] = "content/" + it["id"] + ".txt"
+            it["read_status"] = "read"
+        elif it["kind"] in ("paper", "dataset"):
+            hay = (it["url"] + " " + it.get("ident", "")).lower()
+            it["read_status"] = "fetchable" if any(h in hay for h in OA_HOSTS) else "needs_pdf"
+    print("full-text", sum(1 for it in items if it["content"]),
+          "| needs-pdf", sum(1 for it in items if it["read_status"] == "needs_pdf"),
+          "| fetchable", sum(1 for it in items if it["read_status"] == "fetchable"))
+
     def tally(field):
         c = {}
         for it in items:
@@ -439,6 +458,7 @@ def main():
             "from_docx": len(docx),
             "by_kind": tally("kind"), "by_origin": tally("origins"),
             "by_domain": tally("domains"), "by_focus": tally("focus"), "by_topic": tally("topics"),
+            "by_read": tally("read_status"),
         },
         "items": items,
     }

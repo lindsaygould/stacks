@@ -1,0 +1,4481 @@
+Research Article: New Research | Cognition and Behavior
+
+Spectral Slope and Lempel-Ziv complexity as robust
+markers of brain states during sleep and wakefulness
+https://doi.org/10.1523/ENEURO.0259-23.2024
+Received: 14 July 2023
+Revised: 22 January 2024
+Accepted: 9 February 2024
+Copyright © 2024 Höhn et al.
+This is an open-access article distributed under the terms of the Creative Commons
+Attribution 4.0 International license, which permits unrestricted use, distribution and
+reproduction in any medium provided that the original work is properly attributed.
+
+This Early Release article has been peer reviewed and accepted, but has not been through
+the composition and copyediting processes.The final version may differ slightly in style or
+formatting and will contain links to any extended data.
+Alerts: Sign up at www.eneuro.org/alerts to receive customized email alerts when the fully
+formatted version of this article is published.
+
+1
+
+Title: Spectral Slope and Lempel-Ziv complexity as robust markers of brain
+
+2
+
+states during sleep and wakefulness
+
+3
+
+Abbreviated Title: Differentiating brain states by slope & complexity
+
+4
+
+Christopher Höhn1,2, Michael A. Hahn3, Janna D. Lendner3, & Kerstin Hoedlmoser1,2
+
+5
+6
+
+1
+
+7
+8
+
+2
+
+9
+10
+
+3
+
+11
+
+Author Contributions: K.H. designed research; C.H. performed research; M.A.H. and J.D.L.
+
+12
+
+contributed unpublished analytic tools; C.H. analyzed data; C.H., M.A.H., J.D.L. and K.H. wrote
+
+13
+
+the paper.
+
+14
+
+Correspondence: Christopher.hoehn@plus.ac.at and Kerstin.hoedlmoser@plus.ac.at
+
+15
+
+Number of Figures: 8 (+ 15 in extended data)
+
+16
+
+Number of Tables: 0 (+ 3 in extended data)
+
+17
+
+Number of words for Abstract: 250
+
+18
+
+Number of words for Significance Statement: 117
+
+19
+
+Number of words for Introduction: 758
+
+20
+
+Number of words for Discussion: 1971
+
+21
+
+Conflict of Interest: Authors report no conflict of interest.
+
+23
+24
+
+cr
+ip
+t
+
+Centre for Cognitive Neuroscience Salzburg (CCNS), University of Salzburg, Salzburg,
+Austria
+
+ro
+
+Ac
+c
+
+ep
+
+te
+
+d
+
+M
+
+an
+
+us
+
+Hertie-Institute for Clinical Brain Research, University Medical Center Tübingen, Tübingen,
+Germany
+
+eN
+eu
+
+22
+
+Laboratory for Sleep, Cognition and Consciousness Research, Department of Psychology,
+University of Salzburg, Austria
+
+Funding sources: Austrian Science Fund (FWF: P32028, W1233-G17 & W1233-B); German
+Research Foundation (DFG: LE 3863/2-1 & HE8329/2-1); Centre for Cognitive Neuroscience
+Salzburg (CCNS); Jung Foundation for Science and Research
+
+25
+
+Acknowledgements: This research was funded by the Austrian Science Fund (FWF, P32028)
+
+26
+
+and the Centre for Cognitive Neuroscience Salzburg (CCNS). C.H. further received funding
+
+27
+
+from the Doctoral College “Imaging the Mind” (FWF; W1233-B). J.D.L. received a grant from
+
+28
+
+the German Research Foundation (DFG LE 3863/2-1). We would like to thank Sarah R.
+
+29
+
+Schmid, Selina Schindlmayr, Daniela Niebler, Lucy Matthews, Marina Thierauf, Leoni
+
+30
+
+Bernstorf, Lorenz Rapp, Henrik Rheinwald and Leonard van Dyck for their help with the data
+
+31
+
+collection process and recruitment of participants.
+
+32
+
+Abstract
+
+35
+
+Non-oscillatory measures of brain activity such as the spectral slope and Lempel-Ziv complexity are
+
+36
+
+affected by many neurological disorders and modulated by sleep. A multitude of frequency ranges,
+
+37
+
+particularly a broadband (encompassing the full spectrum) and narrowband approach, have been used
+
+38
+
+especially for estimating the spectral slope. However, the effects of choosing different frequency ranges
+
+39
+
+have not yet been explored in detail. Here, we evaluated the impact of sleep stage and task-engagement
+
+40
+
+(resting, attention and memory) on slope and complexity in a narrow- (30 – 45Hz) and broadband (1 –
+
+41
+
+45Hz) frequency range in 28 healthy male human subjects (21.54 ± 1.90 years) using a within-subject
+
+42
+
+design over two weeks with three recording nights and days per subject. We strived to determine how
+
+43
+
+different brain states and frequency ranges affect slope and complexity and how the two measures
+
+44
+
+perform in comparison. In the broadband range, the slope steepened, and complexity decreased
+
+45
+
+continuously from wakefulness to N3 sleep. REM sleep, however, was best discriminated by the
+
+46
+
+narrowband slope. Importantly, slope and complexity also differed between tasks during wakefulness.
+
+47
+
+While the narrowband complexity decreased with task engagement, the slope flattened in both
+
+48
+
+frequency ranges. Interestingly, only the narrowband slope was positively correlated with task
+
+49
+
+performance. Our results show that slope and complexity are sensitive indices of brain state variations
+
+50
+
+during wakefulness and sleep. However, the spectral slope yields more information and could be used
+
+51
+
+for a greater variety of research questions than Lempel-Ziv complexity, especially when a narrowband
+
+52
+
+frequency range is used.
+
+us
+
+an
+
+M
+
+d
+
+te
+
+ep
+
+Ac
+c
+
+ro
+eN
+eu
+
+53
+
+cr
+ip
+t
+
+34
+
+Significance Statement
+
+55
+
+We demonstrate that the spectral slope and Lempel-Ziv complexity differentiate between sleep stages,
+
+56
+
+quiet wakefulness and active tasks, thus making them reliable non-invasive biomarkers of brain states.
+
+57
+
+Critically, these markers were previously assessed in isolation only. Here, we provide evidence that they
+
+58
+
+track highly similar information about the underlying brain state in a broad frequency range (1 – 45Hz).
+
+59
+
+Within this range, slope and complexity distinguish brain states better than in a more narrowband range
+
+60
+
+(30 – 45Hz). However, the slope calculated from the narrowband range is superior in differentiating REM
+
+61
+
+from wakefulness and tracking behavioral performance. Our results demonstrate that the choice of
+
+62
+
+frequency range critically affects the information reflected the spectral slope and Lempel-Ziv complexity.
+
+us
+
+cr
+ip
+t
+
+54
+
+eN
+eu
+
+ro
+
+Ac
+c
+
+ep
+
+te
+
+d
+
+M
+
+an
+
+63
+
+65
+
+Introduction
+Neural oscillations are a dominant electrophysiological signature of human brain activity. For
+
+67
+
+instance, quiet wakefulness is characterized by pronounced alpha-band activity (Klimesch et al., 1993;
+
+68
+
+Jensen and Mazaheri, 2010) and sleep stages are defined by oscillatory events like sleep spindles and
+
+69
+
+slow oscillations (Terzano et al., 2002; Richard et al., 2012). However, recent evidence suggests that
+
+70
+
+non-oscillatory, irregular brain activity, assessed by Lempel-Ziv complexity (Lempel and Ziv, 1976 and
+
+71
+
+Welch, 1984) or the spectral slope (He, 2014), also carries meaningful information about
+
+72
+
+electrophysiological variations across brain states.
+
+cr
+ip
+t
+
+66
+
+The spectral slope is obtained in the frequency domain and reflects the steepness of the power
+
+74
+
+spectrum. In contrast, Lempel-Ziv complexity (Welch, 1984) is computed in the time domain and reflects
+
+75
+
+the regularity of a signal (Lau et al., 2022). Thus, Lempel-Ziv complexity is still strongly influenced by
+
+76
+
+oscillatory activity (see Figure 1 – 4), whereas the spectral slope captures mainly aperiodic activity
+
+77
+
+(Donoghue et al., 2020).
+
+M
+
+an
+
+us
+
+73
+
+Computational modelling has demonstrated that the spectral slope constitutes a marker of the
+
+79
+
+brain’s excitation to inhibition (E/I) balance (Gao et al., 2017), which is impaired in a variety of clinical
+
+80
+
+conditions (Rubenstein and Merzenich, 2003; Gao and Penzes, 2015; Robertson et al., 2019; Karalunas
+
+81
+
+et al., 2022). Interestingly, some disorders as for instance epilepsy have been associated not only with
+
+82
+
+alterations in the spectral slope but also in complexity (Wong, 2010; Aarabi and He, 2012; Zhu et al.,
+
+83
+
+2017). Overall, previous studies suggest that both, spectral slope and Lempel-Ziv complexity capture
+
+84
+
+brain state changes in similar ways. The slope steepens (i.e., decreases) under anesthesia (Gao et al.,
+
+85
+
+2017; Colombo et al., 2019; Lendner et al., 2020; Waschke et al., 2021) and during sleep (Ma et al.,
+
+87
+88
+
+te
+
+ep
+
+Ac
+c
+
+ro
+
+eN
+eu
+
+86
+
+d
+
+78
+
+2018; Miskovic et al., 2019; Lendner et al., 2020). Similarly, Lempel-Ziv complexity is reduced under
+anesthesia (Zhang et al., 2001; Ferenets et al., 2007) and with increasing sleep depth (Andrillon et al.,
+2016; Schartner et al., 2017). Evidence from Waschke et al. (2021) suggests that the spectral slope
+
+89
+
+further tracks the level of attention, whereby faster response times are indexed by flatter slopes. This is
+
+90
+
+in line with work demonstrating that the slope is indicative of cognitive processing speed (Ouyang et al.,
+
+91
+
+2020; Pathania et al., 2022) and modulated by cognitive decline (Voytek and Knight, 2015; Voytek et
+
+92
+
+al., 2015; Dave et al., 2018). Relatedly, higher task-related Lempel-Ziv complexity has also been
+
+93
+
+suggested to track higher processing speed (Mediano et al., 2021).
+
+94
+
+A big issue, however, that has hampered the assessment of and comparability between slope
+
+95
+
+and complexity is the huge heterogeneity in frequency ranges used to calculate these measures. While
+
+there will be no frequency range without potential confounds, it is important to compare different
+
+97
+
+frequency ranges and calculation settings to gain a better understanding of how the choice of a certain
+
+98
+
+frequency range affects the data. Particularly for the spectral slope, researchers have argued either in
+
+99
+
+favor of broadband (Podvalny et al., 2015; Waschke et al., 2021; Karalunas et al., 2022) or more
+
+100
+
+narrowband (Gao et al., 2017; Lendner et al., 2020) frequency ranges, commonly within 1 – 45/50Hz.
+
+101
+
+While broadband ranges (e.g., 1 – 45Hz) encompass more of the total signal and result in better overall
+
+102
+
+fits (Donoghue et al., 2020; Gerster et al., 2022), narrowband ranges (e.g., 30 – 45Hz) are less affected
+
+103
+
+by slower oscillatory activity and reflect mostly aperiodic activity (Gao et al., 2017; Lendner et al., 2020).
+
+104
+
+But also regarding complexity, recent evidence demonstrated that this metric is strongly affected by
+
+105
+
+different frequency contents and might be mainly driven by lower frequencies (González et al., 2022).
+
+106
+
+Taken together, a functional overlap between the spectral slope and Lempel-Ziv complexity is
+
+107
+
+suggested in the literature. However, direct comparisons between the two measures are rare and limited
+
+108
+
+to quiet wakefulness and anesthesia (Medel et al., 2023). Thus, even though slope and complexity are
+
+109
+
+both biomarkers of arousal that are similarly modulated by changes in brain states, it is yet unclear how
+
+110
+
+they behave in comparison. Moreover, it remains unclear how the selection of different frequency ranges
+
+111
+
+affects the information captured by them.
+
+ep
+
+te
+
+d
+
+M
+
+an
+
+us
+
+cr
+ip
+t
+
+96
+
+Here, we leverage a within-subject design with multiple sleep and wake recordings over 14 days
+
+113
+
+to investigate (1) whether spectral slope and Lempel-Ziv complexity are modulated by sleep stages and
+
+114
+
+tasks during wakefulness and (2) to assess their significance for cognition in different frequency ranges.
+
+115
+
+Additionally, we aim (3) to evaluate which parameter might be better suited under different
+
+116
+
+circumstances and for different research questions. Finally, by using multiple recordings per subject, we
+
+118
+
+ro
+
+eN
+eu
+
+117
+
+Ac
+c
+
+112
+
+assess the stability of these measures as indices of underlying brain states.
+
+Materials and methods
+Key resources table
+Reagent type
+
+Source or
+
+Additional
+
+(species) or resource
+
+Designation
+
+reference
+
+Identifiers
+
+information
+
+Software,
+
+Brain Vision
+
+Brain Products
+
+RRID:
+
+https://www.brainproduct
+
+algorithm
+
+Analyzer 2.2
+
+GmbH
+
+SCR_002356
+
+s.com
+
+Software,
+
+Adobe
+
+Adobe Inc.
+
+RRID:
+
+algorithm
+
+Illustrator CS6
+
+SCR_010279
+
+Software,
+
+Fieldtrip
+
+Oostenveld et
+
+RRID:
+
+https://gitlab.com/obob/o
+
+algorithm
+
+(obob_ownft)
+
+al., 2011
+
+SCR_004849
+
+bob_ownft/
+
+Software,
+
+FOOOF
+
+Donoghue et
+
+https://fooof-
+
+algorithm
+
+(specparam)
+
+al., 2020
+
+tools.github.io/fooof/
+
+Software,
+
+ggplot-2
+
+Wickham,
+
+RRID:
+
+https://cran.r-
+
+2016
+
+SCR_014601
+
+project.org/web/package
+
+algorithm
+
+Lempel-Ziv
+
+algorithm
+
+complexity
+
+Comsa, 2019
+
+https://github.com/iuliam-
+
+us
+
+Software,
+
+cr
+ip
+t
+
+s/ggplot2/index.html
+
+Software,
+
+MANOVA.RM
+
+al., 2019
+
+project.org/web/package
+s/MANOVA.RM/index.ht
+
+te
+MATLAB
+
+algorithm
+
+Ac
+c
+
+algorithm
+
+RRID:
+
+https://de.mathworks.co
+
+2018b
+
+Inc.
+
+SCR_001622
+
+m/products/matlab.html
+
+MVPA-light
+
+Treder, 2020
+
+RRID:
+
+https://github.com/treder/
+
+SCR_022173
+
+MVPA-Light
+http://psychtoolbox.org/
+
+toolbox
+Psychtoolbox
+
+Kleiner et al.,
+
+RRID:
+
+algorithm
+
+PTB-3
+
+2007
+
+SCR_002881
+
+Software,
+
+RStudio
+
+RStudio Team
+
+RRID:
+
+https://posit.co/download
+
+algorithm
+
+2021.09
+
+SCR_000432
+
+s/
+
+Software,
+
+Somnolyzer
+
+Koninklijke
+
+algorithm
+
+24 x 7
+
+Philips N.V.
+
+eN
+eu
+
+Software,
+
+ml
+
+MathWorks
+
+ro
+
+Software,
+
+Ziv%20complexity
+https://cran.r-
+
+ep
+
+Software,
+
+Lempel-
+
+Friedrich et
+
+d
+
+algorithm
+
+M
+
+an
+
+comsa/EEG/tree/master/
+
+https://www.philips.co.in
+
+119
+120
+
+Participants and inclusion criteria
+
+121
+
+We recorded data from 28 biologically male participants (18 – 25 years; mean age 21.54 ± 1.90
+
+122
+
+years) to avoid previously reported sex effects on sleep, attributed to hormonal variations (Alonso et al.,
+
+2021; Plamberger et al., 2021). Final sample sizes varied for each analysis between N = 26 – 28 as
+
+124
+
+some participants had missing data for specific tasks or timepoints (the exact sample size for each
+
+125
+
+analysis is provided in the corresponding figure caption). All participants were free of medication and
+
+126
+
+did not suffer from a mental or physiological illness or reported sleep problems. They adhered to a
+
+127
+
+regular sleep-wake rhythm (i.e., regular bedtimes with about 8 hours of sleep per night) and refrained
+
+128
+
+from drug use and above-average caffeine consumption (more than three cups of coffee per day) during
+
+129
+
+participation. For screening purposes, all subjects filled in an entrance questionnaire in which we
+
+130
+
+checked for sleep quality, mood, anxiety, perceived stress level and chronotype to exclude individuals
+
+131
+
+with clinical symptoms in advance (cf., Figure 1 – 1) . Written informed consent was obtained from every
+
+132
+
+participant and they were remunerated with either 100€ and 16 hours course credit or 50€ and 24 hours
+
+133
+
+course credit. The study was approved by the local ethics committee and conducted in agreement with
+
+134
+
+the Declaration of Helsinki.
+
+135
+
+Experimental protocol
+
+136
+
+Study design
+
+te
+
+d
+
+M
+
+an
+
+us
+
+cr
+ip
+t
+
+123
+
+Each subject participated over a time span of 14 days (for an outline of the protocol see Figure
+
+138
+
+1). From that day on, participants wore an actigraph (MotionWatch 8; CamNtech Ltd, Cambridge,
+
+139
+
+England) and filled in daily online sleep protocols (LimeSurvey GmbH, Hamburg, Germany), which were
+
+140
+
+checked for compliance with a regular sleep-wake rhythm.
+
+143
+144
+145
+
+Ac
+c
+
+ro
+
+142
+
+[FIGURE 1]
+
+The first recording was scheduled on day 4 for adaptation purposes to avoid potential first night
+
+eN
+eu
+
+141
+
+ep
+
+137
+
+effects (Browman and Cartwright, 1980; Curcio et al., 2004). After electrode placement, participants
+were familiarized with the resting session and Go/Nogo (GNG) task. Bedtime was scheduled for
+approximately 11:00 pm and participants were woken up 8 hours after lights out, thereby adhering to
+
+146
+
+general sleep hygiene recommendations (Watson et al., 2015; Chaput et al., 2018). The experimental
+
+147
+
+recordings were scheduled on days 7, 10 and 13. Participants arrived at 6:00 pm and electrodes were
+
+148
+
+mounted again. Recordings started with an initial resting session (3min eyes closed and 3min eyes
+
+149
+
+open) and the GNG task (10min), which was followed by the encoding sessions (two times 14min) of a
+
+150
+
+declarative memory task. Before the first cued recall, another resting and GNG session was conducted.
+
+151
+
+Afterwards, participants had a break of 1.5 hours in which they read standardized stories under different
+
+light conditions. These conditions consisted of either reading from a smartphone with or without a blue-
+
+153
+
+light filter or from a printed book, leading to varying levels of short-wavelength light exposure with dim
+
+154
+
+background room-lighting (Höhn et al., 2021; Schmid et al., 2021). Before going to bed at approximately
+
+155
+
+11:00 pm, participants completed the last resting and GNG session of the day. After awakening, a
+
+156
+
+morning session of resting and the GNG task as well as another cued recall session were performed.
+
+157
+
+During all wake-recordings, daylight mimicking room lights (provided by Emilum GmbH, Oberalm,
+
+158
+
+Austria) were dimmed to 4.5 photopic lux and room temperature was adjusted via air conditioning based
+
+159
+
+on participant’s preferences.
+
+160
+
+Go/Nogo task
+
+us
+
+cr
+ip
+t
+
+152
+
+To assess objective levels of attention and inhibitory control, we implemented an auditory
+
+162
+
+version of the Go/Nogo paradigm (Donders, 1969) via the Psychophysics Toolbox (PTB-3; Kleiner et
+
+163
+
+al., 2007) in MATLAB (Release 2018b, The MathWorks Inc., Natick, MA). Due to the plentitude of tasks
+
+164
+
+already included in the study design, we opted for an attention task that measures various aspects of
+
+165
+
+attention and inhibitory control and therefore chose the Go/Nogo paradigm over a classical psychomotor
+
+166
+
+vigilance task. Thus, participants were asked to react as quickly as possible on a response time box
+
+167
+
+(RTBox v5/6; Ohio State University, Columbus, OH) whenever they heard a ‘Go’ sound and needed to
+
+168
+
+inhibit their reaction when a ‘Nogo’ sound was played. The task comprised 400 trials with Go sounds
+
+169
+
+being presented in 80% of the trials (the order of Go and Nogo sounds was randomized each time). The
+
+170
+
+two stimuli used for the Go and Nogo sounds were low- (1000Hz) and high-pitched (1500Hz) tones,
+
+171
+
+which were presented for 50ms with a varying interstimulus interval (1480 – 1880ms). Whether the low-
+
+173
+174
+175
+
+M
+
+d
+
+te
+
+ep
+
+Ac
+c
+
+ro
+
+eN
+eu
+
+172
+
+an
+
+161
+
+or high-pitched sound represented the Go-signal was determined by chance at the beginning of each
+session. Participants had to react within 500ms for the response to be considered valid and reaction
+times longer than 500ms were regarded as attentional lapses. From each session, the performance
+score was computed by dividing the percentage of correct trials by the median reaction time of all valid
+
+176
+
+responses (≤ 500ms, no errors) in milliseconds (Figueiro et al., 2016).
+
+177
+
+Declarative memory task
+
+178
+
+Participants encoded a set of 80 word pairs on days 7, 10 and 13. To avoid learning effects over
+
+179
+
+time, a different but similarly difficult set of 80 word pairs was presented on each of the three days. The
+
+180
+
+order of the sets was randomized across subjects. Each set was presented twice for 14min during
+
+encoding and the data from both encoding sessions was pooled. Each word pair was presented for
+
+182
+
+1500ms, followed by a fixation-cross for 8500ms. Participants were instructed to encode the word pair
+
+183
+
+as vividly as possible during the presentation of the fixation-cross by imagining a semantic connection
+
+184
+
+between the two words. During the cued recall sessions, only the first word of a pair was presented, and
+
+185
+
+participants were asked to press a button on the response time box as soon as they remembered the
+
+186
+
+second word. Whenever a button was pressed, the participant was instructed to name the missing word
+
+187
+
+and a fixation-cross appeared for 3500ms while the experimenter noted the answer. When no button
+
+188
+
+was pressed, the fixation-cross appeared automatically after 6500ms. Recall performance was
+
+189
+
+measured as the percentage of correctly recalled word pairs during each retrieval session. To assess
+
+190
+
+the overnight change in performance, the increase in percentage from the evening performance to the
+
+191
+
+following morning was computed.
+
+192
+
+EEG recording and analyses
+
+M
+
+an
+
+us
+
+cr
+ip
+t
+
+181
+
+All electrophysiological data were recorded with a sampling rate of 500Hz via the BrainVision
+
+194
+
+Recorder software (Version 2.11, Brain Products GmbH, 2015) using a 32 channel BrainAmp system
+
+195
+
+(Brain Products GmbH, Munich, Germany). We placed 11 gold-cup electrodes (Grass Technologies,
+
+196
+
+Astro-Med GmbH, Rodgau, Germany) according to the international 10-20 system on the positions: F3,
+
+197
+
+Fz, F4, C3, Cz, C4, P3, Pz, P4, O1 and O2. Linked mastoids were used for offline re-referencing as the
+
+198
+
+data were online referenced against Cz. The position Fpz was used as ground electrode. Additionally,
+
+199
+
+two EMG electrodes were placed on the musculus mentalis for measuring muscle activity during sleep
+
+200
+
+and four EOG electrodes around the eyes to record horizontal and vertical eye movements. Impedances
+
+201
+
+were always kept below 10kΩ.
+
+203
+
+te
+
+ep
+
+Ac
+c
+
+ro
+
+eN
+eu
+
+202
+
+d
+
+193
+
+Polysomnography
+
+Time in bed was standardized for all polysomnography recordings to 8 hours. For sleep staging,
+
+204
+
+the data were first low-pass filtered at 30Hz and re-referenced to contralateral mastoids with the
+
+205
+
+BrainVision Analyzer software (Version 2.2.0.7383, Brain Products GmbH, 2019). EOG and EMG
+
+206
+
+channels were referenced bipolarly and the data were down-sampled to 128Hz for further staging. Sleep
+
+207
+
+stages were classified for each 30s epoch with the Somnolyzer 24 x 7 algorithm (Koninklijke Philips
+
+208
+
+N.V.; Eindhoven, The Netherlands) in accordance with the criteria of the American Academy of Sleep
+
+209
+
+Medicine (Richard et al., 2012). The results were finally verified by a human expert scorer. The general
+
+210
+
+sleep architecture of each night is presented descriptively in Figure 1 – 2.
+
+211
+
+EEG preprocessing
+In a first step, the raw data were processed with the BrainVision Analyzer software, and we
+
+213
+
+applied a 0.3Hz high-pass as well as a 50Hz notch filter. EEG channels were re-referenced to linked
+
+214
+
+mastoids and the online reference Cz was restored. We corrected for eye movements with the Gratton
+
+215
+
+& Coles method (Gratton et al., 1983; only implemented for data during wakefulness) and ran an
+
+216
+
+automatic artifact detection procedure on all scalp EEG channels, which was manually checked
+
+217
+
+afterwards. Events with a voltage jump exceeding 50μV/ms, an absolute voltage difference of more than
+
+218
+
+400μV within 200ms or activity lower than 0.5μV for at least 100ms were marked as bad intervals. If
+
+219
+
+severe muscle or movement artefacts were missed, they were additionally marked manually. The data
+
+220
+
+were then down-sampled to 250Hz and exported for further analyses in MATLAB. The continuous data
+
+221
+
+were subsequently segmented into epochs of 4s for each task and sleep stage using the fieldtrip toolbox
+
+222
+
+(Oostenveld et al., 2011). To be able to compare all task- and sleep-data, we decided to set the epoch-
+
+223
+
+length to 4s as this enabled the best tradeoff between sufficient epochs even for the shortest tasks (3min
+
+224
+
+resting sessions) and an adequate frequency resolution. All artifact-containing epochs (defined as > 1%
+
+225
+
+being detected as artifact) were removed. Since the remaining number of clean epochs from the tasks
+
+226
+
+(resting, Go/Nogo, encoding and retrieval) and sleep-stages (WAKE, N1, N2, N3 and REM) varied due
+
+227
+
+to different recording lengths, we balanced the number of epochs across tasks and sleep-stages for the
+
+228
+
+multivariate pattern analyses (MVPA). We set the maximum number of epochs for the MVPA analyses
+
+230
+231
+232
+233
+
+us
+
+an
+
+M
+
+d
+
+te
+
+ep
+
+Ac
+c
+
+ro
+
+eN
+eu
+
+229
+
+cr
+ip
+t
+
+212
+
+to the highest possible number of epochs from the shortest task (i.e., 45 epochs as the resting sessions
+only comprised 3min). To do so, we drew a random subset of 45 epochs from all data that contained
+more than 45 clean epochs. For all other analyses we used all available data to maximize the signal to
+noise ratio wherever possible (cf., Figure 1 – 3).
+
+Spectral Slope
+
+234
+
+To obtain the spectral slope, we first calculated power-spectra between 0.5 – 45Hz from the
+
+235
+
+preprocessed, 4s segmented data via the mtmfft method in Fieldtrip (Oostenveld et al., 2011) using a
+
+236
+
+multi-taper approach (1Hz frequency smoothing). To extract the slope, we applied robust linear fits
+
+237
+
+(using the robust fit MATLAB function) in log-log space between 30 – 45Hz. We decided to use robust
+
+linear fits instead of using the FOOOF algorithm (Donoghue et al., 2020) for the narrowband frequency
+
+239
+
+range since this approach has already been established to yield a sensitive aperiodic marker of arousal
+
+240
+
+by Lendner et al. (2020) and because in this frequency range also the FOOOF would approximate a
+
+241
+
+linear fit, thus leading to highly comparable results. However, for the broadband frequency range (1 –
+
+242
+
+45Hz), we applied the FOOOF algorithm to extract the slope since linear fits would have been skewed
+
+243
+
+by oscillatory bumps in the power spectrum.
+
+244
+
+Lempel-Ziv Complexity
+
+cr
+ip
+t
+
+238
+
+We followed previous approaches (Schartner et al., 2015; Mediano et al., 2021; Medel et al.,
+
+246
+
+2023) and calculated the Lempel-Ziv-Welch complexity (Lempel and Ziv, 1976; Welch, 1984) per
+
+247
+
+channel and epoch. To obtain the complexity in the same frequency ranges in which we calculated the
+
+248
+
+spectral slope, we applied additional 1Hz or 30Hz high-pass and 45Hz low-pass filters. As Rivolta et al.
+
+249
+
+(2014) demonstrated that 1000 datapoints are sufficient for reliable Lempel-Ziv complexity analyses
+
+250
+
+during sleep, we used the same 4s segmented data (corresponding to 1000 sampling points per epoch
+
+251
+
+in our down sampled data) as for the spectral slope. We then applied a Hilbert-transformation on each
+
+252
+
+epoch to obtain the instantaneous amplitude. Afterwards, we binarized the resulting single epoch data
+
+253
+
+around its median amplitude and transformed it into a binary sequence. Values of 1 were given for
+
+254
+
+amplitude samples above the median and values of 0 for amplitudes below (or equal with) the median.
+
+255
+
+This binary sequence of ones and zeros was subjected to the Lempel-Ziv-Welch complexity algorithm
+
+256
+
+(Comsa, 2019) in MATLAB. In general, higher complexity values (normalized between 0 and 1) reflect
+
+257
+
+more random and unpredictable signals (cf., Figure 1 – 4).
+
+259
+260
+
+an
+
+M
+
+d
+
+te
+
+ep
+
+Ac
+c
+
+ro
+
+eN
+eu
+
+258
+
+us
+
+245
+
+Statistical analyses
+Statistics were calculated in R-Studio (Version 4.1.2.; RStudio Team, 2021). MATLAB
+
+functions from the Fieldtrip toolbox and the ggplot-framework (Wickham, 2016) in R were adapted for
+
+261
+
+data visualization.
+
+262
+
+ANOVA-type analyses and correlations
+
+263
+
+All analyses involved three repeated measurements (days 7, 10 and 13; cf., Figure 1) and
+
+264
+
+therefore at least two factors (lab-session and task or sleep stage). Since in most cases at least one
+
+265
+
+assumption for parametrical testing was violated, we decided to compute more conservative semi-
+
+266
+
+parametrical analyses with the MANOVA.RM package (Friedrich et al., 2019). For these factorial
+
+267
+
+analyses, data were averaged over all EEG electrodes to facilitate interpretation of the results. In the
+
+268
+
+statistical results, we always refer to the Wald-Type-Statistics (WTS) with empirical p-values obtained
+
+269
+
+from permutation resampling procedures and 10.000 iterations. Whenever multiple comparisons were
+
+270
+
+conducted, p-values were corrected with the Benjamini-Hochberg procedure (Benjamini and Hochberg,
+
+271
+
+1995).
+For correlational analyses, we computed Spearman rho coefficients instead of Pearson
+
+273
+
+correlations whenever the normality assumption was significantly violated (indicated by Shapiro-Wilk
+
+274
+
+tests) and for all cluster correlations on the whole scalp level. For the cluster corrected correlation
+
+275
+
+approach, we used the Monte-Carlo method with 10.000 iterations to assess the relationship between
+
+276
+
+EEG parameters per channel and behavioral measures.
+
+277
+
+Multivariate pattern analyses (MVPA)
+
+M
+
+an
+
+us
+
+cr
+ip
+t
+
+272
+
+Since it is difficult to take topographical patterns into account in classical factorial designs, we
+
+279
+
+additionally computed multivariate pattern analyses using the MVPA-Light toolbox (Treder, 2020) to
+
+280
+
+exploit the information present in the complexity and slope data as patterns across electrodes. For each
+
+281
+
+task and sleep stage, the complexity and slope from every epoch and electrode was fed into the
+
+282
+
+classifier. Thus, the single epochs per subject were used for training and testing while the complexity
+
+283
+
+and slope patterns over electrodes represented the multivariate information. For comparisons between
+
+284
+
+more than two tasks or sleep stages, multiclass linear-discriminant analyses (LDA) were used and
+
+285
+
+regular LDA for two-condition comparisons. We calculated classifier accuracies per subject via leave-
+
+287
+288
+289
+290
+
+te
+
+ep
+
+Ac
+c
+
+ro
+
+eN
+eu
+
+286
+
+d
+
+278
+
+one-out cross validation (LOO-CV) to account for the restricted amount of data available for training and
+testing. Since no effects regarding the different lab-sessions emerged, we pooled the data from the
+different lab-sessions for each participant to improve the reliability of the MVPA analyses.
+
+Data and Code Accessibility
+The data and code necessary to reproduce the main results and figures is freely available online
+
+291
+
+at https://doi.org/10.17605/OSF.IO/QGPW4.
+
+292
+
+Results
+
+We calculated the spectral slope and Lempel-Ziv complexity for all sleep stages and tasks in a
+
+294
+
+narrow- (30 – 45Hz) and broadband (1 – 45Hz) frequency range (cf., Figure 1B and C; Colombo et al.,
+
+295
+
+2019; Lendner et al., 2020; Jacob et al., 2021; Kozhemiako et al., 2022; Lendner et al., 2022; Ameen et
+
+296
+
+al., 2023; Helson et al., 2023). We set the upper frequency limit to 45Hz to avoid line-noise influences
+
+297
+
+around 50Hz and the need for fitting a knee in higher frequencies. Likewise, we decided to set the lower
+
+298
+
+frequency boundary for the broadband range at 1Hz since the area below often exhibits a plateau that
+
+299
+
+would require fitting an additional knee or would otherwise also distort the data (He et al., 2010; Gerster
+
+300
+
+et al., 2022). The 30Hz lower limit for the narrowband range was selected based on original modeling
+
+301
+
+work for the spectral slope, demonstrating that the 30 – 45Hz range is capable of tracking changes in
+
+302
+
+the brain’s excitation / inhibition balance (Gao et al., 2017). Furthermore, a large replication study with
+
+303
+
+more than 10.000 polysomnography recordings confirmed that the 30 – 45Hz range tracks the
+
+304
+
+hypnogram accurately (Kozhemiako et al., 2022), a finding that has also been supported by others who
+
+305
+
+used a data-driven fitting algorithm to compare different frequency ranges for slope estimation (Lendner
+
+306
+
+et al., 2020; Lendner et al., 2022).
+
+307
+
+Spectral slope and Lempel-Ziv complexity delineate brain states during sleep
+
+ep
+
+te
+
+d
+
+M
+
+an
+
+us
+
+cr
+ip
+t
+
+293
+
+The narrowband slope and complexity were significant modulated by sleep stage (N1, N2, N3
+
+309
+
+and REM sleep: WTS (4) = 133.57, p < .001 and WTS (4) = 21.64, p = .004 respectively). The
+
+310
+
+narrowband slope was significantly steeper in all sleep stages compared to wakefulness with the
+
+311
+
+steepest slope during REM sleep. In contrast, the narrowband complexity slightly increased from
+
+312
+
+wakefulness to all sleep stages (see Figure 2). To control for muscular activity in the 40 – 70Hz range,
+
+313
+
+we also computed the slope and complexity of the EMG channels (see Figures 2 – 1 & 2 – 2). When
+
+315
+
+ro
+
+eN
+eu
+
+314
+
+Ac
+c
+
+308
+
+partialling out the EMG from the EEG data, the modulation of the EEG slope and complexity remained
+largely unaffected, indicating that EMG activity did not significantly confound the results.
+
+316
+
+[FIGURE 2]
+
+317
+
+When the broadband frequency range was used for estimation, the effect of sleep stage was
+
+318
+
+even more pronounced in both parameters (spectral slope: WTS (4) = 1088.28, p < .001; Lempel-Ziv
+
+319
+
+complexity: WTS (4) = 857.60, p < .001). Both, broadband slope and complexity significantly decreased
+
+320
+
+from shallow (N1) to deep NREM sleep (N3). For REM sleep, however, both markers increased again
+
+321
+
+(see Figure 3), arguably reflecting more wake-like brain activity. While REM sleep was significantly
+
+322
+
+different from wakefulness in both frequency ranges for both parameters (all p < .025) it was best
+
+323
+
+discernable with the narrowband slope. We found no significant effects of the repeated measurements
+
+324
+
+(all padj. ≥ .419), revealing that the effect of sleep stage robustly emerged in all individual recordings per
+
+325
+
+subject.
+
+326
+327
+
+[FIGURE 3]
+
+Spectral slope and Lempel-Ziv complexity vary across tasks
+Next, we investigated whether spectral slope and Lempel-Ziv complexity can differentiate
+
+329
+
+between resting and task-engagement as well as between the different active tasks. We calculated both
+
+330
+
+markers from resting sessions with eyes closed (REC) and eyes open (REO), an auditory Go/Nogo
+
+331
+
+(GNG) task, an encoding session (ENC) from a declarative memory task as well as its retrieval session
+
+332
+
+(RET). For this, we focused on the task data from the evening recordings (see dashed dark-green
+
+333
+
+rectangle in Figure 1A). Theoretically, a task-engagement effect, representing a shift towards excitation
+
+334
+
+(i.e., flatter slopes and higher complexity), should be visible between the resting sessions and the GNG
+
+335
+
+or learning task. Since the GNG task was mainly auditory and should rely on different cognitive
+
+336
+
+resources compared to the visual / verbal memory task, we also expected differences between the GNG,
+
+337
+
+ENC and RET sessions.
+
+ep
+
+te
+
+d
+
+M
+
+an
+
+us
+
+cr
+ip
+t
+
+328
+
+In the narrowband range, we observed a significant flattening of the slope (WTS (4) = 56.64, p
+
+339
+
+< .001) along with a decrease in complexity (WTS (4) = 199.55, p < .001) from resting sessions to active
+
+340
+
+tasks, including GNG, ENC and RET (see Figure 4). As expected, the slope was flatter during the GNG,
+
+341
+
+ENC and RET tasks than during resting. However, there was an additional flattening of the narrowband
+
+342
+
+slope during RET compared to GNG and ENC, potentially reflecting higher cognitive engagement.
+
+344
+345
+
+ro
+
+eN
+eu
+
+343
+
+Ac
+c
+
+338
+
+Narrowband Lempel-Ziv complexity did not differ between the resting and GNG sessions (all padj. > .110)
+but decreased from the GNG to the ENC session and was lowest during retrieval.
+[FIGURE 4]
+
+346
+
+When investigating the broadband frequency range, we found that the diverging pattern
+
+347
+
+between spectral slope and Lempel-Ziv complexity disappeared and both parameters were increasing
+
+348
+
+from rest to active task engagement (slope: WTS (4) = 40.46, p < .001; complexity: WTS (4) = 46.24, p
+
+349
+
+< .001; see Figure 5). In addition, Lempel-Ziv complexity differed between the two resting sessions (eyes
+
+350
+
+closed and eyes open), likely reflecting a difference in alpha power (8 – 12Hz). This further supports the
+
+351
+
+notion that oscillatory components exert a greater influence on Lempel-Ziv complexity than the spectral
+
+352
+
+slope. Again, we did not observe any effects of the repeated measurements (all padj. ≥ .222).
+To control for task order and potential influences of exhaustion, we repeated the analyses with
+
+354
+
+the task data averaged over all time points (cf., Figure 1A, i.e., the resting and GNG data were averaged
+
+355
+
+over four time points, the RET data over two time points and the ENC was only completed once) and
+
+356
+
+with a different order of tasks. Both control analyses showed the same pattern as the original analysis
+
+357
+
+(cf., Figures 4 – 1 & 4 – 2 as well as Figures 5 – 1 & 5 – 2). Further, we tested in the GNG task whether
+
+358
+
+it would have made a difference if we focused only on epochs with or without stimulus presentation and
+
+359
+
+did not detect strong differences between different epoch types (cf., Figure 5 – 3).
+
+cr
+ip
+t
+
+353
+
+[FIGURE 5]
+
+361
+
+To evaluate the topographical distribution of the spectral slope and Lempel-Ziv complexity, we
+
+362
+
+also ran a multivariate pattern analysis (MVPA) with multi-class linear discriminant analyses (LDA).
+
+363
+
+Thus, we quantified how well sleep stages and tasks could be decoded by taking the topographical
+
+364
+
+distribution of the slope and complexity into account. In both frequency ranges and for both parameters,
+
+365
+
+classification accuracies were significantly above chance level (20%, p < .001). In the narrowband range,
+
+366
+
+the slope was significantly more informative about the underlying brain state (i.e., yielded higher
+
+367
+
+classification accuracies) than complexity (sleep: WTS (1) = 166.15, p < .001; wake: WTS (1) = 82.28,
+
+368
+
+p < .001; cf., Figure 6A). Within the broadband range, this was only true for the sleep stage classification
+
+369
+
+(WTS (1) = 19.84, p < .001). As for the classification of tasks during wakefulness, the Lempel-Ziv
+
+370
+
+complexity was more informative (WTS (1) = 22.38, p < .001; cf., Figure 6B). An overview of the pairwise
+
+371
+
+classification accuracies for all sleep stages and task pairings is presented in Figures 6 – 1 & 6 – 2.
+
+373
+374
+
+an
+
+M
+
+d
+
+te
+
+ep
+
+Ac
+c
+
+ro
+
+eN
+eu
+
+372
+
+us
+
+360
+
+Correlations between slope and complexity as well as analyses of the robustness across repeated
+measurements are presented in Figures 6 – 3, 6 – 4 and 6 – 5.
+[FIGURE 6]
+
+375
+
+The narrowband spectral slope as an electrophysiological marker of task performance
+
+376
+
+Having established that slope and complexity are not only modulated by sleep but also differ
+
+377
+
+between tasks in a frequency range specific manner, we next investigated their relationship with task
+
+378
+
+performance. We correlated the slope and complexity from the narrow- and broadband frequency range
+
+379
+
+during the GNG task with the according performance scores (percentage of correct trials divided by
+
+380
+
+median reaction time) over multiple sessions.
+
+381
+
+Within the narrowband range, the slope was more consistently related to higher task
+
+382
+
+performance than the complexity, reaching statistical significance at 3 out of 4 timepoints (cf., Figure 7).
+
+383
+
+In the broadband range, the relationship with task performance was also consistently positive for both
+
+384
+
+parameters but did not reach statistical significance (cf., Figure 7 – 1). Thus, only the narrowband slope
+
+385
+
+reliably predicted GNG task performance.
+
+386
+
+Next, we determined whether the narrowband slope would also track memory performance.
+
+388
+
+Thus, we correlated slope and complexity during the RET sessions of the declarative memory task with
+
+389
+
+recall performance (i.e., percentage of correctly recalled word pairs). Even though the slope was again
+
+390
+
+consistently positively correlated with recall performance, only few correlations (C4 and P4 at the
+
+391
+
+delayed retrieval) reached statistical significance (see Figure 8). Despite the lack of statistical
+
+392
+
+significance, the positive trend of tracking recall performance was only observed for the narrowband
+
+393
+
+spectral slope. In the broadband frequency range, both parameters did not show a consistent
+
+394
+
+relationship with recall performance (see Figure 8 – 1).
+
+395
+
+d
+
+M
+
+an
+
+us
+
+387
+
+te
+
+cr
+ip
+t
+
+[FIGURE 7]
+
+ep
+
+[FIGURE 8]
+
+Finally, we assessed whether the performance in the GNG and RET task were related, resulting
+
+397
+
+from better overall attention and higher task engagement. However, there was no significant relationship
+
+398
+
+between the performance scores in the two tasks (evening: rho = 0.10, p = .611; morning: rho = 0.06, p
+
+399
+
+= .766). Thus, subjects that performed well in the GNG task did not necessarily achieve high recall
+
+400
+
+performance scores.
+
+402
+403
+
+ro
+
+eN
+eu
+
+401
+
+Ac
+c
+
+396
+
+Discussion
+
+In this study comprising three experimental recordings with multiple measurements per subject,
+
+we demonstrated that the spectral slope and Lempel-Ziv complexity (I) reliably delineate sleep stages
+
+404
+
+and (II) are modulated by different cognitive tasks. Critically, we provided evidence that (III) the
+
+405
+
+modulation of the slope and complexity strongly depends on the frequency content. While the broadband
+
+406
+
+(1 – 45Hz) slope and complexity were more strongly modulated by sleep stages in general, the
+
+407
+
+narrowband (30 – 45Hz) slope best differentiated REM sleep from wakefulness and reflects mainly
+
+408
+
+aperiodic activity. Moreover, we found that (IV) active task engagement (i.e., switching from resting to
+
+409
+
+an attention or learning task) was associated with flatter slopes in the narrow- and broadband range,
+
+410
+
+but only with higher complexity in the broadband range. The broadband range was also better suited to
+
+411
+
+capture differences between tasks in the classification analyses. However, (V) only the narrowband
+
+412
+
+slope tracked task performance in an auditory attention task and trended towards significance regarding
+
+413
+
+memory performance.
+
+414
+
+The narrowband slope uniquely tracks aperiodic brain activity in REM
+Our findings corroborate previous research demonstrating that the spectral slope and Lempel-
+
+416
+
+Ziv complexity are sensitive markers of sleep stage (Abásolo et al., 2015; Schartner et al., 2017; Lendner
+
+417
+
+et al., 2020; Bódizs et al., 2021; Pascovich et al., 2022; Kozhemiako et al., 2022). We extended these
+
+418
+
+findings by leveraging repeated EEG recordings per subject and confirmed that the two parameters can
+
+419
+
+robustly differentiate between all sleep stages and wakefulness across multiple recording days. In
+
+420
+
+contrast to complexity, the calculation of the slope was about 3.5 times more computationally efficient
+
+421
+
+with our implementations, highlighting its practical applicability for closed loop and clinical settings.
+
+M
+
+an
+
+us
+
+cr
+ip
+t
+
+415
+
+Overall, sleep stages could be better delineated within a broadband frequency range. This is
+
+423
+
+probably because the broadband range encompasses the frequencies typically used for traditional sleep
+
+424
+
+scoring, such as slow wave activity (0.5 – 4Hz) and sleep spindles (11 – 15Hz; Dijk, 1995), thereby
+
+425
+
+increasing the sleep stage specific information in the underlying signal. Interestingly, REM sleep was
+
+426
+
+only clearly distinguished from all other sleep stages by the narrowband slope, in line with findings from
+
+427
+
+Lendner et al. (2020). In the broadband range both parameters showed a relative, more wake-like,
+
+428
+
+increase during REM sleep. Since REM sleep (sometimes called ‘paradoxical sleep’; Peigneux et al.,
+
+429
+
+2001 or Siegel, 2011) is characterized by a more desynchronized EEG pattern that lacks prominent
+
+431
+432
+433
+434
+
+te
+
+ep
+
+Ac
+c
+
+ro
+
+eN
+eu
+
+430
+
+d
+
+422
+
+oscillations (Peever and Fuller, 2017; Blumberg et al., 2020), these disparate results between the two
+frequency ranges support the notion that the narrowband slope mainly measured aperiodic activity. The
+relative increase in broadband complexity during REM has been attributed to higher levels of conscious
+content that accompany vivid dreaming and thus require more complex brain activity than deeper, mostly
+dreamless sleep stages (Mateos et al., 2018; Lau et al., 2022).
+
+435
+
+Previous modeling work has linked the narrowband slope with the excitation to inhibition (E/I)
+
+436
+
+balance in the brain (Gao et al., 2017). Within this framework, steeper slopes during REM sleep
+
+437
+
+potentially reflect stronger inhibitory brain activity. This might allow the brain to decouple from its
+
+438
+
+environment and, by maintaining muscle atonia, to enable the consolidation of emotional memories and
+
+439
+
+the experience of vivid dreams (Aime et al., 2022) without acting them out. The narrowband complexity,
+
+440
+
+however, does not appear to yield informative results and stayed almost constant across sleep stages.
+
+441
+
+Thus, for complexity it might not be sensible to select a narrowband frequency range. Other research
+
+442
+
+also provided evidence that complexity changes are mainly driven by frequencies at the lower end of
+
+443
+
+the frequency spectrum (González et al., 2022).
+
+444
+
+Aperiodic brain activity tracks task engagement and performance
+We demonstrated that the spectral slope and Lempel-Ziv complexity can also track different
+
+446
+
+tasks and are affected by task engagement. That slope and complexity are modulated during
+
+447
+
+wakefulness is in line with other research (Sheehan et al., 2018; Mediano et al., 2021; Jacob et al.,
+
+448
+
+2021; Waschke et al., 2021). However, to our best knowledge this is the first study comparing multiple
+
+449
+
+tasks and different rest conditions as well as the effect of different frequency ranges. Like for sleep, we
+
+450
+
+observed a homogenous modulation of the broadband slope and complexity, where flatter slopes and
+
+451
+
+higher complexity values were associated with active task engagement.
+
+M
+
+an
+
+us
+
+cr
+ip
+t
+
+445
+
+In the E/I balance framework, flatter slopes are the result of higher excitation in the brain (Gao
+
+453
+
+et al., 2017; Chini et al., 2022). Thus, our observed pattern of a flattening of the slope with task
+
+454
+
+engagement and between cognitive tasks might be attributed to differences in the amount of required
+
+455
+
+cognitive resources, leading to stronger excitatory brain activity (Harris and Thiele, 2011; He, 2011;
+
+456
+
+Kanashiro et al., 2017). Unlike Waschke et al. (2021), who reported a stronger occipital flattening of the
+
+457
+
+slope in a visual compared to an auditory task, we did not observe clear topographical differences
+
+458
+
+between the auditory Go/Nogo task and the declarative memory task that relied on visual content.
+
+459
+
+However, this lack of topographical distinctiveness might be due to a partial overlap of involved brain
+
+461
+462
+463
+
+te
+
+ep
+
+Ac
+c
+
+ro
+
+eN
+eu
+
+460
+
+d
+
+452
+
+areas since both, auditory discrimination and learning involve frontotemporal brain regions (Ackerman,
+1992; Halsband, 1998).
+When relating slope and complexity to behavior, we observed that only the narrowband slope
+
+was consistently correlated with attentional task performance across almost all recordings per subject
+
+464
+
+(with the exception of the third session, cf., Figure 7). This association between flatter narrowband
+
+465
+
+slopes and better task performance might even translate to cognitive tasks that do not solely rely on
+
+466
+
+attention since we also observed a consistent but weaker and not statistically significant relationship
+
+467
+
+with memory performance. However, in larger scale studies which offer more reliable effect sizes and
+
+468
+
+confidence intervals, the broadband slope and complexity were also significantly correlated with task
+
+469
+
+performance (Mediano et al., 2021; Waschke et al., 2021). Taken together, our findings suggest that the
+
+470
+
+narrowband slope serves as a particularly sensitive marker for task-dependent fluctuations in brain
+
+471
+
+states relevant for behavioral performance.
+
+472
+
+Narrow- and broadband frequency ranges track different facets of brain activity
+Based on the results from the broadband range, it is tempting to assume that the spectral slope
+
+474
+
+and Lempel-Ziv complexity are indexing similar features of brain activity. Indeed, according to Medel et
+
+475
+
+al. (2023), both parameters might be driven by the transition entropy of the underlying cortical system
+
+476
+
+(i.e., the predictive capacity of the current signal for the upcoming signal). Thus, flatter slopes and higher
+
+477
+
+complexity values could be characteristic of the same cortical states. However, the divergence between
+
+478
+
+the slope and complexity in the narrowband range clearly demonstrates that the two parameters are not
+
+479
+
+redundant and indeed track different facets of the underlying signal. Different contributions of oscillatory
+
+480
+
+and aperiodic brain activity might account for the diverging patterns. At first, it appears paradoxical that
+
+481
+
+flatter slopes, representing an increase in aperiodic activity, should be accompanied by a decrease in
+
+482
+
+complexity as complexity should also increase with higher irregularity. However, others have also
+
+483
+
+reported this type of counterintuitive behavior. For instance, Mediano et al. (2021) showed that in MEG
+
+484
+
+within 0.5 – 30Hz, active tasks exhibited lower complexity values than quiet wakefulness. Additionally,
+
+485
+
+a recent review from Lau et al. (2022) discussed several studies that reported contradicting modulations
+
+486
+
+of signal complexity in different clinical conditions, where some report lower and others higher levels of
+
+487
+
+complexity. So far, these contradictory findings seem to be best explained by the notion that higher
+
+488
+
+complexity values can represent both, either more complex or more random systems (La Torre-Luque
+
+489
+
+et al., 2016), which makes it difficult to argue whether higher complexity always represents a healthier
+
+491
+492
+
+us
+
+an
+
+M
+
+d
+
+te
+
+ep
+
+Ac
+c
+
+ro
+
+eN
+eu
+
+490
+
+cr
+ip
+t
+
+473
+
+brain.
+
+Limitations
+
+In this study, we focused exclusively on two specific EEG derivates: spectral slope and Lempel-
+
+493
+
+Ziv complexity. Consequently, we did not compare these measures against other established analytical
+
+494
+
+techniques such as spectral power, entropy, or network analyses (e.g., coherence). However, regarding
+
+495
+
+spectral power, previous research demonstrated that the spectral slope is superior in discriminating
+
+496
+
+REM sleep from wakefulness compared to slow oscillation or gamma power, and performs similarly to
+
+497
+
+beta power (Lendner et al., 2020; Kozhemiako et al., 2022). Additionally, Biggs et al. (2022) showed
+
+498
+
+that Lempel-Ziv complexity also performed similarly well in comparison to alpha power and outperformed
+
+499
+
+permutation entropy in capturing age-related changes in brain activity induced by anesthesia. However,
+
+500
+
+comparisons with other biomarkers, such as heart rate variability or blood pressure (Radha et al., 2019;
+
+501
+
+Mitsukura et al., 2020; Kuula and Pesonen, 2021), as well as specific benchmark tests involving both
+
+502
+
+spectral slope and Lempel-Ziv complexity, are lacking and merit exploration in future large datasets.
+It should also be noted that the tasks in this study were not specifically designed for the analysis
+
+504
+
+of varying levels of task demand or difficulty as the dataset was originally designed for other purposes.
+
+505
+
+Even though the participants reported differences in task difficulty, other significant factors that could
+
+506
+
+potentially influence the results include differences in task modality. While there is evidence that
+
+507
+
+attentional and learning tasks do differ regarding their level of cognitive demand (Sweller, 2011;
+
+508
+
+Bambrah et al., 2019), it also seems to be dependent on the specific task instructions and modalities. In
+
+509
+
+the future, it might be promising to contrast tasks that exclusively rely on different cognitive resources
+
+510
+
+and sensory modalities.
+
+M
+
+an
+
+us
+
+cr
+ip
+t
+
+503
+
+Despite using only 11 scalp electrodes and no high-density EEG caps due to the need for long-
+
+512
+
+term EEG data collection (14 – 16 hours), we still robustly detected modulations by sleep stage and task
+
+513
+
+engagement, thereby providing evidence for the practical usability of the slope and complexity as indices
+
+514
+
+of different brain states. Nevertheless, research with high-density or intracranial EEG might further
+
+515
+
+contribute to the understanding of which topographical areas are most influential in driving changes in
+
+516
+
+slope or complexity across brain states.
+
+Ac
+c
+
+ep
+
+te
+
+d
+
+511
+
+Finally, we only recruited healthy biologically male adults in a restricted age range (18 – 25
+
+518
+
+years) to avoid potential sex differences and hormonal effects (Plamberger et al., 2021; Kozhemiako et
+
+519
+
+al., 2022) and because controlling for hormonal variations by exclusively recording female participants
+
+521
+522
+
+eN
+eu
+
+520
+
+ro
+
+517
+
+in the follicular phase would have been extremely challenging with our study design. Therefore, it is
+unclear to what extent our results generalize to other populations.
+
+Conclusions
+
+523
+
+Our results demonstrate that EEG spectral slope and Lempel-Ziv complexity are powerful
+
+524
+
+indices of brain states during sleep and wakefulness. We present robust evidence from multiple
+
+525
+
+recordings of three within-subject measurements, revealing that sleep stages and various cognitive
+
+526
+
+tasks are reliably indexed by both spectral slope and Lempel-Ziv complexity. When derived from the full
+
+527
+
+spectrum, slope and complexity capture redundant information and are influenced by oscillatory activity,
+
+528
+
+particularly during sleep. In contrast, the narrowband slope (30 – 45Hz) mainly indexes aperiodic brain
+
+529
+
+activity, offering additional insights into underlying brain states. It provides a means to infer potential
+
+530
+
+changes in the excitation/inhibition balance using only scalp electrodes, thus characterizing the spectral
+
+531
+
+slope as a unique electrophysiological marker and distinguishing it from other measures such as spectral
+
+532
+
+power. Moreover, recent evidence has shown that aperiodic activity on the scalp level can even offer
+
+533
+
+insights into excitability changes on a cellular basis and reflects variations in pyramidal cell calcium
+
+534
+
+activity (Lendner et al., 2023).
+In the present study, the narrowband slope also proved to be the most powerful index of
+
+536
+
+behavioral performance and was best suited to differentiate REM sleep from wakefulness and all other
+
+537
+
+sleep stages without the additional use of EOG or EMG. Computing complexity in the narrowband range,
+
+538
+
+however, did not yield any particularly meaningful results and should be undertaken with caution.
+
+539
+
+Therefore, considering the faster computation time and the more diverse range of applications when
+
+540
+
+using different frequency ranges as well as its correlation with task performance, the slope might be
+
+541
+
+more practical and useful in most circumstances compared to complexity. Taken together, our study
+
+542
+
+emphasizes the importance of considering the parametrization of brain activity into full, oscillatory and
+
+543
+
+aperiodic components to comprehensively understand the dynamics underlying passive and active brain
+
+544
+
+states during sleep and wakefulness.
+
+ep
+
+te
+
+d
+
+M
+
+an
+
+us
+
+cr
+ip
+t
+
+535
+
+eN
+eu
+
+ro
+
+Ac
+c
+
+545
+
+546
+
+References
+
+547
+
+Aamodt A, Nilsen AS, Thürer B, Moghadam FH, Kauppi N, Juel BE, Storm JF (2021) EEG Signal
+
+548
+
+Diversity Varies With Sleep Stage and Aspects of Dream Experience. Front Psychol 12:655884.
+
+549
+
+Aarabi A, He B (2012) A rule-based seizure prediction method for focal neocortical epilepsy. Clinical
+
+550
+
+neurophysiology 123:1111–1122.
+Abásolo D, Simons S, Da Morgado Silva R, Tononi G, Vyazovskiy VV (2015) Lempel-Ziv complexity of
+
+552
+
+cortical activity during sleep and waking in rats. Journal of Neurophysiology 113:2742–2752.
+
+cr
+ip
+t
+
+551
+
+Ackerman S (1992) Discovering the Brain. Washington, D.C.: National Academies Press.
+
+554
+
+Aime M, Calcini N, Borsa M, Campelo T, Rusterholz T, Sattin A, Fellin T, Adamantidis A (2022)
+
+555
+
+Paradoxical somatodendritic decoupling supports cortical plasticity during REM sleep. Science
+
+556
+
+376:724–730.
+
+561
+562
+563
+564
+
+an
+
+M
+
+d
+
+te
+
+560
+
+Ameen MS, Cheung LM, Hauser T, Hahn MA, Schabus M (2019) About the Accuracy and Problems of
+Consumer Devices in the Assessment of Sleep. Sensors 19.
+
+ep
+
+559
+
+Sleep Medicine Rep 7:1–14.
+
+Ameen MS, Petzka M, Peigneux P, Hoedlmoser K (2023) Post-training sleep modulates motor
+adaptation and task-related beta oscillations. J Sleep Res:e14082.
+
+Ac
+c
+
+558
+
+Alonso A, Genzel L, Gomez A (2021) Sex and Menstrual Phase Influences on Sleep and Memory. Curr
+
+Andrillon T, Poulsen AT, Hansen LK, Léger D, Kouider S (2016) Neural Markers of Responsiveness to
+the Environment in Human Sleep. The Journal of neuroscience 36:6583–6596.
+
+ro
+
+557
+
+us
+
+553
+
+Bambrah V, Hsu C-F, Toplak ME, Eastwood JD (2019) Anticipated, experienced, and remembered
+
+566
+
+subjective effort and discomfort on sustained attention versus working memory tasks. Conscious
+
+569
+
+eN
+eu
+
+565
+
+570
+
+57:289–300.
+
+567
+568
+
+Cogn 75:102812.
+
+Benjamini Y, Hochberg Y (1995) Controlling the False Discovery Rate: A Practical and Powerful
+Approach to Multiple Testing. Journal of the Royal Statistical Society: Series B (Methodological)
+
+571
+
+Biggs D, Boncompte G, Pedemonte JC, Fuentes C, Cortinez LI (2022) The effect of age on
+
+572
+
+electroencephalogram measures of anesthesia hypnosis: A comparison of BIS, Alpha Power,
+
+573
+
+Lempel-Ziv complexity and permutation entropy during propofol induction. Front Aging Neurosci
+
+574
+
+14:910886.
+
+575
+576
+
+Blumberg MS, Lesku JA, Libourel P-A, Schmidt MH, Rattenborg NC (2020) What Is REM Sleep? Current
+Biology 30:R38-R49.
+
+577
+
+Bódizs R, Szalárdy O, Horváth C, Ujma PP, Gombos F, Simor P, Pótári A, Zeising M, Steiger A, Dresler
+
+578
+
+M (2021) A set of composite, non-redundant EEG measures of NREM sleep based on the power
+
+579
+
+law scaling of the Fourier spectrum. Sci Rep 11:2041.
+Boe AJ, McGee Koch LL, O’Brien MK, Shawen N, Rogers JA, Lieber RL, Reid KJ, Zee PC, Jayaraman
+
+581
+
+A (2019) Automating sleep stage classification using wireless, wearable sensors. NPJ Digit Med
+
+582
+
+2:131.
+
+cr
+ip
+t
+
+580
+
+Brain Products GmbH (2019) Analyzer | User Manual. Software version 2.2.0. Gilching.
+
+584
+
+Browman CP, Cartwright RD (1980) The first-night effect on sleep and dreams. Biol Psychiatry 15:809–
+
+588
+589
+
+an
+
+M
+
+587
+
+Chaput J-P, Dutil C, Sampasa-Kanyinga H (2018) Sleeping hours: what is the ideal number and how
+does age impact this? Nat Sci Sleep 10:421–430.
+
+Chini M, Pfeffer T, Hanganu-Opatz I (2022) An increase of inhibition drives the developmental
+decorrelation of neural activity. Elife 11.
+
+d
+
+586
+
+812.
+
+te
+
+585
+
+us
+
+583
+
+Colombo MA, Napolitani M, Boly M, Gosseries O, Casarotto S, Rosanova M, Brichant J-F, Boveroux P,
+
+591
+
+Rex S, Laureys S, Massimini M, Chieregato A, Sarasso S (2019) The spectral exponent of the
+
+592
+
+resting EEG indexes the presence of consciousness during unresponsiveness induced by propofol,
+
+593
+
+xenon, and ketamine. Neuroimage 189:631–644.
+
+596
+597
+598
+599
+600
+601
+
+Ac
+c
+
+ro
+
+595
+
+Comsa I-M (2019) Tracking brain dynamics across transitions of consciousness. Doctoral thesis.
+Cambridge, England.
+
+eN
+eu
+
+594
+
+ep
+
+590
+
+Curcio G, Ferrara M, Piergianni A, Fratello F, Gennaro L de (2004) Paradoxes of the first-night effect: a
+quantitative analysis of antero-posterior EEG topography. Clinical neurophysiology 115:1178–1188.
+
+Dave S, Brothers TA, Swaab TY (2018) 1/f neural noise and electrophysiological indices of contextual
+prediction in aging. Brain Res 1691:34–43.
+Dijk D-J (1995) EEG slow waves and sleep spindles: windows on the sleeping brain. Behavioural Brain
+Research 69:109–116.
+
+602
+
+Donders FC (1969) On the speed of mental processes. Acta Psychologica 30:412–431.
+
+603
+
+Donoghue T, Haller M, Peterson EJ, Varma P, Sebastian P, Gao R, Noto T, Lara AH, Wallis JD, Knight
+
+604
+
+RT, Shestyuk A, Voytek B (2020) Parameterizing neural power spectra into periodic and aperiodic
+
+605
+
+components. Nat Neurosci 23:1655–1665.
+
+606
+
+Ferenets R, Vanluchene A, Lipping T, Heyse B, Struys MMRF (2007) Behavior of entropy/complexity
+
+607
+
+measures of the electroencephalogram during propofol-induced sedation: dose-dependent effects
+
+608
+
+of remifentanil. Anesthesiology 106:696–706.
+
+609
+610
+
+Figueiro MG, Sahin L, Wood B, Plitnick B (2016) Light at Night and Measures of Alertness and
+Performance: Implications for Shift Workers. Biol Res Nurs 18:90–100.
+Friedrich S, Konietschke F, Pauly M (2019) Resampling-Based Analysis of Multivariate Data and
+
+612
+
+Repeated Measures Designs with the R Package MANOVA.RM. The R Journal 11:380–400.
+
+613
+
+Gao R, Penzes P (2015) Common mechanisms of excitatory and inhibitory imbalance in schizophrenia
+
+616
+
+Gao R, Peterson EJ, Voytek B (2017) Inferring synaptic excitation/inhibition balance from field potentials.
+
+us
+
+615
+
+and autism spectrum disorders. Curr Mol Med 15:146–167.
+
+Neuroimage 158:70–78.
+
+an
+
+614
+
+cr
+ip
+t
+
+611
+
+Gerster M, Waterstraat G, Litvak V, Lehnertz K, Schnitzler A, Florin E, Curio G, Nikulin V (2022)
+
+618
+
+Separating Neural Oscillations from Aperiodic 1/f Activity: Challenges and Recommendations.
+
+619
+
+Neuroinformatics. doi:10.1007/s12021-022-09581-8.
+
+d
+
+M
+
+617
+
+González J, Mateos D, Cavelli M, Mondino A, Pascovich C, Torterolo P, Rubido N (2022) Low frequency
+
+621
+
+oscillations drive EEG’s complexity changes during wakefulness and sleep. Neuroscience 494:1–
+
+622
+
+11.
+
+626
+627
+628
+629
+
+ep
+
+Ac
+c
+
+625
+
+Electroencephalography and Clinical Neurophysiology 55:468–484.
+Halsband U (1998) Encoding and retrieval in declarative learning: a positron emission tomography
+
+ro
+
+624
+
+Gratton G, Coles MG, Donchin E (1983) A new method for off-line removal of ocular artifact.
+
+study. Behavioural Brain Research 97:69–78.
+
+eN
+eu
+
+623
+
+te
+
+620
+
+Harris KD, Thiele A (2011) Cortical state and attention. Nat Rev Neurosci 12:509–523.
+He BJ (2011) Scale-free properties of the functional magnetic resonance imaging signal during rest and
+task. The Journal of neuroscience 31:13786–13795.
+
+630
+
+He BJ (2014) Scale-free brain activity: past, present, and future. Trends Cogn Sci 18:480–487.
+
+631
+
+He BJ, Zempel JM, Snyder AZ, Raichle ME (2010) The temporal structures and functional significance
+
+632
+633
+634
+
+of scale-free brain activity. Neuron 66:353–369.
+Helson P, Lundqvist D, Svenningsson P, Vinding MC, Kumar A (2023) Cortex-wide topography of 1/fexponent in Parkinson’s disease. NPJ Parkinsons Dis 9:109.
+
+635
+
+Höhn C, Schmid SR, Plamberger CP, Bothe K, Angerer M, Gruber G, Pletzer BA, Hoedlmoser K (2021)
+
+636
+
+Preliminary Results: The Impact of Smartphone Use and Short-Wavelength Light during the Evening
+
+637
+
+on Circadian Rhythm, Sleep and Alertness. Clocks Sleep 3:66–86.
+
+638
+
+Jacob MS, Roach BJ, Sargent KS, Mathalon DH, Ford JM (2021) Aperiodic measures of neural
+
+639
+
+excitability are associated with anticorrelated hemodynamic networks at rest: A combined EEG-fMRI
+
+640
+
+study. Neuroimage 245:118705.
+
+643
+644
+
+cr
+ip
+t
+
+642
+
+Jensen O, Mazaheri A (2010) Shaping functional architecture by oscillatory alpha activity: gating by
+inhibition. Front Hum Neurosci 4:186.
+
+Kanashiro T, Ocker GK, Cohen MR, Doiron B (2017) Attentional modulation of neuronal variability in
+circuit models of cortex. Elife 6.
+
+us
+
+641
+
+Karalunas SL, Ostlund BD, Alperin BR, Figuracion M, Gustafsson HC, Deming EM, Foti D, Antovich D,
+
+646
+
+Dude J, Nigg J, Sullivan E (2022) Electroencephalogram aperiodic power spectral slope can be
+
+647
+
+reliably measured and predicts ADHD risk in early development. Dev Psychobiol 64:e22228.
+
+648
+
+Kleiner M, Brainard D, Pelli D, Ingling A, Murray, R., Broussard, C. (2007) What’s new in psychtoolbox-
+
+653
+654
+655
+656
+657
+658
+
+M
+
+d
+te
+
+ep
+
+652
+
+performance. Brain Topogr 5:241–251.
+
+Kozhemiako N, Mylonas D, Pan JQ, Prerau MJ, Redline S, Purcell SM (2022) Sources of variation in
+
+Ac
+c
+
+651
+
+Klimesch W, Schimke H, Pfurtscheller G (1993) Alpha frequency, cognitive load and memory
+
+the spectral slope of the sleep EEG. eNeuro 9.
+Kuula L, Pesonen A-K (2021) Heart Rate Variability and Firstbeat Method for Detecting Sleep Stages in
+
+ro
+
+650
+
+3. Perception 36:1–16.
+
+Healthy Young Adults: Feasibility Study. JMIR Mhealth Uhealth 9:e24704.
+
+eN
+eu
+
+649
+
+an
+
+645
+
+La Torre-Luque A de, Bornas X, Balle M, Fiol-Veny A (2016) Complexity and nonlinear biomarkers in
+emotional disorders: A meta-analytic study. Neurosci Biobehav Rev 68:410–422.
+
+Lau ZJ, Pham T, Chen SHA, Makowski D (2022) Brain entropy, fractal dimensions and predictability: A
+
+659
+
+review of complexity measures for EEG in healthy and neuropsychiatric populations. Eur J Neurosci.
+
+660
+
+doi:10.1111/ejn.15800.
+
+661
+662
+663
+664
+
+Lempel A, Ziv J (1976) On the Complexity of Finite Sequences. IEEE Transactions on Information
+Theory 22:75–81.
+Lendner JD, Helfrich RF, Mander BA, Romundstad L, Lin JJ, Walker MP, Larsson PG, Knight RT (2020)
+An electrophysiological marker of arousal level in humans. Elife 9.
+
+665
+
+Lendner JD, Mander BA, Schuh-Hofer S, Schmidt H, Knight RT, Walker MP, Lin JJ, Helfrich RF (2022)
+
+666
+
+Human REM sleep controls neural excitability in support of memory formation. bioRxiv.
+
+667
+
+doi:10.1101/2022.05.13.491801.
+
+668
+
+Lendner JD, Niethard N, Mander BA, van Schalkwijk FJ, Schuh-Hofer S, Schmidt H, Knight RT, Born J,
+
+669
+
+Walker MP, Lin JJ, Helfrich RF (2023) Human REM sleep recalibrates neural activity in support of
+
+670
+
+memory formation. Sci Adv 9:eadj1895.
+
+676
+677
+678
+679
+680
+
+cr
+ip
+t
+
+us
+
+Mateos D, Guevara Erra R, Wennberg R, Perez Velazquez JL (2018) Measures of entropy and
+
+an
+
+675
+
+using fractal and entropy approaches. Sleep Med Rev 37:85–93.
+
+complexity in altered states of consciousness. Cogn Neurodyn 12:73–84.
+
+M
+
+674
+
+Ma Y, Shi W, Peng C-K, Yang AC (2018) Nonlinear dynamical analysis of sleep electroencephalography
+
+Medel V, Irani M, Crossley N, Ossandón T, Boncompte G (2023) Complexity and 1/f slope jointly reflect
+brain states. Sci Rep 13:21700.
+
+d
+
+673
+
+scoring: Comparison with polysomnography. Clinical neurophysiology 132:137–145.
+
+Medel V, Irani M, Ossandón T, Boncompte G (2020) Complexity and 1/f slope jointly reflect brain states.
+
+te
+
+672
+
+Lüdtke S, Hermann W, Kirste T, Beneš H, Teipel S (2021) An algorithm for actigraphy-based sleep/wake
+
+bioRxiv. doi:10.1101/2020.09.15.298497.
+
+ep
+
+671
+
+Mediano PAM, Ikkala A, Kievit RA, Jagannathan SR, Varley TF, Stamatakis EA, Bekinschtein TA, Bor
+
+682
+
+D (2021) Fluctuations in Neural Complexity During Wakefulness Relate To Conscious Level and
+
+683
+
+Cognition. bioRxiv. doi:10.1101/2021.09.23.461002.
+
+686
+687
+688
+
+ro
+
+685
+
+Miskovic V, MacDonald KJ, Rhodes LJ, Cote KA (2019) Changes in EEG multiscale entropy and powerlaw frequency scaling during the human sleep cycle. Hum Brain Mapp 40:538–551.
+
+eN
+eu
+
+684
+
+Ac
+c
+
+681
+
+Mitsukura Y, Fukunaga K, Yasui M, Mimura M (2020) Sleep stage detection using only heart rate. Health
+Informatics J 26:376–387.
+
+Oostenveld R, Fries P, Maris E, Schoffelen J-M (2011) FieldTrip: Open source software for advanced
+
+689
+
+analysis of MEG, EEG, and invasive electrophysiological data. Comput Intell Neurosci 2011:156869.
+
+690
+
+Ouyang G, Hildebrandt A, Schmitz F, Herrmann CS (2020) Decomposing alpha and 1/f brain activities
+
+691
+
+reveals their differential associations with cognitive processing speed. Neuroimage 205:116304.
+
+692
+
+Pascovich C, Castro-Zaballa S, Mediano PAM, Bor D, Canales-Johnson A, Torterolo P, Bekinschtein
+
+693
+
+TA (2022) Ketamine and sleep modulate neural complexity dynamics in cats. Eur J Neurosci
+
+694
+
+55:1584–1600.
+
+695
+
+Pathania A, Euler MJ, Clark M, Cowan RL, Duff K, Lohse KR (2022) Resting EEG spectral slopes are
+
+696
+
+associated with age-related differences in information processing speed. Biol Psychol 168:108261.
+
+697
+
+Peever J, Fuller PM (2017) The Biology of REM Sleep. Current Biology 27:R1237-R1248.
+
+698
+
+Peigneux P, Laureys S, Fuchs S, Delbeuck X, Degueldre C, Aerts J, Delfiore G, Luxen A, Maquet P
+
+699
+
+(2001) Generation of rapid eye movements during paradoxical sleep in humans. Neuroimage
+
+700
+
+14:701–708.
+
+702
+
+Pereda E, Gamundi A, Rial R, González J (1998) Non-linear behaviour of human EEG: fractal exponent
+
+cr
+ip
+t
+
+701
+
+versus correlation dimension in awake and sleep stages. Neuroscience Letters 250:91–94.
+
+Plamberger CP, van Wijk HE, Kerschbaum H, Pletzer BA, Gruber G, Oberascher K, Dresler M, Hahn
+
+704
+
+MA, Hoedlmoser K (2021) Impact of menstrual cycle phase and oral contraceptives on sleep and
+
+705
+
+overnight memory consolidation. J Sleep Res 30:e13239.
+
+an
+
+us
+
+703
+
+Podvalny E, Noy N, Harel M, Bickel S, Chechik G, Schroeder CE, Mehta AD, Tsodyks M, Malach R
+
+707
+
+(2015) A unifying principle underlying the extracellular field potential spectral responses in the
+
+708
+
+human cortex. Journal of Neurophysiology 114:505–519.
+
+d
+
+M
+
+706
+
+Radha M, Fonseca P, Moreau A, Ross M, Cerny A, Anderer P, Long X, Aarts RM (2019) Sleep stage
+
+710
+
+classification from heart-rate variability using long short-term memory neural networks. Sci Rep
+
+711
+
+9:14149.
+
+ep
+
+te
+
+709
+
+Richard BB, Albertario CL, Harding SM, Uoyd RM, Plante DT, Quan SF, Troester MM, Vaughn BV
+
+713
+
+(2012) The AASM Manual for the Scoring of Sleep and Associated Events: Rules, Terminology and
+
+714
+
+Technical Specifications. American Academy of Sleep Medicine: Darien, IL.
+
+716
+717
+718
+719
+
+ro
+
+Rivolta MW, Migliorini M, Aktaruzzaman M, Sassi R, Bianchi AM (2014) Effects of the series length on
+
+eN
+eu
+
+715
+
+Ac
+c
+
+712
+
+Lempel-Ziv Complexity during sleep. Annu Int Conf IEEE Eng Med Biol Soc 2014:693–696.
+
+Roberts DM, Schade MM, Mathew GM, Gartenberg D, Buxton OM (2020) Detecting sleep using heart
+rate and motion data from multisensor consumer-grade wearables, relative to wrist actigraphy and
+polysomnography. Sleep 43.
+
+720
+
+Robertson MM, Furlong S, Voytek B, Donoghue T, Boettiger CA, Sheridan MA (2019) EEG power
+
+721
+
+spectral slope differs by ADHD status and stimulant medication exposure in early childhood. Journal
+
+722
+
+of Neurophysiology 122:2427–2437.
+
+723
+724
+
+Rubenstein JLR, Merzenich MM (2003) Model of autism: increased ratio of excitation/inhibition in key
+neural systems. Genes Brain Behav 2:255–267.
+
+725
+726
+
+Sadeh A, Alster J, Urbach D, Lavie P (1989) Actigraphically based automatic bedtime sleep-wake
+scoring: Validity and clinical applications. Journal of Ambulatory Monitoring:209–216.
+
+727
+
+Schartner M, Pigorini A, Gibbs SA, Arnulfo G, Sarasso S, Barnett L, Nobili L, Massimini M, Seth A,
+
+728
+
+Barrett AB (2017) Global and local complexity of intracranial EEG decreases during NREM sleep.
+
+729
+
+Neurosci Conscious 2017:1-12.
+Schartner M, Seth A, Noirhomme Q, Boly M, Bruno M-A, Laureys S, Barrett AB (2015) Complexity of
+
+731
+
+Multi-Dimensional Spontaneous EEG Decreases during Propofol Induced General Anaesthesia.
+
+732
+
+PLoS One 10:e0133532.
+
+cr
+ip
+t
+
+730
+
+Schaworonkow N, Voytek B (2021) Longitudinal changes in aperiodic and periodic activity in
+
+734
+
+electrophysiological recordings in the first seven months of life. Dev Cogn Neurosci 47:100895.
+
+735
+
+Schmid SR, Höhn C, Bothe K, Plamberger CP, Angerer M, Pletzer BA, Hoedlmoser K (2021) How Smart
+
+736
+
+Is It to Go to Bed with the Phone? The Impact of Short-Wavelength Light and Affective States on
+
+737
+
+Sleep and Circadian Rhythms. Clocks Sleep 3:558–580.
+
+M
+
+an
+
+us
+
+733
+
+Sheehan TC, Sreekumar V, Inati SK, Zaghloul KA (2018) Signal Complexity of Human Intracranial EEG
+
+739
+
+Tracks Successful Associative-Memory Formation across Individuals. The Journal of neuroscience
+
+740
+
+38:1744–1755.
+
+ep
+
+te
+
+d
+
+738
+
+Siegel JM (2011) REM sleep: a biological and psychological paradox. Sleep Med Rev 15:139–142.
+
+742
+
+Sweller J (2011) Cognitive Load Theory. In: The psychology of learning and motivation: Cognition in
+
+743
+
+Ac
+c
+
+741
+
+education (Mestre JP, Ross BH, eds), pp 37–76. Elsevier Academic Press.
+Tal A, Shinar Z, Shaki D, Codish S, Goldbart A (2017) Validation of Contact-Free Sleep Monitoring
+
+745
+
+Device with Comparison to Polysomnography. Journal of clinical sleep medicine 13:517–522.
+
+747
+748
+749
+
+eN
+eu
+
+746
+
+ro
+
+744
+
+Terzano MG, Parrino L, Smerieri A, Chervin R, Chokroverty S, Guilleminault C, Hirshkowitz M,
+Mahowald M, Moldofsky H, Rosa A, Thomas R, Walters A (2002) Atlas, rules, and recording
+techniques for the scoring of cyclic alternating pattern (CAP) in human sleep. Sleep medicine 3:187–
+199.
+
+750
+
+Tosun PD, Dijk D-J, Winsky-Sommerer R, Abásolo D (2019) Effects of Ageing and Sex on Complexity
+
+751
+
+in the Human Sleep EEG: A Comparison of Three Symbolic Dynamic Analysis Methods. Complexity
+
+752
+
+2019:1–12.
+
+753
+754
+
+Treder MS (2020) MVPA-Light: A Classification and Regression Toolbox for Multi-Dimensional Data.
+Front Neurosci 14:289.
+
+755
+
+van de Borne P, Nguyen H, Biston P, Linkowski P, Degaute JP (1994) Effects of wake and sleep stages
+
+756
+
+on the 24-h autonomic control of blood pressure and heart rate in recumbent men. Am J Physiol
+
+757
+
+266:548-554.
+
+758
+759
+
+Voytek B, Knight RT (2015) Dynamic network communication as a unifying neural basis for cognition,
+development, aging, and disease. Biol Psychiatry 77:1089–1097.
+Voytek B, Kramer MA, Case J, Lepage KQ, Tempesta ZR, Knight RT, Gazzaley A (2015) Age-Related
+
+761
+
+Changes in 1/f Neural Electrophysiological Noise. The Journal of neuroscience 35:13257–13265.
+
+762
+
+Waschke L, Donoghue T, Fiedler L, Smith S, Garrett DD, Voytek B, Obleser J (2021) Modality-specific
+
+763
+
+tracking of attention and sensory statistics in the human electrophysiological spectral exponent. Elife
+
+764
+
+10.
+
+us
+
+an
+
+766
+
+Waschke L, Wöstmann M, Obleser J (2017) States and traits of neural irregularity in the age-varying
+human brain. Sci Rep 7:17381.
+
+M
+
+765
+
+cr
+ip
+t
+
+760
+
+Watson NF, Badr MS, Belenky G, Bliwise DL, Buxton OM, Buysse D, Dinges DF, Gangwisch J,
+
+768
+
+Grandner MA, Kushida C, Malhotra RK, Martin JL, Patel SR, Quan SF, Tasali E (2015) Joint
+
+769
+
+Consensus Statement of the American Academy of Sleep Medicine and Sleep Research Society on
+
+770
+
+the Recommended Amount of Sleep for a Healthy Adult: Methodology and Discussion. J Clin Sleep
+
+771
+
+Med 11:931–952.
+
+ep
+
+te
+
+d
+
+767
+
+Welch (1984) A Technique for High-Performance Data Compression. Computer 17:8–19.
+
+773
+
+Wickham H (2016) ggplot2. Elegant graphics for data analysis. Switzerland: Springer.
+
+774
+
+Wong M (2010) Too much inhibition leads to excitation in absence epilepsy. Epilepsy Curr 10:131–132.
+
+775
+
+Zhang XS, Roy RJ, Jensen EW (2001) EEG complexity as a measure of depth of anesthesia for patients.
+
+777
+778
+
+ro
+
+eN
+eu
+
+776
+
+Ac
+c
+
+772
+
+IEEE Trans Biomed Eng 48:1424–1433.
+
+Zhu X, Xu H, Zhao J, Tian J (2017) Automated Epileptic Seizure Detection in Scalp EEG Based on
+Spatial-Temporal Complexity. Complexity 2017:1–8.
+
+779
+
+Legends
+
+780
+
+Figure 1. (A): Overview of the experimental protocol. EEG was recorded throughout all tasks and during sleep (with
+
+781
+
+full-night polysomnography) on the experimental days 7, 10 and 13 (see Figure 1 – 2 for the general sleep
+
+782
+
+architecture on the different nights). The tasks, which are highlighted by a dashed, dark-green rectangle were
+
+783
+
+primarily used to analyze the effects of engagement in different cognitive tasks during wakefulness. The adaptation
+
+784
+
+night only served familiarization purposes and was not included in any of the analyses. An overview of the results
+
+785
+
+from the screening entrance questionnaire is presented in Figure 1 – 1. (B): Example of the spectral slope estimation
+
+during N1 sleep. For illustration purposes, data is shown for the electrode Pz averaged over all subjects and sleep
+
+787
+
+recordings. The spectral slope was fitted within 1 – 45Hz (broadband, dashed green line) and 30 – 45Hz
+
+788
+
+(narrowband, dashed red line). (C): Schematic overview of the Lempel-Ziv complexity calculation based on a
+
+789
+
+random 4s epoch from electrode Pz of a subject during resting with closed eyes. First, the raw signal, filtered within
+
+790
+
+a certain frequency range, is Hilbert transformed. Second, the resulting data is binarized around its median
+
+791
+
+amplitude and stored as a vector of zeros and ones. Lastly, the Lempel-Ziv-Welch algorithm (Welch, 1984) is applied
+
+792
+
+on this binary sequence in order to obtain a complexity value, which is driven by the number of unique repetitions
+
+793
+
+of ones and zeros. The effect of signal regularity on Lempel-Ziv complexity and the spectral slope is further
+
+794
+
+demonstrated in Figure 1 – 4. For an overview of the number of epochs that were used for all analyses see Figure
+
+795
+
+1 – 3.
+
+cr
+ip
+t
+
+786
+
+us
+
+796
+
+Figure 2. Spectral slope (green, A) and Lempel-Ziv (LZ) complexity (purple, B) from 30 – 45Hz across sleep,
+
+798
+
+averaged over all lab-sessions per subject. Center figures show the data averaged over all electrodes and
+
+799
+
+topographical maps are provided below (color-coding refers to z-values of slope or complexity computed from the
+
+800
+
+grand average across all sleep stages). In A, the log-log power spectra are provided for each sleep stage to illustrate
+
+801
+
+the slope changes across different sleep stages. Classification accuracies are shown on the right-hand side. A: The
+
+802
+
+spectral slope decreases from wakefulness across all sleep stages to REM sleep with a small temporary increase
+
+803
+
+during N3 sleep. B: Lempel-Ziv complexity increases from shallow N1 to light N2 sleep and is in general less
+
+804
+
+modulated by sleep stage than the spectral slope. EMG activity did not confound the modulation of the spectral
+
+805
+
+slope and Lempel-Ziv complexity during sleep (see Figure 2 – 1) or wakefulness (see Figure 2 – 2). ***: p < .001,
+
+806
+
+**: p ≤ .010, *: p ≤ .050, n.s.: p > .050; all p-values are adjusted for multiple comparisons; error-bars represent 95%
+
+807
+
+confidence intervals (N = 27).
+
+810
+811
+812
+
+M
+
+d
+
+te
+
+ep
+
+Ac
+c
+
+ro
+
+809
+
+Figure 3. Spectral slope (green, A) and Lempel-Ziv (LZ) complexity (purple, B) from 1 – 45Hz across sleep,
+
+eN
+eu
+
+808
+
+an
+
+797
+
+averaged over all lab-sessions per subject. Center figures show the data averaged over all electrodes and
+topographical maps are provided below (color-coding refers to z-values of slope or complexity computed from the
+grand average across all sleep stages). In A, the log-log power spectra for each sleep stage are provided to illustrate
+
+813
+
+the broadband slope differences across sleep stages. Classification accuracies are shown on the right-hand side.
+
+814
+
+A: Spectral slope steepens from wakefulness to N3 sleep but flattens to some extent in REM sleep. B: Lempel-Ziv
+
+815
+
+complexity shows the same pattern as the spectral slope and likewise decreases from wakefulness to N3 with a
+
+816
+
+subsequent increase in REM sleep. ***: p < .001, **: p ≤ .010, *: p ≤ .050, n.s.: p > .050; p-values are adjusted for
+
+817
+
+multiple comparisons; error-bars represent 95% confidence intervals (N = 27).
+
+818
+819
+
+Figure 4. Spectral slope (green, A) and Lempel-Ziv (LZ) complexity (purple, B) from 30 – 45Hz across tasks,
+
+820
+
+averaged over all lab-sessions per subject (see Figure 4 – 1 for an analysis averaged over all timepoints per lab-
+
+session and Figure 4 – 2 for an analysis demonstrating similar results when using a different task-order). Center
+
+822
+
+figures show the data averaged over all channels and topographical maps are provided below (color-coding refers
+
+823
+
+to z-values of slope or complexity computed from the grand average across all tasks). In A, the log-log power
+
+824
+
+spectra for each task are provided to illustrate narrowband slope differences across tasks. Classification accuracies
+
+825
+
+are shown on the right-hand side. A: The spectral slope flattens when engaging in cognitive tasks (Go/Nogo and
+
+826
+
+learning) and is flattest during the retrieval session of the learning task. B: Lempel-Ziv complexity decreases with
+
+827
+
+task-engagement and reaches its minimum during the retrieval session. ***: p < .001, **: p ≤ .010, *: p ≤ .050, n.s.:
+
+828
+
+p > .050; p-values adjusted for multiple comparisons; error-bars show 95% confidence intervals (N = 28).
+
+cr
+ip
+t
+
+821
+
+829
+
+Figure 5. Spectral slope (green, A) and Lempel-Ziv (LZ) complexity (purple, B) from 1 – 45Hz across tasks,
+
+831
+
+averaged over all lab-sessions per subject (see Figure 5 – 1 and Figure 5 – 2 for analyses averaged over all
+
+832
+
+timepoints per session and for a different task-order). Center figures show the data over all channels and
+
+833
+
+topographical maps are provided below (color-coding refers to z-values of slope or complexity computed from the
+
+834
+
+grand average over all tasks). In A, the log-log power spectra for each sleep stage are provided to illustrate
+
+835
+
+broadband slope differences across tasks. Classification accuracies are shown on the right-hand side. A: The slope
+
+836
+
+flattens from resting to the Go/Nogo task (see Figure 5 – 3 for an analysis of the effect of different epoch types and
+
+837
+
+lengths for this task) and is flattest during retrieval. B: Complexity increases from resting with closed to open eyes
+
+838
+
+and is further elevated in all active tasks, peaking during retrieval. ***: p < .001, **: p ≤ .010, *: p ≤ .050, n.s.: p >
+
+839
+
+.050; p-values adjusted for multiple comparisons; error-bars show 95% confidence intervals (N = 28).
+
+Ac
+c
+
+ep
+
+te
+
+d
+
+M
+
+an
+
+us
+
+830
+
+840
+
+Figure 6. A: Comparison of the multi-class classification accuracies within 30 – 45Hz (see Figure 6 – 1 for all
+
+842
+
+pairwise classification accuracies) for the spectral slope and Lempel-Ziv complexity regarding sleep stages (WAKE,
+
+843
+
+N1, N2, N3, REM) and tasks during wakefulness (resting eyes closed, resting eyes open, auditory Go/Nogo,
+
+844
+
+encoding, retrieval). Sleep stages and tasks could be decoded more precisely with the spectral slope. Overall
+
+846
+847
+
+eN
+eu
+
+845
+
+ro
+
+841
+
+classification accuracy was significantly higher for tasks than for sleep stages. B: Comparison of the classification
+accuracies across tasks and sleep stages for slope and complexity within 1 – 45Hz (see Figure 6 – 2 for the pairwise
+classifications). The slope only yielded better decoding performance during sleep, whereas task classification
+
+848
+
+worked better when using Lempel-Ziv complexity, which is arguably due to the difference in complexity between
+
+849
+
+the two resting conditions that is not present in the slope. The dotted red lines represent chance level (20%). The
+
+850
+
+correlation between slope and complexity within 30 – 45Hz and 1 – 45Hz is presented in Figure 6 – 3. Figure 6 – 4
+
+851
+
+and Figure 6 – 5 demonstrate the robustness of the slope and complexity values across lab-visits and the correlation
+
+852
+
+across frequency ranges. ***: p < .001, n.s.: p > .050 (N = 28).
+
+853
+854
+
+Figure 7. Relationship between Go/Nogo task performance and spectral slope (A) or Lempel-Ziv (LZ) complexity
+
+855
+
+(B) within 30 – 45Hz across different assessment times (see Figure 7 – 1 for the 1 – 45Hz range). For the large
+
+856
+
+scatterplots, data was averaged across all lab-sessions (small scatterplots show the relationship per lab-session).
+
+857
+
+The topoplots depict the correlation strength for each electrode. Electrodes forming a significant cluster are
+
+858
+
+highlighted with asterisks. Those showing a significant correlation after false discovery rate correction but did not
+
+859
+
+from a cluster are marked with a cross. Only the narrowband spectral slope showed a consistent positive
+
+860
+
+relationship with task performance (N = 26).
+
+861
+Figure 8. Relationship between declarative memory recall performance and spectral slope (A) or Lempel-Ziv (LZ)
+
+863
+
+complexity (B) within 30 – 45Hz (see Figure 8 – 1 for the 1 – 45Hz range). Results are shown for immediate recall
+
+864
+
+in the evening and delayed recall on the next morning as well as for overnight change. For the large scatterplots,
+
+865
+
+data was averaged across all lab-sessions (small scatterplots show the relationship per session). The topoplots
+
+866
+
+represent the strength of the correlations on each electrode. Even though the spectral slope was consistently
+
+867
+
+positively correlated with recall performance, no electrodes formed a significant cluster. Significant single electrodes
+
+868
+
+that survived false discovery rate correction are highlighted with a cross (N = 28).
+
+eN
+eu
+
+ro
+
+Ac
+c
+
+ep
+
+te
+
+d
+
+M
+
+an
+
+us
+
+cr
+ip
+t
+
+862
+
+ro
+
+eu
+
+eN
+
+ed
+
+pt
+
+ce
+
+Ac
+
+cr
+ip
+t
+
+us
+
+an
+
+M
+
+ro
+
+eu
+
+eN
+
+ed
+
+pt
+
+ce
+
+Ac
+
+cr
+ip
+t
+
+us
+
+an
+
+M
+
+ro
+
+eu
+
+eN
+
+ed
+
+pt
+
+ce
+
+Ac
+
+cr
+ip
+t
+
+us
+
+an
+
+M
+
+ro
+
+eu
+
+eN
+
+ed
+
+pt
+
+ce
+
+Ac
+
+cr
+ip
+t
+
+us
+
+an
+
+M
+
+ro
+
+eu
+
+eN
+
+ed
+
+pt
+
+ce
+
+Ac
+
+cr
+ip
+t
+
+us
+
+an
+
+M
+
+ro
+
+eu
+
+eN
+
+ed
+
+pt
+
+ce
+
+Ac
+
+cr
+ip
+t
+
+us
+
+an
+
+M
+
+ro
+
+eu
+
+eN
+
+ed
+
+pt
+
+ce
+
+Ac
+
+cr
+ip
+t
+
+us
+
+an
+
+M
+
+ro
+
+eu
+
+eN
+
+ed
+
+pt
+
+ce
+
+Ac
+
+cr
+ip
+t
+
+us
+
+an
+
+M
+
+

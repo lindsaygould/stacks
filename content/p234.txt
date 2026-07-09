@@ -1,0 +1,809 @@
+www.nature.com/scientificreports
+
+OPEN
+
+Complexity and 1/f slope jointly
+reflect brain states
+Vicente Medel 1,6*, Martín Irani 2,6, Nicolás Crossley 3, Tomás Ossandón 3,4* &
+Gonzalo Boncompte 3,5*
+Characterization of brain states is essential for understanding its functioning in the absence of
+external stimuli. Brain states differ on their balance between excitation and inhibition, and on the
+diversity of their activity patterns. These can be respectively indexed by 1/f slope and Lempel–Ziv
+complexity (LZc). However, whether and how these two brain state properties relate remain elusive.
+Here we analyzed the relation between 1/f slope and LZc with two in-silico approaches and in both
+rat EEG and monkey ECoG data. We contrasted resting state with propofol anesthesia, which directly
+modulates the excitation-inhibition balance. We found convergent results among simulated and
+empirical data, showing a strong, inverse and non trivial monotonic relation between 1/f slope and
+complexity, consistent at both ECoG and EEG scales. We hypothesize that differentially entropic
+regimes could underlie the link between the excitation-inhibition balance and the vastness of the
+repertoire of brain systems.
+Spontaneously occurring brain activity patterns in the cerebral cortex constitute the so-called brain ­states1,2.
+These are present without a direct link to external stimuli and constitute the basis of essential cognitive processes
+like ­attention3–5 and global states of consciousness (GSC), such as sleep, wakefulness and ­anesthesia6,7. One of
+the most prominent strategies to characterize brain states has been to analyze the spectral properties of their
+associated field potentials like electroencephalogram (EEG) and local field potential (LFP). A broader approach
+includes both oscillatory and background aperiodic ­activity8,9. From this perspective, our understanding of
+brain states remains limited partly due to the canonical focus on narrow-band oscillations, which marginalizes
+non-linear activity to the status of ’background’ activity or irrelevant ’noise’. However, this background activity
+contains crucial information to bridge the gap between brain states and GSC.
+Cortical neurons in awake animals show strong membrane potential fluctuations generating irregular discharges, known as high conductance ­states10. These states generate the background activity that supports highorder processes. It has been shown that neurons can achieve irregular firing patterns with balanced excitatory
+and inhibitory synaptic ­activity11,12. From this perspective, brain states depend on global brain variables, such as
+relative levels of excitation and ­inhibition13. Moreover, computational characterizations of the balance between
+excitation and inhibition (E/I balance), from local circuit activity to whole-brain modeling, have shown its relevance on modulating information transmission and ­entropy14–16. On the other hand, perturbations to the E/I
+balance have shown to be related to pathological brain ­activity17 and neuropsychiatric ­disorders13,18–20. A proposed way to quantify E/I balance is the slope of the power law decay of spectral power of brain field potentials.
+This parameter, 1/f slope, refers to a widely used way of modelling the relation between power and frequency
+of brain field potential signals according to Eq. (1) (excluding oscillatory activity). Specifically, 1/f slope refers
+to the exponent to which 1/f must be elevated to correctly fit the data. Models have shown that the background
+1/f slope of the power spectral density (PSD) can emerge from the sum of stochastic excitatory and inhibitory
+­currents21–23. Moreover, empirical validation of these models has shown that the E/I balance can be inferred from
+background activity by parameterizing the 1/f shape of the ­PSD23,24.
+Interest in the detailed informational structure of brain states has produced a recent surge of information
+theory-based ­approaches25–28. Data analysis strategies based on Lempel–Ziv complexity (LZc 29;), like the Perturbational Complexity Index 30 have been successful for characterizing subject’s GSC during dreamless sleep and
+during anesthesia-induced unconsciousness, with partial independence of the anesthetic used. It has been shown
+1
+
+Latin American Health Brain Institute (BrainLat), Universidad Adolfo Ibáñez, Santiago, Chile. 2Department of
+Psychology, University of Illinois Urbana-Champaign, IL, USA. 3Departamento de Psiquiatría, Escuela de Medicina,
+Pontificia Universidad Católica de Chile, Santiago, Chile. 4Institute for Biological and Medical Engineering,
+Schools of Engineering, Medicine and Biological Sciences, Pontificia Universidad Católica de Chile, Santiago,
+Chile. 5División de Anestesiología, Escuela de Medicina, Pontificia Universidad Católica de Chile, Santiago,
+Chile. 6These authors contributed equally: Vicente Medel and Martín Irani. *email: vicente.medel@gmail.com;
+tossandonv@uc.cl; gnboncompte@gmail.com
+Scientific Reports |
+
+(2023) 13:21700
+
+| https://doi.org/10.1038/s41598-023-47316-0
+
+1
+Vol.:(0123456789)
+
+www.nature.com/scientificreports/
+that LZc normally decreases concomitantly with the loss of phenomenological ­possibilities31,32, which is consistent with some theoretical views of ­consciousness33,34. LZc algorithm computes the number of non-redundant
+patterns of a ­signal29, which in turn, when applied to brain data, is related to the diversity of the repertoire of
+brain activity patterns(35; see ‘Methods’ section). During the transition from wakefulness to sleep or anesthesia,
+the number of possible experiences and cognitive processes that one can have is greatly reduced. Assuming that
+the repertoire of possible experiences is reflected in brain activity signals, LZc measure of brain activity should
+be decreased in sleep and anesthesia as compared to wakefulness. In fact, this reduction of the repertoire of brain
+activity has been seen in rats at the single neuron level using a myriad of convergent measures of cortical diversity,
+including ­LZc36, suggesting that LZc can be applied as a multiscale proxy of neural repertoire.
+Although 1/f slope and LZc reflect different brain state properties and have distant theoretical origins, one
+coming from spectral analysis and the other from Information Theory, both have been separately shown to correlate with ­GSC27,37. We hypothesize that this could be due to an underlying intrinsic relation between E/I balance
+and the repertoire of activity patterns in brain systems. Here we employed four complementary approaches to
+study the relation between 1/f slope and LZc and thus implicitly between E/I balance and the abundance of nonredundant repertoire in brain field potentials. We analyzed this relation in: (1) a simple inverse Discrete Fourier
+Transform (iDFT) model, (2) a biophysical model, (3) rat EEG, and (4) monkey ECoG during wakefulness and
+propofol anesthesia. Our results consistently show an inverse and non-trivial relation between 1/f slope and LZc
+in brain field potentials, suggesting that both could be related to the underlying entropic state of cortical systems.
+
+Results
+
+iDFT model show a robust and specific relation between LZc and 1/f slope
+
+In order to analyze the relation between the spectral power-law slope and LZc we began by constructing, from
+the frequency domain, sets of time series with different 1/f spectral power decay slopes (Fig. 1A; see ‘Materials
+and Methods’ section). We simulated 256 time series with slopes ranging from 0 to 2, and calculated LZc for
+each one. Figure 1B illustrates that, for these simple iDFT models, 1/f and LZc follow a strict monotonically
+descending behavior, with lesser complexity values for time series with a steeper slope. This general behavior is
+to be expected: slopes near zero reflect white noise (high LZc), while on the other hand high slopes reflect time
+series with significant power only in low frequencies (periodic signals with low LZc). Interestingly, we found that
+LZc had a one-to-one mapping with 1/f slope. This relation can be robustly adjusted (R2 > 0.99) to an x-inverted
+asymmetrical sigmoid function (see ‘Materials and methods’ section).
+Electrophysiological field potential signals (e.g., EEG and ECoG) have been shown to present only partial
+power-law ­behavior38. In other words, only part of their spectrum follows a clear spectral power-law distribution.
+In an attempt to emulate this, we introduced two types of constraints to the spectral construction of signals: an
+initial (f0 also referred to as “knee”) and a final (ff) 1/f frequency (see ‘Materials and methods’ section). Both constraints are illustrated in Fig. 1A, and sample signals with the manipulated parameters can be found in Figure S1.
+We found that the introduction of greater f0 values (Fig. 1C) generated signals with greater complexity across
+all slopes tested. This effect was more prominent for higher slope values than for lower slopes. Interestingly, the
+introduction of f0 higher than 1 Hz reduced the dynamical range of the observed LZc (no longer ranging from
+0 to 1). On the other hand, a final frequency ff (homologous to a low-pass filter), reduced the complexity of the
+resultant time series (Fig. 1D). This effect was more marked in signals with lower slope values. Similarly, to f0,
+we found that ff also reduced the dynamical range of possible complexity values, but in a different way: LZc now
+ranged from zero to a value lower than 1. Regardless of these spectral constraints, we found that the slope vs.
+LZc relationship could be modeled with a simple set of related equations (see ‘Materials and methods’ section,
+Eqs. (3 and 4), with a robust goodness of fit (all R2 > 0.98, see Supplementary Table 1). Additionally, we evaluated
+the nature of this relation when variables were calculated using different window lengths and found that windows
+from 2 to 20 s showcased essentially the same behavior for the LZc versus 1/f relation (Figure S2).We initially
+used a uniform distribution for the initial phase of the iDFT simulation. To control possible non-trivial effects
+of phase assignment, and as it has been previously shown that phase-randomization could serve as a surrogate
+signal for LZc, we used phase samples from von Mises distributions (the normal distribution of circular variables)
+of initial phases to construct signals. By employing different kappa values (von Mises dispersion parameter),
+we found that LZc is mostly unaffected by different values of kappa, nor its relation to 1/f slope (Figure S2A, B).
+However, when extreme values of kappa are used, meaning that all frequency components have almost exactly
+the same initial phase, LZc values start to decay. However, the relation between LZc and 1/f slope is qualitatively
+the same as with the kappa = 0 (uniform random distribution).
+Given the robust relation between the general spectral properties of synthetic signals and their LZc, we asked
+whether this relation could also be tracked by another non-linear characteristic of time series, namely their autocorrelation function (ACF). This was also motivated by evidence suggesting that ACF’s tau (also called timescale)
+can be obtained based on the initial (or knee) frequency of the power-law decay in neural ­data39. To evaluate
+this, we constructed new sets of iDFT time series and calculated tau for each one of them. As expected, we found
+that increasing slopes generally produced longer timescales. However, this relation was strongly dependent on f0
+(and its inverse; Fig. 1E). We consistently found that the period of the initial frequency ( f0−1) had a linear relation with tau, and that the slope of this relation ( f0−1 vs. tau) was dependent on the spectral 1/f slope. Thus, the
+relationship between tau and 1/f slope is strongly modulated by the initial frequency (f0) of the corresponding
+spectral power-law behavior. In the same line, we next explored the possible relation between tau and LZc by
+constructing iDFT signals that varied in 1/f slope and f0. As expected, we found that generally tau presented an
+inverse relation with LZc, showing that faster timescales were associated with higher complexity. However, this
+relation was almost completely dominated by f0−1. Figure 1F shows that, while for small f0−1 values (e.g., 0.1 Hz)
+tau and LZc are related, this relation is severely distorted and diminished when higher, more physiological values
+
+Scientific Reports |
+Vol:.(1234567890)
+
+(2023) 13:21700 |
+
+https://doi.org/10.1038/s41598-023-47316-0
+
+2
+
+www.nature.com/scientificreports/
+
+Figure 1.  iDFT model illustrates a strict relation between LZc and 1/f slope. (A) Depiction of the parameters
+employed. Time series were constructed by first defining a power-spectrum structure according to power law
+decays with various slopes, initial frequencies (f0) and final frequencies (ff). Afterwards this was converted to the
+time domain by means of iDFT. (B) Scatterplot showing the relation between LZc and 1/f slope. (C) Scatterplot
+depicting how the relation between LZc and slope changes with different initial frequencies of the power law.
+(D) Same as C but using various final frequencies. Solid lines in B, C and D correspond to best fit of Eq. (3–4)
+(E) Scatterplots depicting the strong and linear relation that exists between timescale (tau) and the period of
+the slower oscillation of the power-law behavior, in other words (the inverse of f0) for different slope values. (F)
+Scatterplot showing the relation that exists between LZc and tau for different values of initial frequency f0.
+
+Scientific Reports |
+
+(2023) 13:21700 |
+
+https://doi.org/10.1038/s41598-023-47316-0
+
+3
+Vol.:(0123456789)
+
+www.nature.com/scientificreports/
+
+of f0−1 are employed (e.g., > 2 Hz). This shows that tau, under some circumstances, is robustly related to 1/f slope
+and LZc. However, this relation is dominated by the initial frequency of the spectral power-law decay.
+
+Conductance‑based neural network model and kernel‑based LFP estimation
+
+The spectral 1/f slope has been suggested as a proxy of the background state and the balance between excitation
+and inhibition in cortical ­circuits9,21,23,24,40. In this line, we hypothesized that E/I balance could also be related to
+the repertoire of brain activity as indexed by LZc. To examine this, and to test whether iDFT model predictions
+are also present in biologically-based model settings, we use a recurrently-connected network of spiking neurons
+with conductance-based synapses. The network is composed of 80% AMPA-like excitatory and 20% GABA-like
+inhibitory neurons. All neurons were modeled as leaky integrate-and-fire (LIF) receiving two types of inputs
+(Fig. 2A): a sensory-driven thalamic input and an intracortical ­input24,41. From this model, we computed the
+network’s local field potential (LFP, Fig. 2B) by fitting a kernel function defined by the unitary contribution of
+the spiking of neurons to the ­LFP42. In this simulation, we manipulated E/I ratio by emulating different GABAergic tones; we introduced a scaling factor that multiplied unitary GABA-like conductance (see ‘Materials and
+methods’ section). This manipulation robustly and systematically modulated the PSD structure (Fig. 2C) and
+the firing rate of both excitatory and inhibitory populations (Fig. 2D).
+Consistent with previous ­reports23,24, we found that PSD displays a modulation of its aperiodic features at the
+approximate frequency range of 30–70 Hz (Fig. 2C). We found that increasing the scaling factor (that is, E/I ratio
+is shifted towards inhibition) was consistently related with both an increase in the 1/f slope (Fig. 2E) and with a
+decrease in LZc (Fig. 2F). (Fig. 2G) summarizes both these effects by showcasing the strong and inverse relation
+that exists between LZc and 1/f slope across E/I balances using this modelling strategy (LZc vs. 1/f slope: Spearman rho: 0.96, p < 0.001). These results indicate that, in a biophysically inspired, recurrently-connected neural
+network of excitatory and inhibitory neuronal populations, changes in the synaptic E/I conductance could be
+simultaneously inferred from LFP features such as LZc and 1/f slope.
+
+Rat EEG and monkey ECoG
+
+Next, we asked whether the impact of modifying E/I balance on the relationship between 1/f slope and LZc seen
+in our model could be reproduced in empirical electrophysiological data. We analyzed two open datasets, both
+obtained during resting-state and during increased cortical inhibition by propofol: a macaque monkey ­ECoG43,
+and an epidural EEG in ­rats44,45.
+Propofol is known to directly enhance GABAergic inhibitory activity, and thus reduce E/I ­balance46. In
+accordance with our previous results, we observed an increase of the 1/f slope for propofol (conscious state main
+effect’s F(1) = 1034, p < 0.001, η2 = 0.467; simple main effects (awake vs. anesthesia) for all monkeys (p < 0.001))
+and reduced LZc with respect to wakefulness (conscious state main effect F(1) = 442, p < 0.001, η2 = 0.063; simple
+main effects (awake vs. anesthesia), p < 0.001) and rat EEG (p < 0.0001). This is illustrated in Fig. 3A,B,C,D,E,F,G.
+To estimate the spatial correspondence of the effect of propofol, we calculated the difference between states
+of 1/f slope and LZc for each electrode. In a simple linear model, with all animals aggregated and both variables
+centered (delta LZc and delta 1/f slope), these measures showed a strong inverse relation (adjusted r2 = 0.20,
+β =  − 2.96; F(1,286) = 71.04; p < 0.001), illustrating that electrodes that had a greater modulation by propofol in
+1/f slope, also show a greater modulation in their LZc and vice versa. Next, we assessed this effect in one multiple
+regression model that estimated the linear dependence between these measures for each animal. This model
+showed a significant main effect (adjusted r2 = 0.23; F(4,283) = 21.84; p < 0.001), and significant individual effects
+for Monkey 1 (Figure S5; β =  − 3.37; p < 0.001), Monkey 2 (β =  − 2.641; p < 0.001) and Rat 2 (β =  − 6.27, p < 0.001),
+while for Rat 1 the linear dependence did not reach significance (p = 0.36).
+
+Discussion
+
+In this article we studied the relation between two apparently dissimilar features of time series from brain field
+potentials. Our results show a robust and inverse relation between LZc and 1/f slope, constitutive of a one-to-one
+mapping in both synthetic and empirical data. This relation closely followed an x-inverted asymmetric sigmoid
+function in the whole range of both measures in iDFT models. This behavior, although scaled, was present even
+when the spectral power-law behavior only comprised a small portion of all frequencies of the signal (Fig. 1C,D).
+This is of particular importance as real electrophysiological signals do not show a 1/f spectral power decay in
+the whole frequency ­range39,47. We believe it is noteworthy that such a simple Gaussian stationary process, as
+that produced by the iDFT model, can track this ­relation48 also seen in more biophysically plausible models.
+In these models we observed a similar inverse relation between LZc and 1/f slope, which adjusted to the same
+mathematical function. We show that this relation follows the balance between excitation and inhibition, with
+greater complexity and flatter 1/f slopes associated with the predominance of excitatory over inhibitory activity.
+We probed the link between E/I balance and these two measures in two animal models by directly contrasting 1/f slope and LZc changes due to a pharmacological intervention. Propofol, a GABA-A agonist, produced
+changes in both measures consistent with what our models predicted: increased inhibition produced reduced
+LZc and increased 1/f slope in both monkeys ECoG and rat EEG data. Interestingly, the spatial change by brain
+state in some electrodes was stronger than others, however, the correspondence of the changes in brain state by
+propofol showed in both datasets that the electrodes that had a greater change by brain state in 1/f slope, also
+show a greater change in their complexity.
+Consistent with prior ­work23,24 we show that changes in E/I balance can be inferred from the 1/f slope of
+the spectrum. Recently, it has been shown that this can be obtained by modeling excitation and inhibition as
+disconnected ­signals23, as well as in a recurrently connected ­configuration24. The disconnected model shows that
+disruptions in the E/I balance towards inhibition steepens the 1/f slope by increasing the slower time constant
+Scientific Reports |
+Vol:.(1234567890)
+
+(2023) 13:21700 |
+
+https://doi.org/10.1038/s41598-023-47316-0
+
+4
+
+www.nature.com/scientificreports/
+
+Figure 2.  1/f slope and LZc present an inverse relation across E/I balances in a recurrently connected LIF model. (A) Schematic
+of the model structure. Excitatory (red) and inhibitory (blue) neurons are externally stimulated by thalamic inputs (lightning)
+and by cortico-cortical connections. E/I balance was manipulated by changing both inhibitory-inhibitory and inhibitoryexcitatory conductances. (B) Top) Representative rasterplot depicting spikes across time for excitatory (red) and inhibitory
+(blue) simulated neurons. Bottom) Representative LFP calculated from spiking activity. (C) PSD of simulated signals with
+different scaling factors. Bigger scaling factors imply more inhibitory activity. (D) Average firing rate across scaling factors for
+both inhibitory (blue) and excitatory (red) neurons. (E) 1/f slope as a function of scaling factor. (F) LZc as a function of scaling
+factor. (G) Scatterplot showing the strong and inverse relation between LZc and 1/f slope for different E/I balance (LZc vs. 1/f
+slope: Spearman rho: 0.96, p < 0.001). Error bars x and y-axes from panels D-G correspond to standard deviation.
+Scientific Reports |
+
+(2023) 13:21700 |
+
+https://doi.org/10.1038/s41598-023-47316-0
+
+5
+Vol.:(0123456789)
+
+www.nature.com/scientificreports/
+
+Figure 3.  LZc and 1/f slope jointly reflect cortical states changes between wakefulness and anesthesia in rats
+and monkeys. (A) Power spectral Density with 1/f slope fittings (30–80 Hz range) of representative macaque
+ECoG (Monkey 1) in Awake (blue) and propofol anesthesia (red) brain states. (B) Left, the topography of the
+percentage of change from baseline for Lempel–Ziv complexity. Left, a paired-sample raincloud plot showing
+LZc individual electrode changes across brain states. (C) Left, the topography of the percentage of change from
+baseline for 1/f slope. Right, a paired-sample raincloud plot showing 1/f slope individual electrode modulation
+across brain states. (D, F, G) Same as A, B, C for rat EEG (Rat 1).
+associated with inhibitory synaptic currents. The recurrently connected model, however, depends on coupled
+excitatory and inhibitory dynamics with a realistic biophysical basis that, although more complex, show consistent results with the disconnected model. We show that both models have similar behavior, suggesting that the
+relation between 1/f slope and LZc -and their predictive power on E/I ­balance16- can be tracked with simple and
+complex modelling configurations.
+Aperiodic neural activity has been studied in a wide range of scientific ­studies9 where a divergent set of frequency ranges for the background activity estimates have been used. However, fitting the spectrum across the
+whole frequency ranges reported in the literature would result in an imprecise fitting. This is consistent with
+previous work showing the presence of different 1/f slopes at different frequency ­ranges24,37,40,47,49,50, where lower
+range fittings have a higher correlation with low frequency ­oscillations22 and suggest a note of caution when
+interpreting 1/f slope results from different frequency ranges as reflecting the same biological mechanism. We
+have shown, however, that changing the initial and cut-off frequency of the power-law decay does not qualitatively affect the relation between 1/f slope and LZc (Fig. 1C, D). Here we analyzed 1/f aperiodic slope as a proxy
+of background activity and E/I balance, which was most representative in the 30–80 Hz range and is consistent
+with previous modeling ­work23,24.
+While the slope of the spectral power law has been linked to E/I ­balance40, LZc reflects the vastness of the
+repertoire of brain activity ­patterns36. Although these two measures may seem unrelated at first, we hypothesize
+that both reflect a specific type of entropy of brain systems. The entropy of a system can be characterized by
+the probabilities of each of its possible states (Shannon entropy), but also in terms of the probabilities of the
+transitions between these states in time, namely its entropy rate (or transition entropy). Low values of 1/f slope
+represent a flatter power spectrum, which is characteristic of irregular desynchronized brain states, while steeper
+1/f slopes showcase mainly low frequency periodic ­behavior51,52. These two extremes can also be characterized
+in terms of their signals’ transition entropy: flat 1/f slopes (similar to white noise) have low memory and thus
+high entropy rates, while in mainly periodic signals, its history strongly constrains future values; thus, they present low transition entropies. This is particularly useful as direct estimates of entropy rate require much longer
+data series than ­LZc53,54. Although there are other alternatives for estimating entropy rate more precisely, such
+as parametric estimators like Hidden Markov Models which have been previously related to ­LZc55, the latter is
+more suited to a descriptive approach to behaviorally-defined brain states, as compared to the former which
+generally defines brain states based on the temporal structure of brain signals itself. In our implementation of
+LZc, because we binarize each signal based on its median value, the number of points in each state (ones and
+zeros) is equal, which results in a constant Shannon or distribution entropy. In this line, we believe signal’s LZc
+Scientific Reports |
+Vol:.(1234567890)
+
+(2023) 13:21700 |
+
+https://doi.org/10.1038/s41598-023-47316-0
+
+6
+
+www.nature.com/scientificreports/
+could be reflecting not only the vastness of the repertoire of brain activity, but also specifically the transition
+entropy of the system. Thus, the strong relation we observe between LZc and 1/f slope suggests both measures
+are, at least partially, driven by the transition entropy of the underlying brain system.
+Future work should include the role of oscillations and phase, as recent evidence has suggested that low
+frequency 1/f slope is dependent on alpha band ­activity49. Despite this potential limitation in our simulations,
+previous findings have shown that non-linear features like LZc closely relate to the spectral more than the phase
+component of the ­signal54. Consistent with this, we observe the same general behavior in the relation between
+1/f and LZc both in EEG and ECoG data, which does present oscillatory activity.
+The E/I-balance shapes neurons’ computational ­properties56, and therefore behavior and ­cognition3. Alterations of this balance have been related to ­schizophrenia18, ­autism19, and ­epilepsy17, which hints it might also
+play an unexplored role in other neuropsychiatric ­disorders20. Moreover, E/I balance is not a static property of
+the cortex. It changes depending on the behavioral ­state57, task ­demands57,58, ­performance22 and depending on
+circadian ­rhythms59, which suggests that this property is under fine dynamic control. Recent work have shown
+brain states and neural complexity can be regulated by ascending arousal ­activity60,61, external ­stimulation62 and
+task ­demand63,64. Future research could address this topic with a multiscale approach to the underlying states
+of neuromodulation-related psychiatric ­disorders65. From this perspective, the readout of E/I balance through
+brain signal complexity and the power-law of the PSD could be useful for addressing fundamental questions
+about the modulation of the state dependence of brain computations. This offers new methods to understand
+the general mechanisms of brain states functioning, as well as broadening the diagnostic and therapeutic tools
+related to neuropsychiatric disorders.
+
+Materials and methods
+
+Power spectral density and 1/f analyses
+
+We employed the same approach to estimate the power-law slope of simulations and monkey ECoG data. We
+calculated the Power Spectral Density (PSD) by means of Fourier Transforms using Welch’s method as implemented in the MNE ­toolbox66. Afterwards, the power-law 1/f slope and offset were obtained using the FOOOF
+­toolbox8. Aperiodic offset (O) and slope (s) components are obtained by modeling the aperiodic signal according
+to Eq. 1. The FOOOF algorithm decomposes the log power spectra into a summation of narrowband gaussians
+periodic (oscillations) and aperiodic (offset and slope) components within a broad frequency range. The algorithm iteratively estimates periodic and aperiodic components, removes the periodic ones and estimates again
+until only the aperiodic components of the signal remain. This allows for estimation of offset and power-law
+slope with considerable independence from oscillatory behavior, which is particularly important for empirical
+signal ­analysis8,52. Also, there is evidence revealing spectral “knee39” which suggests that one fitting over the
+whole spectrum will conflate imprecise fitting of the background activity. Previous evidence has shown that an
+increase in the global network’s inhibition is consistently related to a steepening of the 1/f slope in the range
+between 30–80 ­Hz23,24. Thus, we use a 30–80 Hz frequency range for all the fittings.
+
+LZc algorithm
+
+To compute the complexity of time series (both simulated and empirical), we used the LZc algorithm as introduced by Lempel and ­Ziv29. This algorithm quantifies the number of distinct and non-redundant patterns of a
+signal and it can serve as a close analogue of the entropy rate of a ­signal53,54. We implemented the LZc algorithm
+using Python scripts available from previous ­work31. Briefly, every time series was first binarized, assigning a
+value of 1 for each time point with an amplitude greater than the median of the entire signal (5 s), and zero for
+those below it. Afterwards, the LZc algorithm was applied to the resulting so-called symbolic signal. To quantify
+the number of non-redundant patterns, a sequential evaluation of the signal is performed. At each time point,
+the algorithm analyzes whether the segment including the following point of the signal can be recreated from
+the already analyzed signal, be it because it is already present, or because it can be recreated by a simple copying
+procedure. In this sense, if the following sequence cannot be recreated from the previously analyzed signal, then
+a complexity counter increases. If the next sequence is redundant with respect to the already analyzed signal, the
+algorithm advances to the next time point without increasing the complexity counter. Once the whole signal is
+analyzed, the complexity counter (number of non-redundant patterns) is normalized to produce the LZc value,
+which ranges (asymptotically for long signals) from 0 to 1. A more thorough explanation of the algorithm can
+be found in the original ­article29 and ­in31.
+
+iDFT model
+
+To study the general relation between power-law slope and LZc, we first employed a simple modeling strategy that
+we denominate iDFT model. We constructed signals with different 1/f slopes, among other spectral parameters,
+and computed their resulting LZc. Each signal was simulated using 5 s of length with 1000 points per second
+­(fs = 1 kHz), which resulted in a Nyquist frequency (Nf) of 500 Hz. Each time series was initially constructed in the
+frequency domain as the product of its power and phase components. The power of each frequency component
+was constructed accordingly to a power-law distribution:
+ 
+P f = O ∗ f −s
+(1)
+where P(f) represents power as a function of frequency, O is the offset of the curve, the amplitude of the 1 Hz
+component, and s corresponds to the slope of the power-law. Phases were linear in time, starting at an initial
+phase θ0 that was randomly assigned from a uniform distribution (− π to π) or from von Mises distributions
+with varying dispersion (see below). Importantly, this is the main source of random variability in this model.
+
+Scientific Reports |
+
+(2023) 13:21700 |
+
+https://doi.org/10.1038/s41598-023-47316-0
+
+7
+Vol.:(0123456789)
+
+www.nature.com/scientificreports/
+iDFT function, as implemented in ­Numpy67, was applied to the product of the amplitudes A(f) (square root of
+the power) and phase components to obtain the time series data according to Eq. (2):
+
+X(t) =
+
+N
+  
+1 
+iDFT A fn ∗ exp(i ∗ θn )
+N
+
+(2)
+
+n=0
+
+where X(t) is the resulting time varying signal, i is the imaginary unit and n is the index of every frequency. Only
+positive frequencies were employed. To better model the spectral properties of physiologically plausible neural
+signals, in addition to constructing signals using the whole range of possible frequencies (0 to Nf) we also applied
+two types of constraints to the power-law distribution: an initial frequency (f0; Fig. 1C) and a final frequency (ff;
+Fig. 1D). Both are illustrated in Fig. 1A. Specifically, f0 corresponds to setting all amplitudes of frequencies lower
+than f0 to the value of f0, thus flattening the curve to the left of f0. On the other hand, applying an ff corresponds to
+setting the amplitude of every frequency higher than ff to zero. To maintain time series stationarity, a requirement
+of the LZc ­algorithm27,29, all iDFT models were made with a f0 = 1 Hz unless otherwise stated.
+The initial phase of each frequency was first obtained from an uniform random distribution (Fig. 1). This was
+the main source of random variability in this model, choosing the simplest distribution possible. However, to
+analyze the importance of the initial phases in the LZc versus 1/f relation we constructed 9 more series of iDFT
+256 signals. For these series we employed the same slope ranges as the ones employed in Fig. 1, but changed
+the distribution of initial frequencies to von Mises distributions. The von Mises distribution, also known as the
+circular normal distribution, is a probability distribution used to model data that is distributed on a circle or
+a unit circle in a two-dimensional plane. It is characterized by its concentration parameter, often denoted as
+"kappa," which measures the spread or concentration of data around the circle. We used varying values of the
+kappa parameter, which is inversely related to the dispersion of the distribution (see Figure S2).
+
+1/f slope versus LZc modeling function
+
+In an attempt to model the observed relation between 1/f slope and LZc, we empirically found that this relation,
+for a pure power-law iDFT model (Fig. 1B), closely followed a particular mathematical behavior:
+
+
+
+LZc(s) = a1 ∗ exp −b ∗ ln2 sc + 1
+(3)
+where s is the slope of the power-law, LZc(s) is the LZc as a function of slope and a1, b and c are free parameters
+such that a1 ranges from 0 to 1 and b and c ∈ R + . The parameters b and c modify the shape of the curve, while a1
+is a scaling factor. Without this scaling factor, the image of LZc(s) ranges from (0 to 1), while if a1 is introduced
+it ranges from (0 to a1) without changing the internal structure of the curve. Equation (3) appropriately adjusted
+pure power-law signals (Fig. 1B) and iDFTdata generated with a non-trivial final frequency (ff < Nq; Fig. 1D).
+Signals with non-trivial f0 (> 1 Hz) did not range from 0 to 1 but from a value greater than 0 to 1 (Fig. 1C).
+Because of this, we designed a similar equation that better reflected the required image of the LZc(s) function
+for non-trivial f0 cases, introducing a second scaling parameter a2:
+
+
+
+LZc(s) = a2 + (1 − a2 ) ∗ exp −b ∗ ln2 sc + 1
+(4)
+For every fit we employed Eqs. 3 or 4 using an algorithm that minimized the squares of the differences
+between data and models as implemented in the scipy.optimize.curve_fit ­function67. Best fit parameters and
+r2 values for goodness of fit for all iDFT simulations can be found in Table S1 (all r2 > 0.98). It is important to
+emphasize that the modeling of the relation between 1/f slope and LZc was conducted by an iterative and empirical approach. Although it is possible that there exists a strict analytical solution for this relation, this escapes the
+scope of the present article.
+
+Autocorrelation, time‑scale, 1/f and LZc
+
+Given the relation between the general spectral properties of synthetic signals (1/f slope and LZc), we wondered
+whether this relation could also be tracked by another non-linear characteristic of time series, namely their time
+scale (tau). Additionally, there is evidence indicating that tau is related to the initial (or knee) frequency (f0 in
+our nomenclature) of the power-law decay of neural ­data39. Indeed, a recent work has described an analyticallyderived relation between tau and 1/f ­slope68. Thus, we calculated the tau of iDFT-generated signals following
+previously used ­strategies69, which are based on the autocorrelation function (ACF). For each time series we first
+computed its ACF (numpy correlate function), and selected a segment starting at lag = 0 and ending in the first lag
+point that dropped below 80% of the initial autocorrelation. Within this segment of the ACF, we fitted a quadratic
+equation and, based on the parameters of this equation, obtained the time lag (tau) at which the ACF reached
+50% of its initial magnitude (numpy roots function). Each tau estimation was the average of 20 repetitions.
+We analyzed the relation between tau, 1/f slope and f0 by constructing iDFT models for six 1/f slopes (ranging from 0.3 to 3), each one with 11 values of f0 (ranging from 1 to 10 Hz). To improve the interpretability of the
+results, we plotted the multiplicative inverse of f0, i.e. the period of the slower frequency that follows a power-law
+behavior as a function of tau (Fig. 1E). To analyze the relation between tau and LZc, and its dependence on f0,
+we constructed 64 series of iDFT models with different 1/f slopes (ranging from 0.2 to 3.2), each one with five
+different values of f0 (0.1, 0.5, 1 and 5 Hz). These results are depicted in Fig. 1F.
+
+Scientific Reports |
+Vol:.(1234567890)
+
+(2023) 13:21700 |
+
+https://doi.org/10.1038/s41598-023-47316-0
+
+8
+
+www.nature.com/scientificreports/
+Conductance‑based neural network model and kernel‑based LFP estimation
+
+We modeled a standard cortical circuit using a recurrent network of leaky integrate-and-fire (LIF) excitatory and
+inhibitory neurons with conductance-based synapses. The dynamics of each of the neuron types is described by
+
+Cm
+
+dvi
+= gL (EL − vi ) + Isyn + ξi
+dt
+
+(5)
+
+where Cm represents the membrane capacitance, vi represents the voltage of neuron i and whenever vi > vth
+at time t, vi goes back to the resting membrane voltage vrest for a refractory period tr. The synaptic current Isyn
+received by each neuron i after the spiking activity of all presynaptic neurons ji described by Eqs. (6) and (7).
+
+Isyn = gE (EE − vi ) + gI (EI − vi )
+
+(6)
+
+
+τd  −t/τr
+dg
+e
+− e−t/τd
+=
+dt
+τr − τd
+
+(7)
+
+Both excitatory and inhibitory neurons received two types of external inputs (ξ) that represent thalamic and
+cortico-cortical background excitatory drives. Thalamic input was modeled as a Ornstein–Uhlenbeck process
+and cortico-cortical input as a poisson process. The network structure and parameters were obtained from previously validated ­model41 according to physiological evidence (Table 1). The network consisted of 5000 neurons, of
+which 4000 were excitatory and 1000 inhibitory. Neurons forming AMPA-like excitatory synapses and GABA-like
+inhibitory synapses were randomly connected with a uniform probability of 20%.
+To compute LFP signals from the recurrent network of spiking neurons, we used a kernel-based ­method42.
+We convolved the spikes of the network with unitary LFP kernels. Changes to E/I balances were simulated as
+modifications to GABA-like conductances. We introduced a scaling factor that multiplied inhibitory-inhibitory
+and inhibitory-excitatory unitary conductances. We employed 21 scaling factors ranging from 1/4 to 4. In this
+way, we drove the system both towards more excitatory driven situations (low scaling factor) and more inhibitiondominated ones (high scaling factors).
+
+Macaque ECoG data
+
+We used an open ECoG database collected from 2 macaque monkeys (Macaca fuscata) during wakefulness,
+propofol anesthesia (5 and 5.2 mg/kg), and ­recovery43. Propofol induced anesthesia was achieved through intravenous propofol injection. Loss of consciousness was defined as the moment when monkeys no longer responded
+to touch stimuli. The ECoG grid consisted of 128 channels using multichannel ECoG electrode arrays (Unique
+Medical, Japan). The array was implanted in the subdural space with an interelectrode distance of 5 mm. Electrodes were implanted in the left hemisphere continuously covering frontal, parietal, temporal and occipital lobes.
+No further preprocessing than the one used ­by43 was applied to this data. Since we were interested in assessing
+differences between brain states during wakefulness and anesthesia and not in the transitions, we only considered
+periods of closed-eyes wakefulness and anesthesia. We computed LZc and 1/f slope measures of the times series
+as mentioned above for each electrode, epoch and subject and then averaged LZc and 1/f slope across epochs.
+
+Rat EEG data
+
+We used an open EEG ­database44 collected from two head—and body—restricted rats during wakefulness and
+propofol anesthesia (2 mg/kg/min). The EEG recording represents 3 min of spontaneous brain activity recorded
+with 16 EEG channels. No further preprocessing than the one used in the open ­dataset44 was applied to this data.
+All coordinates for electrodes implantation are expressed referring to bregma position, x = medial–lateral axis (–,
+left hemisphere; + , right hemisphere), y = rostral-caudal axis (–, caudal to bregma; + , rostral to bregma), z = dorsal–ventral axis. Recording electrodes were in contact with the dura and were organized in a grid, symmetric
+along the sagittal suture, and were placed at the following coordinates (in mm): x =  ± 1.5, y =  + 5 (M2); x =  ± 1.5,
+
+Neuron type
+
+Parameter name
+
+E&I
+
+Resting membrane potential
+
+Value
+− 65 mV
+
+E
+
+Population size
+
+8000
+
+E
+
+Population firing rate
+
+2 Hz * [0.2, 1, 2, 5, 20]
+
+E
+
+Reversal potential
+
+0 mV
+
+E
+
+Conductance time rise
+
+0.1 ms
+
+E
+
+Conductance time decay
+
+2 ms
+
+I
+
+Population size
+
+2000
+
+I
+
+Population firing rate
+
+5 Hz * [0.5, 2.5, 5, 12.5, 50]
+
+I
+
+Reversal potential
+
+-80 mV
+
+I
+
+Conductance time rise
+
+0.5 ms
+
+I
+
+Conductance time decay
+
+10 ms
+
+Table 1.  Recurrent LIF model parameters.
+
+Scientific Reports |
+
+(2023) 13:21700 |
+
+https://doi.org/10.1038/s41598-023-47316-0
+
+9
+Vol.:(0123456789)
+
+www.nature.com/scientificreports/
+y =  + 2 (M2); x =  ± 1.5, y = –1 (primary motor cortex; M1); x =  ± 4.5, y = –1 (primary somatosensory cortex; S1);
+x =  ± 1.5, y = –4 (retrosplenial cortex; RS); x =  ± 4.5, y = –4 (parietal associative cortex; PA); x =  ± 1.5, y = –7 (secondary visual cortex; V2); x =  ± 4.5, y = –7 (primary visual cortex; V1); x = 0, y = –10 (cerebellum, ground; GND).
+
+Statistical analyses
+
+Experimental data were visualized using raincloud ­plots70. Statistical significance was assessed with a Type-1
+error threshold of 0.05. All curve fits were carried out using Scipy optimize function. R2 was calculated using
+custom-made scripts. Correlations were assessed by means of Spearman Correlations. The relation between LZc
+and 1/f slope in empirical data was evaluated using mixed effects ANOVA. Spatial correspondence between the
+amount of change in LZc and 1/f slope between resting and propofol anesthesia conditions were assessed by
+multiple linear regressions.
+
+Data availability
+
+The ECoG dataset analyzed in the current study is available in the NeuroTycho repository, http://​neuro​tycho.​
+org/​anest​hesia-​task (task ID: 75). The EEG dataset is available in the EBRAINS repository (https://​doi.​org/​10.​
+25493/​8CQN-​Y8S).
+Received: 24 August 2023; Accepted: 12 November 2023
+
+References
+
+1. Poulet, J. F. A. & Crochet, S. The cortical states of wakefulness. Front. Syst. Neurosci. 12, 59955 (2019).
+2. Scholvinck, M. L., Saleem, A. B., Benucci, A., Harris, K. D. & Carandini, M. Cortical state determines global variability and correlations in visual cortex. J. Neurosci. 35, 170–178 (2015).
+3. Harris, K. D. & Thiele, A. Cortical state and attention. Nat. Rev. Neurosci. 12, 509–523 (2011).
+4. McGinley, M. J., David, S. V. & McCormick, D. A. Cortical membrane potential signature of optimal states for sensory signal
+detection. Neuron 87, 179–192 (2015).
+5. McCormick, D. A., Nestvogel, D. B. & He, B. J. Neuromodulation of brain state and behavior. Ann. Rev. Neurosci. 43, 391–415
+(2020).
+6. Bayne, T., Hohwy, J. & Owen, A. M. Are there levels of consciousness?. Trends Cogn. Sci. 20, 405–413 (2016).
+7. He, B. J. & Raichle, M. E. The fmri signal, slow cortical potential and consciousness. Trends Cogn. Sci. 13, 302–309 (2009).
+8. Donoghue, T. et al. Parameterizing neural power spectra into periodic and aperiodic components. Nat. Neurosci. 23, 1655–1665
+(2020).
+9. Waschke, L., Kloosterman, N. A., Obleser, J. & Garrett, D. D. Behavior needs neural variability. Neuron 109, 751–766 (2021).
+10. Destexhe, A., Rudolph, M. & Paré, D. The high-conductance state of neocortical neurons in vivo. Nat. Rev. Neurosci. 4, 739–751
+(2003).
+11. van Vreeswijk, C. & Sompolinsky, H. Chaos in neuronal networks with balanced excitatory and inhibitory activity. Science 274,
+1724–1726 (1996).
+12. Brunel, N. Dynamics of networks of randomly connected excitatory and inhibitory spiking neurons. J. Physiol. Paris 94, 445–463
+(2000).
+13. Haider, B., Duque, A., Hasenstaub, A. R. & McCormick, D. A. Neocortical network activity in vivo is generated through a dynamic
+balance of excitation and inhibition. J. Neurosci. 26, 4535–4545 (2006).
+14. Deco, G. et al. How local excitation–inhibition ratio impacts the whole brain dynamics. J. Neurosci. 34, 7886–7898 (2014).
+15. Rubin, R., Abbott, L. & Sompolinsky, H. Balanced excitation and inhibition are required for high-capacity, noise-robust neuronal
+selectivity. Proc. Natl. Acad. Sci. 114, E9366–E9375 (2017).
+16. Agrawal, V. et al. Robust entropy requires strong and balanced excitatory and inhibitory synapses. Chaos Interdiscip. J. Nonlinear
+Sci. 28, 103115 (2018).
+17. Žiburkus, J., Cressman, J. R. & Schiff, S. J. Seizures as imbalanced up states: Excitatory and inhibitory conductances during seizurelike events. J. Neurophysiol. 109, 1296–1306 (2013).
+18. Uhlhaas, P. J. & Singer, W. Abnormal neural oscillations and synchrony in schizophrenia. Nat. Rev. Neurosci. 11, 100–113 (2010).
+19. Rubenstein, J. & Merzenich, M. M. Model of autism: increased ratio of excitation/inhibition in key neural systems. Genes Brain
+Behav. 2, 255–267 (2003).
+20. Sohal, V. S. & Rubenstein, J. L. R. Excitation-inhibition balance as a framework for investigating mechanisms in neuropsychiatric
+disorders. Mol. Psychiat. 24, 1248–1257 (2019).
+21. Destexhe, A., Rudolph, M., Fellous, J. M. & Sejnowski, T. J. Fluctuating synaptic conductances recreate in vivo-like activity in
+neocortical neurons. Neuroscience 107, 13–24 (2001).
+22. Sheehan, T. C., Sreekumar, V., Inati, S. K. & Zaghloul, K. A. Signal complexity of human intracranial eeg tracks successful associative-memory formation across individuals. J. Neurosci. 38, 1744–1755 (2018).
+23. Gao, R., Peterson, E. J. & Voytek, B. Inferring synaptic excitation/inhibition balance from field potentials. Neuroimage 158, 70–78
+(2017).
+24. Trakoshis, S. et al. Intrinsic excitation-inhibition imbalance affects medial prefrontal cortex differently in autistic men versus
+women. eLife 9, 748962525 (2020).
+25. Arsiwalla, X. D. & Verschure, P. Measuring the complexity of consciousness. Front. Neurosci. 12, 424 (2018).
+26. Ferenets, R. et al. Comparison of entropy and complexity measures for the assessment of depth of sedation. IEEE Trans. Biomed.
+Eng. 53, 1067–1077 (2006).
+27. Zhang, X. S., Roy, R. & Jensen, E. EEG complexity as a measure of depth of anesthesia for patients. IEEE Trans. Biomed. Eng. 48,
+1424–1433 (2001).
+28. Tononi, G., Sporns, O. & Edelman, G. M. A measure for brain complexity: Relating functional segregation and integration in the
+nervous system. Proc. Natl. Acad. Sci. 91, 5033–5037 (1994).
+29. Lempel, A. & Ziv, J. On the complexity of finite sequences. IEEE Trans. Inf. Theory 22, 75–81 (1976).
+30. Casali, A. G. et al. A theoretically based index of consciousness independent of sensory processing and behavior. Sci. Transl. Med.
+5, 198ra105-198ra105 (2013).
+31. Boncompte, G., Medel, V., Cortínez, L. I. & Ossandón, T. Brain activity complexity has a nonlinear relation to the level of propofol
+sedation. Brit. J. Anaesth. 127, 254–263 (2021).
+32. Li, D., Fabus, M. S. & Sleigh, J. W. Brain complexities and anesthesia: Their meaning and measurement. Anesthesiology 137, 290–302
+(2022).
+
+Scientific Reports |
+Vol:.(1234567890)
+
+(2023) 13:21700 |
+
+https://doi.org/10.1038/s41598-023-47316-0
+
+10
+
+www.nature.com/scientificreports/
+33. Carthart-Harris, R. et al. The entropic brain: A theory of conscious states informed by neuroimaging research with psychedelic
+drugs. Front. Hum. Neurosci. Med. 8, 89654 (2014).
+34. Tononi, G. Consciousness and complexity. Science 282, 1846–1851 (1998).
+35. Sarasso, S. et al. Consciousness and complexity: A consilience of evidence. Neurosci. Conscious. 7(2), 1–24 (2021).
+36. Wenzel, M. et al. Reduced repertoire of cortical microstates and neuronal ensembles in medically induced loss of consciousness.
+Cell Syst. 8, 467-474.e4 (2019).
+37. Miskovic, V., MacDonald, K. J., Rhodes, L. J. & Cote, K. A. Changes in eeg multiscale entropy and power-law frequency scaling
+during the human sleep cycle. Hum. Brain Mapp. 40, 538–551 (2019).
+38. He, B. J. Scale-free brain activity: Past, present, and future. Trends Cogn. Sci. 18, 480–487 (2014).
+39. Gao, R., van den Brink, R. L., Pfeffer, T. & Voytek, B. Neuronal timescales are functionally dynamic and shaped by cortical microarchitecture. Elife 9, e61277 (2020).
+40. Lombardi, F., Herrmann, H. J. & de Arcangelis, L. Balance of excitation and inhibition determines 1/f power spectrum in neuronal
+networks. Chaos Interdiscip. J. Nonlinear Sci. 27, 047402 (2017).
+41. Cavallari, S., Panzeri, S. & Mazzoni, A. Comparison of the dynamics of neural interactions between current-based and conductancebased integrate-and-fire recurrent networks. Front. Neural Circ. 8, 896545 (2014).
+42. Telenczuk, B., Telenczuk, M. & Destexhe, A. A kernel-based method to calculate local field potentials from networks of spiking
+neurons. J. Neurosci. Methods 344, 108871 (2020).
+43. Yanagawa, T., Chao, Z. C., Hasegawa, N. & Fujii, N. Large-scale information flow in conscious and unconscious states: An ECoG
+study in monkeys. PLoS ONE 8, e80845 (2013).
+44. Arena, A., Nilsen, A. S., Thon, S., Storm, J. F. Test of consciousness metrics in rodents (2020).
+45. Arena, A., Comolatti, R., Thon, S., Casali, A. G. & Storm, J. F. General anesthesia disrupts complex cortical dynamics in response
+to intracranial electrical stimulation in rats. Eneuro 8, 51426 (2021).
+46. Alkire, M. T., Hudetz, A. G. & Tononi, G. Consciousness and anesthesia. Science 322, 876–880 (2008).
+47. He, B. J., Zempel, J. M., Snyder, A. Z. & Raichle, M. E. The temporal structures and functional significance of scale-free brain
+activity. Neuron 66, 353–369 (2010).
+48. Breakspear, M. Dynamic models of large-scale brain activity. Nat. Neurosci. 20, 340–352 (2017).
+49. Becker, R., Van De Ville, D. & Kleinschmidt, A. Alpha oscillations reduce temporal long-range dependence in spontaneous human
+brain activity. J. Neurosci. 38, 755–764 (2018).
+50. Schaworonkow, N. & Voytek, B. Longitudinal changes in aperiodic and periodic activity in electrophysiological recordings in the
+first seven months of life. Dev. Cogn. Neurosci. 47, 100895 (2021).
+51. Fazlali, Z., Ranjbar-Slamloo, Y., Adibi, M. & Arabzadeh, E. Correlation between cortical state and locus coeruleus activity: Implications for sensory coding in rat barrel cortex. Front. Neural Circ. 10, 14 (2016).
+52. Voytek, B. & Knight, R. T. Dynamic network communication as a unifying neural basis for cognition, development, aging, and
+disease. Biol. Psychiat. 77, 1089–1097 (2015).
+53. Amigó, J. M., Szczepanski, J., Wajnryb, E. & Sanchez-Vives, M. V. Estimating the entropy rate of spike trains via lempel-ziv complexity. Neural Comput. 16, 717–736 (2004).
+54. Mediano, P. A., Rosas, F. E., Barrett, A. B. & Bor, D. Decomposing spectral and phasic differences in nonlinear features between
+datasets. Phys. Rev. Lett. 127, 124101 (2021).
+55. Li, D. & Mashour, G. A. Cortical dynamics during psychedelic and anesthetized states induced by ketamine. Neuroimage 196,
+32–40 (2019).
+56. Denève, S. & Machens, C. K. Efficient codes and balanced networks. Nat. Neurosci. 19, 375–382 (2016).
+57. Waschke, L., Tune, S. & Obleser, J. Local cortical desynchronization and pupil-linked arousal differentially shape brain states for
+optimal sensory performance. eLife 8, 546925 (2019).
+58. Pfeffer, T. et al. Catecholamines alter the intrinsic variability of cortical population activity and perception. PLoS Biol. 16, e2003453
+(2018).
+59. Bridi, M. C. et al. Daily oscillation of the excitation-inhibition balance in visual cortical circuits. Neuron 105, 621–629 (2020).
+60. D’Andola, M. et al. Bistability, causality, and complexity in cortical networks: an in vitro perturbational study. Cereb. Cortex 28,
+2233–2242 (2018).
+61. Nghiem, T. A. E. et al. Cholinergic switch between two types of slow waves in cerebral cortex. Cereb. Cortex 30, 3451–3466 (2020).
+62. PA Mediano, et al., Effects of external stimulation on psychedelic state neurodynamics. Biorxiv (2020).
+63. Mediano, P. A. et al. Fluctuations in neural complexity during wakefulness relate to conscious level and cognition. bioRxiv https://​
+doi.​org/​10.​1101/​2021.​09.​23.​461002 (2021).
+64. Höhn, C., Hahn, M. A., Lendner, J. D. & Hoedlmoser, K. Spectral slope and neural complexity as robust markers of task demand
+and brain state during sleep and wakefulness. bioRxiv https://​doi.​org/​10.​1101/​2022.​09.​10.​507390 (2022).
+65. Medel, V., Valdés, J., Castro, S., Ossandón, T. & Boncompte, G. Commentary: Amplification and suppression of distinct brainwide
+activity patterns by catecholamines. Front. Behav. Neurosci. 12, 217 (2019).
+66. Gramfort, A. et al. Mne software for processing meg and eeg data. Neuroimage 86, 446–460 (2014).
+67. Virtanen, P. et al. SciPy 1.0: Fundamental algorithms for scientific computing in python. Nat. Methods 17, 261–272 (2020).
+68. Carpena, P. & Coronado, A. V. On the autocorrelation function of 1/f noises. Mathematics 10, 1416 (2022).
+69. Murray, J. D. et al. A hierarchy of intrinsic timescales across primate cortex. Nature Neurosci. 17, 1661–1663 (2014).
+70. Allen, M. et al. Raincloud plots: a multi-platform tool for robust data visualization [version 2; peer review: 2 approved]. Wellcome
+Open Res. 4, 63 (2021).
+
+Acknowledgements
+
+We would like to thank Chile’s national agency for science ANID for their financial support to GB (postdoctoral
+project N° 3200248), TO (FONDECYT N° 1230383) and to VM (FONDECYT N° 3230557). We also thank
+Fernanda Weinstein for her valuable comments on previous versions of this manuscript.
+
+Author contributions
+
+V.M., M.I. and G.B. conceptualized the work and carried out the analyses on models and empirical data. All
+authors discussed, wrote and reviewed the manuscript.
+
+Competing interests
+
+The authors declare no competing interests.
+
+Additional information
+
+Supplementary Information The online version contains supplementary material available at https://​doi.​org/​
+10.​1038/​s41598-​023-​47316-0.
+Scientific Reports |
+
+(2023) 13:21700 |
+
+https://doi.org/10.1038/s41598-023-47316-0
+
+11
+Vol.:(0123456789)
+
+www.nature.com/scientificreports/
+Correspondence and requests for materials should be addressed to V.M., T.O. or G.B.
+Reprints and permissions information is available at www.nature.com/reprints.
+Publisher’s note Springer Nature remains neutral with regard to jurisdictional claims in published maps and
+institutional affiliations.
+Open Access This article is licensed under a Creative Commons Attribution 4.0 International
+License, which permits use, sharing, adaptation, distribution and reproduction in any medium or
+format, as long as you give appropriate credit to the original author(s) and the source, provide a link to the
+Creative Commons licence, and indicate if changes were made. The images or other third party material in this
+article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the
+material. If material is not included in the article’s Creative Commons licence and your intended use is not
+permitted by statutory regulation or exceeds the permitted use, you will need to obtain permission directly from
+the copyright holder. To view a copy of this licence, visit http://​creat​iveco​mmons.​org/​licen​ses/​by/4.​0/.
+© The Author(s) 2023
+
+Scientific Reports |
+Vol:.(1234567890)
+
+(2023) 13:21700 |
+
+https://doi.org/10.1038/s41598-023-47316-0
+
+12
+
+

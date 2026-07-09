@@ -433,6 +433,9 @@ const PROV_COLORS = {
 function provColors(p){ return PROV_COLORS[p] || PROV_COLORS['Web']; }
 const KIND_COLOR = {paper:'#c0392b',model:'#f0a417',repo:'#3a3f4b',dataset:'#7a5aa8',toolkit:'#2c6e8f',
   benchmark:'#4a54b0',video:'#c4302b',podcast:'#1db954',article:'#e0663a',company:'#2f8f5b',event:'#5b57e8',grant:'#d98a1f',other:'#5a6572'};
+const READ_LABEL={read:'Read ✓', fetchable:'Open access', needs_pdf:'Needs your PDF'};
+const READ_COLOR={read:'#2f9e5f', fetchable:'#4f9be6', needs_pdf:'#e0a44a'};
+const DRIVE_PAPERS='https://drive.google.com/drive/folders/1I41GiIKSNNME9jHrCosmhgxXPdKHebhC';
 
 const Q_TOPIC = {
   eeg:['eeg','electroenceph','microstate'], tms:['tms','rtms','itbs','transcranial','stimulation','neuromodulation'],
@@ -458,7 +461,7 @@ let ALL = [];
 function rebuild(){ ALL = BASE_DATA.items.concat(USER); }
 rebuild();
 
-const state = { q:'', sort:'relevance', view:'cards', dateFrom:'', dateTo:'', f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set()} };
+const state = { q:'', sort:'relevance', view:'cards', dateFrom:'', dateTo:'', f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set(), read:new Set()} };
 
 const FACETS = [
   {key:'kind', title:'Type', field:'kind', order:['paper','model','repo','dataset','toolkit','benchmark','video','podcast','article','company','event','grant','other'], label:k=>KIND_LABEL[k]||k},
@@ -466,6 +469,7 @@ const FACETS = [
   {key:'focus', title:'Mental-health focus', field:'focus', order:['tms','ketamine','eeg','wearables'], label:k=>FOCUS_LABEL[k]||k},
   {key:'origins', title:'Source', field:'origins', order:['Manual search','Claude Science','Claude','Added by you'], label:k=>k},
   {key:'topics', title:'Topics', field:'topics', order:['foundation-model','biomarker','connectome','neurofeedback','depression','psychedelics','bci','sleep'], label:k=>TOPIC_LABEL[k]||k},
+  {key:'read', title:'Reading status', field:'read_status', order:['read','fetchable','needs_pdf'], label:k=>READ_LABEL[k]||k},
 ];
 
 function matchesText(it,q){
@@ -603,7 +607,8 @@ function renderGrid(){
       const tags = it.focus.concat(it.topics).slice(0,3).map(t=>'<span class="tg">'+esc(FOCUS_LABEL[t]||TOPIC_LABEL[t]||t)+'</span>').join('');
       const src = it.origins.map(o=>'<span class="tg src'+(o==='Added by you'?' you':'')+'">'+esc(o)+'</span>').join('')
         + (it.via_linkedin?'<span class="tg li">via LinkedIn</span>':'')
-        + (it.drive_url?'<span class="tg drive">Drive ✓</span>':'');
+        + (it.drive_url?'<span class="tg drive">Drive ✓</span>':'')
+        + (it.read_status?'<span class="tg" style="color:'+(READ_COLOR[it.read_status]||'var(--dim)')+';border-color:'+(READ_COLOR[it.read_status]||'var(--edge2)')+'66">'+esc(READ_LABEL[it.read_status])+'</span>':'');
       const el=document.createElement('article'); el.className='card'; el.dataset.id=it.id;
       el.innerHTML = cardCover(it)
         +'<div class="cbody"><div class="ctitle">'+esc(it.title)+'</div>'
@@ -633,6 +638,7 @@ function openDetail(id){
   if(it.category) rows+=row('Category',esc(it.category));
   if(it.license) rows+=row('License',esc(it.license));
   if(it.weights) rows+=row('Weights','Pretrained weights available');
+  if(it.read_status) rows+=row('Reading','<span style="color:'+(READ_COLOR[it.read_status]||'var(--dim)')+'">'+esc(READ_LABEL[it.read_status])+'</span>'+(it.content?' — the Librarian answers from this paper’s full text':''));
   if(it.source_files&&it.source_files.length) rows+=row('From',esc(it.source_files.join(', ')));
   const coverInner = it.preview_url ? '<img src="'+esc(it.preview_url)+'" alt="">' : '<span class="mono">'+esc(monogram(it.title))+'</span>';
   const body='<div class="m-cover" style="background:linear-gradient(135deg,'+c1+','+c2+')">'+coverInner+'<span class="prov">'+esc(it.provider)+'</span></div>'
@@ -645,6 +651,7 @@ function openDetail(id){
         : '<div class="m-desc">'+esc(it.context)+'</div>'):'')
     +(it.notes&&it.notes!==it.context?'<div class="m-desc">'+esc(it.notes)+'</div>':'')
     +rows
+    +(it.read_status==='needs_pdf'?'<div class="m-lictx" style="border-left-color:#e0a44a;background:rgba(224,164,74,.09)"><b>Needs your PDF</b><br>This paper is paywalled and isn’t in your Drive yet. Drop its PDF into your Papers folder and the Librarian will read it on the next sync. <a href="'+DRIVE_PAPERS+'" target="_blank" rel="noopener">Open the Papers folder ↗</a></div>':'')
     +'<div class="m-actions"><a class="m-open" href="'+esc(it.url)+'" target="_blank" rel="noopener">Open source ↗</a>'
     +(it.drive_url?'<a class="m-drive" href="'+esc(it.drive_url)+'" target="_blank" rel="noopener">📄 Your Drive copy</a>':'')
     +'<button class="m-copy" id="copy-md">Copy as Markdown</button>'
@@ -679,7 +686,7 @@ function openAdd(){
   $('#add-body').innerHTML='<div class="m-pad"><div class="m-kind">Add material</div>'
     +'<h2 class="m-title" style="margin-bottom:2px">Paste a link</h2>'
     +'<p class="form-hint">That’s all you need — type, provider and a title fill in automatically. Add details only if you want to.</p>'
-    +'<div class="form-row"><label>URL</label><input type="url" id="a-url" placeholder="https://…"></div>'
+    +'<div class="form-row"><label>Links <span style="text-transform:none;color:var(--faint)">— one per line. Paste the paper, plus the LinkedIn post or blog it came from; they save as one object.</span></label><textarea id="a-url" placeholder="https://arxiv.org/abs/…&#10;https://www.linkedin.com/posts/…"></textarea></div>'
     +'<div class="m-actions" style="margin-top:14px"><button class="m-open" id="a-save">Add to Stacks</button><button class="m-copy" data-close>Cancel</button></div>'
     +'<span class="adv-toggle" id="adv-toggle">＋ Add details (optional)</span>'
     +'<div class="adv-body" id="adv-body">'
@@ -696,27 +703,35 @@ function openAdd(){
   showModal('#addmodal');
   $('#adv-toggle').onclick=()=>{ $('#adv-body').classList.toggle('open'); $('#adv-toggle').textContent=$('#adv-body').classList.contains('open')?'– Hide details':'＋ Add details (optional)'; };
   const urlEl=$('#a-url'); setTimeout(()=>urlEl.focus(),50);
-  urlEl.oninput=()=>{ const u=urlEl.value.trim(); if(!/^https?:\/\//.test(u)) return;
-    $('#a-kind').value=detectKind(u);
-    if(!$('#a-title').value){ try{ const seg=new URL(u).pathname.split('/').filter(Boolean).pop()||new URL(u).hostname;
+  urlEl.oninput=()=>{ const urls=urlEl.value.split(/\s+/).filter(u=>/^https?:\/\//.test(u)); if(!urls.length) return;
+    const canon=urls.find(u=>!/linkedin\.com|lnkd\.in/.test(u.toLowerCase()))||urls[0];
+    $('#a-kind').value=detectKind(canon);
+    if(!$('#a-title').value){ try{ const seg=new URL(canon).pathname.split('/').filter(Boolean).pop()||new URL(canon).hostname;
       $('#a-title').value=decodeURIComponent(seg).replace(/[-_]/g,' ').replace(/\.(pdf|html?)$/,''); }catch(e){} }
   };
   $('#a-save').onclick=saveNew;
 }
+const isLinkedIn=u=>/linkedin\.com|lnkd\.in/.test((u||'').toLowerCase());
+const isOpenAccess=u=>/arxiv\.org|biorxiv\.org|medrxiv\.org|ncbi\.nlm\.nih\.gov|osf\.io|pnas\.org|plos\.org|elifesciences\.org/.test((u||'').toLowerCase());
 function saveNew(){
-  const url=$('#a-url').value.trim();
-  if(!/^https?:\/\//.test(url)){ toast('Enter a valid URL'); return; }
-  const {p,h}=providerFromUrl(url);
+  const urls=$('#a-url').value.split(/\s+/).map(u=>u.trim()).filter(u=>/^https?:\/\//.test(u));
+  if(!urls.length){ toast('Paste at least one link'); return; }
+  // canonical = first real (non-LinkedIn) link; the LinkedIn wrapper becomes context, never the source
+  const canonical=urls.find(u=>!isLinkedIn(u))||urls[0];
+  const {p,h}=providerFromUrl(canonical);
   const gather=sel=>Array.from($('#add-body').querySelectorAll('input[data-'+sel+']:checked')).map(x=>x.getAttribute('data-'+sel));
   const kind=$('#a-kind').value;
-  const it={ id:'u'+Date.now(), kind:kind, title:$('#a-title').value.trim()||url, ident:'',
-    url:url, all_urls:[url], host:h, provider:p, origins:[$('#a-source').value],
+  const via=urls.some(isLinkedIn)||$('#a-li').checked;
+  const read=['paper','dataset'].includes(kind) ? (isOpenAccess(canonical)?'fetchable':'needs_pdf') : '';
+  const it={ id:'u'+Date.now(), kind:kind, title:$('#a-title').value.trim()||canonical, ident:'',
+    url:canonical, all_urls:urls, host:h, provider:p, origins:[$('#a-source').value],
     domains:gather('domain'), focus:gather('focus'), topics:gather('topic'),
     category:'', license:'', weights:null, notes:$('#a-notes').value.trim(), context:$('#a-notes').value.trim(),
-    source_files:['Added in Stacks'], preview_url:(kind==='video'?ytThumb(url):''), via_linkedin:$('#a-li').checked,
-    added:true, addedAt:Date.now() };
+    source_files:['Added in Stacks'], preview_url:(kind==='video'?ytThumb(canonical):''), via_linkedin:via,
+    content:'', read_status:read, added:true, addedAt:Date.now() };
   if(['model','benchmark','toolkit'].includes(it.kind) && !it.domains.includes('ai')) it.domains.push('ai');
-  USER.unshift(it); saveUser(USER); rebuild(); hideModal('#addmodal'); state.sort='added'; $('#sort').value='added'; sync(); render(); toast('Added — remember to export');
+  USER.unshift(it); saveUser(USER); rebuild(); hideModal('#addmodal'); state.sort='added'; $('#sort').value='added'; sync(); render();
+  toast(urls.length>1 ? ('Added — '+urls.length+' links bundled as one object') : 'Added — remember to export');
 }
 
 /* export / import */
@@ -866,8 +881,11 @@ async function ragAnswer(q){
   const src=retrieve(q,8);
   if(!src.length){ chatBubble('bot','Nothing in the library touches that yet. Try different words, or add the source with + Add material.'); return; }
   const bubble=chatBubble('bot','Reading the sources…');
-  const ctx=src.map((it,i)=>'['+(i+1)+'] '+it.title+' — '+it.kind+', '+it.provider+(it.date?(', '+it.date):'')+'\n'+((it.abstract||it.context||it.notes||'(no text indexed)').slice(0,900))).join('\n\n');
-  const system='You are the Librarian for a personal research library on neuroscience, EEG, brain-AI, and mental health. Answer the user question using ONLY the numbered sources below. Cite every claim with its source number in brackets like [2]. Prefer specifics — findings, numbers, methods — over generalities. If the sources do not contain the answer, say so plainly and suggest what to search for or add. Never invent sources or facts. Keep it concise.';
+  // pull the full extracted text for any retrieved paper we have on file (cached on the item)
+  await Promise.all(src.map(async it=>{ if(it.content && it._ft===undefined){ try{ const r=await fetch(it.content); it._ft = r.ok ? (await r.text()) : ''; }catch(e){ it._ft=''; } } }));
+  const ctx=src.map((it,i)=>{ const full=(it._ft&&it._ft.length>200); const body=(full?it._ft:(it.abstract||it.context||it.notes||'(no text indexed)')).slice(0,6000);
+    return '['+(i+1)+'] '+it.title+' — '+it.kind+', '+it.provider+(it.date?(', '+it.date):'')+(full?' (full text)':'')+'\n'+body; }).join('\n\n');
+  const system='You are the Librarian for a personal research library on neuroscience, EEG, brain-AI, and mental health. Answer the user question using ONLY the numbered sources below. Sources marked "(full text)" are the complete paper — quote specific findings, numbers, and methods from them. Cite every claim with its source number in brackets like [2]. Prefer specifics over generalities. If the sources do not contain the answer, say so plainly and suggest what to search for or add. Never invent sources or facts. Keep it concise.';
   const user='Question: '+q+'\n\nSources:\n'+ctx;
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
@@ -940,10 +958,11 @@ const PILLS=['Show me all the repos','Papers about ketamine','What do the papers
 $('#chat-pills').innerHTML=PILLS.map(p=>'<button>'+p+'</button>').join('');
 $('#chat-pills').querySelectorAll('button').forEach(b=>b.onclick=()=>ask(b.textContent));
 $('#chat-key').onclick=()=>{ $('#chat').hidden=false; askForKey(null); };
-const QUICK=[['Papers',['paper']],['Repos & models',CODE_KINDS],['Videos',['video']],['Podcasts',['podcast']],['Companies',['company']],['Grants',['grant']],['Articles',['article']]];
+const QUICK=[{l:'Papers',k:'kind',v:['paper']},{l:'Repos & models',k:'kind',v:CODE_KINDS},{l:'Videos',k:'kind',v:['video']},{l:'Podcasts',k:'kind',v:['podcast']},{l:'Companies',k:'kind',v:['company']},{l:'Grants',k:'kind',v:['grant']},{l:'Articles',k:'kind',v:['article']},{l:'📄 Needs your PDF',k:'read',v:['needs_pdf']}];
 function renderQuick(){ const el=$('#quicklists'); if(!el) return;
-  el.innerHTML='<span class="ql-label">Quick views</span>'+QUICK.map((q,i)=>'<button data-i="'+i+'">'+esc(q[0])+'</button>').join('');
-  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{ clearFilters(); state.q=''; $('#q').value=''; QUICK[+b.dataset.i][1].forEach(k=>state.f.kind.add(k)); syncViewsUI(); sync(); render(); window.scrollTo({top:0,behavior:'smooth'}); }); }
+  const npdf=ALL.filter(it=>it.read_status==='needs_pdf').length;
+  el.innerHTML='<span class="ql-label">Quick views</span>'+QUICK.map((q,i)=>'<button data-i="'+i+'">'+esc(q.l)+(q.k==='read'&&npdf?(' ('+npdf+')'):'')+'</button>').join('');
+  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const q=QUICK[+b.dataset.i]; clearFilters(); state.q=''; $('#q').value=''; q.v.forEach(x=>state.f[q.k].add(x)); syncViewsUI(); sync(); render(); window.scrollTo({top:0,behavior:'smooth'}); }); }
 
 function jwtEmail(tok){ try{ const p=tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
   return (JSON.parse(decodeURIComponent(escape(atob(p)))).email||'').toLowerCase(); }catch(e){ return ''; } }

@@ -1,0 +1,551 @@
+EEG-Inception: A Novel Deep Convolutional Neural Network for Assistive ERP-Based Brain-Computer Interfaces 
+
+EEG-Inception: A Novel Deep Convolutional Neural Network for Assistive ERP-Based Brain-Computer Interfaces
+
+EduardoSantamaría-Vázquez ,VíctorMartínez-Cagigal ,FernandoVaquerizo-Villar , and Roberto Hornero , Senior Member, IEEE
+
+Abstract— In recent years, deep-learning models gained attention for electroencephalography (EEG) classification tasks due to their excellent performance and ability to extract complex features from raw data. In particular, convo- lutional neural networks (CNN) showed adequate results in brain-computer interfaces (BCI) based on different control signals, including event-related potentials (ERP). In this study, we propose a novel CNN, called EEG-Inception, that improves the accuracy and calibration time of assistive ERP-based BCIs. To the best of our knowledge, EEG- Inception is the first model to integrate Inception modules for ERP detection, which combined efficiently with other structures in a light architecture, improved the performance of our approach. The model was validated in a popula- tion of 73 subjects, of which 31 present motor disabilities. Results show that EEG-Inception outperforms 5 previous approaches, yielding significant improvements for com- mand decoding accuracy up to 16.0%, 10.7%, 7.2%, 5.7% and 5.1% in comparison to rLDA, xDAWN + Riemannian geom- etry, CNN-BLSTM, DeepConvNet and EEGNet, respectively. Moreover, EEG-Inception requires very few calibration trials to achieve state-of-the-art performances taking advantage
+
+Manuscript received June 7, 2020; revised October 5, 2020 and December 20, 2020; accepted December 27, 2020. Date of pub- lication December 30, 2020; date of current version January 29, 2021. This work was supported in part by the Ministerio de Cien- cia, Innovación y Universidades and European Regional Development Fund (FEDER) under Project DPI2017-84280-R, in part by the Euro- pean Commission and FEDER under projects Análisis y correlación entre el genoma completo y la actividad cerebral para la ayuda en el diagnóstico de la enfermedad de Alzheimer and Análisis y cor- relación entre la epigenética y la actividad cerebral para evaluar el riesgo de migra na crónica y episódica en mujeres (Cooperation Pro- gramme Interreg V-A Spain-Portugal POCTEP 2014–2020), and in part by the Centro de Investigación Biomédica en Red en Bioinge- niería, Biomateriales y Nanomedicina (CIBER-BBN) through Instituto de Salud Carlos III co-funded by FEDER funds. The work of Eduardo Santamaría-Vázquez was supported in part by the personal investigador en formación (PIF) Grant from the Consejería de Educación de la Junta de Castilla y León and in part by the European Social Fund. The work of Víctor Martínez-Cagigal was supported by PIF Grant from the University of Valladolid. The work of Fernando Vaquerizo-Villar was supported by the Ayuda para contratos predoctorales para la Formación de Profesorado Universitario (FPU) Grant from the Ministerio de Edu- cación, Cultura y Deporte under Project FPU16/02938. (Corresponding author: Eduardo Santamaría-Vázquez.)
+
+The authors are with the Biomedical Engineering Group (GIB), E.T.S Ingenieros de Telecomunicación, University of Valladolid, 47011 Valladolid, Spain, and also with the CIBER-BBN, Instituto de Salud Carlos III, 28029 Madrid, Spain (e-mail: eduardo.santamaria@gib.tel. uva.es; victor.martinez@gib.tel.uva.es; fernando.vaquerizo@gib.tel.uva. es; robhor@tel.uva.es).
+
+Digital Object Identifier 10.1109/TNSRE.2020.3048106
+
+of a novel training strategy that combines cross-subject transfer learning and fine-tuning to increase the feasibility of this approach for practical use in assistive applications.
+
+Index Terms—Brain–computer interfaces, event-related potentials, P300, deep learning, convolutional neural net- works, inception, transfer learning.
+
+BRAIN–computer nication between I. interfaces humans INTRODUCTION and (BCI) external enable devices direct commu- through the analysis of neural signals \[1\]. These systems have a wide range of applications, including neurorehabilitation, cognitive training or entertainment \[2\]. However, the most extended use is the control of assistive technologies to improve the autonomy and quality of life of people with severe motor disabilities, caused by spinal cord injury, head trauma, stroke, multiple sclerosis, lateral amyotrophic sclerosis or cerebral palsy, among others \[2\]. In practice, most BCIs use the electroencephalography (EEG) to record brain activity for its relative low cost, ease of use and noninvasiveness \[2\]. This technique uses electrodes placed over the scalp to register the electrical activity of superficial neurons, reflecting the ongoing brain processes with exceptional temporal resolution \[3\]. Nonetheless, EEG also has important drawbacks. For instance, it presents poor spatial resolution, recording activity from volumes between 1 and 10 cm3 around each electrode \[3\]. Moreover, it is very sensitive to a wide range of noisy artefacts, such as muscular movements, corneo-retinal stand- ing potentials or cardiac activity \[3\]. Therefore, EEG is an extremely complex and noisy signal, making direct decoding of individual brain processes almost impossible.
+
+In order to overcome this limitation, BCIs usually rely on control signals with higher signal-to-noise ratio (SNR) to extract discriminative information from the EEG. In particular, visual event-related potentials (ERP) are waveforms that reflect the ongoing brain activity happening just after the perception of an external visual stimuli \[4\]. ERP-based BCIs, also known as spellers, were first proposed by Farwell and Donchin \[5\] in 1988 as a communication aid for people suffering from severe physical disability. These systems allow to select com- mands from a predefined set of options by detecting ERPs in the EEG of the user. The main advantages of these systems in comparison with other BCIs are the very low mental workload
+
+1558-0210 © 2020 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+
+Authorized licensed use limited to: Brown University. Downloaded on July 06,2026 at 21:11:24 UTC from IEEE Xplore. Restrictions apply.
+
+IEEE TRANSACTIONS ON NEURAL SYSTEMS AND REHABILITATION ENGINEERING, VOL. 28, NO. 12, DECEMBER 2020 2773
+
+2774 IEEE TRANSACTIONS ON NEURAL SYSTEMS AND REHABILITATION ENGINEERING, VOL. 28, NO. 12, DECEMBER 2020
+
+method needed to use them, the high number of commands that can
+
+to evaluate visual fatigue using a 3D Inception CNN. be discriminated and their versatility for a wide range of
+
+Nevertheless, it has not yet been studied whether Inception applications. However, the accuracy and maximum amount of
+
+modules are useful for ERP-based spellers. ERPs are generally information conveyed by ERP-based spellers per unit of time is
+
+considered to have most of their power in delta (0-4 Hz) and limited due to the low SNR of ERPs, non-stationary properties
+
+theta (4-7 Hz) bands \[21\]. Thus, the majority of algorithms of the EEG over time, and strong inter-subject variability \[4\].
+
+for ERP detection do not take into account the upper bands A large number of studies addressed this issue by improving
+
+(i.e., alpha, beta and gamma), most even filtering frequencies pattern recognition algorithms for ERP detection \[6\]. Methods
+
+above 10 Hz \[7\], \[8\], \[11\]. However, several studies found based on linear discriminant analysis (LDA) and support-
+
+that these bands contain discriminative information for target vector machine are the most classical approaches \[7\]–\[11\].
+
+vs non-target conditions, especially in the gamma range \[21\]. They achieve reasonable performance, especially when a large
+
+Therefore, algorithms for ERP detection should be able to amount of training examples is available. However, these
+
+process patterns at very different temporal scales in order methods are noise-sensitive and show poor inter-subject and
+
+to take full advantage of all the discriminative information inter-session generalization \[7\]. Moreover, several studies have
+
+available. In this respect, previous CNNs for ERP detection demonstrated that their performance is reduced drastically in
+
+used one kernel size per layer, which may limit their capa- real environments with severely disabled populations \[9\], \[10\].
+
+bility to learn features at different temporal scales \[22\]–\[28\]. Additionally, novel tensor classifiers based on Riemannian
+
+Additionally, there are other open challenges for deep learning geometry (RG) and adaptive methodologies have led to impor-
+
+in the EEG domain. Especially, the lack of large datasets has tant improvements in BCIs in recent years \[6\], \[12\].
+
+hindered the development of novel training strategies with Nonetheless, the field of pattern recognition is living
+
+great impact in other fields, such as transfer learning and fine- breakthrough advances thanks to the development of deep
+
+tuning \[29\]. These techniques have great potential to reduce learning \[13\]. Deep neural networks are able to automati-
+
+the calibration time required by deep-learning models in BCI cally extract complex features from raw data, learning hier-
+
+applications. However, to our knowledge, they have not been archical representations of the input in different levels of
+
+explored for this purpose in ERP-based spellers yet. abstraction \[13\]. This ability has revolutionized fields such
+
+The main goal of this study is to design, develop and as computer vision, natural language processing, genomics or
+
+test a novel CNN in order to improve the accuracy and drug-discovery \[13\]. In the EEG domain, deep neural networks
+
+calibration time of ERP-based spellers for practical use. To this have been used for ERP, sensorymotor rhythms (SMR) and
+
+end, our model, called EEG-Inception, efficiently integrates steady-state visual evoked potentials (SSVEP) classification,
+
+Inception modules and other structures optimized for EEG seizure detection and prediction, sleep stage scoring, mental
+
+processing. Additionally, the dataset used in this study had a workload detection, data augmentation or emotion recognition,
+
+total of 701615 observations from 73 subjects (42 controls, 31 among others \[14\]. However, there are still relatively few
+
+severely disabled), the largest sample among related studies. studies of deep-learning models for EEG analysis \[15\]. In fact,
+
+Taking advantage from this dataset, we designed a novel whether they truly present advantages over classical methods
+
+training strategy using cross-subject transfer learning and remain as an open question \[15\].
+
+fine-tuning to reduce the calibration time required for test Since the application of deep learning to EEG is relatively
+
+subjects. Finally, we provide a direct and fair comparison new, most studies explored simple architectures based on
+
+with the most successful previous approaches in ERP-based convolutional neural networks (CNN) and recurrent neural
+
+spellers. Noteworthy, most studies do not evaluate novel networks (RNN) \[14\]. Nevertheless, there is still room for
+
+classification algorithms with severely disabled subjects, the improvement, and more complex architectures specifically
+
+end users of these systems. This is a common limitation designed for EEG analysis could enhance the performance of
+
+in the BCI literature, likely caused by the lack of public CNNs in this domain. For instance, Inception modules pro-
+
+datasets with disabled subjects \[30\]. In order to address this posed by Szegedy et al. \[16\] for computer vision allow a multi-
+
+issue, we released the code and database used in this study scale analysis of the input data by using convolutional layers in
+
+in http://dx.doi.org/10.21227/6bdr-4w65 \[31\], providing a new parallel with different kernel sizes. Empirically, this structure
+
+public benchmark for ERP-based spellers. has proved to extract richer feature maps with less computa- tional cost, boosting performance while keeping a reasonable training and evaluation time \[17\]. In this regard, EEG is made
+
+II. RELATED WORK
+
+up of transient and oscillatory patterns of different temporal
+
+This section presents an overview of previous studies that lengths that reflect the ongoing activity of the brain, making
+
+proposed deep-learning models for ERP detection in a BCI multiscale analysis through Inception modules especially suit-
+
+framework \[22\]–\[28\]. Table I summarizes these approaches, able for this signal. However, there are still very few studies
+
+highlighting their main contributions, evaluation approach, that explored Inception-based architectures for EEG process-
+
+subjects and results. As can be seen, CNNs are the most ing. Qiao and Bi \[18\] and Lee et al. \[19\] proposed Inception-
+
+popular approach. Among them, the model proposed by based architectures to decode movements from motor imagery
+
+Lawhern et al. \[26\], called EEGNet, stands out as one of the and motor execution tasks, respectively. In both cases, their
+
+most successful, using depthwise and separable convolutions models yielded higher performance than other state-of-the-art
+
+to provide a robust and compact architecture. In fact, this methods. Additionally, Yue and Wang \[20\] designed a novel
+
+model won the scientific challenge for ERP detection launched
+
+Authorized licensed use limited to: Brown University. Downloaded on July 06,2026 at 21:11:24 UTC from IEEE Xplore. Restrictions apply.
+
+SANTAMARÍA-VÁZQUEZ et al.: EEG-INCEPTION: A NOVEL DEEP CNN FOR ASSISTIVE ERP-BASED BCI 2775
+
+TABLE I OVERVIEW OF PREVIOUS DEEP-LEARNING APPROACHES FOR ERP-BASED SPELLERS
+
+by International Federation of Medical and Biological Engi- neering (IFMBE) in 2019 \[32\]. Noteworthy, the second position was achieved by other deep-learning model, CNN- BLSTM, which combines a convolutional layer to extract spatial patterns with 2 recurrent layers based on bidirectional long-short term memory units (BLSTM) to learn temporal patterns \[28\]. The use of RNNs for EEG processing is scarce, especially for ERP detection \[14\]. This is probably because these architectures are very expensive in computational terms, taking considerably longer times than CNNs to train. Never- theless, RNNs are specifically designed to process temporal series, which makes them a promising alternative to CNNs for EEG processing.
+
+It should be noted that, to the best of our knowledge, previous studies failed to test their deep-learning models with motor-disabled subjects. Moreover, Liu et al. \[25\] and Cecotti and and Gräser \[22\] only included 2 and 3 healthy subjects in their studies. In this regard, it is well-known that patients generally achieve lower classification accuracies due to indi- vidual aspects related to their diseases, such as neural dam- age, visual impairment, limited sustained attention abilities, involuntary tremors or limited cognitive performance, among others \[9\], \[10\]. Furthermore, these symptoms are highly variable between individuals, even between those with the same condition, making severely disabled subjects especially heterogeneous and challenging for ERP detection. Therefore, comprehensive evaluation in this group is required to assess the performance of new models for assistive BCI applications.
+
+III. MATERIALS AND METHODS A. Subjects and Signals
+
+Seventy three subjects participated in this study: 42 healthy controls (mean age: 25.1±4.3 years; 31 males) and 31 severely disabled (mean age: 44.2±7.7 years; 20 males) suffering from different conditions (5 spinal cord injury; 4 Friedreich’s ataxia; 4 cerebral palsy; 2 polymalformative syndrome; 1 stroke; 15 multiple sclerosis). The dataset was built on data from previous studies \[9\]–\[11\]. In all cases, subjects performed several sessions with an ERP-based speller using the row- column paradigm (RCP) \[5\]. In the RCP, the system displays a matrix of commands, whose rows and columns are high- lighted randomly. Typically, rows and columns are highlighted several times (i.e., sequences) to increase the accuracy of the system. To select a command, the user has to stare at the desired option, eliciting an ERP when a stimulus is perceived. Finally, the system decodes the row and the column using signal processing algorithms to detect the ERPs and executes
+
+the corresponding command, providing feedback to the user. Table II summarizes the key aspects of the database according to the experimental protocols of each study. Noteworthy, data from different sessions were mixed to simplify the analysis. For further details, see the corresponding studies \[9\]–\[11\].
+
+Participants were split into 3 sets: training, validation and test. Healthy subjects were randomly divided into 2 groups, assigning 80% of them to the training set and 20% to the validation set. The remaining 31 disabled subjects were assigned to the test set. This distribution is designed provide a real estimation of the performance of EEG-Inception through evaluation in people with severe disabilities, who are the end users of ERP-based spellers. Table III shows the number of subjects, trials, and observations of each set. Noteworthy, no method was applied to handle the inherent class imbalance associated to datasets from ERP-based spellers.
+
+EEG signals were acquired with a g.USBamp (g.Tec, Guger Technologies, Austria) at a sampling frequency of 256 Hz using 8 active electrodes placed at Fz, Cz, Pz, P3, P4, PO7, PO8 and Oz, the ground placed at FPz and the reference in the earlobe, according to the International System 10–10 \[8\]. During the experiments, 2 different platforms were used to present the stimuli and save the signals: BCI2000 \[33\], and MEDUSA \[34\]. The experimental protocol was approved by the corresponding local ethics committee, and all participants gave their informed consent.
+
+B. Novel CNN: EEG-Inception
+
+EEG-Inception is a novel CNN inspired on the work of Qassim et al. \[21\] for image classification, adapting its con- cepts to provide an enhanced architecture for EEG processing and ERP detection.
+
+In order to prepare the raw EEG, a simple preprocessing pipeline was applied. First, signals were decimated to 128 Hz to reduce the computational cost of the model \[26\]. Afterward, a band-pass filter was applied between 0.5 and 45 Hz, keep- ing the most discriminative information and eliminating the power line frequency at 50 Hz \[21\]. Common average refer- ence (CAR) spatial filter was also applied to improve the SNR of ERPs \[8\]. Finally, epochs were extracted from 0 to 1000 ms after the stimulus onset \[11\]. Thus, the model input is an array of shape 128 × 8, being the first dimension the temporal axis (i.e., samples), whereas the second dimension corresponds to the spatial axis (i.e., channels).
+
+EEG-Inception includes several concepts adapted from the image classification domain, including Inception modules to capture dependencies between features at different scales and
+
+Authorized licensed use limited to: Brown University. Downloaded on July 06,2026 at 21:11:24 UTC from IEEE Xplore. Restrictions apply.
+
+2776 IEEE TRANSACTIONS ON NEURAL SYSTEMS AND REHABILITATION ENGINEERING, VOL. 28, NO. 12, DECEMBER 2020
+
+TABLE II DESCRIPTION OF THE DATASET
+
+TABLE III CHARACTERISTICS OF EACH SET
+
+depthwise convolutions. Fig. 1 depicts a visual overview of the architecture, whereas Table IV details the configuration and architectural choices. It should be noted that each convo- lutional block (i.e., 2D convolutions and depthwise 2D convo- lutions) includes batch normalization to normalize the feature maps \[35\], activation function to introduce non-linearities \[29\] and dropout regularization \[36\] to prevent overfitting.
+
+The architecture of EEG-Inception, is organized in three main blocks:
+
+1\) Inception Module 1: this module processes the signal in 3 different temporal scales for each EEG channel, according to the kernel sizes of the convolutional blocks C1, C2 and C3, which are 64 × 1, 32 × 1 and 16 × 1, respectively. Therefore, since the sampling rate of the input is 128 Hz, these sizes cor- respond to temporal windows of 500 ms, 250 ms and 125 ms. Following these layers, D1, D2 and D3 process the signal in the spatial domain using depthwise convolutions. Depthwise convolutions were first used in the image classification domain to factorize a convolution kernel into smaller kernels by acting on each input channel separately, reducing the total amount of parameters \[17\], \[37\]. When applied to EEG processing, they provide a method to learn optimal spatial filters (i.e., channels weights) for each temporal pattern extracted by the previous layer \[26\]. Then, the concatenation layer N1 merges the output features from D1, D2 and D3. Finally, an average pooling is applied for dimensionality reduction.
+
+2\) Inception Module 2: this module is organized as the previous one. It is formed by 3 branches that process the EEG signal in 3 temporal scales of 500 ms, 250 ms and 125 ms. It should be noticed that, after the average pooling layer of the first block, these scales correspond to kernel sizes of 16 × 1, 8 × 1 and 4 × 1. This module extracts additional temporal features in a higher level of abstraction, considering all EEG channels. As previously, the outputs of convolutional blocks C4, C5 and C6 are concatenated. Then, an average pooling for dimensionality reduction is also applied.
+
+3\) Output Module: the last 2 convolutional layers are designed to extract the most meaningful patterns for the final classification, compressing the information into few fea- tures. Noteworthy, the number of filters is decreased pro- gressively, which, along with the average pooling layers, reduces the dimensionality in order to avoid overfitting. In fact, only 24 features are fed to the final classification layer. Finally, the softmax output estimates the probability for each class (target and non-target) \[26\].
+
+The model was trained using the following configuration: Adam optimizer with default hyperparameters β1 = 0.9 and β2 = 0.999 \[38\]; categorical cross entropy loss function \[39\]; mini-batch size of 1024; and 500 epochs. To speed up training and avoid overfitting, we applied early stopping \[29\] when the loss of the validation set did not improve for 10 consecutive epochs, restoring the weights that minimized this metric.
+
+The choice of hyperparameters in deep-learning models is crucial to achieve suitable results \[29\]. In particular, the learning rate, the activation function and the dropout rate have great impact \[24\]. In order to reach an optimal solution, they were automatically optimized on the validation set using grid search. The rest of hyperparameters (i.e., number of layers, number of branches in Inception modules, number of filters, kernel sizes and pooling sizes) were heuristically chosen.
+
+C. Comparison Models
+
+1\) Regularized LDA (rLDA): LDA-based approaches are widely used for ERP detection due to their simplicity and performance \[8\], \[9\], \[11\]. Specifically, rLDA was proposed for single-trial analysis and classification of ERP compo- nents by Blankertz et al. \[40\], achieving acceptable results. This model is a regularized version of LDA by means of shrinkage estimators which showed advantages over other LDA-based approaches, such as stepwise LDA (SWLDA) \[40\]. Thus, rLDA is a suitable benchmark for more advanced models. As preprocessing stage, band pass filtering between 0.5 and 10 Hz and CAR were applied. Then, epochs were extracted from 0 to 1000 ms after the stimulus onset and decimated to 20 Hz \[8\]. EEG channels were concatenated to arrange the final feature vector, which was fed to rLDA for classification. We used the scikit-learn implementation of rLDA, which implements the O. Ledoit and M. Wolf’s formula to calculate the shrinkage parameter \[41\].
+
+2\) xDAWN + RG: models based on RG have gained importance for BCI applications in recent years due to
+
+Authorized licensed use limited to: Brown University. Downloaded on July 06,2026 at 21:11:24 UTC from IEEE Xplore. Restrictions apply.
+
+SANTAMARÍA-VÁZQUEZ et al.: EEG-INCEPTION: A NOVEL DEEP CNN FOR ASSISTIVE ERP-BASED BCI 2777
+
+Fig. 1. Overview of EEG-Inception architecture. 2D convolution blocks and depthwise 2D convolution blocks include batch normalization, activation and dropout regularization. The kernel size is displayed for convolutional and average pooling layers.
+
+TABLE IV EEG-INCEPTION ARCHITECTURE DETAILS
+
+their robustness and transfer learning capabilities \[12\]. Here, we used the algorithm that won the “BCI Challenge NER 2015” for comparison purposes \[12\]. This algorithm combines xDAWN spatial filtering with RG to estimate covariances matrices and project them into the tangent space, followed by a logistic regression classifier to achieve a robust ERP clas- sification \[42\]. In this case, we used the same preprocessing pipeline as for EEG-Inception. Please refer to \[43\] for further information and an open source implementation.
+
+3\) CNN-BLSTM: this model was proposed to take part in the IFMBE scientific challenge launched in 2019 for ERP classification \[28\]. In this competition, CNN-BLSTM reached the second position, beating 7 other approaches \[32\]. CNN-BLSTM combines 1D convolutional layers to extract spatial features with 2 BLSTM layers to detect temporal patterns. As commented previously, the use of RNNs for EEG processing is scarce \[14\]. Therefore, CNN-BLSTM is an interesting alternative that adds variety to the comparison performed in this study. The same preprocessing was applied as for EEG-Inception.
+
+4\) DeepConvNet: this CNN was proposed by Schirrmeister et al. \[24\] as a generic model for EEG decoding tasks in BCI. DeepConvNet comprises 5 convolution blocks which include max-pooling layers, with a special first block designed to handle EEG input, followed by a dense softmax classification layer \[24\]. In this work, we used the implementation proposed by Lawhern et al. \[26\], which is publicly available. The same preprocessing was applied as for EEG-Inception.
+
+5\) EEGNET: this CNN proposed by Lawhern et al. \[26\] is especially designed for BCI classification tasks, keep- ing a compact and robust architecture that has been tested with different BCI paradigms (i.e., ERP-based speller, SMR, movement-related cortical potentials and feedback error- related negativity). This network uses batch normalization and dropout to avoid overfitting and average pooling for dimen- sionality reduction. The same preprocessing was applied as for EEG-Inception. For training and testing the models, we used the open source implementation of EEGNet-8-2 provided by Lawhern et al. \[26\] with the same hyperparameters for ERP detection as the original study.
+
+Authorized licensed use limited to: Brown University. Downloaded on July 06,2026 at 21:11:24 UTC from IEEE Xplore. Restrictions apply.
+
+2778 IEEE TRANSACTIONS ON NEURAL SYSTEMS AND REHABILITATION ENGINEERING, VOL. 28, NO. 12, DECEMBER 2020
+
+Fig. 2. Work-flow of the study. First, hyperparameter optimization process of EEG-Inception was done based on the performance on the validation set. Then, the models were trained using the training set. Finally, they were evaluated in the test set using a fine-tuning process for each subject. Fine-tuning trials were randomly selected, and the process is repeated 100 times for each N and subject.
+
+D. Evaluation Experiment
+
+The evaluation experiment was designed to meet real-life conditions, where the available amount of training data from a single subject is usually limited. Fig. 2 offers a graphic description of the different stages of the study, including the hyperparameter optimization process and the training and test- ing phases. Firstly, all models were trained using the training set. Then, we evaluated them in the test set using a fine- tuning process for each subject with N = {0,5,10,20,30} trials. For N = 0, models are directly evaluated in the test set, simulating a plug & play device and thus assessing their robustness to inter-subject variability. For N \> 0, the fine- tuning process has 3 stages: (i) the algorithm picks N trials from each subject randomly; (ii) the trained model is fine- tuned with the data from these trials (deep-learning models are initialized with the original weights after the training phase), obtaining a subject-specific model; and (iii) the fine-tuned model is tested with the rest of trials for each subject. This procedure was repeated 100 times for each N and subject, averaging the obtained results.
+
+The proposed evaluation experiment reproduces a real-life setting, where the number of training trials for end users should be under 30 (approximately 20 minutes of effective training) \[9\], \[10\]. Longer calibration times would reduce the usability of an ERP-based speller radically. Therefore, the proposed experimental approach, together with the distribution of the dataset, allows to assess the effectiveness of our training strategy, which combines cross-subject transfer learning and fine-tuning to reduce the calibration time and overfitting for end users of ERP-based spellers.
+
+All implementations were programmed in Python. Keras v2.3 framework with Tensorflow v2.0 backend was used to implement deep-learning models \[37\]. For all experiments, we used a desktop computer with the following hardware characteristics: Intel Core i9-9900 @ 3.6 GHz, 64 GB RAM, NVIDIA RTX 2080Ti 11GB.
+
+IV. RESULTS A. Hyperparameter Optimization
+
+Learning rate (lr), activation function ( fact) and dropout rate (pdrop) were optimized for EEG-Inception. The search space
+
+Fig. 3. Results of the optimization process of EEG-Inception in the validation set (8 healthy subjects). Each line depicts the mean command decoding accuracy after a fine-tuning process for each subject with N = 30, considering 5 sequences of stimulation. (a) Score for each activation function and dropout rate using the best value of learning rate (lr = 0.001). (b) Score for each learning rate and dropout rate using the best activation function (ELU).
+
+for each hyperparameter was: lr = {0.01,0.001,0.0001}; fact = {Sigmoid,ReLU,ELU}; pdrop = {0.00 : 0.05 : 0.5}. Fig. 3 depicts the results of the optimization process. Note- worthy, the optimization score was computed as the averaged command decoding accuracy in the validation set after a fine- tuning process with N = 30 for each subject, consider- ing 5 sequences of stimulation. The values that maximized this score were selected as optimal and used in the evaluation experiment. Specifically, the optimal set was lr = 0.001; fact = ELU; pdrop = 0.25. The activation function and learning rate choices were especially important. On the other hand, dropout rates between 0.1 and 0.4 were acceptable, while the performance was reduced in the edges of the search space.
+
+B. Performance Evaluation
+
+Table V and Fig. 4 summarize the results of the evaluation experiment. Table V displays the command decoding accuracy of the models in the test set for each number of fine- tuning trials and sequences considered to make the prediction. It should be noted that models were trained and tested using observations (i.e., EEG epochs) corresponding to a single stimulus. Therefore, the command decoding process followed a single-stimulus approach: the probability of single epochs was predicted and then averaged per row and column. The command that corresponds to the row and column with higher probability was then selected \[1\]. The last column compares EEG-Inception with the rest of models. Concretely, this col- umn shows the performance improvement of EEG-Inception compared to the other 5 models, calculated as the mean differ- ence in command decoding accuracy. Wilcoxon Signed-Rank Test was applied to evaluate statistical differences between the accuracy of EEG-Inception and the other models. False Discovery Rate (FDR) for multiple comparisons was corrected with Benjamini-Hochberg approach \[44\]. Additionally, Fig. 4 shows the theoretical information transfer rate (ITR) achieved by the models. This metric is widely used to assess the per- formance of BCI systems \[1\]. The ITR, expressed in bits/min, measures the amount of information conveyed by a BCI system taking into account the speed of selection, the number of available commands and the accuracy of the system \[1\]. As can be seen, EEG-Inception outperformed the comparison
+
+Authorized licensed use limited to: Brown University. Downloaded on July 06,2026 at 21:11:24 UTC from IEEE Xplore. Restrictions apply.
+
+SANTAMARÍA-VÁZQUEZ et al.: EEG-INCEPTION: A NOVEL DEEP CNN FOR ASSISTIVE ERP-BASED BCI 2779
+
+TABLE V COMMAND DECODING ACCURACY IN THE TEST SET
+
+models in these analyses, reaching the highest performance for command decoding accuracy and ITR. Moreover, the statistical analysis showed that the improvements in command decoding accuracy are significant (p-value \< 0.01), regardless of the number of fine-tuning trials and sequences considered in the analysis. Results broken down by subject can be found in http://dx.doi.org/10.21227/6bdr-4w65.
+
+V. DISCUSSION In this study, we propose a novel CNN architecture for ERP detection called EEG-Inception. The model was validated in a population of 73 subjects (i.e., 42 healthy, 31 severely disabled) using an ERP-based speller. Moreover, we provide direct comparison with 5 previous approaches: rLDA, xDAWN + RG, CNN-BLSTM, DeepConvNet and EEGNet.
+
+A. Architecture Design
+
+The growth of computer vision and natural language processing have led the theoretical and practical development of deep learning in recent years \[13\]. As a consequence, many of the concepts and architectures that boosted this success are specific to these fields and do not generalize for EEG process- ing, hindering the development of deep-learning approaches in this context \[24\]. In this work, classic and novel concepts and techniques from image and EEG processing were smartly combined to achieve a novel CNN that outperformed previous
+
+approaches for ERP detection. The main contributions of the proposed architecture are detailed below.
+
+The first highlight is the inclusion of Inception modules specifically designed for EEG processing. Inception mod- ules were first proposed by Szegedy et al. \[16\] for image processing, providing significant improvements in this domain. However, there are still very few studies that explored this architecture for EEG processing, and to our knowl- edge, none for ERP detection \[18\]–\[20\]. EEG-Inception inte- grates 2 Inception modules with 3 branches that process the signal in different temporal scales (i.e., 500ms, 250ms, and 125ms), depending on the kernel size of the temporal filters (C1, C2, C3, C4, C5 and C6 as displayed in Fig. 1). In our experiments, the inclusion of these modules allowed signifi- cant improvements in comparison to single-scale approaches. Nevertheless, the performance of the model remained compa- rable for different kernel sizes, and the optimal values may depend on the specific context. In this study, the scales were chosen to maximize the performance for ERP detection.
+
+The novel architecture design, along with the efficient integration of structures that proved useful in previous studies, such as depthwise convolutions to extract independent spatial filters for each temporal pattern, dropout regularization, batch normalization and average pooling also increased the accuracy of the model \[24\]–\[26\]. In this regard, the architecture of EEG- Inception was especially designed to avoid overfitting, includ- ing an output block that synthesizes the information extracted
+
+Authorized licensed use limited to: Brown University. Downloaded on July 06,2026 at 21:11:24 UTC from IEEE Xplore. Restrictions apply.
+
+2780 IEEE TRANSACTIONS ON NEURAL SYSTEMS AND REHABILITATION ENGINEERING, VOL. 28, NO. 12, DECEMBER 2020
+
+Fig. 4. ITR: information transfer rate; N: number of fine-tuning trials. ITR in bits/min in the test set (31 motor disabled subjects) as a function of N and the number of sequences.
+
+by Inception modules in very few, high-level features. In fact, only 24 features are fed to the final classification layer (see Table III). This approach maximized the gain of the fine- tuning process, which used very few calibration trials to adapt the model to new subjects, and proved especially important in our experiments.
+
+Finally, the hyperparameter optimization also constitutes an important contribution and could help to design new approaches in the future. As can be seen in Fig. 3a, the activation function proved to be an important choice. We tested Sigmoid, ReLU and ELU functions for their extensive use in deep learning. In fact, ReLU is the preferred choice for com- puter vision \[13\]. However, ELU achieved greater performance in our experiments. This finding is in accordance with the work of Schirrmeister et al. \[24\] for SMR classification. Reducing the overfitting is also crucial in order to design deep-learning models for ERP detection, even with large datasets. In our experiments, dropout regularization proved to be the most useful technique to reduce this effect \[24\], \[25\]. The dropout rate was automatically optimized, reaching its optimal value in the validation set at 0.25. Finally, the learning rate used for training and fine-tune the model also played an important role to reach an optimal solution. As can be seen in Fig. 3b, a learning rate of 0.001 maximized the command decoding accuracy in the validation set.
+
+B. Results and Advantages of the Training Strategy
+
+Table V shows the command decoding accuracy for each number of fine-tuning trials, model and sequences considered. As can be seen, EEG-Inception always achieved the highest accuracy, followed by EEGNet, DeepConvNet, CNN-BLSTM, xDAWN+RG and rLDA. In fact, the comparison between EEG-Inception and the rest of models showed improvements up to 16.0% for rLDA, 10.7% for xDAWN + RG, 7.2% for CNN-BLSTM, 5.7% for DeepConvNet and 5.1% for EEGNet. Moreover, the statistical test (i.e., Wilkoxon Signed Rank Test, FDR corrected with Benjamini-Hochberg approach) showed that these differences were significant (p-value \< 0.01), regardless of the number of fine-tuning trials and sequences. Of note, the standard deviation reached high values for all models due to the high inter-subject variability of the test set, which had subjects with very different pathologies.
+
+Nevertheless, it should be noted that EEG-Inception was generally the model with the lowest variability, showing greater robustness to individual differences. Additionally, Fig. 4 shows the theoretical ITR achieved by the mod- els. As before, EEG-Inception reached the highest value, 25.64 bits/min, which is comparable to the ITR achieved by healthy subjects using the same paradigm \[25\]. This is in accordance with previous studies, which demonstrated that deep-learning approaches usually achieve higher performance for ERP detection \[26\], \[28\]. Unsurprisingly, the number of fine-tuning trials had a positive impact in the performance due to the high inter-subject variability of ERPs. A larger number of calibration trials enable classification algorithms to learn subject specific features, thus increasing the command decoding accuracy. In return, it also increases the training time before using the system, which reduces its usability. Therefore, a suitable balance should be found between performance and calibration time. In this regard, deep-learning models (i.e., CNN-BLSTM, DeepConvNet, EEGNet and EEG-Inception) showed a clear advantage in comparison to rLDA and xDAWN + RG models, reaching suitable accuracies with fewer fine- tuning trials. Another aspect to consider is the speed of selection, which depends on the number of sequences (i.e., stimuli per row and column). A greater number of sequences entails higher accuracy, regardless of the model, but also increases the time of selection. As before, a proper trade-off between precision and speed must be achieved for practical applications. In this regard, EEG-Inception would provide higher accuracies with less selection time.
+
+Fundamental differences in the experimental design, stim- ulation paradigm and subjects make it difficult to compare the results achieved in this study with previous works in terms of performance \[22\]–\[28\]. Especially, our test set com- prised 31 severely disabled subjects, which are the end users of ERP-based spellers. On the other hand, to the best of our knowledge, none of the previous works that proposed deep-learning approaches for ERP-based spellers tested their models with target users \[22\]–\[28\]. As stated before, severely disabled subjects pose a great challenge for their hetero- geneity and special characteristics. Moreover, it has to be taken into account that, for each subject, all sessions were mixed. Therefore, results could be affected to some extent by inter-session variability. To mitigate this problem, we opted
+
+Authorized licensed use limited to: Brown University. Downloaded on July 06,2026 at 21:11:24 UTC from IEEE Xplore. Restrictions apply.
+
+SANTAMARÍA-VÁZQUEZ et al.: EEG-INCEPTION: A NOVEL DEEP CNN FOR ASSISTIVE ERP-BASED BCI 2781
+
+for for the random selection approach with multiple repetition,
+
+ERP detection challenging \[47\]. In this regard, EEG- performing 100 repetitions and averaging the results. For
+
+Inception introduces architectural advantages that could help these reasons, we implemented several of the most successful
+
+to overcome this issue. Therefore, we think that our approach previous classification approaches for ERP-based spellers in
+
+has great potential to cope with different paradigms after an order to assure a fair comparison. As shown, our proposal
+
+appropriate fine-tuning process with enough training examples. significantly outperformed all of them, demonstrating its fea-
+
+Furthermore, we believe that, after a proper optimization of sibility in a practical setup with end users.
+
+several hyperparameters, EEG-Inception could be applied in The designed training strategy also constitutes an important
+
+other contexts such as BCIs based on SMR or SSVEP, sleep contribution of the study and allows to draw some insight-
+
+stage scoring, disease detection, etc. Nevertheless, additional ful conclusions that should not be overlooked. Most related
+
+experiments are required to corroborate these hypotheses. studies, probably due to dataset limitations, analyzed the
+
+On the other hand, online tests would also be interesting to performance of novel BCI classification methods from cross-
+
+assess the performance of EEG-Inception in real applications. subject (i.e., training and testing with different subjects) or
+
+In fact, EEG-Inception could be used together with novel intra-subject (i.e., training and testing with data from the same
+
+stimulation paradigms and interactive strategies to improve subject) points of view \[24\]–\[26\]. However, we applied a
+
+the overall performance \[48\], \[49\]. Additionally, we did not hybrid approach using transfer learning and fine-tuning. For
+
+apply any method to explain the features learned by EEG- N = 0, all models were trained using the training set and
+
+Inception. In this regard, explainable deep-learning models tested using the test set, following the cross-subject evaluation
+
+could help to gain insight into brain processes through EEG approach. In contrast, for N \> 0, the model was updated with
+
+and optimize the architectures, being a field of research with new data from each subject starting from the original weights
+
+great potential. Therefore, future endeavors are needed to through the fine-tuning process. This is a fundamental analysis
+
+address this issue. Finally, adaptive methodologies for tra- to study the potential of deep learning for BCI, measuring the
+
+ditional machine-learning classifiers yield improvements in effectiveness of cross-subject transfer learning and fine-tuning.
+
+accuracy and calibration time in BCI \[6\], \[50\]. However, to the In accordance to previous studies with classical methods \[45\],
+
+best of our knowledge, adaptive approaches for deep-learning our results suggest that deep-learning models can also take
+
+models have not been studied in this domain yet. Thus, they advantage from these techniques to reduce calibration time
+
+represent a promising research line that should be explored in in ERP-based spellers without compromising the performance
+
+the future. of the model with end users. In fact, we used a maximum of 30 calibration trials to obtain subject-specific models for the
+
+VI. CONCLUSION test set. In contrast, among related studies that used the same
+
+In this study, we proposed a novel CNN architecture for stimulation paradigm, Cecotti and Gräser \[22\] used 85 calibra-
+
+ERP classification called EEG-Inception. This model effi- tion trials for each subject, Liu et al. \[25\] included 2 databases
+
+ciently integrates Inception modules to facilitate the extrac- with 85 and 42 trials, and Santamaría-Vázquez et al. \[28\]
+
+tion of feature maps at different temporal scales with other and Borra et al. \[27\] used 140 trials. Furthermore, in this
+
+structures optimized for practical use in ERP-based spellers. study the models were initialized using signals from healthy
+
+EEG-Inception showed excellent performance in this context, subjects, which are easier and less expensive to acquire. While
+
+significantly outperforming 5 successful previous approaches public databases of disabled subjects are scarce, there is a great
+
+such as rLDA, xDAWN + RG, CNN-BLSTM, DeepConvNet amount of data available from healthy subjects. Thus, existing
+
+and EEGNet in an experiment that involved 73 subjects, databases could be used to reduce the calibration time for end
+
+including 31 with severe motor disabilities. To the best of users. As aforementioned, EEG-Inception is designed to make
+
+our knowledge, this is the largest sample in related studies, the most of this training approach, providing advantages for
+
+assuring the generalization of our results. Additionally, the the practical use of ERP-based spellers in real applications.
+
+proposed training strategy reduced the calibration data required by deep-learning approaches to achieve a suitable accuracy
+
+C. Limitations and Future Work
+
+with new subjects. In the future, these concepts could be applied to enhance the performance of deep-learning models Despite the positive results achieved in this study, we also
+
+in other EEG classification tasks. acknowledge several limitations that should be addressed in the future. For instance, the validation of EEG-Inception
+
+REFERENCES in other EEG classification tasks and public datasets is a
+
+\[1\] J. R. Wolpaw, N. Birbaumer, D. J. McFarland, G. Pfurtscheller, and promising research line. We only tested the performance of EEG-Inception to detect ERPs elicited by the RCP, whose main component is the P3 wave \[1\]. However, our approach
+
+T. M. Vaughan, “Brain–computer interfaces for communication and control,” Clin. Neurophysiol., vol. 4, no. 113, pp. 767–791, Jun. 2002. \[2\] L. F. Nicolas-Alonso and J. Gomez-Gil, “Brain computer interfaces, a
+
+review,” Sensors, vol. 12, no. 2, pp. 1211–1279, 2012. has not been evaluated with ERPs elicited by other stim- ulation paradigms, such as miniature asymmetrical visual evoked potentials or motion visual evoked potentials \[46\].
+
+\[3\] J. Wolpaw and E. W. Wolpaw, Brain-Computer Interfaces: Principles
+
+and Practice. New York, NY, USA: OUP, 2012. \[4\] J. Polich, “Updating P300: An integrative theory of P3a and P3b,” Clin.
+
+Neurophysiol., vol. 118, no. 10, pp. 2128–2148, Oct. 2007. These ERPs are characterized by different components, which affects the morphology and spatial distribution of the response. This variability makes the development of general models
+
+\[5\] L. A. Farwell and E. Donchin, “Talking off the top of your head: Toward a mental prosthesis utilizing event-related brain potentials,” Electroencephalogr. Clin. Neurophysiol., vol. 70, no. 6, pp. 510–523, Dec. 1988.
+
+Authorized licensed use limited to: Brown University. Downloaded on July 06,2026 at 21:11:24 UTC from IEEE Xplore. Restrictions apply.
+
+2782 IEEE TRANSACTIONS ON NEURAL SYSTEMS AND REHABILITATION ENGINEERING, VOL. 28, NO. 12, DECEMBER 2020
+
+\[28\] \[6\] F. Lotte et al., “A review of classification algorithms for EEG-based
+
+E. Santamaría-Vázquez, V. Martínez-Cagigal, J. Gomez-Pilar, and brain–computer interfaces: A 10 year update,” J. Neural Eng., vol. 15,
+
+R. Hornero, “Deep learning architecture based on the combination of no. 3, Jun. 2018, Art. no. 031005.
+
+convolutional and recurrent layers for ERP-based brain-computer inter- \[7\] F. Lotte, M. Congedo, A. Lécuyer, F. Lamarche, and B. Arnaldi,
+
+faces,” in Proc. 15th Medit. Conf. Med. Biol. Eng. Comput. (MEDICON), “A review of classification algorithms for EEG-based brain–
+
+2019, pp. 1844–1852. computer interfaces,” J. Neural Eng., vol. 4, no. 2, p. R1,
+
+\[29\] I. Goodfellow, Y. Bengio, and A. Courville, Deep Learning. Cambridge, 2007.
+
+MA, USA: MIT Press, 2016. \[8\] D. J. Krusienski, E. W. Sellers, D. J. McFarland, T. M. Vaughan, and
+
+\[30\] J. N. Mak et al., “Optimizing the P300-based brain–computer interface: J. R. Wolpaw, “Toward enhanced P300 speller performance,” J. Neu-
+
+Current status, limitations and future directions,” J. Neural Eng., vol. 8, rosci. Methods, vol. 167, no. 1, pp. 15–21, Jan. 2008.
+
+no. 2, Apr. 2011, Art. no. 025003. \[9\] V. Martínez-Cagigal, J. Gomez-Pilar, D. Álvarez, and R. Hornero,
+
+\[31\] E. Santamaría-Vázquez, V. Martínez-Cagigal, and R. Hornero. “An asynchronous P300-based brain-computer interface Web browser
+
+(2020). GIBUVa ERP-BCI Dataset. \[Online\]. Available: http://dx.doi. for severely disabled people,” IEEE Trans. Neural Syst. Rehabil. Eng.,
+
+org/10.21227/6bdr-4w65 vol. 25, no. 8, pp. 1332–1342, Aug. 2017.
+
+\[32\] M. Simões et al., “BCIAUT-P300: A multi-session and multi-subject \[10\] V. Martínez-Cagigal, E. Santamaría-Vázquez, J. Gomez-Pilar, and
+
+benchmark dataset on autism for P300-based brain-computer-interfaces,” R. Hornero, “Towards an accessible use of smartphone-based social net-
+
+Frontiers Neurosci., vol. 14, p. 978, Sep. 2020. works through brain-computer interfaces,” Expert Syst. Appl., vol. 120,
+
+\[33\] G. Schalk, D. J. McFarland, T. Hinterberger, N. Birbaumer, and pp. 155–166, Apr. 2019.
+
+J. R. Wolpaw, “BCI2000: A general-purpose brain-computer inter- \[11\] E. Santamaria-Vazquez, V. Martinez-Cagigal, J. Gomez-Pilar, and
+
+face (BCI) system,” IEEE Trans. Biomed. Eng., vol. 51, no. 6, R. Hornero, “Asynchronous control of ERP-based BCI spellers using
+
+pp. 1034–1043, Jun. 2004. steady-state visual evoked potentials elicited by peripheral stimuli,”
+
+\[34\] E. Santamaría-Vázquez, V. Martínez-Cagigal, and R. Hornero, IEEE Trans. Neural Syst. Rehabil. Eng., vol. 27, no. 9, pp. 1883–1892,
+
+“MEDUSA: Una nueva herramienta para el desarrollo de sistemas brain- Sep. 2019.
+
+computer interface basada en python,” Cogn. Area Netw., vol. 5, no. 1, \[12\] M. Congedo, A. Barachant, and R. Bhatia, “Riemannian geometry for
+
+pp. 87–92, 2018. EEG-based brain-computer interfaces; A primer and a review,” Brain-
+
+\[35\] S. Ioffe and C. Szegedy, “Batch normalization: Accelerating deep Comput. Interfaces, vol. 4, no. 3, pp. 155–174, Jul. 2017.
+
+network training by reducing internal covariate shift,” in Proc. 32nd \[13\] Y. Lecun, Y. Bengio, and G. Hinton, “Deep learning,” Nature, vol. 521,
+
+Int. Conf. Mach. Learn. (ICML), vol. 1, Jul. 2015, pp. 448–456. no. 7553, pp. 436–444, 2015.
+
+\[36\] N. Srivastava, G. Hinton, A. Krizhevsky, I. Sutskever, and \[14\] A. Craik, Y. He, and J. L. Contreras-Vidal, “Deep learning for elec-
+
+R. Salakhutdinov, “Dropout: A simple way to prevent neural networks troencephalogram (EEG) classification tasks: A review,” J. Neural Eng.,
+
+from overfitting,” J. Mach. Learn. Res., vol. 15, no. 1, pp. 1929–1958, vol. 16, no. 3, Jun. 2019, Art. no. 031001.
+
+2014\. \[15\] Y. Roy, H. Banville, I. Albuquerque, A. Gramfort, T. H. Falk,
+
+\[37\] F. Chollet. (2015). Keras. \[Online\]. Available: https://keras.io and J. Faubert, “Deep learning-based electroencephalography analysis:
+
+\[38\] D. P. Kingma and J. L. Ba, “Adam: A method for stochastic optimiza- A systematic review,” J. Neural Eng., vol. 16, no. 5, Aug. 2019,
+
+tion,” in Proc. 3rd Int. Conf. Learn. Represent. (ICLR), 2015, pp. 1–15. Art. no. 051001.
+
+\[39\] Z. Zhang and M. Sabuncu, “Generalized cross entropy loss for training \[16\] C. Szegedy et al., “Going deeper with convolutions,” in Proc. IEEE
+
+deep neural networks with noisy labels,” in Proc. Adv. Neural Inf. Conf. Comput. Vis. Pattern Recognit. (CVPR), Jun. 2015, pp. 1–9.
+
+Process. Syst., 2018, pp. 8778–8788. \[17\] F. Chollet, “Xception: Deep learning with depthwise separable convo-
+
+\[40\] B. Blankertz, S. Lemm, M. Treder, S. Haufe, and K.-R. Müler, “Single- lutions,” in Proc. IEEE Conf. Comput. Vis. Pattern Recognit. (CVPR),
+
+trial analysis and classification of ERP components—A tutorial,” Neu- Jul. 2017, pp. 1251–1258.
+
+roImage, vol. 56, no. 2, pp. 814–825, May 2011. \[18\] W. Qiao and X. Bi, “Deep spatial-temporal neural network for classi-
+
+\[41\] F. Pedregosa et al., “Scikit-learn: Machine learning in Python,” J. Mach. fication of EEG-based motor imagery,” in Proc. Int. Conf. Artif. Intell.
+
+Learn. Res., vol. 12, pp. 2825–2830, Oct. 2011. Comput. Sci., Jul. 2019, pp. 265–272.
+
+\[42\] A. Barachant, S. Bonnet, M. Congedo, and C. Jutten, “Multiclass brain– \[19\] D.-Y. Lee, J.-H. Jeong, K.-H. Shim, and D.-J. Kim, “Classification of
+
+computer interface classification by Riemannian geometry,” IEEE Trans. upper limb movements using convolutional neural network with 3D
+
+Biomed. Eng., vol. 59, no. 4, pp. 920–928, Apr. 2012. inception block,” in Proc. 8th Int. Winter Conf. Brain-Comput. Interface
+
+\[43\] A. Barachant. (2015). PyRiemann: Biosignals Classification With (BCI), Feb. 2020, pp. 1–5.
+
+Riemannian Geometry. \[Online\]. Available: https://pyriemann. \[20\] K. Yue and D. Wang, “EEG-based 3D visual fatigue evaluation using
+
+readthedocs.io/en/latest/ CNN,” Electronics, vol. 8, no. 11, pp. 1–18, Nov. 2019.
+
+\[44\] Y. Benjamini and Y. Hochberg, “Controlling the false discovery rate: \[21\] Y. T. Qassim, T. R. H. Cutmore, D. A. James, and D. D. Rowlands,
+
+A practical and powerful approach to multiple testing,” J. Roy. Stat. “Wavelet coherence of EEG signals for a visual oddball task,” Comput.
+
+Soc. B, Methodol., vol. 57, no. 1, pp. 289–300, Jan. 1995. Biol. Med., vol. 43, no. 1, pp. 23–31, Jan. 2013.
+
+\[45\] D. Wu, Y. Xu, and B.-L. Lu, “Transfer learning for EEG-based \[22\] H. Cecotti and A. Gräser, “Convolutional neural networks for
+
+brain-computer interfaces: A review of progress made since 2016,” P300 detection with application to brain-computer interfaces,” IEEE
+
+IEEE Trans. Cogn. Develop. Syst., early access, Jul. 7, 2020, doi: Trans. Pattern Anal. Mach. Intell., vol. 33, no. 3, pp. 433–445,
+
+10.1109/TCDS.2020.3007453. Mar. 2011.
+
+\[46\] M. Xu, X. Xiao, Y. Wang, H. Qi, T.-P. Jung, and D. Ming, “A brain– \[23\] R. Manor and A. B. Geva, “Convolutional neural network for multi-
+
+computer interface based on miniature-event-related potentials induced category rapid serial visual presentation BCI,” Frontiers Comput. Neu-
+
+by very small lateral visual stimuli,” IEEE Trans. Biomed. Eng., vol. 65, rosci., vol. 9, no. 146, pp. 1–12, Dec. 2015.
+
+no. 5, pp. 1166–1175, May 2018. \[24\] R. T. Schirrmeister et al., “Deep learning with convolutional neural
+
+\[47\] X. Xiao, M. Xu, J. Jin, Y. Wang, T.-P. Jung, and D. Ming, “Discrimi- networks for EEG decoding and visualization,” Hum. Brain Mapping,
+
+native canonical pattern matching for single-trial classification of ERP vol. 38, no. 11, pp. 5391–5420, Nov. 2017.
+
+components,” IEEE Trans. Biomed. Eng., vol. 67, no. 8, pp. 2266–2275, \[25\] M. Liu, W. Wu, Z. Gu, Z. Yu, F. Qi, and Y. Li, “Deep learning based
+
+Aug. 2020. on batch normalization for P300 signal detection,” Neurocomputing,
+
+\[48\] J. Jin, Z. Chen, R. Xu, Y. Miao, X. Wang, and T.-P. Jung, “Develop- vol. 275, pp. 288–297, Jan. 2018.
+
+ing a novel tactile P300 brain-computer interface with a cheeks-stim \[26\] V. J. Lawhern, A. J. Solon, N. R. Waytowich, S. M. Gordon, C. P. Hung,
+
+paradigm,” IEEE Trans. Biomed. Eng., vol. 67, no. 9, pp. 2585–2593, and B. J. Lance, “EEGNet: A compact convolutional neural network for
+
+Sep. 2020. EEG-based brain–computer interfaces,” J. Neural Eng., vol. 15, no. 5,
+
+\[49\] Z. Gu, Z. Chen, J. Zhang, X. Zhang, and Z. L. Yu, “An online pp. 1–17, 2018.
+
+interactive paradigm for P300 brain–computer interface speller,” IEEE \[27\] D. Borra, S. Fantozzi, and E. Magosso, “Convolutional neural network
+
+Trans. Neural Syst. Rehabil. Eng., vol. 27, no. 2, pp. 152–161, Feb. 2019. for a P300 brain-computer interface to improve social attention in autistic
+
+\[50\] J. Jin et al., “The study of generic model set for reducing calibration spectrum disorder,” in Proc. 15th Medit. Conf. Med. Biol. Eng. Comput.
+
+time in P300-based brain–computer interface,” IEEE Trans. Neural Syst. (MEDICON), 2019, pp. 1837–1843.
+
+Rehabil. Eng., vol. 28, no. 1, pp. 3–12, Jan. 2020.
+
+Authorized licensed use limited to: Brown University. Downloaded on July 06,2026 at 21:11:24 UTC from IEEE Xplore. Restrictions apply.
+
+<https://orcid.org/0000-0002-7688-4258>   
+<https://orcid.org/0000-0002-3822-1787>   
+<https://orcid.org/0000-0002-5898-2006>   
+<https://orcid.org/0000-0001-9915-2570>   
+<http://dx.doi.org/10.1109/TCDS.2020.3007453>   

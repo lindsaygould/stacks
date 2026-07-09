@@ -1,0 +1,1297 @@
+Whole-brain annotation and multi-connectome cell typing of Drosophila 
+
+Article Whole-brain annotation and multi- connectome cell typing of Drosophila
+
+https://doi.org/10.1038/s41586-024-07686-5
+
+Philipp Schlegel1,2, Yijie Yin2, Alexander S. Bates1,3,4, Sven Dorkenwald5,6, Katharina Eichler2,
+
+Received: 14 July 2023
+
+Paul Brooks2, Daniel S. Han1,7, Marina Gkantia2, Marcia dos Santos2, Eva J. Munnelly2, Griffin Badalamente2, Laia Serratosa Capdevila2, Varun A. Sane2, Alexandra M. C. Fragniere2, Accepted: 6 June 2024
+
+Ladann Kiassat2, Markus W. Pleijzier1, Tomke Stürner1,2, Imaan F. M. Tamimi2,
+
+Published online: 2 October 2024
+
+Christopher R. Dunne2, Irene Salgarella2, Alexandre Javier2, Siqi Fang2, Eric Perlman8, Tom Kazimiers9, Sridhar R. Jagannathan2, Arie Matsliah6, Amy R. Sterling6,10, Szi-chieh Yu6, Open access
+
+Claire E. McKellar6, FlyWire Consortium\*Mala Murthy6, Volker Hartenstein11, Davi D. ,\*\*, BockMarta 12 ✉ Costa& Gregory 2, H. Sebastian S. X. E. JefferisSeung1,2 5,6✉ ,
+
+The fruit fly Drosophila melanogaster has emerged as a key model organism in neuroscience, in large part due to the concentration of collaboratively generated molecular, genetic and digital resources available for it. Here we complement the approximately 140,000 neuron FlyWire whole-brain connectome1 with a systematic and hierarchical annotation of neuronal classes, cell types and developmental units (hemilineages). Of 8,453 annotated cell types, 3,643 were previously proposed in the partial hemibrain connectome2, and 4,581 are new types, mostly from brain regions outside the hemibrain subvolume. Although nearly all hemibrain neurons could be matched morphologically in FlyWire, about one-third of cell types proposed for the hemibrain could not be reliably reidentified. We therefore propose a new definition of cell type as groups of cells that are each quantitatively more similar to cells in a different brain than to any other cell in the same brain, and we validate this definition through joint analysis of FlyWire and hemibrain connectomes. Further analysis defined simple heuristics for the reliability of connections between brains, revealed broad stereotypy and occasional variability in neuron count and connectivity, and provided evidence for functional homeostasis in the mushroom body through adjustments of the absolute amount of excitatory input while maintaining the excitation/inhibition ratio. Our work defines a consensus cell type atlas for the fly brain and provides both an intellectual framework and open-source toolchain for brain-scale comparative connectomics.
+
+The adult fruit fly represents the current frontier for whole-brain con- nectomics. With 139,255 neurons, the newly completed full adult female brain (FAFB) connectome is intermediate in log scale between the first connectome of Caenorhabditis elegans (302 neurons3,4) and the mouse (108 neurons), a desirable but currently intractable target5. The availabil- ity of a complete adult fly brain connectome now allows brain-spanning circuits to be mapped and linked to circuit dynamics and behaviour as has long been possible for the nematode and more recently the Dros- ophila larva (3,016 neurons)6. However, the adult fly has richer behaviour, including complex motor control while walking or in flight7, courtship behaviour8, involved decision making9, flexible associative memory10,11, spatial learning12 and complex13,14 multisensory15,16 navigation.
+
+The FlyWire brain connectome reported in our companion paper1 is by some margin the largest and most complex yet obtained. The
+
+full connectome, derived from the approximately 100 teravoxel FAFB whole-brain electron microscopy (EM) volume17, can be represented as a graph with 139,255 nodes and around 15.1 million weighted edges. Here we formulate and answer key questions that are essential to inter- preting connectomes at this scale regarding (1) how we know which edges are important; (2) how we can simplify the connectome graph to aid automated or human analysis; and (3) the extent to which this connectome is a snapshot of a single brain or representative of this species as a whole (or have we collected a ‘snowflake’?). These ques- tions are inextricably linked with connectome annotation and cell type identification18,19 within and across datasets.
+
+At the most basic level, navigating this connectome would be extremely challenging without a comprehensive system of annota- tions, which we now provide. Our annotations represent an indexed
+
+Check for updates
+
+1Neurobiology Division, MRC Laboratory of Molecular Biology, Cambridge, UK. 2Drosophila Connectomics Group, Department of Zoology, University of Cambridge, Cambridge, UK. 3Department of Neurobiology and Howard Hughes Medical Institute, Harvard Medical School, Boston, MA, USA. 4Centre for Neural Circuits and Behaviour, University of Oxford, Oxford, UK. 5Computer Science Department, Princeton University, Princeton, NJ, USA. 6Princeton Neuroscience Institute, Princeton University, Princeton, NJ, USA. 7School of Mathematics and Statistics, University of New South Wales, Sydney, New South Wales, Australia. 8Yikes, Baltimore, MD, USA. 9kazmos, Dresden, Germany. 10Eyewire, Boston, MA, USA. 11Molecular, Cell and Developmental Biology, University of California Los Angeles, Los Angeles, CA, USA. 12Department of Neurological Sciences, Larner College of Medicine, University of Vermont, Burlington, VT, USA. \*A list of authors and their affiliations appears at the end of the paper. \*\*A full list of members and their affiliations appears in the Supplementary Information. ✉e-mail: dbock@uvm.edu; jefferis@mrc-lmb.cam.ac.uk
+
+Nature | Vol 634 | 3 October 2024 | 139
+
+Article
+
+and hierarchical human-readable parts list18,20, enabling biologists to explore their systems and neurons of interest. Connectome anno- tation is also crucial to ensuring data quality as it inevitably reveals segmentation errors that must be corrected. Furthermore, there is a rich history in Drosophila of probing the circuit basis of a wide range of innate and learned behaviours as well as their developmental genetic origins; realizing the full potential of this dataset is only possible by cross-identifying cell types within the connectome with those charac- terized in the published and in-progress literature. This paper reports this key component of the connectome together with the open source tools (Table 1) and resources that we have generated. As the annota- tion and proofreading of the connectome are inextricably linked, the companion paper1 and this paper will preferably be co-cited as they jointly describe the FlyWire resource.
+
+Comparison with cell types proposed using the partial hemi- brain connectome2 confirmed that the majority of fly cell types is highly stereotyped, and defined simple rules for which connec- tions within a connectome are reliable and therefore more likely to be functional. However, this comparison also revealed unexpected variability in some cell types and demonstrated that many cell types originally reported in the hemibrain could not be reliably reidenti- fied. This discovery necessitated the development and application of a new robust approach for defining cell types jointly across con- nectomics datasets. Overall, this effort lays the foundation both for deep interrogation of current and anticipated fly connectomes from normal individuals, but also future studies of sexual dimorphism, experience-dependent plasticity, development and disease at the whole- brain scale.
+
+Hierarchical annotation of a connectome Annotations defining different kinds of neurons are key to exploring and interpreting any connectome; but, with the FlyWire connectome— which we report jointly with the companion paper1—now exceeding the 100,000 neuron mark, they are also both of increased significance and more challenging to generate. We defined a comprehensive, sys- tematic and hierarchical set of annotations based on the anatomical organization of the brain (Fig. 1 and Supplementary Videos 1 and 2), as well as the developmental origin and coarse morphology of neurons (Fig. 2). Building on these as well as validating cell types identified from pre-existing datasets, we then defined a set of consensus terminal cell types intended to capture the finest level of organization that is reproducible across brains (Fig. 3).
+
+We first collected and curated basic metadata for every neuron in the dataset including soma position and side, and entry or exit nerve for afferent and efferent neurons, respectively (Fig. 1). Our group also predicted neurotransmitter identity for all neurons as reported elsewhere21. We then defined a hierarchy of four levels: flow \> super- class \> class \> cell type, which provide salient labels at different granu- larities (Fig. 1a, Supplementary Table 1 and Extended Data Fig. 2).
+
+The first two levels, flow and superclass, were densely annotated: every neuron is either afferent, efferent or intrinsic to the brain (flow) and falls into one of the nine superclasses: sensory (periphery to brain), motor (brain to periphery), endocrine (brain to corpora allata/cardi- aca), ascending (ventral nerve cord (VNC) to brain), descending (brain to VNC), visual projection (optic lobes to central brain), visual cen- trifugal (central brain to optic lobes), or intrinsic to the optic lobes or the central brain (Fig. 1b and Supplementary Table 2). Mapping to the https://virtualflybrain.org/ (ref. 22) database enables cross-referencing of neurons and types with other publications (Methods). Note that due to an inversion of the left–right axis during the original acquisi- tion of the FAFB dataset17, identified during preparation of this work (Extended Data Fig. 1; see the ‘FAFB laterality’ section of the Methods), frontal figures in this work and the FlyWire connectome1 have the fly’s left on the viewer’s left, and the fly’s right on the viewer’s right, that
+
+140 | Nature | Vol 634 | 3 October 2024
+
+Table 1 | Software tools used
+
+Name Github repository Description
+
+navis navis-org/navis Analysis (for example, NBLAST) and
+
+visualization of neuron morphologies in Python.
+
+navis-flybrains navis-org/
+
+navis-flybrains
+
+Transform data between brain templates (including hemibrain and FAFB) in Python.
+
+fafbseg-py flyconnectome/
+
+fafbseg-py
+
+Query and work with auto-segmented FAFB data (including FlyWire) in Python.
+
+cocoa flyconnectome/cocoa Analysis suite for comparative
+
+connectomics in Python.
+
+neuprint- python
+
+connectome-neuprint/ neuprint-python
+
+Query data from neuPrint, developed by Stuart Berg (Janelia Research Campus).
+
+fafbseg natverse/fafbseg Support for working with FlyWire
+
+segmentation, meshes and annotations in R.
+
+neuprintr natverse/neuprintr Support for working with neuPrint
+
+databases including the hemibrain connectome in R.
+
+coconat coconatfly
+
+natverse/coconat natverse/coconatfly
+
+Analysis suite for comparative connectomics in R.
+
+Pyroglancer SridharJagannathan/
+
+pyroglancer
+
+Pythonic interface to neuroglancer for displaying neuronal data.
+
+is, the opposite of the usual convention. However, all side labels are biologically correct.
+
+The class field contains pre-existing neurobiological groupings from the literature (for example, for central complex neurons; Supplemen- tary Table 3) and is sparsely annotated (43%) for the central brain, in large part because past research has favoured some brain areas over others. In the optic lobes, 99% of neurons have a generic class based on their neuropil innervation. Finally, 98% of all central brain neurons were given a terminal cell type, a majority of which could be linked to at least one report in the literature (Fig. 1c). Our annotations for the optic lobes include cell types for 92% of neurons in both left and right optic lobes. A separate report23 will describe comprehensive typing of all neurons intrinsic to the optic lobes. In total, we collected over 870,000 annotations for all 139,255 neurons; all are available for download and through neuroglancer scenes (Methods and Extended Data Fig. 11). A total of 32,388 (23%) neurons are intrinsic to the central brain and 77,536 (54%) neurons are intrinsic to the optic lobes. The optic lobes and the central brain are connected through 8,053 visual projection and 524 visual centrifugal neurons. The central brain receives afferent input through 5,512 sensory and 2,362 ascending neurons. Efferent output is realized through 1,303 descending, 80 endocrine and 106 motor neurons.
+
+We find marked stereotypy in the number of central brain intrinsic neurons—for example, between the left and the right hemisphere, they differ by only 27 (0.1%) neurons. For superclasses with less consistency in left versus right counts, such as the ascending neurons (140, 11%), the discrepancies are typically due to ambiguity in the sidedness (Fig. 1d and Methods).
+
+Combining the dense superclass annotation for all neurons with the connectome1 gives a birds-eye view of the input/output connec- tivity of the central brain (Fig. 1f): 55% of the central brain’s synap- tic input comes from the optic system; 25% from the VNC through ascending neurons; and only 18% from peripheral sensory neurons. This is surprising as sensory neurons are almost as numerous as visual projection neurons (Fig. 1d,e); individual visual projection neurons therefore provide about 2.5 times more synapses, underscoring the value of this information stream. Input neurons make about two syn- apses onto central brain neurons for every one synapse onto output
+
+neurons. Most output synapses target the VNC through descending neurons (75%); the rest provide centrifugal feedback onto the optic system (15%), motor neuron output (9%) and endocrine output to the periphery (1%).
+
+A full atlas of neuronal lineages Our top-level annotations (flow, superclass, class) provide a system- atic but relatively coarse grouping of neurons compared with \>5,000 terminal cell types expected from previous work on the hemibrain2. We therefore developed an intermediate level of annotation based on hemilineages—this provides a powerful bridge between the develop- mental origin and molecular specification of neurons and their place within circuits in the connectome (Fig. 2a).
+
+9
+
+Flow Superclass SideClass
+
+HemilinageCell type
+
+Fig. 1 | Hierarchical annotation schema for a whole-brain connectome. a, Hierarchical annotation schema for the FlyWire dataset (see the companion paper1). Annotations for example cell type DA1 lPN (right) are highlighted in red. b, Renderings of neurons for each superclass. AN, antennal nerve; APhN, accessory pharyngeal nerve; CV, cervical connective; d, dorsal; m, medial; MxLbN, maxillary-labial nerve; NCC, corpora cardiaca nerves; OCG, ocellar ganglion; ON, occipital nerves; PhN, pharyngeal nerve; p, posterior.
+
+b
+
+a
+
+Visual projection
+
+NCC
+
+Visual centrifugal
+
+Side: left Hemilineage: ALl1 dorsal VFB ID: FBbt00067363
+
+Left Right
+
+d p m
+
+d m
+
+p
+
+c d e f
+
+3 140
+
+) 01×(s noruenf or ebmuN120 10080604020Number 0
+
+of neurons
+
+Central brain Optic lobes Laminae
+
+Full adult fly brain: 139,255 neurons
+
+Central (n = 32,388)
+
+Endocrine (n = 80)
+
+Optic (n = 75,536)
+
+3
+
+46
+
+8,453
+
+183
+
+39,060 16,136 5,865 4,016 2,768 1,111 646 2655240
+
+Optic Central Sensory (visual) Visual projection Sensory (other) Ascending Descending Visual centrifugal Motor
+
+104
+
+103 102 102 103 104 Endocrine
+
+Left Right
+
+Ascending (n = 2,362)
+
+Descending (n = 1,303)
+
+Visual projection (n = 8,053)
+
+Superclass Flow
+
+Class Cell type
+
+Afferent
+
+Sensory
+
+ALPN DA1 IPN
+
+Ascending
+
+Central
+
+Intrinsic
+
+Metadata Descending
+
+Efferent
+
+Motor
+
+38,476 16,163 5,450 4,037 2,714 1,251 649 259 5440
+
+Central brain neurons and a minority of visual projection neurons are generated by around 120 identified neuroblasts per hemisphere. Each of these stem cells is defined by a unique transcriptional code and generates a stereotyped lineage in a precise birth order by asym- metric division24–27 (Fig. 2b). Each neuroblast typically produces two hemilineages28,29 that differ markedly in neuronal morphology and can express different neurotransmitters from one another, but neu- rons in each hemilineage usually express a single fast-acting transmit- ter21,30. Hemilineages therefore represent a natural functional as well as developmental grouping by which to study the nervous system. Within a hemilineage, neurons form processes that extend together in one cohesive bundle (the hemilineage tract) that enters, traverses and interconnects neuropil compartments in a stereotypical pattern (Fig. 2c). Comparing these features between EM and previous light-level
+
+c, Annotation counts per field. Each colour within a bar represents discrete values; the numbers above bars count the discrete values. d, Left versus right neuron counts per superclass. Bottom, the left and right soma locations, respectively. e, Breakdown of sensory neuron counts into modalities. f, Flow chart of superclass-level, feed-forward (afferent to intrinsic to efferent) connectivity.
+
+N10,000 snoruenf or ebmu8,000 6,000
+
+4,000
+
+2,0000MechVanisousael
+
+nsoOrylfactoGruystatUoHrny
+
+kyngorowTshn
+
+eenrsmoory
+
+sensory
+
+CVCV
+
+Optic
+
+Endocrine
+
+11,3912,6482,281343135 74 29
+
+Sensory (n = 16,903)
+
+Photoreceptor neurons
+
+Motor (n = 106)
+
+Visual centrifugal (n = 524)
+
+AN APhN
+
+PhN
+
+MxLbN
+
+KCLHCENT
+
+MBON ...
+
+Nature | Vol 634 | 3 October 2024 | 141
+
+Endocrine
+
+Sensory (visual)
+
+AscendingSensory (other)
+
+Visual projection
+
+Motor
+
+Descending Central
+
+Visual centrifugal
+
+Optic
+
+400,000 synapses
+
+OCG
+
+CV/ON
+
+Article
+
+a b c
+
+e
+
+data31–34 enabled us to compile the first definitive atlas of all hemiline- ages in the central brain (Fig. 2c–e and Methods).
+
+In total, we successfully identified 120 neuroblast lineages in FlyWire comprising 183 hemilineages for 88% (30,233 total) of central brain neurons (Fig. 2e,f and Extended Data Fig. 3). The unassigned neurons are likely primary neurons born during embryonic development, which account for 10% of neurons in the adult brain35,36. We tentatively designated 3,779 (11%) as primary neurons either based on specific identification in the literature27 or expert assessment of diagnostic morphological features such as larger cell bodies and broader pro- jections. A further 797 neurons (2%) did not co-fasciculate with any hemilineage tracts, even though their morphology suggested that they are later-born secondary neurons37. This developmental atlas is comprehensive as, after reviewing discrepancies between previous studies (Methods), we identified all 119 expected lineages plus one new lineage.
+
+The number of neurons per hemilineage can vary widely (Fig. 2h)—for example, counting both hemispheres, FLAa1 contains just 30 neu- rons whereas MBp4 (which makes the numerous Kenyon cells that are required for memory storage) has 1,335. However, in general, the number of neurons per hemilineage is between 60 and 282 (10th to 90th percentile, respectively). Nevertheless, the numbers of neurons within each hemilineage were highly reliable, differing only by 3% (±4%)
+
+Larva Adult fly
+
+Neuroblast Ganglion
+
+Lineage Hemilineage Hemilineage mother
+
+cell
+
+a
+
+Secondary neurons Primary neurons Cell body
+
+Fibre segment bHemilineage tractDendritic branches
+
+Axonal c Brain compartment segment
+
+Axonal branches
+
+AOTUv3
+
+f g
+
+1
+
+n iarbl artnecn is norueN1
+
+182Found
+
+119 s egaeniLh
+
+i j k AOTUv3 dorsal
+
+all-by-all NBLAST
+
+Morphology groups
+
+Put. primary 35,000
+
+30,000
+
+25,000
+
+20,000
+
+15,000
+
+10,000
+
+5,0000
+
+3,780
+
+885
+
+30,125
+
+100%
+
+806040200
+
+New
+
+No lineage
+
+Has lineage
+
+s egaenilimeHAOTUv3 dorsal (hemibrain)
+
+Fig. 2 | Annotation of developmental units. a, Illustration of the two complementary sets of annotations. b, Developmental organization of neuroblast hemilineages. c, Light-level image of an example AOTUv3 lineage clone; the lower case letters link canonical features of each hemilineage to the cartoon in b. Inset: cell body fibre tract in the EM. cb, cell body; np, neuropil. d, AOTUv3 neurons in FlyWire split into its two hemilineages. e, Cell body fibre bundles from all identified hemilineages, partially annotated on the right. f, The number of central brain neurons with an identified lineage; annotation of
+
+(putative (put.)) primary neurons is based on literature or expert assessment of morphology. g, The number of identified unique (hemi)lineages. h, Left versus right number of neurons contained in each hemilineage. i, Example morphological clustering of the AOTUv3 dorsal hemilineage reveals four distinct subgroups. j, Neurons belonging to the AOTUv3 dorsal hemilineage identified in the hemibrain connectome. k, FlyWire versus hemibrain number of neurons for cross-identified hemilineages.
+
+142 | Nature | Vol 634 | 3 October 2024
+
+d
+
+Flow
+
+Superclass
+
+Class w ofln oitamrofnILineage Hemilineage
+
+Morphology group y golohprom+ t nempoleveDCell type
+
+SLPpm3 SLPpm3 SLPpm3
+
+SLPpm1 SLPpm1 SLPpm1
+
+SMPpv2\_dorsal SMPpv2\_dorsal SMPpv2\_dorsal
+
+t fele riWylFH200 VLPl\&d1\_dorsal VLPl\&d1\_dorsal VLPl\&d1\_dorsal
+
+LB19LB19LB19WEDa2WEDa2WEDa2
+
+VLPl\&p1\_lateral VLPl\&p1\_lateral VLPl\&p1\_lateral
+
+50
+
+LB7LB7LB7 MX3MX3MX3MX12MX12MX12 MX7MX7MX7 LB5LB5LB5 SLPal2SLPal2SLPal2
+
+800 LHl2\_ventral LHl2\_ventral LHl2\_ventral SLPal2SLPal2SLPal2 VLPl4\_dorsal VLPl4\_dorsal VLPl4\_dorsal SLPav2SLPav2SLPav2 SLPav3SLPav3SLPav3 VPNl\&d1\_dorsal VPNl\&d1\_dorsal VPNl\&d1\_dorsal LHa2LHa2LHa2
+
+ALlv1ALlv1ALlv1
+
+100 50100 200 400 800 250
+
+200 niarbime400 150
+
+10050 Linear fit
+
+Slope = 0.951 R2 = 0.982 0 0 50 100 150 200 250
+
+between the left and right hemispheres (Fig. 2h). This is consistent with the near-equality of neurons per hemisphere noted in Fig. 1, and indicates great precision in the developmental programs controlling neuron number. We also identified neurons belonging to 125 hemi- lineages in the hemibrain dataset (Fig. 2j), a connectome compris- ing approximately half of a female fly brain2 (Fig. 3a). The number of neurons per hemilineage strongly correlates across brains (R2 = 0.98), with FlyWire hemilineages containing on average around 5% more neurons (Fig. 2k).
+
+Although hemilineages typically contain functionally and morpho- logically related neurons, subgroups can be observed37. We further divided each hemilineage into distinct morphology groups, each inner- vating similar brain regions and taking similar internal tracts, using NBLAST morphological clustering38 (Fig. 2i, Methods, Extended Data Fig. 3, Supplementary Files 3 and 4 and Supplementary Video 3). This generated a total of 528 groupings that are consistent across hemi- spheres and provide an additional layer of annotations between the hemilineage and cell type levels.
+
+Validating cell types across brains We next sought to compare FlyWire against the hemibrain connec- tome2; this contains most of one central brain hemisphere and parts
+
+b c
+
+a
+
+a
+
+npc b
+
+cb
+
+c
+
+b a
+
+a
+
+AOTUv3 dorsal AOTUv3 ventral
+
+b
+
+c
+
+Linear fit Slope = 0.995 R2 = 0.997
+
+FlyWire right
+
+x = y
+
+FlyWire (L/R mean)
+
+of the optic lobe. The hemibrain was previously densely cell typed by a combination of two automated procedures followed by extensive manual review2,39–41: NBLAST morphology clustering initially yielded 5,235 morphology types; multiple rounds of CBLAST connectivity clus- tering split some types, generating 640 connectivity types for a final total of 5,620 types. We have reidentified just 14% of connectivity types and therefore use the 5,235 morphology types as a baseline for com- parison. Although 389 (7%) of the hemibrain cell types were previously established in the literature and recorded in the https://virtualflybrain. org/ database22, principally through analysis of genetic driver lines19, the great majority (90%) were newly proposed using the hemibrain, that is, derived from a single hemisphere of a single animal. This was reasonable given the pioneering nature of the hemibrain reconstruc- tion, but the availability of the FlyWire connectome now allows for a more stringent re-examination.
+
+a
+
+e riWylFe
+
+Hemibrain query Unlikely FlyWire match Score: 0.267
+
+Hemibrain query niarbimeHScore: 0.704
+
+6832
+
+103
+
+102
+
+Many:1
+
+SIP078,SIP080
+
+101
+
+100
+
+100 101 102 103
+
+Fig. 3 | Across-brain stereotypy. a, Schematic of the pipeline for matching neurons between FlyWire and the Janelia hemibrain connectomes. Conf., confidence. b, The distribution of top hemibrain to FlyWire NBLAST scores. c, Manual review for a sample of top NBLAST hits. d, The extrapolated number of hemibrain neurons with matches in FlyWire. e, Example for unlikely (left) and strong (right) morphology match. f, Example of a high-confidence cell type (PS008) that is unambiguously identifiable across all three hemispheres. g, Counts of FlyWire neurons that were assigned a hemibrain type. h, The number of hemibrain cell types that were successfully identified and the
+
+Strong FlyWire match
+
+f
+
+h
+
+i
+
+j
+
+k
+
+l Across brains
+
+e pytr eps llecf or ebmuNWithin brain SIP078 SIP080
+
+PS090
+
+1:manyPS090a PS090b
+
+R = 0.934 P \< 0.001 R = 0.997 P \< 0.001
+
+Number of cells per type
+
+resulting number of FlyWire cell types. i,j, Examples for many:1 (i) and 1:many (j) hemibrain type matches. The dotted vertical lines indicate truncation of the hemibrain neurons. k, Graph representation of top NBLAST hits between FlyWire neurons and hemibrain types. This subgraph contains nodes within a radius of three edges from the query cell type (AVLP534). Neurons matching multiple cell types (asterisks) must be manually resolved, which is not always possible. l, The number of cells per cross-matched cell type within a brain (FlyWire left versus right) and across brains (FlyWire versus hemibrain).
+
+Hemibrain
+
+Within-brain comparisons
+
+Left Right
+
+Across-brain comparisons
+
+w eiverl aunaMMorphology match (b–d)
+
+Type match (e–k)
+
+High conf.
+
+Analyses
+
+Low conf.
+
+PS008
+
+NBLAST
+
+e riWylFSimilarity
+
+matrix Top hemibrain to FlyWire
+
+NBLAST score
+
+Transform into FlyWire space
+
+Hemibrain
+
+22,704 neurons 5,235 cell types
+
+–0.25 0
+
+0.25 0.50 0.75
+
+g FlyWire left
+
+FlyWire right
+
+\* AVLP213 \* \* \* \*
+
+\* AVLP434 \*
+
+\*
+
+\*
+
+1.0 b
+
+s noruenf or ebmuN4,000
+
+) evitalumuc(s noruenf on oitcarFc d 0.8 3,000
+
+0.6
+
+2,000
+
+0.4
+
+1,000
+
+0.2
+
+0
+
+AVLP164
+
+AVLP534 (query)
+
+We approach this by considering each cell type in the hemibrain as a prediction: if we can reidentify a distinct group of cells with the same properties in both hemispheres of the FlyWire dataset, then we con- clude that a proposed hemibrain cell type has been tested and validated. To perform this validation, we first used non-rigid three-dimensional (3D) registration to map meshes and skeletons of all hemibrain neurons into FlyWire space, enabling direct co-visualization of both datasets and a range of automated analyses. We then used NBLAST38 to calculate morphological similarity scores between all hemibrain neurons and the approximately 84,000 FlyWire neurons with arbours at least partially contained within the hemibrain volume (Fig. 3a,b and Extended Data Fig. 4a–c). We manually reviewed the top five NBLAST hits for a ran- dom sample of individual neuron-to-neuron matches and found that high NBLAST scores typically indicate a good morphological match (Fig. 3c). Extrapolating from this sample, we expect 99% of hemibrain
+
+AVLP163
+
+AVLP019
+
+FlyWire neuron match
+
+0
+
+s noruenn iarbimehd elpmaS30 2520151050Match Unlikely No match Too truncated
+
+snoruenf or ebmuN1010104 3
+
+2
+
+Extrapolate (b × c)
+
+%39.89%94.0%62.0% 92.00.0–00.1.1
+
+–00.2.2
+
+–00.3.3
+
+–00.4.4
+
+–00.5.5
+
+–00.6.6
+
+–00.7.7
+
+–0.8
+
+Top NBLAST score
+
+Truncated
+
+s noruene riWylFf or ebmuN38,100
+
+Outside hemibrain volume 5,830
+
+54,923
+
+Untyped 16,468
+
+Type matched
+
+d etacnurtt oN23,934
+
+FlyWire neuron
+
+Hemibrain type
+
+Nature | Vol 634 | 3 October 2024 | 143
+
+NBLAST scores
+
+Number of types in hemibrain
+
+Number of types in FlyWire
+
+2,920
+
+1:1
+
+2,920
+
+261 403
+
+1:many
+
+1,651
+
+Many:1
+
+523 not matched
+
+200
+
+Article
+
+neurons to have a morphologically very similar neuron in FlyWire (Fig. 3d).
+
+We next attempted to map hemibrain cell types onto FlyWire neurons. Candidate type matches were manually reviewed by co-visualization and only those with high confidence were accepted (Fig. 3f–h and Methods). Crucially, this initial morphological matching process gen- erated a large corpus of shared cell type labels between datasets; with these in place, we developed an across-dataset connectivity cluster- ing method that enabled us to investigate and resolve difficult cases (see the ‘hemibrain cell type matching with connectivity’ section of the Methods).
+
+The majority of hemibrain cell types (56%; 2,920 out of 5,235 types) were unambiguously found in the FlyWire dataset (Fig. 3f). A further 664 (13%) hemibrain types were mapped but had to be either merged (many:1) or further split (1:many) (Fig. 3h). In total, 7% of proposed hemibrain types were combined to define new ‘composite’ types (for example, SIP078,SIP080) because the hemibrain split could not be recapitulated when examining neurons from both FlyWire and the hemibrain (Fig. 3i and Extended Data Fig. 4e–g). This is not too sur- prising as the hemibrain philosophy was explicitly to err on the side of splitting in cases of uncertainty2. We found that 5% of proposed hemibrain types needed to be split, for example, because truncation of neurons in the hemibrain removed a key defining feature (Fig. 3j). Together these revisions mean that the 3,584 reidentified hemibrain cell types map onto 3,643 consensus cell types (Fig. 3h). All revisions were confirmed by across-dataset connectivity clustering.
+
+Notably, 1,651 (32%) hemibrain cell types could not be reidentified in FlyWire. Ambiguities due to hemibrain truncation can partially explain this: we were much more successful at matching neurons that were not truncated in the hemibrain (Fig. 3g). However, this appears not to be the main explanation. Especially in cases of multiple, very similar, ‘adjacent’ hemibrain types, we often encountered ‘chains’ of ambigu- ity that made assigning types difficult (Fig. 3k). Further investigation (Fig. 6) suggests that the majority of these unmatched hemibrain types are not exactly replicable across animals. Instead, we show that multi- connectome analysis can generate validated cell types that are robust to interindividual variation.
+
+In conclusion, we validated 3,643 high-confidence consensus cell type labels for 43,737 neurons from three different hemispheres and two different brains (Fig. 3g). Collectively these cross-matched neurons cover 46.5% of central brain edges (comprising 49% of synapses) in the FlyWire graph. This body of high-confidence cross-identified neurons enables both within-brain (FlyWire left versus right hemisphere) and across-brain (FlyWire versus hemibrain) comparisons.
+
+Cell types are highly stereotyped Using the consensus cell type labels, we found that the numbers of cells per type across the three hemispheres are closely correlated (Fig. 3l). About one in six cell types shows a difference in numbers between the left and right hemisphere and one in three across brains (FlyWire versus hemibrain). The mean difference in the number of cells per type is small though: 0.3 (±1.8) within brains and 0.8 (±10) across brains. Impor- tantly, cell types with fewer neurons per type are less variable (Extended Data Fig. 4i,j). At the extreme, ‘singleton’ cell types account for 59% of all types in our sample; they often appear to be embryonic-born, or early secondary neurons, and only very rarely comprise more than one neuron—only 3% of neurons that are singletons in both FlyWire hemispheres have more than 1 member in the hemibrain. By contrast, more numerous cell types are also more likely to vary in number both within but even more so across brains (Extended Data Fig. 4i,j).
+
+Synapse counts were also largely consistent within cell types, both within and across brains. To enable a fair comparison, the FlyWire syn- apse cloud was restricted to the smaller hemibrain volume. Although this does not correct for other potential confounds such as differences
+
+144 | Nature | Vol 634 | 3 October 2024
+
+in the synaptic completion rates or synapse detection, pre- and post-synapse counts per cell type were highly correlated, both within brains (Pearson R = 0.99; P \< 0.001) and across brains (Pearson R = 0.92 and 0.76 for pre- and post-synapses, respectively; P \< 0.001; Fig. 4a,b and Extended Data Fig. 4k,l). This is an important quality control and pre-requisite for subsequent connectivity comparisons.
+
+The fly brain is mostly left–right symmetric, but inspection of the FlyWire dataset revealed a small number of asymmetries. For example, LC6 and LC9 visual projection neurons form a large axon bundle that follows the normal path in the right hemisphere42 but, in the left hemi- sphere, it loops over (that is, medial) the mushroom body peduncle; nevertheless, the axons still find their correct targets as previously reported43. We annotated other examples of this ranging from small additional/missing branches to misguided neurite bundles and found that only 0.4% of central brain neurons exhibit such biological oddities (Extended Data Fig. 5).
+
+Interpreting connectomes Brain wiring develops through a complex and probabilistic develop- mental process44,45. To interpret the connectome, it is vital to obtain a basic understanding of how variable that biological process is. This is complicated by the fact that the connectome we observe is shaped not just by biological variability but also by technical noise, for example, from segmentation issues, synapse detection errors and synaptic com- pletion rates (the fraction of synapses attached to proofread neurons) (Fig. 4a). Here we use the consensus cell types to assess which connec- tions are reliably observed across three hemispheres of connectome data. We use the term ‘edge’ to describe the set of connections between two cell types, and its ‘weight’ as the number of unitary synapses (no threshold, that is, ≥1 synapses) forming that connection.
+
+Weights of individual edges are highly correlated within (Pearson R = 0.97, P \< 0.001) and across (Pearson R = 0.8, P \< 0.001) brains (Fig. 4c and Extended Data Fig. 6a). Consistent with this, cell types exhibit highly similar connectivity within as well as across brains (Fig. 4d and Extended Data Fig. 6b,c). While the connectivity (cosine) similarity across brains is lower than within brains (P \< 0.001), the effect size is small (0.045 ± 0.096) and is at least in part due to the aforementioned truncation in the hemibrain.
+
+We next examined, for a given edge between two cell types in one hemisphere, the odds of finding the same connection in another hemi- sphere or brain. Examination of 572,980 edges present in at least one of the three brain hemispheres showed that 53% of the edges observed in the hemibrain were also found in FlyWire. This fraction is slightly higher when comparing between the two FlyWire hemispheres: left to right: 61%; right to left: 59% (Fig. 4e). Weaker edges were less likely to be consistent: an edge consisting of a single synapse in the hemibrain has a 42% chance to be also present in a single FlyWire hemisphere, and only a 16% chance to be seen in both hemispheres of FlyWire (Fig. 4f). By contrast, any edge of more than ten synapses in any hemisphere can be reproducibly (\>90% of the time, rounded) found in the other two hemispheres. Although only 16% of all edges meet this threshold, they comprise around 79% of all synapses (Fig. 4g and Extended Data Fig. 6e). We also analysed normalized edge weights expressed as the fraction of the input onto each downstream neuron; this accounts for the small difference in synaptic completion rate between FlyWire and the hemibrain. With this treatment, the distributions are almost identical for within and across brain comparisons (Fig. 4g (compare the left and right panels)); edges constituting ≥0.9% of the target cell type’s total inputs have a greater than 90% chance of persisting (Fig. 4g (right)). Around 7% of edges, collectively containing over half (54%) of all synapses, meet this threshold.
+
+We observed that the fraction of edges persisting across datasets plateaued as the edge weight increased. Using a level of 99% edge per- sistence, we can define a second principled heuristic: edges greater than
+
+2.6% edge weight (or 31 synapses) can be considered to be strong. Note that these statistics defined across the whole connectome can have exceptions in individual neurons. For example, descending neuron DNp42 receives 34 synapses from PLP146 in FlyWire right, but none on the left or hemibrain; this may well be an example of developmen- tal noise (that is, bona fide biological variability, rather than techni- cal noise).
+
+So far, we have examined only the binary question of whether an edge exists or not. However, the conservation of edge weight is also highly relevant for interpreting connectomes. We next considered, given that an edge is present in two or more hemispheres, the odds that it will have a similar weight. Edge weights within and across brains are highly correlated (Fig. 4c), a 30-synapse edge in the hemibrain, for example, will on average consist of 29 synapses in FlyWire, despite differences in synaptic detection and completion rates for these two datasets imaged with different EM modalities1. The variance of edge weights is considerable though: 25% of all 30-synapse hemibrain edges will consist of fewer than 13 synapses in FlyWire, and 5% will consist of only 1–2 synapses. Consistency is greater when looking within FlyWire: a 30-synapse edge on the left will, on average, consist of 31 synapses on the right. Still, 25% of all 30-synapse edges on the left will consist of 21 synapses or less on the right, and 5% of only 1–8 synapses (Fig. 4h).
+
+b a
+
+c
+
+104
+
+103
+
+102
+
+101
+
+100
+
+100 101 102 103 104
+
+FlyWire edge weight (L/R mean)
+
+0
+
+0 10 20 30 Edge weight
+
+Normalized edge weight Edge weight in hemibrain
+
+h i
+
+Within brain
+
+Within brain t hgire riWylFn it hgiewe gdEt hgire riWylFn it hgiewe gdEP\[xi, yi\]
+
+Within brain
+
+\+Biological
+
+R = 0.99 variability
+
+P \< 0.001
+
+R = 0.92
+
+\+False positives
+
+P \< 0.001
+
+\+False negatives
+
+\+False negatives
+
+70 6050403020100R y tivitcennoCsespanys-erP= 0.97 P \< 0.001
+
+Brain A Brain B
+
+Synapse detection
+
+s espanysf or ebmuNs espanys-tsoPthgire riWylF10t hgire riWylF4 102
+
+FlyWire
+
+104
+
+FlyWire left
+
+n iarbimeHFlyWire left
+
+Synapse detection
+
+Cell type Edge
+
+Neuron reconstr.
+
+Neuron reconstr.
+
+niarbimeH102102 104 102 104
+
+100 101 102 103 104
+
+FlyWire d 1.00
+
+\*\*\*
+
+e FlyWire
+
+f
+
+1.0 g y tiralimisy tivitcennoC0.95
+
+59%
+
+61%
+
+54%
+
+60% 0.8 0.90
+
+0.85
+
+Right Left
+
+y tilibaborP0.6
+
+Edge seen in FlyWire
+
+0.80
+
+61%
+
+52% 0.4
+
+Left AND right Left OR right
+
+0.75
+
+Hemibrain
+
+0.2
+
+Left NOR right
+
+0 10 20 30
+
+Within
+
+5 20 30 35 brain
+
+60
+
+40Q75
+
+200 10 20 30 0 10 20 30
+
+FlyWire left 00 10 20 30 edge weight
+
+Fig. 4 | Connectivity stereotypy. a, Connectivity comparisons and potential sources of variability. Reconstr., reconstruction. b, The number of pre- and post-synapses per cross-matched cell type. c,d, Edge weights (c) and cosine connectivity similarity (d) between cross-matched cell types. The whiskers represent 1.5× the interquartile range. e, The percentage of edges in one hemisphere that can be found in another hemisphere. f, The probability that an edge present in the hemibrain is found in one, both or neither of the hemispheres in FlyWire. A plot with normalized edge weights is shown in Extended Data Fig. 6d. g, The probability that an edge is found within and across brains as a function of total (left) and normalized (right) edge weight. The second x axis shows the percentage of synapses below a given weight. h, Correlation of across-edge (left) and within-edge (right) edge weights.
+
+0 0.005 0.010 0.015 0.70
+
+Across brains
+
+Synapses removed (%) Synapses removed (%) Across brains d
+
+evresbOy tivitcennoc70
+
+Q95
+
+i12Modelled technical noise j
+
+1.0 k 605040Q75 30d
+
+elledoM%
+
+001i23 20d
+
+elledoMy tilibairavjjt hgiewe gdet hgire riWylF) delledom(n oitcarF10Q25 0Q5
+
+i
+
+0 10 20 30
+
+Modelled biological variability
+
+Q95
+
+Scale by neuropil completion Q75
+
+rates
+
+Q25
+
+Random Q5
+
+draws
+
+0.9
+
+0.8
+
+0.7
+
+t hgiewe gdet hgire riWylFQ95 Q25
+
+Q5 0.6
+
+Hemibrain edge weight
+
+j
+
+FlyWire left edge weight \[10, 14, 11, …\]
+
+(modelled) FlyWire left edge weight FlyWire left edge weight The envelopes represent quantiles. i, Model for the impact of technical noise (synaptic completion rate, synapse detection) on synaptic weight from cell types i to j. The raw weight from the connectome for each individual edge is scaled up by the computed completion rate for all neurons within the relevant neuropil; random draws of the same fraction of those edges then allow an estimate of technical noise. j, Observed variability explainable by technical noise as fraction of FlyWire left–right edge pairs that fall within the 5–95% quantiles for the modelled technical noise. k, Modelled biological variability (observed variability − technical noise). R (b and c) is the Pearson correlation coefficient. For d, statistical analysis was performed using unpaired t-tests; \*\*\*P \< 0.001.
+
+Across Across brains
+
+brains R = 0.80
+
+R = 0.99 P \< 0.001
+
+t hgiewe gdet fele riWylFt
+
+hgiewe gden iarbimeHP \< 0.001 R = 0.76 P \< 0.001
+
+FlyWire right edge weight
+
+FlyWire
+
+70
+
+605040Q75 30201000 10 20 30 Right Left Hemibrain
+
+Q95
+
+Q25
+
+Q5
+
+To assess how much of this edge weight variability is biological and how much is technical, we modelled the impact of technical noise on a fictive ground truth connectome (Fig. 4i and Methods). This model was randomly subsampled according to postsynaptic completion rate (in the mushroom body calyx, for example, there is a 6% differ- ence between the left and right hemisphere of FlyWire; Extended Data Fig. 6f), and synapses were randomly added and deleted according to the false-positive and false-negative rates reported for the syn- apse detection46. Repeated application of this procedure generated a distribution of edge weights between each cell type pair expected due to technical noise alone. On average, 65% of the observed vari- ability of edge weight between hemispheres fell within the range expected due to technical noise; this fraction approached 100% for weaker synapses (Fig. 4j). For example, cell type LHCENT3 targets LHAV3g2 with 30 synapses on the left but only 23 on the right of Fly- Wire, which is within the 5–95% quantiles expected due to technical noise alone. Overall, this analysis shows that observed variability (Fig. 4h (left)) is greater than can be accounted for by technical noise, establishing a lower bound for likely biological variability (Fig. 4k), and suggests another simple heuristic: differences in edge weights of 30% or less may be entirely due to technical noise and should not be overinterpreted.
+
+1.0 1.0
+
+y tilibaborP0.8 0.6
+
+y tilibaborP0.8 0.6
+
+0.4
+
+0.4
+
+0.2
+
+0.2
+
+0.020 30205 40 50 60
+
+Nature | Vol 634 | 3 October 2024 | 145
+
+Article
+
+a MBONsb
+
+c
+
+KCab
+
+KCs
+
+KCg-m
+
+KCs
+
+f
+
+1.0 2000
+
+2000
+
+200
+
+K
+
+i
+
+k FlyWire
+
+Variability in the mushroom body The comprehensive annotation of cell types in the FlyWire dataset revealed that the number of Kenyon cells (KCs), the intrinsic neu- rons of the mushroom body, is 30% larger per hemisphere than in the hemibrain (2,597 KCs in FlyWire right; 2,580 in FlyWire left; and 1,917 in hemibrain), well above the average variation in cell counts (5 ± 12%). While these KC counts are within the previously reported range47, the difference presents an opportunity to investigate how connectomes accommodate perturbations in cell count. The mushroom body con- tains five principal cell classes: KCs, mushroom body output neurons (MBONs), modulatory neurons (dopaminergic neurons (DANs) and octopaminergic neurons (OANs)), the dorsal paired medial (DPM) and anterior paired lateral neuron (APL) giant interneurons48 (Fig. 5a). KCs further divide into five main cell types on the basis of which parts of the mushroom body they innervate: KCab, KCab-p, KCg-m, KCa′b′ and KCg-d (Fig. 5b). Of those, KCab, KCa′b′ and KCg-m are the primary recipients of largely random39,49 (but see ref. 50) olfactory input through around 130 antennal lobe projection neurons (ALPNs) comprising 58 canonical types39,40. Global activity in the mushroom body is regulated through an inhibitory feedback loop mediated by APL, a single large GABAergic neuron51. Analogous to the mammalian cerebellum, KCs transform the dense overlapping odour responses of the early olfactory
+
+Birth order
+
+Counts
+
+0
+
+d -gCKm
+
+\-gCKa
+
+CKp -baCKb aCKKCg-d
+
+KCg-m
+
+KCa′b′
+
+KCab-p
+
+KCab
+
+Global inhibition
+
+Hemibrain
+
+99
+
+590
+
+337
+
+60
+
+829
+
+KCab-p KCa′b′
+
+148
+
+1,121
+
+466 61799APL
+
+Σ
+
+KCg-d
+
+K
+
+147
+
+450
+
+67844
+
+ALPNs
+
+0 500 1,000 0 250 0 050 500 d e
+
+1.0
+
+KCab
+
+0.8
+
+KCab
+
+0.6
+
+0.4
+
+N PLA0.20
+
+HemFiblyraWin
+
+ire rFiglyhWt
+
+ire left
+
+HemFiblyraWin
+
+ire rFiglyhWt
+
+ire left
+
+KCab
+
+t egdube spanysN OBM25
+
+0.8 00.6 500.4 2500.2
+
+50FlyWire
+
+Left Right Hem0
+
+ibrainRight Left 250Hemibrain
+
+1,069
+
+Hemibrain
+
+Left Right
+
+g
+
+0.5
+
+FlyWire
+
+Left
+
+1.580.77
+
+tegdube spanys1.47 C K0.31
+
+LPAl
+
+e riWylFNo change More cells lower K
+
+Fig. 5 | Variability in the mushroom body. a, Schematic of mushroom body circuits. K refers to the number of ALPN types that a KC samples from. Neuron types not shown are as follows: DANs, DPM and OANs. b, Rendering of KC types. c, Per-type KC counts across the three hemispheres. d, KC post-synapse counts, normalized to total KC post-synapses in each dataset. e, The fraction of ALPN to KC budget spent on individual KC types. f, The number of ALPN types a KC receives input from K. The dotted vertical lines represent the mean. g, The fraction of APL to KC budget spent on individual KC types. h, The normalized
+
+0.52 1.72
+
+KCg-m KCa′b′ b aCK0.130.03 r ebmund ezilamroNs espanys-tsopf oRight
+
+Hemibrain
+
+m -gCK0.47 0.21
+
+) h(midCohen’s 1.68 d 0.4
+
+0.8
+
+0.6
+
+0.93 0.4
+
+0.20
+
+0.29
+
+KCab-p KCa′b′o itar60.3
+
+KCa′b′ 540.2
+
+KCg-m
+
+KCg-m d ezilamroN320.1 1b aCK0 0 2 4 6 8 10 12 14 16 18
+
+KCg-d
+
+0Cohen’s d effect size
+
+KCab
+
+KCg-m KCa′b′ j
+
+MBON09 KCa′b′
+
+m -gCKKCg-m
+
+50
+
+KCab KCg-m KCa′b′ 1.0
+
+Hemibrain
+
+Right LeHftemibrain
+
+Right LeHftemibrain
+
+Right Left
+
+) h(mid0.8
+
+a CKK (modelled)
+
+n iarbimeH0.6
+
+0.4
+
+0.20
+
+e riWylF0 5 10 15 20 25
+
+More cells lower K weaker exc. input
+
+excitation/inhibition ratio for KCs. An explanation of enhanced box plots is provided in the Methods. i, The fraction of MBON input budget coming from KCs. Each line represents an MBON type. j, MBON09 as an example for KC to MBON connectivity. All MBONs are shown in Extended Data Fig. 7. k, Dimensionality (dim(h)) as function of a modelled K. The arrowheads mark observed mean K values. l, Summarizing schematic. Exc., excitatory. For f and h, Cohen’s d effect size values are shown for pairwise comparisons where P ≤ 0.01; Welch’s tests (f) and Kolmogorov–Smirnov tests (h) were applied.
+
+146 | Nature | Vol 634 | 3 October 2024
+
+system into sparse non-overlapping representations that enable the animal to discriminate between individual odours during associative learning52,53. The difference in cell counts is not evenly distributed across all KC types: KCg-m (and to a lesser extent KCg-d and KCa′b′) are almost twice as numerous in FlyWire versus hemibrain while KCab and KCab-p are present in similar numbers (Fig. 5c). Protein starvation during the larval stage can induce specific increases in KCg-m number54, suggesting that environmental variations in food resources may have contributed to this difference.
+
+To examine how this affects the mushroom body circuitry, we opted to compare the fraction of the input or output synaptic budget across different KCs, as this is well matched to our question and naturally handles a range of technical noise issues that seemed particularly prominent in the mushroom body completion rate (Methods and Extended Data Fig. 7a). We found that, despite the large difference in KCg-m cell counts between FlyWire and hemibrain, this cell type con- sistently makes and receives 32% and 45% of all KC pre-synapses and post-synapses, respectively (Fig. 5d and Extended Data Fig. 7e). This suggested that individual FlyWire KCg-m neurons receive fewer inputs and make fewer outputs than their hemibrain counterparts. The share of ALPN outputs allocated to KCg-m is around 55% across all hemispheres (Fig. 5e), and the average ALPN to KCg-m connection is comparable in strength across hemispheres (Extended Data Fig. 7f); however, each
+
+FlyWire right
+
+FlyWire left
+
+0 100
+
+h
+
+Verysmall
+
+Small
+
+MediumLarge
+
+Huge Verylarge
+
+2 0 1
+
+KCg-m neuron receives input from a much smaller number of ALPN types in FlyWire than in the hemibrain (5.74, 5.89 and 8.76 for FlyWire left, right and hemibrain, respectively; Fig. 5f). FlyWire KCg-m neurons therefore receive inputs with the same strength but from fewer ALPNs. This pattern holds for other KCg-m synaptic partners as well. Similar to the excitatory ALPNs, the share of APL outputs allocated to KCg-m neurons is essentially constant across hemispheres (Fig. 5g). Thus, each individual KCg-m neuron receives proportionally less inhibition from the APL, as well as less excitation, maintaining a similar excita- tion/inhibition ratio (Fig. 5h). Furthermore, as a population, KCg-m neurons contribute similar amounts of input to MBONs (Fig. 5i,j and Extended Data Fig. 7h).
+
+Past theoretical work has shown that the number (K) of discrete odour channels (that is, ALPN types) providing input to each KC has an optimal value for maximizing dimensionality of KC activity and, therefore, discriminability of olfactory input52,53. The smaller value for K observed for KCg-m neurons in the FlyWire connectome (Fig. 5g) raises the question of how dimensionality varies with K for each of the KC types. Using the neural network rate model described previously52, we calculated dimensionality as a function of K for each of the KC types, using the observed KC counts, ALPN to KC connectivity and global inhibition from the APL. This analysis revealed that optimal values for K are lower for KCg-m neurons in FlyWire than in the hemibrain (Fig. 5k), consistent with the observed values.
+
+Taken together, these results demonstrate that, for KCg-m neurons, the brain compensates for a developmental perturbation by changing a single parameter: the number of odour channels each KC samples from. By contrast, KCa′b′ cells, which are also more numerous in Fly- Wire than in the hemibrain, appear to use a hybrid strategy of reduced K combined with a reduction in ALPN to KCa′b′ connection strength (Extended Data Fig. 7f). These findings contradict earlier studies in which a global increase in KC numbers through genetic manipulation triggered an increase in ALPN axon boutons (indicating an compensa- tory increase in excitatory drive to KCs) and a modest increase in KC claws (suggesting an increase rather than decrease in K)55,56. This may be due to the differences in the nature and timing of the perturbation in KC cell number, and the KC types affected.
+
+Toward multiconnectome cell typing As the first dense, large-scale connectome of a fly brain, the hemibrain dataset proposed over 5,000 previously unknown cell types in addi- tion to confirming around 400 previously reported types recorded in the http://virtualflybrain.org/ database22. As this defines a de facto standard cell typing for large parts of the fly brain, our initial work plan was simply to reidentify hemibrain cell types in FlyWire, providing a critical resource for the fly neuroscience community. While this was successful for 68% of hemibrain cell types (Fig. 3), 32% could not be validated. Given the great stereotypy generally exhibited by the fly nervous system, this result is both surprising and interesting.
+
+We can imagine two basic categories of explanation. First, that through ever closer inspection, we may successfully reidentify these missing cell types. Second, that these definitions, mostly based on a single brain hemisphere, might not be robust to variation across individuals. Distinguishing between these two explanations is not at all straightforward. We began by applying across-dataset connectiv- ity clustering to large groups of unmatched hemibrain and FlyWire neurons. We observed that most remaining hemibrain types showed complex clustering patterns, which both separated neurons from the same proposed cell type and recombined neurons of different proposed hemibrain types.
+
+While it is always more difficult to prove a negative result, these observations strongly suggest that the majority of the remaining 1,696 hemibrain types are not robust to interindividual variation. We
+
+therefore developed a definition of cell type that uses interanimal variability: a cell type is a group of neurons that are each more similar to a group of neurons in another brain than to any other neuron in the same brain. This definition can be used with different similarity metrics but, for connectomics data, a similarity measure incorporat- ing morphology and/or connectivity is most useful. Our algorithmic implementation of this definition operates on the co-clustering den- drogram by finding the smallest possible clusters that satisfy two criteria (Fig. 6a): (1) each cluster must contain neurons from all three hemispheres (hemibrain, FlyWire right and FlyWire left); (2) within each cluster, the number of neurons from each hemisphere must be approximately equal.
+
+Determining how to cut a dendrogram generated by data clustering is a widespread challenge in data science for which there is no single satisfactory solution. A key advantage of the cell type definition that we propose is that it provides very strong guidance about how to assign neurons to clusters. This follows naturally from the fact that connec- tome data provide us with all neurons in each dataset, rather than a random subsample. This advantage of completeness is familiar from analogous problems such as the ability to identify orthologous genes when whole genomes are available57.
+
+Analysis of the hemibrain cell type AOTU063 provides a relatively straightforward example of our approach (Fig. 6b and Extended Data Fig. 10). Morphology-based clustering generates a single group, com- prising all six AOTU063 neurons from each of the three hemispheres. However, clustering based on connectivity reveals two discrete groups, with equal numbers of neurons from each hemisphere, suggesting that this type should be split further. Here, algorithmic analysis across multiple connectomes reveals consistent connectivity differences between subsets of AOTU063 neurons.
+
+To test whether this approach is applicable to more challenging sets of neurons, we set aside the hemibrain types and performed a complete retyping of neurons in the central complex (Fig. 6c), a centre for naviga- tion in the insect brain that has been subject to detailed connectome analysis41. We selected two large groups of neurons innervating the fan-shaped body (FB) that show a key difference in organization. The first group, FC1–3 (357 neurons in total), consists of columnar cell types that tile the FB innervating adjacent non-overlapping columns. The second group, FB1–9 (897 neurons in total), contains tangential neurons where neurons of the same cell type are precisely co-located in space41 (Fig. 6d). Standard NBLAST similarity assumes that neurons of the same cell type overlap closely in space; although this is true for most central brain types, it does not hold for repeated columnar neurons such as those in the optic lobe or these FC neurons of the FB. We therefore used a connectivity-only distance metric co-clustering across the three hemispheres. This resulted in seven FC clusters satisfying the above criteria (Fig. 6e,f). Five of these cross-brain types have a one-to-one correspondence with hemibrain types, while two are merges of multi- ple hemibrain types; only a small number of neurons are recombined across types (Fig. 6g). For the second group, FB1–9, a combined mor- phology and connectivity embedding was used. Co-clustering across the three hemispheres generated 114 cell types compared to 146 cell types in the hemibrain (Fig. 6h and Extended Data Fig. 8). In total, 44% of these types correspond one-to-one to a hemibrain cell type; 11% are splits (1:many), 12% are merges (many:1) and 33% are recombinations (many:many) of hemibrain cell types. The 67% (44 + 11 + 12) success rate of this de novo approach in identifying hemibrain cell types is slightly higher than the 61% achieved in our directed work in Fig. 3; it is consistent with the notion that further effort could still identify some unmatched hemibrain types, but that the majority will probably require retyping.
+
+All of the preceding efforts have focused on cell typing neurons contained within both FlyWire and the hemibrain. We next examined the extensive regions of the brain covered only by FlyWire and not by hemibrain. Based on the lessons learned from the joint analysis of
+
+Nature | Vol 634 | 3 October 2024 | 147
+
+Article
+
+a
+
+CX
+
+hemibrain and FlyWire, we ran a co-clustering of neurons from the two hemispheres of FlyWire to fill in missing cell types (Fig. 6i,j and Extended Data Fig. 9). This combined both morphology and connec- tivity measures, was carried out separately for each hemilineage and produced 3,200 new central brain cell types for a total of 8,453 includ- ing the optic lobes. We further compared double-hemisphere (FlyWire left/right) and triple-hemisphere analysis (FlyWire + hemibrain) for 25 cross-identified lineages that are not truncated in the hemibrain. This
+
+Cross-brain types
+
+Type A
+
+n iarbimeHeriWylFthgiRType B t feLc d
+
+e
+
+h
+
+Fig. 6 | Across-brain cell typing. a, Cell type is defined as a group of neurons that are each more similar to a group in another brain than to any neurons in the same brain. We expect cell type clusters to be balanced, that is, contain neurons from all three hemispheres in approximately even numbers. b, Example of a hemibrain cell type (AOTU063) that is morphologically homogeneous but has two cross-brain consistent connectivity types and can therefore be split. c, Main neuropils making up the central complex (CX). d, Overview of all CX cells (left) and two subsets of fan-shaped body (FB, dotted outlines) cell types: FC1–3 and FB1–9 (right). e, Hierarchical clustering from connectivity embedding for FC1–3 cells. A magnification of cross-brain cell type clusters is
+
+shown. The asterisk marks a cluster that was manually adjusted. f, Renderings of FC1–3 across-brain types; the FB is outlined. The tiling of FC1–3 neurons can be discerned. g, Comparison of FC1–3 hemibrain and cross-brain cell types. The colours correspond to those in f. h, Mappings between hemibrain and cross-brain cell types for FB1–9. A detailed flow chart is provided in Extended Data Fig. 8. i, The pipeline for generating types for neurons without a hemibrain cell type. Hemilineage LHl2 dorsal is shown as an example. The box plot shows the fraction of FlyWire neurons with a hemibrain-derived cell type. j, Cell type source broken down by super class.
+
+148 | Nature | Vol 634 | 3 October 2024
+
+Embedding
+
+dacross
+
+dwithin
+
+Hemibrain
+
+Right Left
+
+d m
+
+Dataset Across-dataset cell types
+
+Neurons per dataset
+
+s epytl lec= s retsulcd ecnalaBr
+
+etsulcd ecnalabe lgnisA s retsulcd ecnalabo wTProtocerebral bridge
+
+FC1–3 (columnar cell types) FB1–9 (tangential cell types) eriWylFFan-shaped
+
+bodyEllipsoid body
+
+n iarbimeHd Noduli
+
+p m
+
+p
+
+connectivity FC1–3
+
+embedding FB1–9
+
+FlyWire
+
+14
+
+1416FC1A FC1F
+
+CB.FC1A 9FC1B 78)
+
+01(s epytn iarbimeHFC1D FC1E
+
+CB.FC1B
+
+FC1C
+
+CB.FC1C
+
+FC2A
+
+FC2B
+
+FC2C
+
+FC3
+
+CB.FC3 CB.FC2A
+
+CB.FC2B
+
+CB.FC2C
+
+) 7(s epytn iarb-ssorC
+
+b Morphology (NBLAST) Connectivity
+
+gf CB.FC1A
+
+CB.FC1B
+
+CB.FC1C
+
+CB.FC2A
+
+CB.FC2B
+
+CB.FC2C
+
+CB.FC3
+
+Hemibrain
+
+Right
+
+Left
+
+d p
+
+AOTU063
+
+AOTU063a
+
+AOTU063b
+
+d p
+
+m
