@@ -529,13 +529,18 @@ async function initAccount(){
   let me; try{ me=await (await fetch('/api/me',{cache:'no-store'})).json(); }catch(e){ return; }
   if(!me || !me.configured) return;               // local mode — behaves exactly as before
   if(!me.signedIn){ showLoginGate(); return; }
+  let serverHad=false;
   try{ const d=await (await fetch('/api/data',{cache:'no-store'})).json();
-    if(Array.isArray(d.items)) USER=d.items;
-    if(Array.isArray(d.views)) storeViews(d.views);
-    if(d.context && typeof d.context==='object') CTX=d.context;
+    serverHad=!!((d.items&&d.items.length)||(d.views&&d.views.length)||(d.context&&Object.keys(d.context||{}).length));
+    if(serverHad){ if(Array.isArray(d.items)) USER=d.items; if(Array.isArray(d.views)) storeViews(d.views); if(d.context&&typeof d.context==='object') CTX=d.context; }
   }catch(e){}
-  try{ const k=await (await fetch('/api/key',{cache:'no-store'})).json(); if(k && k.key) MEMKEY=k.key; }catch(e){}
+  let keyFromServer=false;
+  try{ const k=await (await fetch('/api/key',{cache:'no-store'})).json(); if(k && k.key){ MEMKEY=k.key; keyFromServer=true; } }catch(e){}
+  if(!keyFromServer){ try{ const lk=localStorage.getItem('stacks-anthropic-key')||''; if(lk) MEMKEY=lk; }catch(e){} }
   SERVER=true;                                    // future saves now push to the server
+  // first sign-in on this account: seed the server from whatever's already local (no data loss)
+  if(!serverHad) pushData();
+  if(!keyFromServer && MEMKEY){ fetch('/api/key',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({apiKey:MEMKEY})}).catch(()=>{}); }
   rebuild(); renderViewsSelect(); render(); renderAccountChip(me.email);
 }
 function showLoginGate(){
