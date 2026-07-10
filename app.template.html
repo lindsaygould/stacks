@@ -289,6 +289,21 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   @keyframes fab-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
   @keyframes fab-halo{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
   @media (prefers-reduced-motion:reduce){#fab,#fab::before{animation:none}}
+  #login-gate{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;background:
+    radial-gradient(60% 40% at 8% -8%, rgba(255,148,38,.14), transparent 60%),
+    radial-gradient(52% 40% at 100% -6%, rgba(255,106,61,.11), transparent 60%),var(--bg)}
+  #login-gate .lg-card{max-width:380px;width:100%;text-align:center;padding:34px 30px;background:var(--panel);border:1px solid var(--edge2);border-radius:22px;box-shadow:var(--shadow)}
+  #login-gate .lg-mark{width:60px;height:60px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;background:var(--grad);color:var(--on-accent);box-shadow:0 8px 24px rgba(229,104,10,.34), inset 0 1px 1px rgba(255,255,255,.5)}
+  #login-gate h1{font-size:25px;font-weight:800;letter-spacing:-.02em;margin:0 0 8px}
+  #login-gate p{color:var(--dim);font-size:14px;line-height:1.55;margin:0 0 22px}
+  #login-gate .lg-btn{display:inline-block;background:var(--grad);color:var(--on-accent);font-weight:650;font-size:14px;padding:12px 24px;border-radius:12px;box-shadow:0 6px 18px rgba(229,104,10,.3)}
+  #login-gate .lg-err{color:#e0533f;font-size:12.5px;margin-top:14px;min-height:1em}
+  #acct-chip{position:fixed;left:16px;bottom:16px;z-index:64;display:flex;align-items:center;gap:8px;background:var(--topbar);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--edge);border-radius:99px;padding:6px 6px 6px 12px;font-size:12px;color:var(--dim);box-shadow:var(--shadow)}
+  #acct-chip .ac-dot{width:6px;height:6px;border-radius:50%;background:#2f9e5f;flex:none}
+  #acct-chip .ac-em{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #acct-chip #ac-out{font-size:11px;color:var(--accent);border:1px solid var(--edge);border-radius:99px;padding:3px 9px;font-weight:600}
+  #acct-chip #ac-out:hover{border-color:var(--accent)}
   #chat{position:fixed;right:24px;bottom:88px;z-index:66;width:min(410px,calc(100vw - 32px));
     height:min(620px,calc(100vh - 120px));display:flex;flex-direction:column;background:var(--topbar);
     -webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);
@@ -501,10 +516,44 @@ function monogram(t){ const w=String(t||'').replace(/^arxiv[:\s]*/i,'').replace(
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1900); }
 
 function loadUser(){ try{ return JSON.parse(localStorage.getItem('stacks-user')||'[]'); }catch(e){ return []; } }
-function saveUser(a){ localStorage.setItem('stacks-user', JSON.stringify(a)); }
+function saveUser(a){ try{ localStorage.setItem('stacks-user', JSON.stringify(a)); }catch(e){} pushData(); }
 // Per-source context notes the user adds by hand (any source, not just ones they added). Kept per-item.
 function loadCtx(){ try{ return JSON.parse(localStorage.getItem('stacks-context')||'{}'); }catch(e){ return {}; } }
-function saveCtx(){ try{ localStorage.setItem('stacks-context', JSON.stringify(CTX)); }catch(e){} }
+function saveCtx(){ try{ localStorage.setItem('stacks-context', JSON.stringify(CTX)); }catch(e){} pushData(); }
+
+/* ---- account mode: sync to the server when the backend is configured (else local) ---- */
+let SERVER=false, MEMKEY='', _pushT=null;
+function pushData(){ if(!SERVER) return; clearTimeout(_pushT); _pushT=setTimeout(()=>{
+  fetch('/api/data',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({items:USER, views:loadViews(), context:CTX})}).catch(()=>{}); },700); }
+async function initAccount(){
+  let me; try{ me=await (await fetch('/api/me',{cache:'no-store'})).json(); }catch(e){ return; }
+  if(!me || !me.configured) return;               // local mode — behaves exactly as before
+  if(!me.signedIn){ showLoginGate(); return; }
+  try{ const d=await (await fetch('/api/data',{cache:'no-store'})).json();
+    if(Array.isArray(d.items)) USER=d.items;
+    if(Array.isArray(d.views)) storeViews(d.views);
+    if(d.context && typeof d.context==='object') CTX=d.context;
+  }catch(e){}
+  try{ const k=await (await fetch('/api/key',{cache:'no-store'})).json(); if(k && k.key) MEMKEY=k.key; }catch(e){}
+  SERVER=true;                                    // future saves now push to the server
+  rebuild(); renderViewsSelect(); render(); renderAccountChip(me.email);
+}
+function showLoginGate(){
+  const g=document.createElement('div'); g.id='login-gate';
+  g.innerHTML='<div class="lg-card"><div class="lg-mark"><svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6c.5 4.9 3.9 8.3 8.8 8.8v3.2c-4.9.5-8.3 3.9-8.8 8.8h-3.2c-.5-4.9-3.9-8.3-8.8-8.8v-3.2c4.9-.5 8.3-3.9 8.8-8.8z" fill="currentColor"/></svg></div>'
+    +'<h1>The Stacks</h1><p>Your private research library — sign in to sync it across every device.</p>'
+    +'<a class="lg-btn" href="/api/auth-start">Sign in with Google</a><div class="lg-err" id="lg-err"></div></div>';
+  document.body.appendChild(g);
+  const p=new URLSearchParams(location.search).get('login');
+  if(p){ g.querySelector('#lg-err').textContent = p==='not_allowed'?'That Google account isn’t on the allowlist.':'Sign-in didn’t finish — please try again.'; }
+}
+function renderAccountChip(email){
+  if($('#acct-chip')) return;
+  const c=document.createElement('div'); c.id='acct-chip';
+  c.innerHTML='<span class="ac-dot"></span><span class="ac-em">'+esc(email)+'</span><button id="ac-out">Sign out</button>';
+  document.body.appendChild(c);
+  c.querySelector('#ac-out').onclick=async()=>{ try{ await fetch('/api/signout',{method:'POST'}); }catch(e){} location.href='/'; };
+}
 let CTX = loadCtx();
 let USER = loadUser();
 let ALL = [];
@@ -850,7 +899,7 @@ function download(name,text,type){ const b=new Blob([text],{type}); const a=docu
 
 /* saved views (Kairos-style) */
 function loadViews(){ try{ return JSON.parse(localStorage.getItem('stacks-views')||'[]'); }catch(e){ return []; } }
-function storeViews(v){ localStorage.setItem('stacks-views', JSON.stringify(v)); }
+function storeViews(v){ try{ localStorage.setItem('stacks-views', JSON.stringify(v)); }catch(e){} pushData(); }
 function serializeState(){ const f={}; for(const k in state.f) f[k]=Array.from(state.f[k]);
   return {q:state.q, sort:state.sort, view:state.view, dateFrom:state.dateFrom, dateTo:state.dateTo, f}; }
 function applyState(s){ state.q=s.q||''; $('#q').value=state.q; state.sort=s.sort||'relevance'; $('#sort').value=state.sort;
@@ -939,8 +988,8 @@ function listAnswer(q){
   }
 }
 /* ---- key + retrieval-augmented answering ---- */
-function getKey(){ try{ return localStorage.getItem('stacks-anthropic-key')||''; }catch(e){ return ''; } }
-function setKey(k){ try{ localStorage.setItem('stacks-anthropic-key',(k||'').trim()); }catch(e){} }
+function getKey(){ if(SERVER) return MEMKEY||''; try{ return localStorage.getItem('stacks-anthropic-key')||''; }catch(e){ return ''; } }
+function setKey(k){ k=(k||'').trim(); if(SERVER){ MEMKEY=k; fetch('/api/key',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({apiKey:k})}).catch(()=>{}); return; } try{ localStorage.setItem('stacks-anthropic-key',k); }catch(e){} }
 function askForKey(pendingQ){
   const b=chatBubble('bot','To answer questions about your sources I use Claude with your own Anthropic API key — stored only in this browser, never uploaded. Paste it to continue.');
   const form=document.createElement('div'); form.style.cssText='display:flex;gap:6px;margin-top:8px';
@@ -1104,7 +1153,7 @@ function initGate(){
     google.accounts.id.renderButton($('#gbtn'), {theme:'filled_black', size:'large', text:'signin_with', shape:'pill'}); }catch(e){} };
   document.body.appendChild(s);
 }
-restore(); renderViewsSelect(); railstats(); render(); renderQuick(); initGate();
+restore(); renderViewsSelect(); railstats(); render(); renderQuick(); initGate(); initAccount();
 </script>
 </body>
 </html>
