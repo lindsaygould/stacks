@@ -85,6 +85,10 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .quicklists .ql-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-right:2px}
   .quicklists button{font-size:12px;padding:4px 12px;border-radius:99px;border:1px solid var(--edge);background:var(--hover);color:var(--dim);transition:all .14s}
   .quicklists button:hover{color:var(--ink);border-color:var(--edge2);transform:translateY(-1px)}
+  .quicklists button.ql-review{color:#c47f1a;border-color:rgba(224,164,74,.5);background:rgba(224,164,74,.1);font-weight:600}
+  .quicklists button.ql-review:hover{border-color:#e0a44a}
+  .quicklists button.ql-review.on{color:var(--on-accent);background:#e0a44a;border-color:#e0a44a}
+  .quicklists button.ql-review.zero{opacity:.5;color:var(--faint);border-color:var(--edge);background:transparent;font-weight:400}
   @media(max-width:720px){.quicklists{padding:9px 14px}}
   #chat-key{font-size:15px;color:var(--dim);line-height:1;margin-right:6px}
   #chat-key:hover{color:var(--ink)}
@@ -496,6 +500,9 @@ const KIND_COLOR = {paper:'#c0392b',model:'#f0a417',repo:'#3a3f4b',dataset:'#7a5
   benchmark:'#4a54b0',video:'#c4302b',podcast:'#1db954',article:'#e0663a',company:'#2f8f5b',event:'#5b57e8',grant:'#d98a1f',other:'#5a6572'};
 const READ_LABEL={read:'Read ✓', fetchable:'Open access', needs_pdf:'Needs your PDF'};
 const READ_COLOR={read:'#2f9e5f', fetchable:'#4f9be6', needs_pdf:'#e0a44a'};
+// "Needs review" = an item missing its core content: a paper with no PDF/full text,
+// or something added in a hurry with no note at all. (Your Kairos missing-JD pattern.)
+function needsReview(it){ return it.read_status==='needs_pdf' || (it.added && !(it.userContext||it.context||it.notes) && !it.abstract); }
 const DRIVE_PAPERS='https://drive.google.com/drive/folders/1I41GiIKSNNME9jHrCosmhgxXPdKHebhC';
 
 const Q_TOPIC = {
@@ -566,7 +573,7 @@ function rebuild(){ ALL = BASE_DATA.items.concat(USER);
   ALL.forEach(it=>{ it.userContext = (CTX[it.id]!==undefined ? CTX[it.id] : (it.added ? (it.context||'') : '')); }); }
 rebuild();
 
-const state = { q:'', sort:'relevance', view:'cards', dateFrom:'', dateTo:'', resultSet:null, f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set(), read:new Set()} };
+const state = { q:'', sort:'relevance', view:'cards', dateFrom:'', dateTo:'', resultSet:null, review:false, f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set(), read:new Set()} };
 
 const FACETS = [
   {key:'kind', title:'Type', field:'kind', order:['paper','model','repo','dataset','toolkit','benchmark','video','podcast','article','company','event','grant','other'], label:k=>KIND_LABEL[k]||k},
@@ -599,6 +606,7 @@ function passDate(it){
 function filtered(exceptFacet){
   return ALL.filter(it=>{
     if(state.resultSet && !state.resultSet.ids.has(it.id)) return false;
+    if(state.review && !needsReview(it)) return false;
     if(!matchesText(it,state.q)) return false;
     if(!passDate(it)) return false;
     for(const f of FACETS){ if(f.key===exceptFacet) continue; if(!passFacet(it,f.key)) return false; }
@@ -1067,7 +1075,7 @@ function ask(q){
   if(isListy(q)) listAnswer(q); else ragAnswer(q);
 }
 
-function clearFilters(){ for(const f of FACETS) state.f[f.key].clear(); state.dateFrom=''; state.dateTo=''; state.resultSet=null; }
+function clearFilters(){ for(const f of FACETS) state.f[f.key].clear(); state.dateFrom=''; state.dateTo=''; state.resultSet=null; state.review=false; }
 // Turn a Librarian result (a specific set of source ids) into a scoped main-grid view.
 function openAsView(label, ids){
   clearFilters(); state.q=''; const q=$('#q'); if(q) q.value='';
@@ -1136,11 +1144,17 @@ function askPill(pillText){
 $('#chat-pills').innerHTML=PILLS.map(p=>'<button>'+p+'</button>').join('');
 $('#chat-pills').querySelectorAll('button').forEach(b=>b.onclick=()=>askPill(b.textContent));
 $('#chat-key').onclick=()=>{ $('#chat').hidden=false; askForKey(null); };
-const QUICK=[{l:'Papers',k:'kind',v:['paper']},{l:'Repos & models',k:'kind',v:CODE_KINDS},{l:'Videos',k:'kind',v:['video']},{l:'Podcasts',k:'kind',v:['podcast']},{l:'Companies',k:'kind',v:['company']},{l:'Grants',k:'kind',v:['grant']},{l:'Articles',k:'kind',v:['article']},{l:'📄 Needs your PDF',k:'read',v:['needs_pdf']}];
+const QUICK=[{l:'Papers',k:'kind',v:['paper']},{l:'Repos & models',k:'kind',v:CODE_KINDS},{l:'Videos',k:'kind',v:['video']},{l:'Podcasts',k:'kind',v:['podcast']},{l:'Companies',k:'kind',v:['company']},{l:'Grants',k:'kind',v:['grant']},{l:'Articles',k:'kind',v:['article']},{l:'⚠ Needs review',review:true}];
 function renderQuick(){ const el=$('#quicklists'); if(!el) return;
-  const npdf=ALL.filter(it=>it.read_status==='needs_pdf').length;
-  el.innerHTML='<span class="ql-label">Quick views</span>'+QUICK.map((q,i)=>'<button data-i="'+i+'">'+esc(q.l)+(q.k==='read'&&npdf?(' ('+npdf+')'):'')+'</button>').join('');
-  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const q=QUICK[+b.dataset.i]; clearFilters(); state.q=''; $('#q').value=''; q.v.forEach(x=>state.f[q.k].add(x)); syncViewsUI(); sync(); render(); window.scrollTo({top:0,behavior:'smooth'}); }); }
+  const rev=ALL.filter(needsReview).length;
+  el.innerHTML='<span class="ql-label">Quick views</span>'+QUICK.map((q,i)=>{
+    const cls=q.review?(' class="ql-review'+(state.review?' on':'')+(rev?'':' zero')+'"'):'';
+    return '<button data-i="'+i+'"'+cls+'>'+esc(q.l)+(q.review&&rev?(' '+rev):'')+'</button>';
+  }).join('');
+  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const q=QUICK[+b.dataset.i];
+    const wasReview=q.review&&state.review; clearFilters(); state.q=''; const qi=$('#q'); if(qi) qi.value='';
+    if(q.review){ state.review=!wasReview; } else { q.v.forEach(x=>state.f[q.k].add(x)); }
+    syncViewsUI(); sync(); render(); window.scrollTo({top:0,behavior:'smooth'}); }); }
 
 function jwtEmail(tok){ try{ const p=tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
   return (JSON.parse(decodeURIComponent(escape(atob(p)))).email||'').toLowerCase(); }catch(e){ return ''; } }
