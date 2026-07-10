@@ -201,7 +201,14 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .cfoot{display:flex;align-items:center;gap:8px;padding:9px 15px;border-top:1px solid var(--edge);
     font-family:var(--mono);font-size:10.5px;color:var(--faint)}
   .cfoot .dot{width:5px;height:5px;border-radius:50%;background:var(--a2)}
-  .cfoot a.open{margin-left:auto;color:var(--accent);font-weight:600}
+  .cfoot a.open{margin-left:auto;color:var(--accent);font-weight:600;font-family:var(--mono);font-size:11px}
+  .a-preview{margin:-2px 0 2px;border:1px solid var(--edge);border-left:2px solid var(--accent);border-radius:0 10px 10px 0;background:var(--grad-soft);padding:9px 12px;display:flex;flex-direction:column;gap:3px}
+  .a-preview[hidden]{display:none}
+  .pv-row{display:flex;gap:8px;font-size:12px;line-height:1.5;align-items:baseline}
+  .pv-k{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);min-width:62px;flex:none}
+  .pv-row b{color:var(--ink);font-weight:650}
+  .pv-row span{color:var(--dim)}
+  .pv-row a{color:var(--accent);word-break:break-all}
 
   /* rows / list view */
   .row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--edge);border-radius:11px;
@@ -268,11 +275,20 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .checks input{accent-color:var(--accent)}
   .form-hint{font-size:11.5px;color:var(--faint);margin-top:6px;line-height:1.5}
 
-  #fab{position:fixed;right:24px;bottom:24px;z-index:65;height:52px;padding:0 20px 0 16px;border-radius:99px;
-    display:flex;align-items:center;gap:9px;background:var(--grad);color:var(--on-accent);font-size:14px;font-weight:650;
-    box-shadow:var(--shadow);transition:transform .18s}
-  #fab:hover{transform:translateY(-2px) scale(1.03)}
-  #fab .fg{font-size:17px}
+  #fab{position:fixed;right:24px;bottom:24px;z-index:65;width:56px;height:56px;padding:0;border-radius:50%;
+    display:grid;place-items:center;background:var(--grad);color:var(--on-accent);border:0;cursor:pointer;
+    box-shadow:0 8px 24px rgba(229,104,10,.34), 0 2px 6px rgba(24,20,16,.20), inset 0 1px 1px rgba(255,255,255,.5);
+    animation:fab-bob 4.2s ease-in-out infinite;transition:box-shadow .2s, filter .2s}
+  #fab::before{content:"";position:absolute;inset:-9px;border-radius:50%;z-index:-1;
+    background:radial-gradient(closest-side, rgba(255,138,45,.5), transparent 78%);filter:blur(3px);
+    animation:fab-halo 4.2s ease-in-out infinite}
+  #fab::after{content:"";position:absolute;top:8px;left:11px;width:20px;height:13px;border-radius:50%;
+    background:radial-gradient(closest-side, rgba(255,255,255,.75), transparent);transform:rotate(-18deg);pointer-events:none}
+  #fab svg{position:relative;z-index:1;filter:drop-shadow(0 1px 1px rgba(24,20,16,.22))}
+  #fab:hover{box-shadow:0 12px 32px rgba(229,104,10,.46), 0 3px 9px rgba(24,20,16,.22), inset 0 1px 1px rgba(255,255,255,.55);filter:brightness(1.05) saturate(1.06)}
+  @keyframes fab-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  @keyframes fab-halo{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+  @media (prefers-reduced-motion:reduce){#fab,#fab::before{animation:none}}
   #chat{position:fixed;right:24px;bottom:88px;z-index:66;width:min(410px,calc(100vw - 32px));
     height:min(620px,calc(100vh - 120px));display:flex;flex-direction:column;background:var(--topbar);
     -webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);
@@ -407,7 +423,7 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   </main>
 </div>
 
-<button id="fab" aria-label="Librarian"><span class="fg">✦</span> Librarian</button>
+<button id="fab" title="Ask the Librarian" aria-label="Ask the Librarian"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6c.5 4.9 3.9 8.3 8.8 8.8v3.2c-4.9.5-8.3 3.9-8.8 8.8h-3.2c-.5-4.9-3.9-8.3-8.8-8.8v-3.2c4.9-.5 8.3-3.9 8.8-8.8z" fill="currentColor"/></svg></button>
 <div id="chat-backdrop" hidden></div>
 <section id="chat" hidden aria-label="Ask the Librarian">
   <div class="chat-head">
@@ -663,7 +679,7 @@ function renderGrid(){
         +(it.userContext?'<div class="cctx"><span class="cctx-i">✎</span> '+esc(it.userContext)+'</div>':'')
         +'</div>'
         +'<div class="cfoot"><span class="dot"></span>'+esc(it.provider)
-        +'<a class="open" href="'+esc(it.url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open ↗</a></div>';
+        +'<a class="open" href="'+esc(it.url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Opens '+esc(it.url)+'">'+esc(it.host||'open')+' ↗</a></div>';
       el.onclick=()=>openDetail(it.id); frag.appendChild(el);
     }
   }
@@ -742,6 +758,7 @@ function openAdd(){
     +'<h2 class="m-title" style="margin-bottom:2px">Paste a link</h2>'
     +'<p class="form-hint">That’s all you need — type, provider and a title fill in automatically. Add details only if you want to.</p>'
     +'<div class="form-row"><label>Links <span style="text-transform:none;color:var(--faint)">— one per line. Paste the paper, plus the LinkedIn post or blog it came from; they save as one object.</span></label><textarea id="a-url" placeholder="https://arxiv.org/abs/…&#10;https://www.linkedin.com/posts/…"></textarea></div>'
+    +'<div id="a-preview" class="a-preview" hidden></div>'
     +'<div class="m-actions" style="margin-top:14px"><button class="m-open" id="a-save">Add to Stacks</button><button class="m-copy" data-close>Cancel</button></div>'
     +'<span class="adv-toggle" id="adv-toggle">＋ Add details (optional)</span>'
     +'<div class="adv-body" id="adv-body">'
@@ -758,11 +775,22 @@ function openAdd(){
   showModal('#addmodal');
   $('#adv-toggle').onclick=()=>{ $('#adv-body').classList.toggle('open'); $('#adv-toggle').textContent=$('#adv-body').classList.contains('open')?'– Hide details':'＋ Add details (optional)'; };
   const urlEl=$('#a-url'); setTimeout(()=>urlEl.focus(),50);
-  urlEl.oninput=()=>{ const urls=urlEl.value.split(/\s+/).filter(u=>/^https?:\/\//.test(u)); if(!urls.length) return;
+  const pv=$('#a-preview');
+  urlEl.oninput=()=>{ const urls=urlEl.value.split(/\s+/).filter(u=>/^https?:\/\//.test(u));
+    if(!urls.length){ pv.hidden=true; return; }
     const canon=urls.find(u=>!/linkedin\.com|lnkd\.in/.test(u.toLowerCase()))||urls[0];
-    $('#a-kind').value=detectKind(canon);
+    const kind=detectKind(canon); $('#a-kind').value=kind;
     if(!$('#a-title').value){ try{ const seg=new URL(canon).pathname.split('/').filter(Boolean).pop()||new URL(canon).hostname;
       $('#a-title').value=decodeURIComponent(seg).replace(/[-_]/g,' ').replace(/\.(pdf|html?)$/,''); }catch(e){} }
+    // provenance preview — make it obvious where this goes and lives before saving
+    let host=''; try{ host=new URL(canon).hostname.replace(/^www\./,''); }catch(e){}
+    const li=urls.filter(u=>/linkedin\.com|lnkd\.in/.test(u.toLowerCase())).length;
+    const disp=canon.length>54?canon.slice(0,52)+'…':canon;
+    pv.hidden=false;
+    pv.innerHTML='<div class="pv-row"><span class="pv-k">Saves as</span><b>'+esc(KIND_LABEL[kind]||'link')+'</b></div>'
+      +'<div class="pv-row"><span class="pv-k">Lives at</span><span>'+esc(host||'—')+'</span></div>'
+      +'<div class="pv-row"><span class="pv-k">Opens →</span><a href="'+esc(canon)+'" target="_blank" rel="noopener">'+esc(disp)+'</a></div>'
+      +(urls.length>1?'<div class="pv-row"><span class="pv-k">Bundle</span><span>'+urls.length+' links'+(li?' · LinkedIn kept as context, not the source':'')+'</span></div>':'');
   };
   $('#a-save').onclick=saveNew;
 }
