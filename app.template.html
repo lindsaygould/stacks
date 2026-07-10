@@ -13,9 +13,9 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
     color-scheme: light;
     --bg:#f6f7f9; --bg2:#ffffff; --panel:#ffffff; --ink:#12151a; --dim:#5a6572; --faint:#93a0ad;
     --edge:rgba(18,21,26,.10); --edge2:rgba(18,21,26,.20); --hover:rgba(18,21,26,.04);
-    --a1:#ff5e8a; --a2:#ffb057; --accent:#e8536f; --on-accent:#ffffff;
-    --grad:linear-gradient(120deg,#ff5e8a 0%,#ff7a59 45%,#ffb057 100%);
-    --grad-soft:linear-gradient(120deg,rgba(255,94,138,.13),rgba(255,176,87,.13));
+    --a1:#ff9426; --a2:#ff6a3d; --accent:#e5680a; --on-accent:#ffffff;
+    --grad:linear-gradient(120deg,#ff9426 0%,#ff7a24 50%,#ff6a3d 100%);
+    --grad-soft:linear-gradient(120deg,rgba(255,148,38,.14),rgba(255,106,61,.12));
     --card:#ffffff; --topbar:rgba(246,247,249,.82); --shadow:0 14px 34px rgba(18,21,26,.10);
     --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
     --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
@@ -24,9 +24,9 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
     color-scheme: dark;
     --bg:#0a0c10; --bg2:#101319; --panel:#12161d; --ink:#e8edf2; --dim:#9aa6b3; --faint:#67727f;
     --edge:rgba(255,255,255,.09); --edge2:rgba(255,255,255,.19); --hover:rgba(255,255,255,.05);
-    --a1:#ff8fb0; --a2:#ffc078; --accent:#ff7e9c; --on-accent:#0a0c10;
-    --grad:linear-gradient(120deg,#ff8fb0 0%,#ff9366 45%,#ffc078 100%);
-    --grad-soft:linear-gradient(120deg,rgba(255,143,176,.16),rgba(255,192,120,.14));
+    --a1:#ffb15a; --a2:#ff7e4a; --accent:#ff9147; --on-accent:#0a0c10;
+    --grad:linear-gradient(120deg,#ffb15a 0%,#ff9040 50%,#ff7e4a 100%);
+    --grad-soft:linear-gradient(120deg,rgba(255,177,90,.16),rgba(255,126,74,.14));
     --card:linear-gradient(180deg,rgba(26,31,40,.7),rgba(16,19,25,.9));
     --topbar:rgba(10,12,16,.74); --shadow:0 16px 44px rgba(0,0,0,.5);
   }
@@ -34,8 +34,8 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   html{scroll-behavior:smooth}
   @media (prefers-reduced-motion: reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
   body{background:
-      radial-gradient(60% 40% at 8% -8%, rgba(255,94,138,.13), transparent 60%),
-      radial-gradient(52% 40% at 100% -6%, rgba(255,176,87,.11), transparent 60%),
+      radial-gradient(60% 40% at 8% -8%, rgba(255,148,38,.13), transparent 60%),
+      radial-gradient(52% 40% at 100% -6%, rgba(255,106,61,.10), transparent 60%),
       var(--bg);
     background-attachment:fixed; color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.5}
   a{color:var(--accent);text-decoration:none}
@@ -305,7 +305,26 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .src .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
   .src .kd{font-family:var(--mono);font-size:9.5px;color:var(--faint);text-transform:uppercase}
   .apply{align-self:flex-start;font-size:11.5px;font-weight:600;color:var(--accent);border:1px solid var(--edge);border-radius:99px;padding:5px 12px;margin-top:2px}
-  .apply:hover{border-color:var(--accent)}
+  .apply:hover{border-color:var(--accent);background:var(--grad-soft)}
+  .ans{white-space:pre-wrap}
+  .cite{display:inline;color:var(--accent);font-weight:650;font-family:var(--mono);font-size:.9em;padding:0 1px;border-bottom:1px dotted var(--accent);cursor:pointer}
+  .cite:hover{background:var(--grad-soft)}
+  @keyframes srcflash{0%{background:var(--grad-soft);border-color:var(--accent)}100%{background:var(--bg2);border-color:var(--edge)}}
+  .src.flash{animation:srcflash 1.15s ease}
+  #resultbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid var(--accent);border-radius:12px;background:var(--grad-soft)}
+  #resultbar[hidden]{display:none}
+  #resultbar .rb-i{color:var(--accent);font-size:14px}
+  #resultbar .rb-lead{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--accent)}
+  #resultbar .rb-q{font-style:italic;color:var(--ink);font-size:13.5px;flex:1;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #resultbar .rb-n{font-family:var(--mono);font-size:11px;color:var(--accent);background:var(--bg2);border-radius:99px;padding:2px 9px}
+  #resultbar .rb-clear{font-size:12px;font-weight:600;color:var(--on-accent);background:var(--grad);border-radius:8px;padding:6px 12px}
+  .cctx{margin-top:8px;font-size:11.5px;line-height:1.45;color:var(--dim);background:var(--grad-soft);border-left:2px solid var(--accent);border-radius:0 8px 8px 0;padding:6px 9px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .cctx .cctx-i{color:var(--accent);font-weight:700}
+  .m-ctx{margin-top:16px;border-top:1px solid var(--edge);padding-top:14px}
+  .m-ctx-l{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);font-weight:700;margin-bottom:8px}
+  .m-ctx textarea{width:100%;min-height:70px;resize:vertical;padding:10px 12px;border:1px solid var(--edge);border-radius:11px;background:var(--bg2);color:var(--ink);font-size:13px;font-family:var(--sans);line-height:1.5}
+  .m-ctx textarea:focus{outline:none;border-color:var(--accent)}
+  .m-ctx-save{margin-top:9px;font-size:12px;font-weight:600;color:var(--on-accent);background:var(--grad);border-radius:9px;padding:7px 15px}
   #chat-pills{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px}
   #chat-pills button{font-size:11.5px;font-weight:500;padding:6px 11px;border-radius:99px;border:1px solid var(--edge);background:var(--bg2);color:var(--dim);text-align:left;transition:all .14s}
   #chat-pills button:hover{color:var(--ink);border-color:var(--edge2);transform:translateY(-1px)}
@@ -325,7 +344,7 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   <div class="brand">
     <svg class="glyph" viewBox="0 0 32 32" fill="none" aria-hidden="true">
       <defs><linearGradient id="ig" x1="0" y1="0" x2="32" y2="32">
-        <stop offset="0" stop-color="#9d8bff"/><stop offset="1" stop-color="#4fd6e6"/></linearGradient></defs>
+        <stop offset="0" stop-color="#ff9426"/><stop offset="1" stop-color="#ff6a3d"/></linearGradient></defs>
       <rect x="4" y="7" width="24" height="4.4" rx="1.4" stroke="url(#ig)" stroke-width="2"/>
       <rect x="4" y="14" width="24" height="4.4" rx="1.4" stroke="url(#ig)" stroke-width="2"/>
       <rect x="4" y="21" width="24" height="4.4" rx="1.4" stroke="url(#ig)" stroke-width="2"/>
@@ -383,11 +402,12 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
           <option value="date">Newest dated</option>
         </select></label></div>
     </div>
+    <div id="resultbar" hidden></div>
     <div id="grid"></div>
   </main>
 </div>
 
-<button id="fab"><span class="fg">✦</span> Ask the Librarian</button>
+<button id="fab" aria-label="Librarian"><span class="fg">✦</span> Librarian</button>
 <div id="chat-backdrop" hidden></div>
 <section id="chat" hidden aria-label="Ask the Librarian">
   <div class="chat-head">
@@ -438,7 +458,7 @@ const PROV_COLORS = {
   'Medium':['#2b2b2b','#111111'], 'Substack':['#e0663a','#a1401f'], 'WIRED':['#2b2b2b','#111111'],
   'PsyPost':['#3a6ea5','#22436a'], 'Meta AI':['#2d6ae0','#183f8a'], 'X':['#2b2b2b','#0b0b0b'],
   'Google Drive':['#2f8f5b','#1c5738'], 'MIT Press':['#7a1f2b','#4c1319'], 'SAGE':['#3a6ea5','#22436a'],
-  'OSF':['#2f7bbf','#1c4a73'], 'Web':['#5b57e8','#2f2c8f']
+  'OSF':['#2f7bbf','#1c4a73'], 'Web':['#5f6470','#34383f']
 };
 function provColors(p){ return PROV_COLORS[p] || PROV_COLORS['Web']; }
 const KIND_COLOR = {paper:'#c0392b',model:'#f0a417',repo:'#3a3f4b',dataset:'#7a5aa8',toolkit:'#2c6e8f',
@@ -466,12 +486,17 @@ function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show')
 
 function loadUser(){ try{ return JSON.parse(localStorage.getItem('stacks-user')||'[]'); }catch(e){ return []; } }
 function saveUser(a){ localStorage.setItem('stacks-user', JSON.stringify(a)); }
+// Per-source context notes the user adds by hand (any source, not just ones they added). Kept per-item.
+function loadCtx(){ try{ return JSON.parse(localStorage.getItem('stacks-context')||'{}'); }catch(e){ return {}; } }
+function saveCtx(){ try{ localStorage.setItem('stacks-context', JSON.stringify(CTX)); }catch(e){} }
+let CTX = loadCtx();
 let USER = loadUser();
 let ALL = [];
-function rebuild(){ ALL = BASE_DATA.items.concat(USER); }
+function rebuild(){ ALL = BASE_DATA.items.concat(USER);
+  ALL.forEach(it=>{ it.userContext = (CTX[it.id]!==undefined ? CTX[it.id] : (it.added ? (it.context||'') : '')); }); }
 rebuild();
 
-const state = { q:'', sort:'relevance', view:'cards', dateFrom:'', dateTo:'', f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set(), read:new Set()} };
+const state = { q:'', sort:'relevance', view:'cards', dateFrom:'', dateTo:'', resultSet:null, f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set(), read:new Set()} };
 
 const FACETS = [
   {key:'kind', title:'Type', field:'kind', order:['paper','model','repo','dataset','toolkit','benchmark','video','podcast','article','company','event','grant','other'], label:k=>KIND_LABEL[k]||k},
@@ -503,6 +528,7 @@ function passDate(it){
 }
 function filtered(exceptFacet){
   return ALL.filter(it=>{
+    if(state.resultSet && !state.resultSet.ids.has(it.id)) return false;
     if(!matchesText(it,state.q)) return false;
     if(!passDate(it)) return false;
     for(const f of FACETS){ if(f.key===exceptFacet) continue; if(!passFacet(it,f.key)) return false; }
@@ -559,6 +585,16 @@ function renderFacets(){
     }
     sec.appendChild(cloud); wrap.appendChild(sec);
   }
+}
+function renderResultBar(){
+  const el=$('#resultbar'); if(!el) return;
+  if(!state.resultSet){ el.hidden=true; el.innerHTML=''; return; }
+  el.hidden=false;
+  el.innerHTML='<span class="rb-i">✦</span><span class="rb-lead">Librarian view</span>'
+    +'<span class="rb-q" title="'+esc(state.resultSet.label)+'">'+esc(state.resultSet.label)+'</span>'
+    +'<span class="rb-n">'+state.resultSet.ids.size+'</span>'
+    +'<button class="rb-clear" aria-label="Clear this view">Clear ✕</button>';
+  el.querySelector('.rb-clear').onclick=()=>{ state.resultSet=null; syncViewsUI(); sync(); render(); window.scrollTo({top:0,behavior:'smooth'}); };
 }
 function renderPills(){
   const p=$('#pills'); p.innerHTML='';
@@ -623,7 +659,9 @@ function renderGrid(){
       el.innerHTML = cardCover(it)
         +'<div class="cbody"><div class="ctitle">'+esc(it.title)+'</div>'
         +'<div class="cdesc">'+esc(desc)+'</div>'
-        +'<div class="ctags">'+tags+src+'</div></div>'
+        +'<div class="ctags">'+tags+src+'</div>'
+        +(it.userContext?'<div class="cctx"><span class="cctx-i">✎</span> '+esc(it.userContext)+'</div>':'')
+        +'</div>'
         +'<div class="cfoot"><span class="dot"></span>'+esc(it.provider)
         +'<a class="open" href="'+esc(it.url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open ↗</a></div>';
       el.onclick=()=>openDetail(it.id); frag.appendChild(el);
@@ -662,11 +700,18 @@ function openDetail(id){
     +(it.notes&&it.notes!==it.context?'<div class="m-desc">'+esc(it.notes)+'</div>':'')
     +rows
     +(it.read_status==='needs_pdf'?'<div class="m-lictx" style="border-left-color:#e0a44a;background:rgba(224,164,74,.09)"><b>Needs your PDF</b><br>This paper is paywalled and isn’t in your Drive yet. Drop its PDF into your Papers folder and the Librarian will read it on the next sync. <a href="'+DRIVE_PAPERS+'" target="_blank" rel="noopener">Open the Papers folder ↗</a></div>':'')
+    +'<div class="m-ctx"><div class="m-ctx-l">Your context</div>'
+    +'<textarea id="m-ctx-in" placeholder="Add your own context — why this matters, what to remember, how it connects…">'+esc(it.userContext||'')+'</textarea>'
+    +'<button class="m-ctx-save" id="m-ctx-save">Save context</button></div>'
     +'<div class="m-actions"><a class="m-open" href="'+esc(it.url)+'" target="_blank" rel="noopener">Open source ↗</a>'
     +(it.drive_url?'<a class="m-drive" href="'+esc(it.drive_url)+'" target="_blank" rel="noopener">📄 Your Drive copy</a>':'')
     +'<button class="m-copy" id="copy-md">Copy as Markdown</button>'
     +(it.added?'<button class="m-copy" id="del-item">Delete</button>':'')+'</div></div>';
   $('#modal-body').innerHTML=body; showModal('#modal');
+  const cs=$('#m-ctx-save'); if(cs) cs.onclick=()=>{ const v=$('#m-ctx-in').value.trim();
+    if(v) CTX[it.id]=v; else delete CTX[it.id];
+    if(it.added){ const u=USER.find(x=>x.id===it.id); if(u) u.context=v; saveUser(USER); }
+    saveCtx(); rebuild(); render(); toast(v?'Context saved':'Context cleared'); cs.textContent='Saved ✓'; setTimeout(()=>{ cs.textContent='Save context'; },1400); };
   $('#copy-md').onclick=()=>{ navigator.clipboard.writeText('- ['+it.title+']('+it.url+') — '+(it.context||it.category||it.provider)); toast('Copied Markdown'); };
   if(it.added) $('#del-item').onclick=()=>{ USER=USER.filter(x=>x.id!==it.id); saveUser(USER); rebuild(); hideModal('#modal'); render(); toast('Deleted'); };
 }
@@ -859,11 +904,9 @@ function listAnswer(q){
       b.innerHTML='<span class="n">'+(i+1)+'</span><span class="t">'+esc(it.title)+'</span><span class="kd">'+esc(it.kind)+'</span>';
       b.onclick=()=>openDetail(it.id); srcs.appendChild(b); });
     bot.appendChild(srcs);
-    if(types.length||topics.length||sources.length){
-      const ap=document.createElement('button'); ap.className='apply'; ap.textContent='Show all '+res.length+' in the grid →';
-      ap.onclick=()=>{ clearFilters(); types.forEach(t=>state.f.kind.add(t)); topics.forEach(t=>{ if(FOCUS_LABEL[t])state.f.focus.add(t); else state.f.topics.add(t); }); sources.forEach(s=>state.f.origins.add(s)); syncViewsUI(); sync(); render(); $('#chat').hidden=true; window.scrollTo({top:0,behavior:'smooth'}); };
-      bot.appendChild(ap);
-    }
+    const ap=document.createElement('button'); ap.className='apply'; ap.textContent='Open these '+res.length+' as a view →';
+    ap.onclick=()=>openAsView(q, res.map(it=>it.id));
+    bot.appendChild(ap);
     const meta=document.createElement('div'); meta.style.cssText='font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:4px'; meta.textContent='Listed '+res.length+' — free, no key'; bot.appendChild(meta);
   }
 }
@@ -886,6 +929,27 @@ function retrieve(q,k){
       let s=0; terms.forEach(x=>{ if(t.includes(x))s+=4; else if(ab.includes(x))s+=2; else if(hay.includes(x))s+=1; }); return {it,s}; })
     .filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,k||8).map(x=>x.it);
 }
+// Render an answer with [n] citations -> clickable footnotes that pulse the one cited source,
+// a cited-source list (click a row to open its full preview), and an "open as a view" button.
+function renderSourced(bubble, text, src, viewLabel){
+  const nums=[...new Set((text.match(/\[(\d+)\]/g)||[]).map(m=>parseInt(m.replace(/\D/g,''),10)))].filter(n=>n>=1&&n<=src.length);
+  const cited = nums.length ? nums : src.map((_,i)=>i+1);
+  const safe = esc(text).replace(/\[(\d+)\]/g,(m,d)=>{ const n=+d; return (n>=1&&n<=src.length)?'<button class="cite" data-n="'+n+'">['+n+']</button>':m; });
+  bubble.textContent='';
+  const ansEl=document.createElement('div'); ansEl.className='ans'; ansEl.innerHTML=safe; bubble.appendChild(ansEl);
+  const wrap=document.createElement('div'); wrap.className='srcs';
+  cited.forEach(n=>{ const it=src[n-1]; if(!it) return; const b=document.createElement('button'); b.className='src'; b.dataset.n=n;
+    b.innerHTML='<span class="n">'+n+'</span><span class="t">'+esc(it.title)+'</span><span class="kd">'+esc(it.kind)+'</span>';
+    b.onclick=()=>openDetail(it.id); wrap.appendChild(b); });
+  bubble.appendChild(wrap);
+  ansEl.querySelectorAll('.cite').forEach(c=>c.onclick=()=>{ const row=wrap.querySelector('.src[data-n="'+c.dataset.n+'"]');
+    if(row){ row.scrollIntoView({block:'nearest',behavior:'smooth'}); row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash'); } });
+  const citedItems=cited.map(n=>src[n-1]).filter(Boolean);
+  if(citedItems.length){ const ap=document.createElement('button'); ap.className='apply';
+    ap.textContent='Open these '+citedItems.length+' as a view →';
+    ap.onclick=()=>openAsView(viewLabel, citedItems.map(it=>it.id)); bubble.appendChild(ap); }
+  return citedItems;
+}
 async function ragAnswer(q){
   const key=getKey(); if(!key){ askForKey(q); return; }
   const src=retrieve(q,8);
@@ -905,14 +969,7 @@ async function ragAnswer(q){
     const data=await resp.json();
     if(data.stop_reason==='refusal'){ bubble.textContent='The model declined to answer that one.'; return; }
     const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim()||'(no answer returned)';
-    bubble.textContent=text;
-    const nums=[...new Set((text.match(/\[(\d+)\]/g)||[]).map(m=>parseInt(m.replace(/\D/g,''),10)))].filter(n=>n>=1&&n<=src.length);
-    const cited=nums.length?nums:src.slice(0,4).map((_,i)=>i+1);
-    const wrap=document.createElement('div'); wrap.className='srcs';
-    cited.forEach(n=>{ const it=src[n-1]; if(!it)return; const b=document.createElement('button'); b.className='src';
-      b.innerHTML='<span class="n">'+n+'</span><span class="t">'+esc(it.title)+'</span><span class="kd">'+esc(it.kind)+'</span>';
-      b.onclick=()=>openDetail(it.id); wrap.appendChild(b); });
-    bubble.appendChild(wrap);
+    renderSourced(bubble, text, src, q);
     const meta=document.createElement('div'); meta.style.cssText='font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:6px'; meta.textContent='Answered from '+src.length+' sources'; bubble.appendChild(meta);
   }catch(e){ bubble.textContent='Could not reach Anthropic (network or key issue). Check your connection and the ⚙ key.'; }
 }
@@ -928,10 +985,17 @@ function ask(q){
   if(isListy(q)) listAnswer(q); else ragAnswer(q);
 }
 
-function clearFilters(){ for(const f of FACETS) state.f[f.key].clear(); state.dateFrom=''; state.dateTo=''; }
+function clearFilters(){ for(const f of FACETS) state.f[f.key].clear(); state.dateFrom=''; state.dateTo=''; state.resultSet=null; }
+// Turn a Librarian result (a specific set of source ids) into a scoped main-grid view.
+function openAsView(label, ids){
+  clearFilters(); state.q=''; const q=$('#q'); if(q) q.value='';
+  state.resultSet = { label: (label||'Librarian result').trim(), ids: new Set(ids) };
+  $('#chat').hidden=true; if(typeof setChatExpanded==='function') setChatExpanded(false);
+  syncViewsUI(); sync(); render(); window.scrollTo({top:0,behavior:'smooth'});
+}
 function showModal(sel){ $(sel).hidden=false; document.body.style.overflow='hidden'; }
 function hideModal(sel){ $(sel).hidden=true; document.body.style.overflow=''; }
-function render(){ renderTimeline(); renderFacets(); renderPills(); renderGrid(); }
+function render(){ renderTimeline(); renderFacets(); renderPills(); renderResultBar(); renderGrid(); }
 function sync(){ const p=new URLSearchParams(); if(state.q)p.set('q',state.q);
   for(const f of FACETS) if(state.f[f.key].size) p.set(f.key, Array.from(state.f[f.key]).join('~'));
   if(state.sort!=='relevance') p.set('sort',state.sort); if(state.view!=='cards') p.set('view',state.view);
@@ -970,8 +1034,25 @@ document.addEventListener('keydown',e=>{
 
 $('#chat-scope').innerHTML='I <b>list</b> instantly (free), or <b>answer</b> questions about your sources with citations — answering uses your own Anthropic key (⚙, kept only in this browser).';
 const PILLS=['Show me all the repos','Papers about ketamine','What do the papers say about rACC theta and antidepressant response?','EEG foundation models','Which sources say microstates need 20+ electrodes?','Grants &amp; fellowships','Podcasts to listen to'];
+// Pre-baked, grounded answers so the marquee question pills return instantly (no key, no wait).
+// Answers were composed from the actual source full text; ids[n-1] is citation [n].
+const PILL_ANSWERS={
+  'What do the papers say about rACC theta and antidepressant response?':{ ids:['p127','p111','p95','p113'],
+    answer:"Papers in the corpus directly address rACC theta as an antidepressant-response biomarker. The central finding: in the EMBARC randomized trial (296 patients randomized to sertraline or placebo, 248 usable EEGs), higher pretreatment rostral/pregenual ACC theta at both baseline (b=-1.05, P=.004) and week 1 (b=-0.83, P<.04) predicted greater symptom improvement, unmoderated by treatment arm, uniquely explaining ~8.5% of variance in symptom change [1]. The authors frame it as a nonspecific prognostic marker with a prior meta-analytic effect size of ~0.92 across ~19 replications, spanning SSRIs, ketamine, sleep deprivation, and rTMS [1]. But the corpus also flags limits: a broad QEEG meta-analysis (76 articles, 81 biomarkers) found only modest, undifferentiated predictive power (sensitivity 0.72, specificity 0.68, AUC 0.76) with substantial publication bias, and no single marker outperformed [2]. Later EMBARC work argues rACC theta is nonspecific to drug-versus-placebo and pursues machine-learning EEG signatures instead [3][4]." },
+  'Which sources say microstates need 20+ electrodes?':{ ids:['p170','p165','p187'],
+    answer:"No source in the library states that microstates require 20+ electrodes; that specific threshold is not supported here. What the microstate sources do say points lower. The Michel and Brechet methods review gives the only explicit electrode recommendation: a minimum of 19 to 32 electrodes with uniform scalp coverage, noting that denser arrays mainly help spatial resolution and source localization rather than the microstate estimation itself [1]. da Cruz et al. (2020) state that montages with as low as 19 electrodes can be used for microstate analysis, and that the four canonical classes appear independently of the number of electrodes [2]. Khanna, Pascual-Leone and Farzan (2014) go further, reporting high test-retest reliability with as few as 8 electrodes, alongside a 19-electrode subset [3]. So the closest defensible figure is 19, not 20+, and reliable estimation has been demonstrated with far fewer." }
+};
+function askPill(pillText){
+  const prep=PILL_ANSWERS[pillText];
+  if(!prep){ ask(pillText); return; }
+  chatBubble('user', esc(pillText));
+  const src=prep.ids.map(id=>ALL.find(x=>x.id===id)).filter(Boolean);
+  const bubble=chatBubble('bot','');
+  renderSourced(bubble, prep.answer, src, pillText);
+  const meta=document.createElement('div'); meta.style.cssText='font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:6px'; meta.textContent='Prepared answer · instant, no key'; bubble.appendChild(meta);
+}
 $('#chat-pills').innerHTML=PILLS.map(p=>'<button>'+p+'</button>').join('');
-$('#chat-pills').querySelectorAll('button').forEach(b=>b.onclick=()=>ask(b.textContent));
+$('#chat-pills').querySelectorAll('button').forEach(b=>b.onclick=()=>askPill(b.textContent));
 $('#chat-key').onclick=()=>{ $('#chat').hidden=false; askForKey(null); };
 const QUICK=[{l:'Papers',k:'kind',v:['paper']},{l:'Repos & models',k:'kind',v:CODE_KINDS},{l:'Videos',k:'kind',v:['video']},{l:'Podcasts',k:'kind',v:['podcast']},{l:'Companies',k:'kind',v:['company']},{l:'Grants',k:'kind',v:['grant']},{l:'Articles',k:'kind',v:['article']},{l:'📄 Needs your PDF',k:'read',v:['needs_pdf']}];
 function renderQuick(){ const el=$('#quicklists'); if(!el) return;
