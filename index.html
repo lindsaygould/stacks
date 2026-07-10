@@ -13,9 +13,9 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
     color-scheme: light;
     --bg:#f6f7f9; --bg2:#ffffff; --panel:#ffffff; --ink:#12151a; --dim:#5a6572; --faint:#93a0ad;
     --edge:rgba(18,21,26,.10); --edge2:rgba(18,21,26,.20); --hover:rgba(18,21,26,.04);
-    --a1:#6d5efc; --a2:#12b5c9; --accent:#5b57e8; --on-accent:#ffffff;
-    --grad:linear-gradient(120deg,#6d5efc 0%,#7b7bf7 45%,#12b5c9 100%);
-    --grad-soft:linear-gradient(120deg,rgba(109,94,252,.12),rgba(18,181,201,.12));
+    --a1:#ff5e8a; --a2:#ffb057; --accent:#e8536f; --on-accent:#ffffff;
+    --grad:linear-gradient(120deg,#ff5e8a 0%,#ff7a59 45%,#ffb057 100%);
+    --grad-soft:linear-gradient(120deg,rgba(255,94,138,.13),rgba(255,176,87,.13));
     --card:#ffffff; --topbar:rgba(246,247,249,.82); --shadow:0 14px 34px rgba(18,21,26,.10);
     --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
     --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
@@ -24,9 +24,9 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
     color-scheme: dark;
     --bg:#0a0c10; --bg2:#101319; --panel:#12161d; --ink:#e8edf2; --dim:#9aa6b3; --faint:#67727f;
     --edge:rgba(255,255,255,.09); --edge2:rgba(255,255,255,.19); --hover:rgba(255,255,255,.05);
-    --a1:#9d8bff; --a2:#4fd6e6; --accent:#8b7cf6; --on-accent:#0a0c10;
-    --grad:linear-gradient(120deg,#9d8bff 0%,#8a86ff 45%,#4fd6e6 100%);
-    --grad-soft:linear-gradient(120deg,rgba(157,139,255,.15),rgba(79,214,230,.13));
+    --a1:#ff8fb0; --a2:#ffc078; --accent:#ff7e9c; --on-accent:#0a0c10;
+    --grad:linear-gradient(120deg,#ff8fb0 0%,#ff9366 45%,#ffc078 100%);
+    --grad-soft:linear-gradient(120deg,rgba(255,143,176,.16),rgba(255,192,120,.14));
     --card:linear-gradient(180deg,rgba(26,31,40,.7),rgba(16,19,25,.9));
     --topbar:rgba(10,12,16,.74); --shadow:0 16px 44px rgba(0,0,0,.5);
   }
@@ -34,8 +34,8 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   html{scroll-behavior:smooth}
   @media (prefers-reduced-motion: reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
   body{background:
-      radial-gradient(60% 40% at 8% -8%, rgba(109,94,252,.12), transparent 60%),
-      radial-gradient(52% 40% at 100% -6%, rgba(18,181,201,.10), transparent 60%),
+      radial-gradient(60% 40% at 8% -8%, rgba(255,94,138,.13), transparent 60%),
+      radial-gradient(52% 40% at 100% -6%, rgba(255,176,87,.11), transparent 60%),
       var(--bg);
     background-attachment:fixed; color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.5}
   a{color:var(--accent);text-decoration:none}
@@ -278,6 +278,15 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
     -webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);
     border:1px solid var(--edge2);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
   #chat[hidden]{display:none}
+  #chat{transition:width .22s ease,height .22s ease,inset .22s ease,border-radius .22s ease}
+  #chat.expanded{top:18px;right:18px;bottom:18px;left:18px;width:auto;height:auto;max-width:1080px;margin-inline:auto;border-radius:22px}
+  #chat.expanded #chat-msgs{padding:22px clamp(22px,7vw,72px)}
+  #chat.expanded .msg{max-width:min(760px,80%)}
+  #chat.expanded #chat-pills,#chat.expanded #chat-form{padding-inline:clamp(16px,7vw,72px)}
+  #chat-backdrop{position:fixed;inset:0;z-index:65;background:rgba(6,8,12,.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  #chat-backdrop[hidden]{display:none}
+  #chat-expand{font-size:15px;color:var(--dim);line-height:1}
+  #chat-expand:hover{color:var(--ink)}
   .chat-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--edge)}
   .chat-title{font-weight:750;font-size:14px;display:flex;align-items:center;gap:8px}
   .chat-title .s{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -379,10 +388,11 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
 </div>
 
 <button id="fab"><span class="fg">✦</span> Ask the Librarian</button>
+<div id="chat-backdrop" hidden></div>
 <section id="chat" hidden aria-label="Ask the Librarian">
   <div class="chat-head">
     <span class="chat-title"><span class="s">✦</span> Ask the Librarian</span>
-    <span style="margin-left:auto;display:flex;align-items:center"><button id="chat-key" title="Set your Anthropic API key">⚙</button>
+    <span style="margin-left:auto;display:flex;align-items:center;gap:4px"><button id="chat-expand" title="Expand to full screen" aria-label="Expand">⤢</button><button id="chat-key" title="Set your Anthropic API key">⚙</button>
     <button id="chat-close" aria-label="Close">×</button></span>
   </div>
   <div class="chat-scope" id="chat-scope"></div>
@@ -945,12 +955,17 @@ $('#btn-rail').onclick=()=>document.body.classList.toggle('rail-open');
 $('#btn-theme').onclick=()=>{ const d=document.documentElement.classList.toggle('dark'); localStorage.setItem('stacks-theme', d?'dark':'light'); };
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{ ['#modal','#addmodal','#datamodal'].forEach(hideModal); });
 document.querySelectorAll('.scrim').forEach(s=>s.addEventListener('click',e=>{ if(e.target===s) hideModal('#'+s.id); }));
-$('#fab').onclick=()=>{ const c=$('#chat'); c.hidden=!c.hidden; if(!c.hidden) $('#chat-in').focus(); };
-$('#chat-close').onclick=()=>{ $('#chat').hidden=true; };
+function setChatExpanded(on){ const c=$('#chat'); c.classList.toggle('expanded',on); $('#chat-backdrop').hidden=!on;
+  const b=$('#chat-expand'); b.textContent=on?'⤡':'⤢'; b.title=on?'Shrink':'Expand to full screen'; b.setAttribute('aria-label',on?'Shrink':'Expand'); }
+function closeChat(){ $('#chat').hidden=true; setChatExpanded(false); }
+$('#fab').onclick=()=>{ const c=$('#chat'); c.hidden=!c.hidden; if(c.hidden) setChatExpanded(false); else $('#chat-in').focus(); };
+$('#chat-close').onclick=closeChat;
+$('#chat-expand').onclick=()=>{ setChatExpanded(!$('#chat').classList.contains('expanded')); $('#chat-in').focus(); };
+$('#chat-backdrop').onclick=()=>setChatExpanded(false);
 $('#chat-form').addEventListener('submit',e=>{ e.preventDefault(); const v=$('#chat-in').value; $('#chat-in').value=''; ask(v); });
 document.addEventListener('keydown',e=>{
   if(e.key==='/'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){ e.preventDefault(); $('#q').focus(); }
-  if(e.key==='Escape'){ ['#modal','#addmodal','#datamodal'].forEach(hideModal); $('#chat').hidden=true; }
+  if(e.key==='Escape'){ const c=$('#chat'); if(!c.hidden && c.classList.contains('expanded')){ setChatExpanded(false); return; } ['#modal','#addmodal','#datamodal'].forEach(hideModal); closeChat(); }
 });
 
 $('#chat-scope').innerHTML='I <b>list</b> instantly (free), or <b>answer</b> questions about your sources with citations — answering uses your own Anthropic key (⚙, kept only in this browser).';
