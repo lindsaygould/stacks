@@ -513,7 +513,10 @@ const READ_COLOR={read:'#2f9e5f', fetchable:'#4f9be6', needs_pdf:'#e0a44a'};
 // A LinkedIn link added on its own — no direct source pulled out yet. The real article/paper
 // is behind LinkedIn's wall (often in the comments), so it needs you to finish it.
 function linkedinNeedsUnwrap(it){ return !!it.via_linkedin && /linkedin\.com|lnkd\.in/.test((it.url||'').toLowerCase()); }
-function needsReview(it){ return it.read_status==='needs_pdf' || linkedinNeedsUnwrap(it) || (it.added && !(it.userContext||it.context||it.notes) && !it.abstract); }
+// Needs review = something only you can resolve: a paywalled paper with no PDF yet,
+// or a LinkedIn link whose real source hasn't been pulled out. (Open-access papers auto-fetch,
+// so they're not "review".)
+function needsReview(it){ return it.read_status==='needs_pdf' || linkedinNeedsUnwrap(it); }
 const DRIVE_PAPERS='https://drive.google.com/drive/folders/1I41GiIKSNNME9jHrCosmhgxXPdKHebhC';
 
 const Q_TOPIC = {
