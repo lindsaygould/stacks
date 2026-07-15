@@ -365,6 +365,9 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .m-edit-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
   .m-edit-row input{flex:1;min-width:140px;padding:8px 11px;border:1px solid var(--edge);border-radius:10px;background:var(--bg2);color:var(--ink);font-size:12.5px;font-family:var(--sans)}
   .m-edit-row input:focus{outline:none;border-color:var(--accent)}
+  .m-unwrap textarea{width:100%;min-height:54px;margin-top:9px;padding:8px 11px;border:1px solid var(--edge);border-radius:9px;background:var(--bg2);color:var(--ink);font-size:12px;font-family:var(--mono);resize:vertical}
+  .m-unwrap textarea:focus{outline:none;border-color:var(--accent)}
+  .m-unwrap button{margin-top:9px}
   #chat-pills{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px}
   #chat-pills button{font-size:11.5px;font-weight:500;padding:6px 11px;border-radius:99px;border:1px solid var(--edge);background:var(--bg2);color:var(--dim);text-align:left;transition:all .14s}
   #chat-pills button:hover{color:var(--ink);border-color:var(--edge2);transform:translateY(-1px)}
@@ -507,7 +510,10 @@ const READ_LABEL={read:'Read ✓', fetchable:'Open access', needs_pdf:'Needs you
 const READ_COLOR={read:'#2f9e5f', fetchable:'#4f9be6', needs_pdf:'#e0a44a'};
 // "Needs review" = an item missing its core content: a paper with no PDF/full text,
 // or something added in a hurry with no note at all. (Your Kairos missing-JD pattern.)
-function needsReview(it){ return it.read_status==='needs_pdf' || (it.added && !(it.userContext||it.context||it.notes) && !it.abstract); }
+// A LinkedIn link added on its own — no direct source pulled out yet. The real article/paper
+// is behind LinkedIn's wall (often in the comments), so it needs you to finish it.
+function linkedinNeedsUnwrap(it){ return !!it.via_linkedin && /linkedin\.com|lnkd\.in/.test((it.url||'').toLowerCase()); }
+function needsReview(it){ return it.read_status==='needs_pdf' || linkedinNeedsUnwrap(it) || (it.added && !(it.userContext||it.context||it.notes) && !it.abstract); }
 const DRIVE_PAPERS='https://drive.google.com/drive/folders/1I41GiIKSNNME9jHrCosmhgxXPdKHebhC';
 
 const Q_TOPIC = {
@@ -798,6 +804,7 @@ function openDetail(id){
     +(it.notes&&it.notes!==it.context?'<div class="m-desc">'+esc(it.notes)+'</div>':'')
     +rows
     +(it.read_status==='needs_pdf'?'<div class="m-lictx" style="border-left-color:#e0a44a;background:rgba(224,164,74,.09)"><b>Needs your PDF</b><br>This paper is paywalled and isn’t in your Drive yet. Drop its PDF into your Papers folder and the Librarian will read it on the next sync. <a href="'+DRIVE_PAPERS+'" target="_blank" rel="noopener">Open the Papers folder ↗</a></div>':'')
+    +(linkedinNeedsUnwrap(it)?'<div class="m-lictx m-unwrap" style="border-left-color:#e0a44a;background:rgba(224,164,74,.09)"><b>📎 From LinkedIn — needs the real link</b><br>LinkedIn posts can’t be read directly. <a href="'+esc(it.url)+'" target="_blank" rel="noopener">Open the post ↗</a>, copy the article or paper link (often it’s in the comments), and paste it below — add any other links too, one per line.<textarea id="unwrap-in" placeholder="https://arxiv.org/abs/…&#10;https://…"></textarea><button class="m-ctx-save" id="unwrap-go">Add link &amp; complete</button></div>':'')
     +'<div class="m-ctx"><div class="m-ctx-l">Your notes &amp; tags — edit anytime</div>'
     +'<textarea id="m-ctx-in" placeholder="Note — the author’s take, why it matters, how it connects…">'+esc(it.userContext||'')+'</textarea>'
     +'<div class="m-edit-row"><input type="text" id="m-from-in" placeholder="From — who shared it" value="'+esc(it.sender||'')+'" list="senders-list" autocomplete="off">'
@@ -809,6 +816,19 @@ function openDetail(id){
     +'<button class="m-copy" id="copy-md">Copy as Markdown</button>'
     +(it.added?'<button class="m-copy" id="del-item">Delete</button>':'')+'</div></div>';
   $('#modal-body').innerHTML=body; showModal('#modal');
+  const ug=$('#unwrap-go'); if(ug) ug.onclick=()=>{
+    const links=$('#unwrap-in').value.split(/\s+/).map(s=>s.trim()).filter(s=>/^https?:\/\//.test(s));
+    if(!links.length){ toast('Paste the article or paper link'); return; }
+    const canon=links.find(u=>!isLinkedIn(u))||links[0];
+    if(isLinkedIn(canon)){ toast('That’s still a LinkedIn link — paste the actual article/paper URL'); return; }
+    const u=USER.find(x=>x.id===it.id); if(!u){ return; }
+    const {p,h}=providerFromUrl(canon);
+    u.all_urls=[...new Set([...links, ...(u.all_urls||[u.url])])];
+    u.url=canon; u.host=h; u.provider=p; u.kind=detectKind(canon);
+    u.read_status = ['paper','dataset'].includes(u.kind) ? (isOpenAccess(canon)?'fetchable':'needs_pdf') : '';
+    if(!u.title || /^https?:|linkedin|lnkd/i.test(u.title)){ try{ const seg=new URL(canon).pathname.split('/').filter(Boolean).pop()||new URL(canon).hostname; u.title=decodeURIComponent(seg).replace(/[-_]/g,' ').replace(/\.(pdf|html?)$/,''); }catch(e){} }
+    saveUser(USER); rebuild(); render(); toast('Completed — real source added'); openDetail(it.id);
+  };
   const cs=$('#m-ctx-save'); if(cs) cs.onclick=()=>{
     const v=$('#m-ctx-in').value.trim();
     const sndr=$('#m-from-in')?$('#m-from-in').value.trim():'';
@@ -905,7 +925,7 @@ function saveNew(){
     content:'', read_status:read, added:true, addedAt:Date.now() };
   if(['model','benchmark','toolkit'].includes(it.kind) && !it.domains.includes('ai')) it.domains.push('ai');
   USER.unshift(it); saveUser(USER); rebuild(); hideModal('#addmodal'); state.sort='added'; $('#sort').value='added'; sync(); render();
-  toast(urls.length>1 ? ('Added — '+urls.length+' links bundled as one object') : 'Added — remember to export');
+  toast(isLinkedIn(canonical) ? '⚠ Added to Needs review — open it to paste the real article link' : (urls.length>1 ? ('Added — '+urls.length+' links bundled as one object') : 'Added'));
 }
 
 /* export / import */
