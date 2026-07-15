@@ -583,7 +583,7 @@ function renderAccountChip(email){
   if($('#acct-chip')) return;
   const c=document.createElement('div'); c.id='acct-chip';
   c.innerHTML='<span class="ac-dot"></span><span class="ac-em">'+esc(email)+'</span>'
-    +'<button id="ac-drive" title="Read PDFs from your Drive Papers folder">☁ Drive</button>'
+    +'<button id="ac-drive" title="Read PDFs from your Drive “Stacks Papers” folder">☁ Drive</button>'
     +'<button id="ac-out">Sign out</button>';
   document.body.appendChild(c);
   c.querySelector('#ac-out').onclick=async()=>{ try{ await fetch('/api/signout',{method:'POST'}); }catch(e){} location.href='/'; };
@@ -601,21 +601,22 @@ async function driveButton(){
 }
 // Phase 3 part 2: pull text from PDFs in your Drive "Papers" folder for the paywalled papers.
 async function syncDrive(){
-  const items=ALL.filter(it=>['paper','dataset'].includes(it.kind) && it.read_status==='needs_pdf' && !it.fullText)
+  let pending=ALL.filter(it=>['paper','dataset'].includes(it.kind) && it.read_status==='needs_pdf' && !it.fullText)
     .map(it=>({id:it.id, title:it.title, url:it.url, ident:it.ident||''}));
-  if(!items.length){ toast('Nothing paywalled needs a PDF right now'); return; }
-  toast('Reading your Drive Papers folder…');
-  let total=0, pending=items.slice();
-  for(let round=0; round<25 && pending.length; round++){
-    let d; try{ d=await (await fetch('/api/drive-sync',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({items:pending})})).json(); }catch(e){ break; }
+  if(!pending.length){ toast('Nothing paywalled needs a PDF right now'); return; }
+  toast('Reading your Stacks Papers folder…');
+  let total=0, skip=[];
+  for(let round=0; round<60; round++){
+    let d; try{ d=await (await fetch('/api/drive-sync',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({items:pending, skip})})).json(); }catch(e){ break; }
     if(!d || d.error){ toast('Drive: '+((d&&d.error)||'error')); break; }
     if(!d.connected){ location.href='/api/drive-start'; return; }
-    if(d.folder===false){ toast('No Drive folder named “Papers” — create one and drop PDFs in it.'); break; }
+    if(d.folder===false){ toast('No Drive folder named “Stacks Papers” — create one and drop PDFs in it.'); break; }
     (d.results||[]).forEach(r=>{ TEXTS[r.id]=(r.text||'').slice(0,16000); const i=pending.findIndex(x=>x.id===r.id); if(i>=0) pending.splice(i,1); });
     if(d.results && d.results.length){ saveTexts(); rebuild(); render(); total+=d.results.length; }
-    else break;   // no progress this round
+    skip=skip.concat(d.processedIds||[]);
+    if(d.done || !(d.processedIds&&d.processedIds.length)) break;   // all PDFs seen, or no progress
   }
-  toast(total?('✓ Read '+total+' paper'+(total>1?'s':'')+' from your Drive'):'No matching PDFs in your Papers folder yet');
+  toast(total?('✓ Read '+total+' paper'+(total>1?'s':'')+' from your Drive'):'No matching PDFs found in Stacks Papers');
 }
 function loadMeta(){ try{ return JSON.parse(localStorage.getItem('stacks-meta')||'{}'); }catch(e){ return {}; } }
 function saveMeta(){ try{ localStorage.setItem('stacks-meta', JSON.stringify(META)); }catch(e){} pushData(); }
