@@ -835,7 +835,7 @@ function openDetail(id){
     u.url=canon; u.host=h; u.provider=p; u.kind=detectKind(canon);
     u.read_status = ['paper','dataset'].includes(u.kind) ? (isOpenAccess(canon)?'fetchable':'needs_pdf') : '';
     if(!u.title || /^https?:|linkedin|lnkd/i.test(u.title)){ try{ const seg=new URL(canon).pathname.split('/').filter(Boolean).pop()||new URL(canon).hostname; u.title=decodeURIComponent(seg).replace(/[-_]/g,' ').replace(/\.(pdf|html?)$/,''); }catch(e){} }
-    saveUser(USER); rebuild(); render(); toast('Completed — real source added'); openDetail(it.id);
+    saveUser(USER); rebuild(); render(); autoFetchText(u); toast('Completed — real source added'); openDetail(it.id);
   };
   const cs=$('#m-ctx-save'); if(cs) cs.onclick=()=>{
     const v=$('#m-ctx-in').value.trim();
@@ -941,7 +941,19 @@ function saveNew(){
     content:'', read_status:read, added:true, addedAt:Date.now() };
   if(['model','benchmark','toolkit'].includes(it.kind) && !it.domains.includes('ai')) it.domains.push('ai');
   USER.unshift(it); saveUser(USER); rebuild(); hideModal('#addmodal'); state.sort='added'; $('#sort').value='added'; sync(); render();
-  toast(isLinkedIn(canonical) ? '⚠ Added to Needs review — open it to paste the real article link' : (urls.length>1 ? ('Added — '+urls.length+' links bundled as one object') : 'Added'));
+  autoFetchText(it);
+  toast(isLinkedIn(canonical) ? '⚠ Added to Needs review — open it to paste the real article link' : (urls.length>1 ? ('Added — '+urls.length+' links bundled as one object') : (['paper','dataset'].includes(it.kind)&&it.read_status==='fetchable' ? 'Added — reading it now…' : 'Added')));
+}
+// Phase 3: the moment an open-access paper is added (or a LinkedIn item is completed into one),
+// read its full text in the background via the server-side fetcher, and mark it Read.
+function autoFetchText(it){
+  if(!it || !['paper','dataset'].includes(it.kind) || it.read_status!=='fetchable') return;
+  fetch('/api/fetch-text?url='+encodeURIComponent(it.url)).then(r=>r.json()).then(d=>{
+    if(!d || !d.ok || !d.text) return;
+    const u=USER.find(x=>x.id===it.id); if(!u) return;
+    u.fullText=d.text; if(!u.abstract) u.abstract=d.text.slice(0,1000); u.read_status='read';
+    saveUser(USER); rebuild(); render(); toast('✓ Read: '+(u.title||'paper').slice(0,34));
+  }).catch(()=>{});
 }
 
 /* export / import */
@@ -1111,8 +1123,8 @@ async function ragAnswer(q){
   if(!src.length){ chatBubble('bot','Nothing in the library touches that yet. Try different words, or add the source with + Add material.'); return; }
   const bubble=chatBubble('bot','Reading the sources…');
   // pull the full extracted text for any retrieved paper we have on file (cached on the item)
-  await Promise.all(src.map(async it=>{ if(it.content && it._ft===undefined){ try{ const r=await fetch(it.content); it._ft = r.ok ? (await r.text()) : ''; }catch(e){ it._ft=''; } } }));
-  const ctx=src.map((it,i)=>{ const full=(it._ft&&it._ft.length>200); const body=(full?it._ft:(it.abstract||it.context||it.notes||'(no text indexed)')).slice(0,6000);
+  await Promise.all(src.map(async it=>{ if(!it.fullText && it.content && it._ft===undefined){ try{ const r=await fetch(it.content); it._ft = r.ok ? (await r.text()) : ''; }catch(e){ it._ft=''; } } }));
+  const ctx=src.map((it,i)=>{ const ft=it.fullText||it._ft||''; const full=ft.length>200; const body=(full?ft:(it.abstract||it.context||it.notes||'(no text indexed)')).slice(0,6000);
     return '['+(i+1)+'] '+it.title+' — '+it.kind+', '+it.provider+(it.date?(', '+it.date):'')+(full?' (full text)':'')+'\n'+body; }).join('\n\n');
   const system='You are the Librarian for a personal research library on neuroscience, EEG, brain-AI, and mental health. Answer the user question using ONLY the numbered sources below. Sources marked "(full text)" are the complete paper — quote specific findings, numbers, and methods from them. Cite every claim with its source number in brackets like [2]. Prefer specifics over generalities. If the sources do not contain the answer, say so plainly and suggest what to search for or add. Never invent sources or facts. Keep it concise.';
   const user='Question: '+q+'\n\nSources:\n'+ctx;
