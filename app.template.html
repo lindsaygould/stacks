@@ -210,6 +210,11 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .cfoot a.open{margin-left:auto;color:var(--accent);font-weight:600;font-family:var(--mono);font-size:11px}
   .a-preview{margin:-2px 0 2px;border:1px solid var(--edge);border-left:2px solid var(--accent);border-radius:0 10px 10px 0;background:var(--grad-soft);padding:9px 12px;display:flex;flex-direction:column;gap:3px}
   .a-preview[hidden]{display:none}
+  .a-preview.warn{border-left-color:#e0a44a;background:rgba(224,164,74,.1)}
+  .a-preview .pv-warn{font-size:12.5px;line-height:1.5;color:var(--ink)}
+  .a-preview .pv-warn b{color:#c47f1a}
+  .li-hint{margin:2px 0 4px;font-size:11.5px;line-height:1.5;color:var(--dim);background:rgba(224,164,74,.08);border:1px solid rgba(224,164,74,.28);border-radius:9px;padding:8px 11px}
+  .li-hint b{color:var(--ink);font-weight:600}
   .pv-row{display:flex;gap:8px;font-size:12px;line-height:1.5;align-items:baseline}
   .pv-k{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);min-width:62px;flex:none}
   .pv-row b{color:var(--ink);font-weight:650}
@@ -870,9 +875,10 @@ function openAdd(){
   $('#add-body').innerHTML='<div class="m-pad"><div class="m-kind">Add material</div>'
     +'<h2 class="m-title" style="margin-bottom:2px">Paste a link</h2>'
     +'<p class="form-hint">Paste the link(s). Type, provider and title fill in automatically — a note or details are optional.</p>'
-    +'<div class="form-row"><label>Links <span style="text-transform:none;color:var(--faint)">— one per line. The paper plus the post it came from save as one object.</span></label><textarea id="a-url" placeholder="https://arxiv.org/abs/…&#10;https://www.linkedin.com/posts/…"></textarea></div>'
+    +'<div class="form-row"><label>Links <span style="text-transform:none;color:var(--faint)">— the article or paper link, one per line</span></label><textarea id="a-url" placeholder="https://arxiv.org/abs/2405.18765&#10;https://github.com/org/repo"></textarea></div>'
     +'<div id="a-preview" class="a-preview" hidden></div>'
-    +'<div class="form-row"><label>Note <span style="text-transform:none;color:var(--faint)">— optional</span></label><textarea id="a-notes" placeholder="The author’s take, the LinkedIn caption, why it matters…"></textarea></div>'
+    +'<div class="li-hint">📎 <b>LinkedIn links can’t be read.</b> Paste the <b>real article/paper link</b> — open the post and copy it (it’s often in the comments). A LinkedIn URL on its own is saved to <b>Needs review</b> so you can finish it later. Put the post’s caption in <b>Note</b> below.</div>'
+    +'<div class="form-row"><label>Note <span style="text-transform:none;color:var(--faint)">— optional · paste the LinkedIn caption &amp; what the post pointed to</span></label><textarea id="a-notes" placeholder="The author’s caption / take, why it matters, other links or items the post mentioned…"></textarea></div>'
     +'<div class="form-row"><label>From <span style="text-transform:none;color:var(--faint)">— optional · who sent it to you</span></label><input type="text" id="a-from" placeholder="e.g. Sai — a name or handle" list="senders-list" autocomplete="off">'+sendersDatalist()+'</div>'
     +'<div class="m-actions" style="margin-top:14px"><button class="m-open" id="a-save">Add to Stacks</button><button class="m-copy" data-close>Cancel</button></div>'
     +'<span class="adv-toggle" id="adv-toggle">＋ Type &amp; themes — auto-detected · tap to label yourself</span>'
@@ -899,7 +905,14 @@ function openAdd(){
     let host=''; try{ host=new URL(canon).hostname.replace(/^www\./,''); }catch(e){}
     const li=urls.filter(u=>/linkedin\.com|lnkd\.in/.test(u.toLowerCase())).length;
     const disp=canon.length>54?canon.slice(0,52)+'…':canon;
+    const canonLi=/linkedin\.com|lnkd\.in/.test(canon.toLowerCase());
     pv.hidden=false;
+    if(canonLi){
+      pv.className='a-preview warn';
+      pv.innerHTML='<div class="pv-warn"><b>⚠ LinkedIn link — this goes to Needs review</b><br>LinkedIn can’t be read directly, so there’s no real source yet. It saves as a review item; open the post, copy the actual article or paper link, and add it there. Paste the caption in Note below.</div>';
+      return;
+    }
+    pv.className='a-preview';
     pv.innerHTML='<div class="pv-row"><span class="pv-k">Saves as</span><b>'+esc(KIND_LABEL[kind]||'link')+'</b></div>'
       +'<div class="pv-row"><span class="pv-k">Lives at</span><span>'+esc(host||'—')+'</span></div>'
       +'<div class="pv-row"><span class="pv-k">Opens →</span><a href="'+esc(canon)+'" target="_blank" rel="noopener">'+esc(disp)+'</a></div>'
