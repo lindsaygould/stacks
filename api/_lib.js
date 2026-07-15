@@ -9,10 +9,14 @@ const TTL = 30 * 24 * 60 * 60; // 30 days (seconds)
 
 // The backend only activates when the essentials are present; otherwise the app
 // stays in local (browser-only) mode. This is what makes login opt-in + safe pre-setup.
+// Accept whatever the Vercel/Upstash storage integration names the Redis REST creds.
+function kvUrl() { return process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.REDIS_REST_API_URL || ''; }
+function kvToken() { return process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.REDIS_REST_API_TOKEN || ''; }
+
 function configured() {
   return !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET &&
             process.env.SESSION_SECRET && process.env.ENCRYPTION_KEY &&
-            process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+            kvUrl() && kvToken());
 }
 
 function baseUrl(req) {
@@ -83,15 +87,15 @@ function decrypt(enc) {
 
 // ---- Vercel KV (Upstash Redis) REST ----
 async function kvGet(key) {
-  const r = await fetch(`${process.env.KV_REST_API_URL}/get/${encodeURIComponent(key)}`,
-    { headers: { Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}` } });
+  const r = await fetch(`${kvUrl()}/get/${encodeURIComponent(key)}`,
+    { headers: { Authorization: `Bearer ${kvToken()}` } });
   if (!r.ok) return null;
   const j = await r.json();
   return j.result == null ? null : j.result;
 }
 async function kvSet(key, val) {
-  const r = await fetch(`${process.env.KV_REST_API_URL}/set/${encodeURIComponent(key)}`,
-    { method: 'POST', headers: { Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}` }, body: val });
+  const r = await fetch(`${kvUrl()}/set/${encodeURIComponent(key)}`,
+    { method: 'POST', headers: { Authorization: `Bearer ${kvToken()}` }, body: val });
   return r.ok;
 }
 
