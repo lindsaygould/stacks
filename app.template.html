@@ -309,13 +309,33 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   #login-gate p{color:var(--dim);font-size:14px;line-height:1.55;margin:0 0 22px}
   #login-gate .lg-btn{display:inline-block;background:var(--grad);color:var(--on-accent);font-weight:650;font-size:14px;padding:12px 24px;border-radius:12px;box-shadow:0 6px 18px rgba(229,104,10,.3)}
   #login-gate .lg-err{color:#e0533f;font-size:12.5px;margin-top:14px;min-height:1em}
-  #acct-chip{position:fixed;left:16px;bottom:16px;z-index:64;display:flex;align-items:center;gap:8px;background:var(--topbar);
-    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--edge);border-radius:99px;padding:6px 6px 6px 12px;font-size:12px;color:var(--dim);box-shadow:var(--shadow)}
-  #acct-chip .ac-dot{width:6px;height:6px;border-radius:50%;background:#2f9e5f;flex:none}
-  #acct-chip .ac-em{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  #acct-chip #ac-out,#acct-chip #ac-drive{font-size:11px;color:var(--accent);border:1px solid var(--edge);border-radius:99px;padding:3px 9px;font-weight:600}
-  #acct-chip #ac-out:hover,#acct-chip #ac-drive:hover{border-color:var(--accent)}
-  #acct-chip #ac-drive{color:var(--dim)}
+  #acct-slot{position:relative;display:flex;align-items:center}
+  .acct-av{width:34px;height:34px;border-radius:50%;background:var(--grad);color:var(--on-accent);font-weight:750;font-size:14px;display:grid;place-items:center;cursor:pointer;border:0;box-shadow:0 2px 8px rgba(229,104,10,.3)}
+  .acct-av:hover{filter:brightness(1.05)}
+  .acct-menu{position:absolute;top:44px;right:0;z-index:70;min-width:200px;background:var(--panel);border:1px solid var(--edge2);border-radius:14px;box-shadow:var(--shadow);padding:6px;display:flex;flex-direction:column;gap:2px}
+  .acct-menu[hidden]{display:none}
+  .acct-menu .acct-em{font-size:11px;color:var(--faint);padding:7px 10px 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-bottom:1px solid var(--edge);margin-bottom:4px}
+  .acct-menu button{text-align:left;font-size:13px;color:var(--ink);padding:8px 10px;border-radius:9px;font-weight:500}
+  .acct-menu button:hover{background:var(--hover)}
+  #settings{position:fixed;inset:0;z-index:120;overflow-y:auto;background:radial-gradient(60% 40% at 8% -8%, rgba(255,148,38,.10), transparent 60%),var(--bg)}
+  #settings[hidden]{display:none}
+  .set-wrap{max-width:640px;margin:0 auto;padding:28px 22px 80px}
+  .set-head{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+  .set-back{font-size:14px;font-weight:600;color:var(--accent);border:1px solid var(--edge);border-radius:99px;padding:7px 14px}
+  .set-back:hover{border-color:var(--accent)}
+  .set-head h1{font-size:24px;font-weight:800;letter-spacing:-.02em}
+  .set-sec{border:1px solid var(--edge);border-radius:16px;padding:18px 20px;margin-bottom:16px;background:var(--card)}
+  .set-sec h2{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:700;margin-bottom:8px}
+  .set-sec p{font-size:13.5px;color:var(--dim);line-height:1.55;margin-bottom:12px}
+  .set-sec p b{color:var(--ink);font-weight:650}
+  .set-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .set-row input{flex:1;min-width:160px;padding:9px 12px;border:1px solid var(--edge);border-radius:10px;background:var(--bg2);color:var(--ink);font-size:13px}
+  .set-row input:focus{outline:none;border-color:var(--accent)}
+  .set-btn{font-size:13px;font-weight:600;color:var(--on-accent);background:var(--grad);border-radius:10px;padding:9px 16px}
+  .set-btn.ghost{color:var(--accent);background:transparent;border:1px solid var(--edge)}
+  .set-btn.ghost:hover{border-color:var(--accent)}
+  .set-note{font-size:12px;color:var(--faint)}
+  .set-note.ok{color:#2f9e5f}
   #chat{position:fixed;right:24px;bottom:88px;z-index:66;width:min(410px,calc(100vw - 32px));
     height:min(620px,calc(100vh - 120px));display:flex;flex-direction:column;background:var(--topbar);
     -webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);
@@ -413,8 +433,10 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
     <button class="btn hide-sm" id="btn-data" title="Export / import">Export</button>
     <button class="btn" id="btn-theme" title="Toggle light / dark">☾</button>
     <button class="btn btn-rail" id="btn-rail" aria-expanded="false">Filters</button>
+    <div id="acct-slot"></div>
   </div>
 </header>
+<section id="settings" hidden aria-label="Settings"></section>
 
 <div class="mission">Stacks is the durable home for everything behind the work — <b>papers</b>, <b>repos</b>, <b>models</b>,
   <b>videos</b>, <b>companies</b>, articles and more — searchable, filterable, and provenance-aware (Manual search · Claude · Claude Science).
@@ -568,7 +590,7 @@ async function initAccount(){
   // first sign-in on this account: seed the server from whatever's already local (no data loss)
   if(!serverHad) pushData();
   if(!keyFromServer && MEMKEY){ fetch('/api/key',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({apiKey:MEMKEY})}).catch(()=>{}); }
-  rebuild(); renderViewsSelect(); render(); renderAccountChip(me.email);
+  rebuild(); renderViewsSelect(); render(); renderAccount(me.email);
 }
 function showLoginGate(){
   const g=document.createElement('div'); g.id='login-gate';
@@ -579,20 +601,46 @@ function showLoginGate(){
   const p=new URLSearchParams(location.search).get('login');
   if(p){ g.querySelector('#lg-err').textContent = p==='not_allowed'?'That Google account isn’t on the allowlist.':'Sign-in didn’t finish — please try again.'; }
 }
-function renderAccountChip(email){
-  if($('#acct-chip')) return;
-  const c=document.createElement('div'); c.id='acct-chip';
-  c.innerHTML='<span class="ac-dot"></span><span class="ac-em">'+esc(email)+'</span>'
-    +'<button id="ac-drive" title="Read PDFs from your Drive “Stacks Papers” folder">☁ Drive</button>'
-    +'<button id="ac-out">Sign out</button>';
-  document.body.appendChild(c);
-  c.querySelector('#ac-out').onclick=async()=>{ try{ await fetch('/api/signout',{method:'POST'}); }catch(e){} location.href='/'; };
-  c.querySelector('#ac-drive').onclick=driveButton;
-  // just came back from Drive consent → confirm + auto-sync
-  const dp=new URLSearchParams(location.search).get('drive');
+let ACCT_EMAIL='';
+function renderAccount(email){
+  const slot=$('#acct-slot'); if(!slot) return; ACCT_EMAIL=email;
+  slot.innerHTML='<button class="acct-av" id="acct-av" title="Account" aria-haspopup="true">'+esc((email[0]||'?').toUpperCase())+'</button>'
+    +'<div class="acct-menu" id="acct-menu" hidden><div class="acct-em">'+esc(email)+'</div>'
+    +'<button id="am-set">⚙ Settings</button><button id="am-drive">☁ Sync Drive</button><button id="am-out">Sign out</button></div>';
+  $('#acct-av').onclick=(e)=>{ e.stopPropagation(); $('#acct-menu').hidden=!$('#acct-menu').hidden; };
+  $('#am-set').onclick=()=>{ $('#acct-menu').hidden=true; openSettings(); };
+  $('#am-drive').onclick=()=>{ $('#acct-menu').hidden=true; driveButton(); };
+  $('#am-out').onclick=async()=>{ try{ await fetch('/api/signout',{method:'POST'}); }catch(e){} location.href='/'; };
+  const dp=new URLSearchParams(location.search).get('drive');   // returned from Drive consent
   if(dp){ history.replaceState(null,'','/');
-    if(dp==='connected'){ toast('Drive connected — reading your Papers folder…'); syncDrive(); }
+    if(dp==='connected'){ toast('Drive connected — reading your Stacks Papers folder…'); syncDrive(); }
     else toast('Drive: '+(dp==='noaccess'?'access not granted':dp)); }
+}
+document.addEventListener('click',()=>{ const m=$('#acct-menu'); if(m&&!m.hidden) m.hidden=true; });
+function closeSettings(){ $('#settings').hidden=true; document.body.style.overflow=''; }
+function openSettings(){
+  const email=ACCT_EMAIL||''; const hasKey=!!getKey();
+  const total=ALL.length, added=USER.length, read=ALL.filter(x=>x.read_status==='read').length, rev=ALL.filter(needsReview).length;
+  $('#settings').innerHTML='<div class="set-wrap"><div class="set-head"><button class="set-back" id="set-back">← Back</button><h1>Settings</h1></div><div class="set-body">'
+    +(email?'<section class="set-sec"><h2>Account</h2><p>Signed in as <b>'+esc(email)+'</b>. Your library syncs across every device you sign in on.</p><button class="set-btn ghost" id="set-out">Sign out</button></section>':'')
+    +'<section class="set-sec"><h2>Anthropic key</h2><p>The Librarian uses your own Anthropic key to answer questions.'+(SERVER?' Stored <b>encrypted on the server</b>.':' Stored in this browser.')+'</p><div class="set-row"><input type="password" id="set-key" placeholder="sk-ant-…"><button class="set-btn" id="set-key-save">'+(hasKey?'Update':'Save')+'</button></div><div class="set-note" id="set-key-note">'+(hasKey?'A key is set ✓':'No key yet')+'</div></section>'
+    +(SERVER?'<section class="set-sec"><h2>Google Drive</h2><p>Drop paywalled PDFs into a Drive folder named <b>Stacks Papers</b> and sync — they’re matched to your papers <b>by content</b> (no renaming needed), read, and taken out of Needs review.</p><div class="set-row" id="set-drive-row"><span class="set-note">Checking…</span></div></section>':'')
+    +'<section class="set-sec"><h2>Library</h2><p><b>'+total+'</b> sources · <b>'+added+'</b> added by you · <b>'+read+'</b> read · <b>'+rev+'</b> need review</p><div class="set-row"><button class="set-btn ghost" id="set-export">Export…</button></div></section>'
+    +'</div></div>';
+  $('#settings').hidden=false; document.body.style.overflow='hidden';
+  $('#set-back').onclick=closeSettings;
+  const so=$('#set-out'); if(so) so.onclick=async()=>{ try{ await fetch('/api/signout',{method:'POST'}); }catch(e){} location.href='/'; };
+  $('#set-key-save').onclick=()=>{ const v=$('#set-key').value.trim(); if(!v){ toast('Paste your key'); return; } setKey(v); $('#set-key').value=''; $('#set-key-note').textContent='A key is set ✓'; $('#set-key-save').textContent='Update'; toast('Key saved'); };
+  $('#set-export').onclick=()=>{ closeSettings(); openData(); };
+  if(SERVER) renderDriveSetting();
+}
+async function renderDriveSetting(){
+  const row=$('#set-drive-row'); if(!row) return;
+  let st; try{ st=await (await fetch('/api/drive-status')).json(); }catch(e){ st=null; }
+  if(!st){ row.innerHTML='<span class="set-note">Drive unavailable</span>'; return; }
+  if(st.connected){ row.innerHTML='<span class="set-note ok">✓ Connected</span><button class="set-btn" id="sd-sync">Sync now</button><button class="set-btn ghost" id="sd-re">Reconnect</button>';
+    $('#sd-sync').onclick=()=>syncDrive(); $('#sd-re').onclick=()=>{ location.href='/api/drive-start'; }; }
+  else { row.innerHTML='<button class="set-btn" id="sd-conn">Connect Google Drive</button>'; $('#sd-conn').onclick=()=>{ location.href='/api/drive-start'; }; }
 }
 async function driveButton(){
   let st; try{ st=await (await fetch('/api/drive-status')).json(); }catch(e){ toast('Drive unavailable'); return; }
@@ -1233,7 +1281,7 @@ $('#chat-backdrop').onclick=()=>setChatExpanded(false);
 $('#chat-form').addEventListener('submit',e=>{ e.preventDefault(); const v=$('#chat-in').value; $('#chat-in').value=''; ask(v); });
 document.addEventListener('keydown',e=>{
   if(e.key==='/'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){ e.preventDefault(); $('#q').focus(); }
-  if(e.key==='Escape'){ const c=$('#chat'); if(!c.hidden && c.classList.contains('expanded')){ setChatExpanded(false); return; } ['#modal','#addmodal','#datamodal'].forEach(hideModal); closeChat(); }
+  if(e.key==='Escape'){ if(!$('#settings').hidden){ closeSettings(); return; } const c=$('#chat'); if(!c.hidden && c.classList.contains('expanded')){ setChatExpanded(false); return; } ['#modal','#addmodal','#datamodal'].forEach(hideModal); closeChat(); }
 });
 
 $('#chat-scope').innerHTML='I <b>list</b> instantly (free), or <b>answer</b> questions about your sources with citations — answering uses your own Anthropic key (⚙, kept only in this browser).';
