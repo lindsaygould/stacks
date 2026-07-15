@@ -345,7 +345,7 @@ def _item(id, kind, title, ident, url, all_urls, host, provider, origins, topics
         "category": category, "license": license, "weights": weights,
         "notes": notes, "context": context, "source_files": source_files,
         "preview_url": preview_url, "via_linkedin": via_linkedin,
-        "date": "", "drive_url": "",
+        "date": "", "drive_url": "", "sender": "",
     }
 
 def derive_date(text):

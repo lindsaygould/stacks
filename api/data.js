@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
 
   const blob = await L.loadUser(email);
   if (req.method === 'GET') {
-    L.json(res, 200, { items: blob.items || [], views: blob.views || [], context: blob.context || {}, updatedAt: blob.updatedAt || 0 });
+    L.json(res, 200, { items: blob.items || [], views: blob.views || [], context: blob.context || {}, meta: blob.meta || {}, updatedAt: blob.updatedAt || 0 });
     return;
   }
   if (req.method === 'PUT' || req.method === 'POST') {
@@ -18,6 +18,7 @@ module.exports = async (req, res) => {
     if (Array.isArray(b.items)) blob.items = b.items;
     if (Array.isArray(b.views)) blob.views = b.views;
     if (b.context && typeof b.context === 'object') blob.context = b.context;
+    if (b.meta && typeof b.meta === 'object') blob.meta = b.meta;
     await L.saveUser(email, blob);
     L.json(res, 200, { ok: true, updatedAt: blob.updatedAt });
     return;

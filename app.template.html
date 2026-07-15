@@ -202,6 +202,8 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .tg.src{border-style:dashed;color:var(--faint)}
   .tg.src.you{color:var(--a2);border-color:var(--a2)}
   .tg.li{color:#4f9be6;border-color:rgba(79,155,230,.4);text-transform:none}
+  .tg.from{color:var(--accent);border-color:rgba(229,104,10,.4);background:var(--grad-soft);text-transform:none;font-weight:600}
+  .cfoot .cdate{font-family:var(--mono);font-size:10px;color:var(--faint);white-space:nowrap}
   .cfoot{display:flex;align-items:center;gap:8px;padding:9px 15px;border-top:1px solid var(--edge);
     font-family:var(--mono);font-size:10.5px;color:var(--faint)}
   .cfoot .dot{width:5px;height:5px;border-radius:50%;background:var(--a2)}
@@ -360,6 +362,9 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .m-ctx textarea{width:100%;min-height:70px;resize:vertical;padding:10px 12px;border:1px solid var(--edge);border-radius:11px;background:var(--bg2);color:var(--ink);font-size:13px;font-family:var(--sans);line-height:1.5}
   .m-ctx textarea:focus{outline:none;border-color:var(--accent)}
   .m-ctx-save{margin-top:9px;font-size:12px;font-weight:600;color:var(--on-accent);background:var(--grad);border-radius:9px;padding:7px 15px}
+  .m-edit-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+  .m-edit-row input{flex:1;min-width:140px;padding:8px 11px;border:1px solid var(--edge);border-radius:10px;background:var(--bg2);color:var(--ink);font-size:12.5px;font-family:var(--sans)}
+  .m-edit-row input:focus{outline:none;border-color:var(--accent)}
   #chat-pills{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px}
   #chat-pills button{font-size:11.5px;font-weight:500;padding:6px 11px;border-radius:99px;border:1px solid var(--edge);background:var(--bg2);color:var(--dim);text-align:left;transition:all .14s}
   #chat-pills button:hover{color:var(--ink);border-color:var(--edge2);transform:translateY(-1px)}
@@ -531,7 +536,7 @@ function saveCtx(){ try{ localStorage.setItem('stacks-context', JSON.stringify(C
 /* ---- account mode: sync to the server when the backend is configured (else local) ---- */
 let SERVER=false, MEMKEY='', _pushT=null;
 function pushData(){ if(!SERVER) return; clearTimeout(_pushT); _pushT=setTimeout(()=>{
-  fetch('/api/data',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({items:USER, views:loadViews(), context:CTX})}).catch(()=>{}); },700); }
+  fetch('/api/data',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({items:USER, views:loadViews(), context:CTX, meta:META})}).catch(()=>{}); },700); }
 async function initAccount(){
   let me; try{ me=await (await fetch('/api/me',{cache:'no-store'})).json(); }catch(e){ return; }
   if(!me || !me.configured) return;               // local mode — behaves exactly as before
@@ -539,7 +544,7 @@ async function initAccount(){
   let serverHad=false;
   try{ const d=await (await fetch('/api/data',{cache:'no-store'})).json();
     serverHad=!!((d.items&&d.items.length)||(d.views&&d.views.length)||(d.context&&Object.keys(d.context||{}).length));
-    if(serverHad){ if(Array.isArray(d.items)) USER=d.items; if(Array.isArray(d.views)) storeViews(d.views); if(d.context&&typeof d.context==='object') CTX=d.context; }
+    if(serverHad){ if(Array.isArray(d.items)) USER=d.items; if(Array.isArray(d.views)) storeViews(d.views); if(d.context&&typeof d.context==='object') CTX=d.context; if(d.meta&&typeof d.meta==='object') META=d.meta; }
   }catch(e){}
   let keyFromServer=false;
   try{ const k=await (await fetch('/api/key',{cache:'no-store'})).json(); if(k && k.key){ MEMKEY=k.key; keyFromServer=true; } }catch(e){}
@@ -566,19 +571,30 @@ function renderAccountChip(email){
   document.body.appendChild(c);
   c.querySelector('#ac-out').onclick=async()=>{ try{ await fetch('/api/signout',{method:'POST'}); }catch(e){} location.href='/'; };
 }
+function loadMeta(){ try{ return JSON.parse(localStorage.getItem('stacks-meta')||'{}'); }catch(e){ return {}; } }
+function saveMeta(){ try{ localStorage.setItem('stacks-meta', JSON.stringify(META)); }catch(e){} pushData(); }
 let CTX = loadCtx();
+let META = loadMeta();   // {id:{sender, tags:[]}} — who shared it + your own tags, editable on any item anytime
 let USER = loadUser();
 let ALL = [];
 function rebuild(){ ALL = BASE_DATA.items.concat(USER);
-  ALL.forEach(it=>{ it.userContext = (CTX[it.id]!==undefined ? CTX[it.id] : (it.added ? (it.context||'') : '')); }); }
+  ALL.forEach(it=>{
+    it.userContext = (CTX[it.id]!==undefined ? CTX[it.id] : (it.added ? (it.context||'') : ''));
+    if(it.sender===undefined) it.sender='';
+    const m = META[it.id];
+    if(m){ if(typeof m.sender==='string') it.sender=m.sender; if(m.tags&&m.tags.length) it.topics=[...new Set([...(it.topics||[]), ...m.tags])]; }
+  }); }
 rebuild();
+function sendersDatalist(){ const s=[...new Set(ALL.map(it=>it.sender).filter(Boolean))].sort();
+  return '<datalist id="senders-list">'+s.map(x=>'<option value="'+esc(x)+'"></option>').join('')+'</datalist>'; }
 
-const state = { q:'', sort:'relevance', view:'cards', dateFrom:'', dateTo:'', resultSet:null, review:false, f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set(), read:new Set()} };
+const state = { q:'', sort:'relevance', view:'cards', dateFrom:'', dateTo:'', resultSet:null, review:false, f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set(), read:new Set(), sender:new Set()} };
 
 const FACETS = [
   {key:'kind', title:'Type', field:'kind', order:['paper','model','repo','dataset','toolkit','benchmark','video','podcast','article','company','event','grant','other'], label:k=>KIND_LABEL[k]||k},
   {key:'domains', title:'Domain', field:'domains', order:['ai','mental-health'], label:k=>DOMAIN_LABEL[k]||k},
   {key:'focus', title:'Mental-health focus', field:'focus', order:['tms','ketamine','eeg','wearables'], label:k=>FOCUS_LABEL[k]||k},
+  {key:'sender', title:'From (who shared it)', field:'sender', order:[], label:k=>k},
   {key:'origins', title:'Source', field:'origins', order:['Manual search','Claude Science','Claude','Added by you'], label:k=>k},
   {key:'topics', title:'Topics', field:'topics', order:['foundation-model','biomarker','connectome','neurofeedback','depression','psychedelics','bci','sleep'], label:k=>TOPIC_LABEL[k]||k},
   {key:'read', title:'Reading status', field:'read_status', order:['read','fetchable','needs_pdf'], label:k=>READ_LABEL[k]||k},
@@ -729,7 +745,8 @@ function renderGrid(){
     for(const it of items){
       const desc = it.abstract || it.context || it.notes || (it.category?('Type: '+it.category):'') || it.url;
       const tags = it.focus.concat(it.topics).slice(0,3).map(t=>'<span class="tg">'+esc(FOCUS_LABEL[t]||TOPIC_LABEL[t]||t)+'</span>').join('');
-      const src = it.origins.map(o=>'<span class="tg src'+(o==='Added by you'?' you':'')+'">'+esc(o)+'</span>').join('')
+      const src = (it.sender?'<span class="tg from">from '+esc(it.sender)+'</span>':'')
+        + it.origins.map(o=>'<span class="tg src'+(o==='Added by you'?' you':'')+'">'+esc(o)+'</span>').join('')
         + (it.via_linkedin?'<span class="tg li">via LinkedIn</span>':'')
         + (it.drive_url?'<span class="tg drive">Drive ✓</span>':'')
         + (it.read_status?'<span class="tg" style="color:'+(READ_COLOR[it.read_status]||'var(--dim)')+';border-color:'+(READ_COLOR[it.read_status]||'var(--edge2)')+'66">'+esc(READ_LABEL[it.read_status])+'</span>':'');
@@ -741,6 +758,7 @@ function renderGrid(){
         +(it.userContext?'<div class="cctx"><span class="cctx-i">✎</span> '+esc(it.userContext)+'</div>':'')
         +'</div>'
         +'<div class="cfoot"><span class="dot"></span>'+esc(it.provider)
+        +(it.date?'<span class="cdate">· '+esc(it.date)+'</span>':'')
         +'<a class="open" href="'+esc(it.url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Opens '+esc(it.url)+'">'+esc(it.host||'open')+' ↗</a></div>';
       el.onclick=()=>openDetail(it.id); frag.appendChild(el);
     }
@@ -760,12 +778,14 @@ function openDetail(id){
   let rows='';
   rows+=row('Links',urls);
   rows+=row('Provider',esc(it.provider)+(it.host?(' · '+esc(it.host)):''));
-  if(it.date) rows+=row('Date',esc(it.date));
+  if(it.date) rows+=row('Published',esc(it.date));
+  if(it.addedAt) rows+=row('Added',new Date(it.addedAt).toISOString().slice(0,10));
+  if(it.sender) rows+=row('Shared by',esc(it.sender));
   if(it.category) rows+=row('Category',esc(it.category));
   if(it.license) rows+=row('License',esc(it.license));
   if(it.weights) rows+=row('Weights','Pretrained weights available');
   if(it.read_status) rows+=row('Reading','<span style="color:'+(READ_COLOR[it.read_status]||'var(--dim)')+'">'+esc(READ_LABEL[it.read_status])+'</span>'+(it.content?' — the Librarian answers from this paper’s full text':''));
-  if(it.source_files&&it.source_files.length) rows+=row('From',esc(it.source_files.join(', ')));
+  if(it.source_files&&it.source_files.length) rows+=row('Source',esc(it.source_files.join(', ')));
   const coverInner = it.preview_url ? '<img src="'+esc(it.preview_url)+'" alt="">' : '<span class="mono">'+esc(monogram(it.title))+'</span>';
   const body='<div class="m-cover" style="background:linear-gradient(135deg,'+c1+','+c2+')">'+coverInner+'<span class="prov">'+esc(it.provider)+'</span></div>'
     +'<div class="m-pad"><div class="m-kind">'+esc(KIND_LABEL[it.kind]||it.kind)+(it.via_linkedin?' · via LinkedIn':'')+'</div>'
@@ -778,18 +798,26 @@ function openDetail(id){
     +(it.notes&&it.notes!==it.context?'<div class="m-desc">'+esc(it.notes)+'</div>':'')
     +rows
     +(it.read_status==='needs_pdf'?'<div class="m-lictx" style="border-left-color:#e0a44a;background:rgba(224,164,74,.09)"><b>Needs your PDF</b><br>This paper is paywalled and isn’t in your Drive yet. Drop its PDF into your Papers folder and the Librarian will read it on the next sync. <a href="'+DRIVE_PAPERS+'" target="_blank" rel="noopener">Open the Papers folder ↗</a></div>':'')
-    +'<div class="m-ctx"><div class="m-ctx-l">Your context</div>'
-    +'<textarea id="m-ctx-in" placeholder="Add your own context — why this matters, what to remember, how it connects…">'+esc(it.userContext||'')+'</textarea>'
-    +'<button class="m-ctx-save" id="m-ctx-save">Save context</button></div>'
+    +'<div class="m-ctx"><div class="m-ctx-l">Your notes &amp; tags — edit anytime</div>'
+    +'<textarea id="m-ctx-in" placeholder="Note — the author’s take, why it matters, how it connects…">'+esc(it.userContext||'')+'</textarea>'
+    +'<div class="m-edit-row"><input type="text" id="m-from-in" placeholder="From — who shared it" value="'+esc(it.sender||'')+'" list="senders-list" autocomplete="off">'
+    +'<input type="text" id="m-tags-in" placeholder="Your tags — comma separated" value="'+esc(((META[it.id]||{}).tags||[]).join(', '))+'"></div>'
+    +sendersDatalist()
+    +'<button class="m-ctx-save" id="m-ctx-save">Save</button></div>'
     +'<div class="m-actions"><a class="m-open" href="'+esc(it.url)+'" target="_blank" rel="noopener">Open source ↗</a>'
     +(it.drive_url?'<a class="m-drive" href="'+esc(it.drive_url)+'" target="_blank" rel="noopener">📄 Your Drive copy</a>':'')
     +'<button class="m-copy" id="copy-md">Copy as Markdown</button>'
     +(it.added?'<button class="m-copy" id="del-item">Delete</button>':'')+'</div></div>';
   $('#modal-body').innerHTML=body; showModal('#modal');
-  const cs=$('#m-ctx-save'); if(cs) cs.onclick=()=>{ const v=$('#m-ctx-in').value.trim();
+  const cs=$('#m-ctx-save'); if(cs) cs.onclick=()=>{
+    const v=$('#m-ctx-in').value.trim();
+    const sndr=$('#m-from-in')?$('#m-from-in').value.trim():'';
+    const tags=($('#m-tags-in')?$('#m-tags-in').value:'').split(',').map(s=>s.trim().toLowerCase().replace(/\s+/g,'-')).filter(Boolean);
     if(v) CTX[it.id]=v; else delete CTX[it.id];
-    if(it.added){ const u=USER.find(x=>x.id===it.id); if(u) u.context=v; saveUser(USER); }
-    saveCtx(); rebuild(); render(); toast(v?'Context saved':'Context cleared'); cs.textContent='Saved ✓'; setTimeout(()=>{ cs.textContent='Save context'; },1400); };
+    const m=META[it.id]||{}; if(sndr) m.sender=sndr; else delete m.sender; if(tags.length) m.tags=tags; else delete m.tags;
+    if(Object.keys(m).length) META[it.id]=m; else delete META[it.id];
+    if(it.added){ const u=USER.find(x=>x.id===it.id); if(u){ u.context=v; u.sender=sndr; } saveUser(USER); }
+    saveCtx(); saveMeta(); rebuild(); render(); toast('Saved'); cs.textContent='Saved ✓'; setTimeout(()=>{ cs.textContent='Save'; },1400); };
   $('#copy-md').onclick=()=>{ navigator.clipboard.writeText('- ['+it.title+']('+it.url+') — '+(it.context||it.category||it.provider)); toast('Copied Markdown'); };
   if(it.added) $('#del-item').onclick=()=>{ USER=USER.filter(x=>x.id!==it.id); saveUser(USER); rebuild(); hideModal('#modal'); render(); toast('Deleted'); };
 }
@@ -818,22 +846,22 @@ function openAdd(){
   const topicBoxes=Object.keys(TOPIC_LABEL).map(k=>'<label><input type="checkbox" data-topic="'+k+'">'+TOPIC_LABEL[k]+'</label>').join('');
   $('#add-body').innerHTML='<div class="m-pad"><div class="m-kind">Add material</div>'
     +'<h2 class="m-title" style="margin-bottom:2px">Paste a link</h2>'
-    +'<p class="form-hint">That’s all you need — type, provider and a title fill in automatically. Add details only if you want to.</p>'
-    +'<div class="form-row"><label>Links <span style="text-transform:none;color:var(--faint)">— one per line. Paste the paper, plus the LinkedIn post or blog it came from; they save as one object.</span></label><textarea id="a-url" placeholder="https://arxiv.org/abs/…&#10;https://www.linkedin.com/posts/…"></textarea></div>'
+    +'<p class="form-hint">Paste the link(s). Type, provider and title fill in automatically — a note or details are optional.</p>'
+    +'<div class="form-row"><label>Links <span style="text-transform:none;color:var(--faint)">— one per line. The paper plus the post it came from save as one object.</span></label><textarea id="a-url" placeholder="https://arxiv.org/abs/…&#10;https://www.linkedin.com/posts/…"></textarea></div>'
     +'<div id="a-preview" class="a-preview" hidden></div>'
+    +'<div class="form-row"><label>Note <span style="text-transform:none;color:var(--faint)">— optional</span></label><textarea id="a-notes" placeholder="The author’s take, the LinkedIn caption, why it matters…"></textarea></div>'
+    +'<div class="form-row"><label>From <span style="text-transform:none;color:var(--faint)">— optional · who sent it to you</span></label><input type="text" id="a-from" placeholder="e.g. Sai — a name or handle" list="senders-list" autocomplete="off">'+sendersDatalist()+'</div>'
     +'<div class="m-actions" style="margin-top:14px"><button class="m-open" id="a-save">Add to Stacks</button><button class="m-copy" data-close>Cancel</button></div>'
-    +'<span class="adv-toggle" id="adv-toggle">＋ Add details (optional)</span>'
+    +'<span class="adv-toggle" id="adv-toggle">＋ Type &amp; themes — auto-detected · tap to label yourself</span>'
     +'<div class="adv-body" id="adv-body">'
     +'<div class="form-row"><label>Title</label><input type="text" id="a-title" placeholder="Auto from the link"></div>'
-    +'<div class="form-row"><label>Type</label><select id="a-kind">'+Object.keys(KIND_LABEL).map(k=>'<option value="'+k+'">'+KIND_LABEL[k]+'</option>').join('')+'</select></div>'
+    +'<div class="form-row"><label>Type <span style="text-transform:none;color:var(--faint)">— auto-detected</span></label><select id="a-kind">'+Object.keys(KIND_LABEL).map(k=>'<option value="'+k+'">'+KIND_LABEL[k]+'</option>').join('')+'</select></div>'
     +'<div class="form-row"><label>Domain</label><div class="checks">'+domainBoxes+'</div></div>'
     +'<div class="form-row"><label>Mental-health focus</label><div class="checks">'+focusBoxes+'</div></div>'
     +'<div class="form-row"><label>Topics</label><div class="checks">'+topicBoxes+'</div></div>'
     +'<div class="form-row"><label>Source</label><select id="a-source"><option>Added by you</option><option>Manual search</option><option>Claude</option><option>Claude Science</option></select></div>'
-    +'<div class="form-row"><label>Context / notes <span style="text-transform:none;color:var(--faint)">(paste the LinkedIn post or why it matters)</span></label><textarea id="a-notes" placeholder="One-line summary, the LinkedIn caption, why you saved it…"></textarea>'
-    +'<label style="margin-top:8px;text-transform:none;letter-spacing:normal;color:var(--dim);display:inline-flex;gap:6px;align-items:center"><input type="checkbox" id="a-li"> Came from a LinkedIn post</label></div>'
     +'</div>'
-    +'<p class="form-hint" style="margin-top:14px">Saved in this browser. Use <b>Export → JSON</b> to download the full library and commit it to the repo to make it permanent.</p></div>';
+    +'<p class="form-hint" style="margin-top:14px">Saved in this browser — sign in (coming) to sync across devices, or <b>Export → JSON</b>.</p></div>';
   showModal('#addmodal');
   $('#adv-toggle').onclick=()=>{ $('#adv-body').classList.toggle('open'); $('#adv-toggle').textContent=$('#adv-body').classList.contains('open')?'– Hide details':'＋ Add details (optional)'; };
   const urlEl=$('#a-url'); setTimeout(()=>urlEl.focus(),50);
@@ -866,12 +894,13 @@ function saveNew(){
   const {p,h}=providerFromUrl(canonical);
   const gather=sel=>Array.from($('#add-body').querySelectorAll('input[data-'+sel+']:checked')).map(x=>x.getAttribute('data-'+sel));
   const kind=$('#a-kind').value;
-  const via=urls.some(isLinkedIn)||$('#a-li').checked;
+  const via=urls.some(isLinkedIn);
   const read=['paper','dataset'].includes(kind) ? (isOpenAccess(canonical)?'fetchable':'needs_pdf') : '';
   const it={ id:'u'+Date.now(), kind:kind, title:$('#a-title').value.trim()||canonical, ident:'',
     url:canonical, all_urls:urls, host:h, provider:p, origins:[$('#a-source').value],
     domains:gather('domain'), focus:gather('focus'), topics:gather('topic'),
     category:'', license:'', weights:null, notes:$('#a-notes').value.trim(), context:$('#a-notes').value.trim(),
+    sender:($('#a-from')?$('#a-from').value.trim():''),
     source_files:['Added in Stacks'], preview_url:(kind==='video'?ytThumb(canonical):''), via_linkedin:via,
     content:'', read_status:read, added:true, addedAt:Date.now() };
   if(['model','benchmark','toolkit'].includes(it.kind) && !it.domains.includes('ai')) it.domains.push('ai');
