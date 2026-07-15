@@ -313,8 +313,9 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
     -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--edge);border-radius:99px;padding:6px 6px 6px 12px;font-size:12px;color:var(--dim);box-shadow:var(--shadow)}
   #acct-chip .ac-dot{width:6px;height:6px;border-radius:50%;background:#2f9e5f;flex:none}
   #acct-chip .ac-em{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  #acct-chip #ac-out{font-size:11px;color:var(--accent);border:1px solid var(--edge);border-radius:99px;padding:3px 9px;font-weight:600}
-  #acct-chip #ac-out:hover{border-color:var(--accent)}
+  #acct-chip #ac-out,#acct-chip #ac-drive{font-size:11px;color:var(--accent);border:1px solid var(--edge);border-radius:99px;padding:3px 9px;font-weight:600}
+  #acct-chip #ac-out:hover,#acct-chip #ac-drive:hover{border-color:var(--accent)}
+  #acct-chip #ac-drive{color:var(--dim)}
   #chat{position:fixed;right:24px;bottom:88px;z-index:66;width:min(410px,calc(100vw - 32px));
     height:min(620px,calc(100vh - 120px));display:flex;flex-direction:column;background:var(--topbar);
     -webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);
@@ -550,7 +551,7 @@ function saveCtx(){ try{ localStorage.setItem('stacks-context', JSON.stringify(C
 /* ---- account mode: sync to the server when the backend is configured (else local) ---- */
 let SERVER=false, MEMKEY='', _pushT=null;
 function pushData(){ if(!SERVER) return; clearTimeout(_pushT); _pushT=setTimeout(()=>{
-  fetch('/api/data',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({items:USER, views:loadViews(), context:CTX, meta:META})}).catch(()=>{}); },700); }
+  fetch('/api/data',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({items:USER, views:loadViews(), context:CTX, meta:META, texts:TEXTS})}).catch(()=>{}); },700); }
 async function initAccount(){
   let me; try{ me=await (await fetch('/api/me',{cache:'no-store'})).json(); }catch(e){ return; }
   if(!me || !me.configured) return;               // local mode — behaves exactly as before
@@ -558,7 +559,7 @@ async function initAccount(){
   let serverHad=false;
   try{ const d=await (await fetch('/api/data',{cache:'no-store'})).json();
     serverHad=!!((d.items&&d.items.length)||(d.views&&d.views.length)||(d.context&&Object.keys(d.context||{}).length));
-    if(serverHad){ if(Array.isArray(d.items)) USER=d.items; if(Array.isArray(d.views)) storeViews(d.views); if(d.context&&typeof d.context==='object') CTX=d.context; if(d.meta&&typeof d.meta==='object') META=d.meta; }
+    if(serverHad){ if(Array.isArray(d.items)) USER=d.items; if(Array.isArray(d.views)) storeViews(d.views); if(d.context&&typeof d.context==='object') CTX=d.context; if(d.meta&&typeof d.meta==='object') META=d.meta; if(d.texts&&typeof d.texts==='object') TEXTS=d.texts; }
   }catch(e){}
   let keyFromServer=false;
   try{ const k=await (await fetch('/api/key',{cache:'no-store'})).json(); if(k && k.key){ MEMKEY=k.key; keyFromServer=true; } }catch(e){}
@@ -581,14 +582,48 @@ function showLoginGate(){
 function renderAccountChip(email){
   if($('#acct-chip')) return;
   const c=document.createElement('div'); c.id='acct-chip';
-  c.innerHTML='<span class="ac-dot"></span><span class="ac-em">'+esc(email)+'</span><button id="ac-out">Sign out</button>';
+  c.innerHTML='<span class="ac-dot"></span><span class="ac-em">'+esc(email)+'</span>'
+    +'<button id="ac-drive" title="Read PDFs from your Drive Papers folder">☁ Drive</button>'
+    +'<button id="ac-out">Sign out</button>';
   document.body.appendChild(c);
   c.querySelector('#ac-out').onclick=async()=>{ try{ await fetch('/api/signout',{method:'POST'}); }catch(e){} location.href='/'; };
+  c.querySelector('#ac-drive').onclick=driveButton;
+  // just came back from Drive consent → confirm + auto-sync
+  const dp=new URLSearchParams(location.search).get('drive');
+  if(dp){ history.replaceState(null,'','/');
+    if(dp==='connected'){ toast('Drive connected — reading your Papers folder…'); syncDrive(); }
+    else toast('Drive: '+(dp==='noaccess'?'access not granted':dp)); }
+}
+async function driveButton(){
+  let st; try{ st=await (await fetch('/api/drive-status')).json(); }catch(e){ toast('Drive unavailable'); return; }
+  if(!st.connected){ location.href='/api/drive-start'; return; }   // consent → returns to /?drive=connected
+  syncDrive();
+}
+// Phase 3 part 2: pull text from PDFs in your Drive "Papers" folder for the paywalled papers.
+async function syncDrive(){
+  const items=ALL.filter(it=>['paper','dataset'].includes(it.kind) && it.read_status==='needs_pdf' && !it.fullText)
+    .map(it=>({id:it.id, title:it.title, url:it.url, ident:it.ident||''}));
+  if(!items.length){ toast('Nothing paywalled needs a PDF right now'); return; }
+  toast('Reading your Drive Papers folder…');
+  let total=0, pending=items.slice();
+  for(let round=0; round<25 && pending.length; round++){
+    let d; try{ d=await (await fetch('/api/drive-sync',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({items:pending})})).json(); }catch(e){ break; }
+    if(!d || d.error){ toast('Drive: '+((d&&d.error)||'error')); break; }
+    if(!d.connected){ location.href='/api/drive-start'; return; }
+    if(d.folder===false){ toast('No Drive folder named “Papers” — create one and drop PDFs in it.'); break; }
+    (d.results||[]).forEach(r=>{ TEXTS[r.id]=(r.text||'').slice(0,16000); const i=pending.findIndex(x=>x.id===r.id); if(i>=0) pending.splice(i,1); });
+    if(d.results && d.results.length){ saveTexts(); rebuild(); render(); total+=d.results.length; }
+    else break;   // no progress this round
+  }
+  toast(total?('✓ Read '+total+' paper'+(total>1?'s':'')+' from your Drive'):'No matching PDFs in your Papers folder yet');
 }
 function loadMeta(){ try{ return JSON.parse(localStorage.getItem('stacks-meta')||'{}'); }catch(e){ return {}; } }
 function saveMeta(){ try{ localStorage.setItem('stacks-meta', JSON.stringify(META)); }catch(e){} pushData(); }
+function loadTexts(){ try{ return JSON.parse(localStorage.getItem('stacks-texts')||'{}'); }catch(e){ return {}; } }
+function saveTexts(){ try{ localStorage.setItem('stacks-texts', JSON.stringify(TEXTS)); }catch(e){} pushData(); }
 let CTX = loadCtx();
 let META = loadMeta();   // {id:{sender, tags:[]}} — who shared it + your own tags, editable on any item anytime
+let TEXTS = loadTexts();  // {id: fullText} — text pulled from your Drive PDFs (Phase 3), makes paywalled papers Read
 let USER = loadUser();
 let ALL = [];
 function rebuild(){ ALL = BASE_DATA.items.concat(USER);
@@ -597,6 +632,7 @@ function rebuild(){ ALL = BASE_DATA.items.concat(USER);
     if(it.sender===undefined) it.sender='';
     const m = META[it.id];
     if(m){ if(typeof m.sender==='string') it.sender=m.sender; if(m.tags&&m.tags.length) it.topics=[...new Set([...(it.topics||[]), ...m.tags])]; }
+    if(TEXTS[it.id]){ it.fullText=TEXTS[it.id]; it.read_status='read'; }  // Drive-read paywalled paper
   }); }
 rebuild();
 function sendersDatalist(){ const s=[...new Set(ALL.map(it=>it.sender).filter(Boolean))].sort();

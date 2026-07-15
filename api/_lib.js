@@ -162,8 +162,57 @@ async function body(req) {
   try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch (e) { return {}; }
 }
 
+// ---- Google Drive (read-only) for Phase 3: read paywalled PDFs from a Drive folder ----
+const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.readonly';
+function driveAuthUrl(req, state) {
+  const p = new URLSearchParams({
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    redirect_uri: baseUrl(req) + '/api/drive-callback',
+    response_type: 'code', scope: 'openid email ' + DRIVE_SCOPE,
+    state, access_type: 'offline', prompt: 'consent', include_granted_scopes: 'true',
+  });
+  return 'https://accounts.google.com/o/oauth2/v2/auth?' + p.toString();
+}
+async function driveExchange(req, code) {
+  const r = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ code, client_id: process.env.GOOGLE_CLIENT_ID, client_secret: process.env.GOOGLE_CLIENT_SECRET, redirect_uri: baseUrl(req) + '/api/drive-callback', grant_type: 'authorization_code' }),
+  });
+  if (!r.ok) return null;
+  return await r.json(); // { access_token, refresh_token, ... }
+}
+async function driveAccess(refresh) {
+  const r = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ refresh_token: refresh, client_id: process.env.GOOGLE_CLIENT_ID, client_secret: process.env.GOOGLE_CLIENT_SECRET, grant_type: 'refresh_token' }),
+  });
+  if (!r.ok) return null;
+  return (await r.json()).access_token || null;
+}
+async function driveApi(access, path) {
+  const r = await fetch('https://www.googleapis.com/drive/v3/' + path, { headers: { Authorization: 'Bearer ' + access } });
+  if (!r.ok) return null;
+  return await r.json();
+}
+async function driveFindFolder(access, name) {
+  const q = `mimeType='application/vnd.google-apps.folder' and name='${name.replace(/'/g, "")}' and trashed=false`;
+  const j = await driveApi(access, 'files?q=' + encodeURIComponent(q) + '&fields=files(id,name)&pageSize=10&spaces=drive');
+  return (j && j.files && j.files[0]) ? j.files[0].id : null;
+}
+async function driveListPdfs(access, folderId) {
+  const q = `'${folderId}' in parents and mimeType='application/pdf' and trashed=false`;
+  const j = await driveApi(access, 'files?q=' + encodeURIComponent(q) + '&fields=files(id,name)&pageSize=1000');
+  return (j && j.files) ? j.files : [];
+}
+async function driveDownload(access, fileId) {
+  const r = await fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media', { headers: { Authorization: 'Bearer ' + access } });
+  if (!r.ok) return null;
+  return Buffer.from(await r.arrayBuffer());
+}
+
 module.exports = {
   COOKIE, configured, baseUrl, cookies, setCookie, clearCookie,
   makeSession, sessionEmail, encrypt, decrypt, loadUser, saveUser,
   googleAuthUrl, googleExchange, allowed, json, body,
+  driveAuthUrl, driveExchange, driveAccess, driveFindFolder, driveListPdfs, driveDownload,
 };
