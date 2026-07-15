@@ -3,20 +3,19 @@
 // Mirrors the Kairos auth pattern: Google OAuth (auth-code) -> HMAC-signed session
 // cookie -> per-user blob in KV, with the Anthropic key AES-256-GCM encrypted at rest.
 const crypto = require('crypto');
+const { neon } = require('@neondatabase/serverless');
 
 const COOKIE = 'stacks_session';
 const TTL = 30 * 24 * 60 * 60; // 30 days (seconds)
 
 // The backend only activates when the essentials are present; otherwise the app
 // stays in local (browser-only) mode. This is what makes login opt-in + safe pre-setup.
-// Accept whatever the Vercel/Upstash storage integration names the Redis REST creds.
-function kvUrl() { return process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.REDIS_REST_API_URL || ''; }
-function kvToken() { return process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.REDIS_REST_API_TOKEN || ''; }
+// Neon Postgres — accept whatever the Vercel Neon integration names the connection string.
+function dbUrl() { return process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.DATABASE_URL_UNPOOLED || process.env.POSTGRES_URL_NON_POOLING || ''; }
 
 function configured() {
   return !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET &&
-            process.env.SESSION_SECRET && process.env.ENCRYPTION_KEY &&
-            kvUrl() && kvToken());
+            process.env.SESSION_SECRET && process.env.ENCRYPTION_KEY && dbUrl());
 }
 
 function baseUrl(req) {
@@ -86,17 +85,25 @@ function decrypt(enc) {
 }
 
 // ---- Vercel KV (Upstash Redis) REST ----
+// Simple key/value on its own table in the Stacks Neon DB (separate from anything else there).
+let _tableReady = false;
+async function kvTable(sql) {
+  if (_tableReady) return;
+  await sql`CREATE TABLE IF NOT EXISTS stacks_kv (k text PRIMARY KEY, v text, updated_at timestamptz DEFAULT now())`;
+  _tableReady = true;
+}
 async function kvGet(key) {
-  const r = await fetch(`${kvUrl()}/get/${encodeURIComponent(key)}`,
-    { headers: { Authorization: `Bearer ${kvToken()}` } });
-  if (!r.ok) return null;
-  const j = await r.json();
-  return j.result == null ? null : j.result;
+  const sql = neon(dbUrl());
+  await kvTable(sql);
+  const rows = await sql`SELECT v FROM stacks_kv WHERE k = ${key}`;
+  return rows[0] ? rows[0].v : null;
 }
 async function kvSet(key, val) {
-  const r = await fetch(`${kvUrl()}/set/${encodeURIComponent(key)}`,
-    { method: 'POST', headers: { Authorization: `Bearer ${kvToken()}` }, body: val });
-  return r.ok;
+  const sql = neon(dbUrl());
+  await kvTable(sql);
+  await sql`INSERT INTO stacks_kv (k, v, updated_at) VALUES (${key}, ${val}, now())
+            ON CONFLICT (k) DO UPDATE SET v = ${val}, updated_at = now()`;
+  return true;
 }
 
 // per-user blob: { items:[], views:[], context:{}, key:"<encrypted>", updatedAt }
