@@ -74,8 +74,7 @@ for name, block in posts:
     urls = real_urls(block)
     hit = next((idx[norm(u)] for u in urls if norm(u) in idx), None)
     if not hit:
-        raw = urls or re.findall(r'https://lnkd\.in/[A-Za-z0-9_-]+', block)   # fall back to the shortener
-        unmatched.append((name, raw, commentary(block)))
+        unmatched.append((name, block))   # keep the whole raw block for a verbatim dump
         continue
     matched += 1
     ctx = commentary(block)
@@ -95,28 +94,48 @@ for iid, v in list(patch.items())[:8]:
 json.dump(patch, open("data/li_context.json","w"), indent=0, ensure_ascii=False)
 print(f"\nwrote data/li_context.json ({len(patch)} items) — merged into the library by build.py")
 
-# ---- write the unmatched list (posts in the dump not tied to a Stacks item) ----
-withlink = [u for u in unmatched if u[1]]
-nolink   = [u for u in unmatched if not u[1]]
-L = [f"# LinkedIn posts from the 7/4 source dump NOT matched to a Stacks item",
+# ---- write the unmatched list VERBATIM (so each entry is Ctrl-F-able in the original doc) ----
+def all_links(block):
+    out = []
+    for m in re.finditer(r'linkedin\.com/safety/go/\?url=([^&)\s]+)', block):
+        out.append(urllib.parse.unquote(m.group(1).replace('%2E', '.')))
+    for m in re.finditer(r'https://lnkd\.in/[A-Za-z0-9_-]+', block):
+        out.append(LNKD.get(m.group(0), m.group(0)))          # resolved dest if known, else the shortener itself
+    for m in re.finditer(r'https?://[^\s)\]<>"]+', block):     # any other URL (bare, angle-bracket, or markdown)
+        u = m.group(0).rstrip('.,);')
+        if 'linkedin.com' in u or 'lnkd.in' in u or 'licdn' in u:
+            continue
+        out.append(u)
+    seen, ded = set(), []
+    for u in out:
+        if u not in seen: seen.add(u); ded.append(u)
+    return ded
+
+def verbatim_body(block):
+    lines = block.split('\n'); start = 0
+    for i, ln in enumerate(lines):                            # skip the profile/degree/bio/timestamp header
+        s = ln.strip()
+        if re.match(r'^\d+\s*(?:mo|d|w|h|yr|s)\s*•', s) or s == 'Follow':
+            start = i + 1
+    return '\n'.join(lines[start:]).strip() or block.strip()
+
+nolink = sum(1 for _, b in unmatched if not all_links(b))
+L = ["# Unmatched LinkedIn posts from the 7/4 source dump — VERBATIM",
      "",
-     f"{len(unmatched)} of {len(posts)} posts didn't map to an existing library item. "
-     f"({matched} matched → {len(patch)} items got a sharer + context.)",
-     "",
-     "Each entry: **sharer** — link — snippet of the post. The first group has a link "
-     "(likely new sources to add); the second had no resolvable article link.",
-     "",
-     f"## Has a link — likely new sources to add ({len(withlink)})", ""]
-seen = set()
-for name, links, ctx in withlink:
-    link = links[0]
-    key = (name, link)
-    if key in seen: continue
-    seen.add(key)
-    L.append(f"- **{name}** — {link}")
-    if ctx: L.append(f"  {ctx[:240]}")
-L += ["", f"## No resolvable article link ({len(nolink)})", ""]
-for name, links, ctx in nolink:
-    L.append(f"- **{name}** — {ctx[:240] if ctx else '(image/text post, no article link)'}")
-open("docs/unmatched_linkedin_sources.md", "w").write("\n".join(L))
-print(f"wrote docs/unmatched_linkedin_sources.md ({len(withlink)} with link, {len(nolink)} without)")
+     f"{len(unmatched)} of {len(posts)} posts didn't map to a Stacks item "
+     f"({matched} matched). Each entry below is the post's text **exactly as it appears in the source "
+     f"dump**, so you can Ctrl-F any line to find the original. Links it carried are listed first "
+     f"(resolved destination where the lnkd.in shortener could be followed, otherwise the shortener itself). "
+     f"{len(unmatched)-nolink} carry a link; {nolink} have no link (use the verbatim text to locate them).",
+     "", "---", ""]
+for i, (name, block) in enumerate(unmatched, 1):
+    links = all_links(block)
+    L.append(f"## {i}. {name}")
+    L.append("**Links:** " + (" · ".join(links) if links else "_(none in the post — Ctrl-F the text below)_"))
+    L.append("")
+    L.append(verbatim_body(block))
+    L.append("")
+    L.append("---")
+    L.append("")
+open("docs/unmatched_linkedin_sources.md", "w", encoding="utf-8").write("\n".join(L))
+print(f"wrote docs/unmatched_linkedin_sources.md — {len(unmatched)} posts verbatim ({len(unmatched)-nolink} with a link, {nolink} without)")
