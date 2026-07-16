@@ -71,10 +71,11 @@ def real_urls(block):
 
 patch, matched, unmatched = {}, 0, []
 for name, block in posts:
-    hit = next((idx[norm(u)] for u in real_urls(block) if norm(u) in idx), None)
+    urls = real_urls(block)
+    hit = next((idx[norm(u)] for u in urls if norm(u) in idx), None)
     if not hit:
-        if len(unmatched) < 15:
-            us = real_urls(block); unmatched.append((name, us[0][:80] if us else "(no link)"))
+        raw = urls or re.findall(r'https://lnkd\.in/[A-Za-z0-9_-]+', block)   # fall back to the shortener
+        unmatched.append((name, raw, commentary(block)))
         continue
     matched += 1
     ctx = commentary(block)
@@ -91,7 +92,31 @@ print(f"  already had context: {sum(1 for i,v in patch.items() if by[i].get('con
 print("\n--- 8 samples ---")
 for iid, v in list(patch.items())[:8]:
     print(f"[{by[iid]['kind']}] {by[iid]['title'][:58]}\n   via {v['sender']} :: {v['li_context'][:150]}")
-print("\n--- unmatched examples ---")
-for n, u in unmatched: print(f"   {n} | {u}")
 json.dump(patch, open("data/li_context.json","w"), indent=0, ensure_ascii=False)
 print(f"\nwrote data/li_context.json ({len(patch)} items) — merged into the library by build.py")
+
+# ---- write the unmatched list (posts in the dump not tied to a Stacks item) ----
+withlink = [u for u in unmatched if u[1]]
+nolink   = [u for u in unmatched if not u[1]]
+L = [f"# LinkedIn posts from the 7/4 source dump NOT matched to a Stacks item",
+     "",
+     f"{len(unmatched)} of {len(posts)} posts didn't map to an existing library item. "
+     f"({matched} matched → {len(patch)} items got a sharer + context.)",
+     "",
+     "Each entry: **sharer** — link — snippet of the post. The first group has a link "
+     "(likely new sources to add); the second had no resolvable article link.",
+     "",
+     f"## Has a link — likely new sources to add ({len(withlink)})", ""]
+seen = set()
+for name, links, ctx in withlink:
+    link = links[0]
+    key = (name, link)
+    if key in seen: continue
+    seen.add(key)
+    L.append(f"- **{name}** — {link}")
+    if ctx: L.append(f"  {ctx[:240]}")
+L += ["", f"## No resolvable article link ({len(nolink)})", ""]
+for name, links, ctx in nolink:
+    L.append(f"- **{name}** — {ctx[:240] if ctx else '(image/text post, no article link)'}")
+open("docs/unmatched_linkedin_sources.md", "w").write("\n".join(L))
+print(f"wrote docs/unmatched_linkedin_sources.md ({len(withlink)} with link, {len(nolink)} without)")
