@@ -390,6 +390,20 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
     box-shadow:0 8px 22px rgba(37,99,235,.28)}
   .lp-door.primary:hover{filter:brightness(1.05)}
   .lp-foot{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:8px}
+  .lp-search{display:flex;gap:8px;max-width:520px;margin:0 auto 22px}
+  .lp-search input{flex:1;padding:14px 18px;border:1px solid var(--edge2);border-radius:14px;background:var(--card);
+    color:var(--ink);font-size:15.5px;font-family:var(--sans)}
+  .lp-search input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--grad-soft)}
+  .lp-search input::placeholder{color:var(--faint)}
+  .lp-search button{flex:none;width:50px;border-radius:14px;background:var(--grad);color:var(--on-accent);font-size:19px}
+  .lp-search button:hover{filter:brightness(1.05)}
+  .lp-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px;max-width:560px;margin:0 auto 18px}
+  .lp-tile{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:14px 16px;border:1px solid var(--edge);
+    border-radius:14px;background:var(--card);text-align:left;transition:transform .16s,border-color .16s}
+  .lp-tile:hover{border-color:var(--edge2);transform:translateY(-2px)}
+  .lp-tile b{font-size:14.5px;font-weight:700;color:var(--ink)}
+  .lp-tile span{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.04em;text-transform:uppercase}
+  #lp-enter{margin-bottom:2px}
   #chat{position:fixed;right:24px;bottom:88px;z-index:66;width:min(410px,calc(100vw - 32px));
     height:min(620px,calc(100vh - 120px));display:flex;flex-direction:column;background:var(--topbar);
     -webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);
@@ -682,27 +696,49 @@ function renderAccount(email){
 document.addEventListener('click',()=>{ const m=$('#acct-menu'); if(m&&!m.hidden) m.hidden=true; });
 function closeSettings(){ $('#settings').hidden=true; document.body.style.overflow=''; }
 function closeLanding(){ $('#landing').hidden=true; document.body.style.overflow=''; }
-// The front door: clicking the Stacks wordmark opens a calm welcome with live stats + three doors.
+function skipStart(v){ try{ if(v===undefined) return localStorage.getItem('stacks-skip-start')==='1';
+  localStorage.setItem('stacks-skip-start', v?'1':'0'); }catch(e){ return false; } }
+// Leave Start and drop into the full (unchanged) library, optionally pre-scoped by fn().
+function enterLibrary(fn){ closeLanding(); clearFilters(); state.q=''; const qi=$('#q'); if(qi) qi.value='';
+  if(fn) fn(); syncViewsUI(); sync(); render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function askFromStart(q){ closeLanding(); $('#chat').hidden=false; renderChatScope(); if(q) ask(q);
+  setTimeout(()=>{ const i=$('#chat-in'); if(i) i.focus(); },50); }
+// Start: the calm way in — the mark, one input (search or ask), and a few gentle doorways.
+// Full functionality is one interaction away and completely unchanged.
 function openLanding(){
-  const total=ALL.length, papers=ALL.filter(x=>x.kind==='paper').length,
-    repos=ALL.filter(x=>CODE_KINDS.includes(x.kind)).length, added=USER.length,
-    read=ALL.filter(x=>x.read_status==='read').length, rev=ALL.filter(needsReview).length;
-  const stat=(n,l)=>'<div class="lp-stat"><b>'+n+'</b><span>'+l+'</span></div>';
+  const papers=ALL.filter(x=>x.kind==='paper').length, repos=ALL.filter(x=>CODE_KINDS.includes(x.kind)).length,
+    added=USER.length, read=ALL.filter(x=>x.read_status==='read').length, rev=ALL.filter(needsReview).length;
+  const tile=(g,l,s)=>'<button class="lp-tile" data-go="'+g+'"><b>'+l+'</b><span>'+s+'</span></button>';
   $('#landing').innerHTML='<div class="lp-wrap"><button class="lp-x" id="lp-x" aria-label="Close">×</button>'
     +'<svg class="lp-mark" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lig" x1="0" y1="0" x2="32" y2="32"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#38bdf8"/></linearGradient></defs>'
     +'<rect x="5" y="20" width="22" height="6.4" rx="2.4" fill="url(#lig)" opacity=".4"/><rect x="5" y="12.6" width="22" height="6.4" rx="2.4" fill="url(#lig)" opacity=".68"/><rect x="5" y="5.2" width="22" height="6.4" rx="2.4" fill="url(#lig)"/></svg>'
     +'<div class="lp-name">Stacks</div>'
     +'<div class="lp-tag">The durable home for everything behind the research.</div>'
-    +'<div class="lp-desc">Every <b>paper</b>, <b>repo</b>, <b>model</b>, <b>video</b> and article you find — captured in one click, searchable, filterable, and provenance-aware. Ask <b>the Librarian</b> to pull exactly what you need, or answer questions from the sources themselves.</div>'
-    +'<div class="lp-stats">'+stat(total,'sources')+stat(papers,'papers')+stat(repos,'repos & models')+stat(added,'added by you')+stat(read,'read')+stat(rev,'need review')+'</div>'
-    +'<div class="lp-doors"><button class="lp-door primary" id="lp-enter">Enter the library →</button>'
-    +'<button class="lp-door" id="lp-ask">✦ Ask the Librarian</button>'
-    +'<button class="lp-door" id="lp-add">＋ Add material</button></div>'
-    +'<div class="lp-foot">Built '+esc(BASE_DATA.generated||'')+' · syncs across your devices when signed in</div></div>';
+    +'<form class="lp-search" id="lp-search"><input id="lp-q" type="search" autocomplete="off" placeholder="Search the library, or ask the Librarian…" aria-label="Search or ask"><button type="submit" aria-label="Go">→</button></form>'
+    +'<div class="lp-tiles">'
+      + tile('papers','Papers', papers+' sources')
+      + tile('repos','Repos & models', repos+' sources')
+      + tile('recent','Recently added','newest first')
+      + tile('review','Needs review', rev+' to resolve')
+      + tile('ask','Ask the Librarian','ask a question')
+    +'</div>'
+    +'<button class="lp-door primary" id="lp-enter">Open the full library →</button>'
+    +'<div class="lp-foot">'+ALL.length+' sources · '+papers+' papers · '+repos+' repos & models · '+read+' read'
+      +(added?(' · '+added+' added by you'):'')+' · built '+esc(BASE_DATA.generated||'')+'</div></div>';
   $('#landing').hidden=false; document.body.style.overflow='hidden';
-  $('#lp-x').onclick=closeLanding; $('#lp-enter').onclick=closeLanding;
-  $('#lp-ask').onclick=()=>{ closeLanding(); $('#chat').hidden=false; renderChatScope(); $('#chat-in').focus(); };
-  $('#lp-add').onclick=()=>{ closeLanding(); openAdd(); };
+  $('#lp-x').onclick=closeLanding;
+  $('#lp-enter').onclick=()=>{ skipStart(true); closeLanding(); };   // explicit "give me the whole thing" -> skip next time
+  $('#lp-search').onsubmit=(e)=>{ e.preventDefault(); const v=$('#lp-q').value.trim(); if(!v) return;
+    if(typeof isListy==='function' && isListy(v)) enterLibrary(()=>{ state.q=v; const qi=$('#q'); if(qi) qi.value=v; });
+    else askFromStart(v); };
+  $('#landing').querySelectorAll('.lp-tile').forEach(b=>b.onclick=()=>{ const g=b.dataset.go;
+    if(g==='ask'){ askFromStart(); return; }
+    enterLibrary(()=>{
+      if(g==='papers') state.f.kind.add('paper');
+      else if(g==='repos') CODE_KINDS.forEach(k=>state.f.kind.add(k));
+      else if(g==='recent'){ state.sort='added'; const s=$('#sort'); if(s) s.value='added'; }
+      else if(g==='review') state.review=true;
+    }); });
 }
 function openSettings(){
   const email=ACCT_EMAIL||''; const hasKey=!!getKey();
@@ -711,6 +747,7 @@ function openSettings(){
     +(email?'<section class="set-sec"><h2>Account</h2><p>Signed in as <b>'+esc(email)+'</b>. Your library syncs across every device you sign in on.</p><button class="set-btn ghost" id="set-out">Sign out</button></section>':'')
     +'<section class="set-sec"><h2>Anthropic key</h2><p>The Librarian uses your own Anthropic key to answer questions.'+(SERVER?' Stored <b>encrypted on the server</b>, so it works on every device.':' Stored in this browser.')+'</p><p class="set-help"><b>Where to get it:</b> open <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com → API keys</a>, click <b>Create Key</b>, and copy it (it starts with <code>sk-ant-</code>). Anthropic bills you for what the Librarian uses.</p><div class="set-row"><input type="password" id="set-key" placeholder="sk-ant-…"><button class="set-btn" id="set-key-save">'+(hasKey?'Update':'Save')+'</button></div><div class="set-note" id="set-key-note">'+(hasKey?'A key is set ✓':'No key yet')+'</div></section>'
     +(SERVER?'<section class="set-sec"><h2>Google Drive</h2><p>Drop paywalled PDFs into a Drive folder named <b>Stacks Papers</b> and sync — they’re matched to your papers <b>by content</b> (no renaming needed), read, and taken out of Needs review.</p><div class="set-row" id="set-drive-row"><span class="set-note">Checking…</span></div></section>':'')
+    +'<section class="set-sec"><h2>Start screen</h2><p>The calm Start screen — with search and a few shortcuts — shows when you open Stacks. Turn it off to open straight to the full library.</p><label style="display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink);cursor:pointer"><input type="checkbox" id="set-start" '+(skipStart()?'':'checked')+' style="accent-color:var(--accent);width:16px;height:16px"> Show the Start screen when I open Stacks</label></section>'
     +'<section class="set-sec"><h2>Library</h2><p><b>'+total+'</b> sources · <b>'+added+'</b> added by you · <b>'+read+'</b> read · <b>'+rev+'</b> need review</p><div class="set-row"><button class="set-btn ghost" id="set-export">Export…</button></div></section>'
     +'</div></div>';
   $('#settings').hidden=false; document.body.style.overflow='hidden';
@@ -718,6 +755,7 @@ function openSettings(){
   const so=$('#set-out'); if(so) so.onclick=async()=>{ try{ await fetch('/api/signout',{method:'POST'}); }catch(e){} location.href='/'; };
   $('#set-key-save').onclick=()=>{ const v=$('#set-key').value.trim(); if(!v){ toast('Paste your key'); return; } setKey(v); $('#set-key').value=''; $('#set-key-note').textContent='A key is set ✓'; $('#set-key-save').textContent='Update'; toast('Key saved'); };
   $('#set-export').onclick=()=>{ closeSettings(); openData(); };
+  const ss=$('#set-start'); if(ss) ss.onchange=()=>{ skipStart(!ss.checked); toast(ss.checked?'Start screen on':'Opening straight to the library from now on'); };
   if(SERVER) renderDriveSetting();
 }
 async function renderDriveSetting(){
@@ -1492,6 +1530,11 @@ function initGate(){
   document.body.appendChild(s);
 }
 restore(); renderViewsSelect(); railstats(); render(); renderQuick(); initGate(); initAccount();
+// Open on the calm Start screen — unless the user has chosen to skip it, or arrived via a deep link.
+(function(){ const p=new URLSearchParams(location.search);
+  const deep=['q','kind','domains','focus','origins','topics','read','sender','sort','view','from','to','drive'].some(k=>p.has(k));
+  if(!deep && !skipStart()) openLanding();
+})();
 </script>
 </body>
 </html>
