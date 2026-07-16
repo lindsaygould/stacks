@@ -437,6 +437,38 @@ def main():
             it["abstract"] = r["abstract"]; ra += 1
     print("resolved-meta: titles", rt, "| abstracts", ra)
 
+    # LinkedIn provenance: who shared it + the poster's commentary, recovered from the 7/4 source
+    # dump by scripts/resolve_lnkd.py + scripts/ingest_linkedin_context.py -> data/li_context.json.
+    # This is the durable home for that context: reapplied on every build (matched by id, url fallback).
+    lp = os.path.join(HERE, "data", "li_context.json")
+    lic = json.load(open(lp)) if os.path.exists(lp) else {}
+    byid = {it["id"]: it for it in items}
+    byurl = {}
+    for it in items:
+        for u in ([it.get("url")] + list(it.get("all_urls") or [])):
+            if u:
+                byurl.setdefault(u, it)
+    ls = lc = 0
+    for key, v in lic.items():
+        it = byid.get(key) or byurl.get(v.get("url", ""))
+        if not it:
+            continue
+        if not it.get("sender"):
+            it["sender"] = v["sender"]; ls += 1
+        it["via_linkedin"] = True
+        li = (v.get("li_context") or "").strip()
+        if len(li) >= 30:
+            old = (it.get("context") or "").strip()
+            if not old:
+                it["context"] = li; lc += 1
+            elif old[:50].lower() != li[:50].lower():
+                if not (it.get("notes") or "").strip():
+                    it["notes"] = old
+                it["context"] = li
+            else:
+                it["context"] = li
+    print("linkedin-context: senders", ls, "| context filled", lc, "| items", len(lic))
+
     # full text (content/<item-id>.txt) + reading status
     content_ids = set(os.path.splitext(os.path.basename(p))[0]
                       for p in glob.glob(os.path.join(HERE, "content", "*.txt")))
