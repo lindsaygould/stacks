@@ -139,3 +139,21 @@ for i, (name, block) in enumerate(unmatched, 1):
     L.append("")
 open("docs/unmatched_linkedin_sources.md", "w", encoding="utf-8").write("\n".join(L))
 print(f"wrote docs/unmatched_linkedin_sources.md — {len(unmatched)} posts verbatim ({len(unmatched)-nolink} with a link, {nolink} without)")
+
+# structured JSON for the .docx builder — body cleaned of markdown link syntax (anchor text kept),
+# escapes unwrapped, one paragraph per line, but otherwise verbatim so it stays Ctrl-F-able.
+def clean_lines(block):
+    out = []
+    for ln in verbatim_body(block).split('\n'):
+        s = ln.strip()
+        if not s: continue
+        s = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', s)
+        for a, b in [('\\>', '>'), ('\\_', '_'), ('\\!', '!'), ('\\&', '&'), ('\\.', '.'),
+                     ('\\,', ','), ('\\-', '-'), ('\\#', '#'), ('\\(', '('), ('\\)', ')'), ('\\[', '['), ('\\]', ']')]:
+            s = s.replace(a, b)
+        out.append(s)
+    return out
+entries = [{"n": i, "name": name, "links": all_links(block), "body": clean_lines(block)}
+           for i, (name, block) in enumerate(unmatched, 1)]
+json.dump(entries, open("docs/unmatched_linkedin.json", "w", encoding="utf-8"), ensure_ascii=False)
+print(f"wrote docs/unmatched_linkedin.json ({len(entries)} entries) for the .docx builder")
