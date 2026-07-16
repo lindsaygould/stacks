@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Stacks — your research source library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script>
 (function(){var t='dark';try{t=localStorage.getItem('stacks-theme')||'dark'}catch(e){}
 if(t!=='light')document.documentElement.classList.add('dark');})();
@@ -17,8 +20,8 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
     --grad:linear-gradient(120deg,#3b82f6 0%,#2f7dea 50%,#0ea5e9 100%);
     --grad-soft:linear-gradient(120deg,rgba(59,130,246,.14),rgba(14,165,233,.12));
     --card:#ffffff; --topbar:rgba(246,247,249,.82); --shadow:0 14px 34px rgba(18,21,26,.10);
-    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sans:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
   }
   .dark{
     color-scheme: dark;
@@ -92,8 +95,6 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .quicklists button.ql-review.on{color:var(--on-accent);background:#e0a44a;border-color:#e0a44a}
   .quicklists button.ql-review.zero{opacity:.5;color:var(--faint);border-color:var(--edge);background:transparent;font-weight:400}
   @media(max-width:720px){.quicklists{padding:9px 14px}}
-  #chat-key{font-size:15px;color:var(--dim);line-height:1;margin-right:6px}
-  #chat-key:hover{color:var(--ink)}
 
   .layout{display:grid;grid-template-columns:290px 1fr;max-width:1620px;margin:0 auto;align-items:start}
   @media(max-width:980px){.layout{grid-template-columns:1fr}}
@@ -110,6 +111,9 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
     color:var(--ink);border-radius:99px;padding:4px 11px;font-size:12px}
   .pill button{color:var(--dim);font-size:14px;line-height:1}
   .pill button:hover{color:var(--ink)}
+  .pill-ask{border-color:var(--accent);font-weight:600}
+  .pill-ask .pa-i{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+  .pill-ask.review{border-color:#e0a44a;color:#c47f1a;background:rgba(224,164,74,.1)}
   .facet{margin-top:20px}
   .facet>h3{font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:var(--faint);font-weight:700;margin-bottom:9px}
   .cloud{display:flex;flex-wrap:wrap;gap:7px}
@@ -167,16 +171,23 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .icon-btn{padding:7px 11px;border:1px solid var(--edge);border-radius:10px;background:var(--hover);font-size:12.5px;color:var(--dim)}
   .icon-btn:hover{color:var(--ink);border-color:var(--edge2)}
 
-  #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+  #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px}
   @media(max-width:460px){#grid{grid-template-columns:1fr}}
   #grid.rows{display:flex;flex-direction:column;gap:8px}
-  .card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--edge);border-radius:14px;
+  .month-sep{grid-column:1/-1;display:flex;align-items:baseline;gap:12px;margin-top:14px;
+    font-size:14px;font-weight:700;letter-spacing:-.014em;color:var(--ink)}
+  .month-sep:first-child{margin-top:0}
+  .month-sep .ms-n{font-family:var(--mono);font-size:10.5px;color:var(--faint);font-weight:400;
+    font-variant-numeric:tabular-nums;white-space:nowrap}
+  .month-sep::after{content:'';flex:1;border-top:1px solid var(--edge);transform:translateY(-4px)}
+  #grid.rows .month-sep{margin:10px 0 2px}
+  .card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--edge);border-radius:16px;
     overflow:hidden;min-width:0;transition:transform .16s,border-color .16s,box-shadow .16s;cursor:pointer}
-  .card:hover{transform:translateY(-3px);border-color:var(--edge2);box-shadow:var(--shadow)}
+  .card:hover{transform:translateY(-3px);border-color:rgba(96,165,250,.5);box-shadow:var(--shadow)}
   .card.flash,.row.flash{border-color:transparent;box-shadow:0 0 0 2.5px var(--a1),var(--shadow)}
-  .cover{height:96px;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;position:relative;
+  .cover{aspect-ratio:1.91/1;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;position:relative;
     overflow:hidden;color:#fff}
-  .cover .mono,.cover .fbmono{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1;text-transform:uppercase;
+  .cover .mono,.cover .fbmono{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1;text-transform:uppercase;
     text-shadow:0 1px 12px rgba(0,0,0,.28);z-index:1}
   .cover .prov{position:absolute;bottom:10px;left:16px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;
     opacity:.95;text-transform:uppercase;z-index:1;text-shadow:0 1px 8px rgba(0,0,0,.5)}
@@ -194,8 +205,8 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .cover.img.failed{background:linear-gradient(135deg,var(--c1),var(--c2));align-items:center;justify-content:flex-start;padding:14px 16px}
   .cover.img.failed img{display:none}
   .cover.img.failed .fbmono{display:block}
-  .cbody{display:flex;flex-direction:column;gap:9px;padding:14px 15px 13px;flex:1;min-width:0}
-  .ctitle{font-size:14.5px;line-height:1.34;font-weight:650;letter-spacing:-.01em;color:var(--ink);
+  .cbody{display:flex;flex-direction:column;gap:9px;padding:16px 17px 13px;flex:1;min-width:0}
+  .ctitle{font-size:15.5px;line-height:1.36;font-weight:700;letter-spacing:-.013em;color:var(--ink);
     text-wrap:balance;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
   .cdesc{font-size:12.5px;color:var(--dim);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
   .ctags{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto;padding-top:4px}
@@ -206,10 +217,18 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .tg.li{color:#4f9be6;border-color:rgba(79,155,230,.4);text-transform:none}
   .tg.from{color:var(--accent);border-color:rgba(37,99,235,.4);background:var(--grad-soft);text-transform:none;font-weight:600}
   .cfoot .cdate{font-family:var(--mono);font-size:10px;color:var(--faint);white-space:nowrap}
-  .cfoot{display:flex;align-items:center;gap:8px;padding:9px 15px;border-top:1px solid var(--edge);
-    font-family:var(--mono);font-size:10.5px;color:var(--faint)}
-  .cfoot .dot{width:5px;height:5px;border-radius:50%;background:var(--a2)}
-  .cfoot a.open{margin-left:auto;color:var(--accent);font-weight:600;font-family:var(--mono);font-size:11px}
+  .cfoot{display:flex;align-items:center;gap:8px;padding:10px 16px;border-top:1px solid var(--edge);
+    font-family:var(--mono);font-size:10.5px;color:var(--faint);min-width:0}
+  .cfoot .dot{width:5px;height:5px;border-radius:50%;background:var(--a2);flex:none}
+  .cfoot .cprov{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:none;max-width:48%}
+  .cfoot .cvia{color:var(--dim);font-family:var(--sans);font-size:12px;overflow:hidden;text-overflow:ellipsis;
+    white-space:nowrap;min-width:0;flex:1 1 auto}
+  .cfoot .cvia b{color:var(--ink);font-weight:600}
+  .cfoot a.open{color:var(--accent);font-weight:600;font-family:var(--mono);font-size:11px;flex:none}
+  .cfoot .cfoot-r{margin-left:auto;display:flex;align-items:center;gap:8px;flex:none}
+  .cfoot .copymd{font-family:var(--mono);font-size:10px;color:var(--faint);border:1px solid var(--edge);
+    border-radius:7px;padding:3px 8px;flex:none;transition:all .14s}
+  .cfoot .copymd:hover{color:var(--ink);border-color:var(--edge2)}
   .a-preview{margin:-2px 0 2px;border:1px solid var(--edge);border-left:2px solid var(--accent);border-radius:0 10px 10px 0;background:var(--grad-soft);padding:9px 12px;display:flex;flex-direction:column;gap:3px}
   .a-preview[hidden]{display:none}
   .a-preview.warn{border-left-color:#e0a44a;background:rgba(224,164,74,.1)}
@@ -343,6 +362,34 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .set-help code,.set-sec code{font-family:var(--mono);font-size:.85em;background:var(--hover);padding:1px 5px;border-radius:5px;color:var(--ink)}
   .drive-on{display:flex;flex-direction:column;gap:6px}
   .drive-badge{display:inline-flex;align-items:center;gap:5px;align-self:flex-start;font-size:12px;font-weight:650;color:#2f9e5f;background:rgba(47,158,95,.12);border:1px solid rgba(47,158,95,.35);border-radius:99px;padding:3px 11px;margin-bottom:2px}
+  /* landing / front door */
+  #landing{position:fixed;inset:0;z-index:130;overflow-y:auto;background:
+      radial-gradient(58% 44% at 10% -6%, rgba(96,165,250,.20), transparent 60%),
+      radial-gradient(52% 42% at 96% -4%, rgba(56,189,248,.16), transparent 60%),var(--bg)}
+  #landing[hidden]{display:none}
+  .lp-wrap{max-width:760px;margin:0 auto;padding:70px 24px 90px;text-align:center;position:relative}
+  .lp-x{position:absolute;top:20px;right:20px;width:38px;height:38px;font-size:20px;color:var(--dim);
+    background:var(--hover);border:1px solid var(--edge);border-radius:99px}
+  .lp-x:hover{color:var(--ink);border-color:var(--edge2)}
+  .lp-mark{width:74px;height:74px;margin:0 auto 20px}
+  .lp-name{font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:14px}
+  .lp-tag{font-size:18px;font-weight:600;color:var(--ink);letter-spacing:-.01em;margin-bottom:10px}
+  .lp-desc{font-size:15px;color:var(--dim);line-height:1.6;max-width:540px;margin:0 auto 30px}
+  .lp-desc b{color:var(--ink);font-weight:600}
+  .lp-stats{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-bottom:34px}
+  .lp-stat{min-width:104px;flex:0 1 130px;padding:16px 14px;border:1px solid var(--edge);border-radius:14px;
+    background:var(--card)}
+  .lp-stat b{display:block;font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px}
+  .lp-stat span{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .lp-doors{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-bottom:22px}
+  .lp-door{display:inline-flex;align-items:center;gap:9px;font-size:14.5px;font-weight:600;padding:13px 26px;
+    border-radius:13px;border:1px solid var(--edge);background:var(--card);color:var(--ink);transition:all .16s}
+  .lp-door:hover{border-color:var(--edge2);transform:translateY(-2px)}
+  .lp-door.primary{background:var(--grad);color:var(--on-accent);border-color:transparent;
+    box-shadow:0 8px 22px rgba(37,99,235,.28)}
+  .lp-door.primary:hover{filter:brightness(1.05)}
+  .lp-foot{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:8px}
   #chat{position:fixed;right:24px;bottom:88px;z-index:66;width:min(410px,calc(100vw - 32px));
     height:min(620px,calc(100vh - 120px));display:flex;flex-direction:column;background:var(--topbar);
     -webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);
@@ -360,8 +407,13 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   .chat-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--edge)}
   .chat-title{font-weight:750;font-size:14px;display:flex;align-items:center;gap:8px}
   .chat-title .s{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .chat-scope{padding:9px 16px;font-size:11px;line-height:1.5;color:var(--faint);border-bottom:1px solid var(--edge)}
+  .chat-scope{padding:9px 16px;font-size:11.5px;line-height:1.55;color:var(--faint);border-bottom:1px solid var(--edge)}
   .chat-scope b{color:var(--dim);font-weight:600}
+  .chat-scope.scoped{background:var(--grad-soft)}
+  .chat-scope.scoped b{color:var(--ink)}
+  .scope-tog,.scope-link{display:inline;font-size:11.5px;font-weight:600;color:var(--accent);
+    border-bottom:1px dotted var(--accent);padding:0;line-height:1.2}
+  .scope-tog:hover,.scope-link:hover{border-bottom-style:solid}
   #chat-close{font-size:20px;color:var(--dim)}
   #chat-msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:11px}
   .msg{max-width:92%;padding:10px 13px;border-radius:14px;font-size:13.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
@@ -421,7 +473,7 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
 </head>
 <body>
 <header class="topbar">
-  <button class="brand" id="brand-home" title="The Stacks — home">
+  <button class="brand" id="brand-home" title="About Stacks">
     <svg class="glyph" viewBox="0 0 32 32" aria-hidden="true">
       <defs><linearGradient id="ig" x1="0" y1="0" x2="32" y2="32">
         <stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#0ea5e9"/></linearGradient></defs>
@@ -447,6 +499,7 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
   </div>
 </header>
 <section id="settings" hidden aria-label="Settings"></section>
+<section id="landing" hidden aria-label="Welcome to Stacks"></section>
 
 <div class="mission">Stacks is the durable home for everything behind the work — <b>papers</b>, <b>repos</b>, <b>models</b>,
   <b>videos</b>, <b>companies</b>, articles and more — searchable, filterable, and provenance-aware (Manual search · Claude · Claude Science).
@@ -493,7 +546,7 @@ if(t!=='light')document.documentElement.classList.add('dark');})();
 <section id="chat" hidden aria-label="Ask the Librarian">
   <div class="chat-head">
     <span class="chat-title"><span class="s">✦</span> Ask the Librarian</span>
-    <span style="margin-left:auto;display:flex;align-items:center;gap:4px"><button id="chat-expand" title="Expand to full screen" aria-label="Expand">⤢</button><button id="chat-key" title="Set your Anthropic API key">⚙</button>
+    <span style="margin-left:auto;display:flex;align-items:center;gap:4px"><button id="chat-expand" title="Expand to full screen" aria-label="Expand">⤢</button>
     <button id="chat-close" aria-label="Close">×</button></span>
   </div>
   <div class="chat-scope" id="chat-scope"></div>
@@ -628,6 +681,29 @@ function renderAccount(email){
 }
 document.addEventListener('click',()=>{ const m=$('#acct-menu'); if(m&&!m.hidden) m.hidden=true; });
 function closeSettings(){ $('#settings').hidden=true; document.body.style.overflow=''; }
+function closeLanding(){ $('#landing').hidden=true; document.body.style.overflow=''; }
+// The front door: clicking the Stacks wordmark opens a calm welcome with live stats + three doors.
+function openLanding(){
+  const total=ALL.length, papers=ALL.filter(x=>x.kind==='paper').length,
+    repos=ALL.filter(x=>CODE_KINDS.includes(x.kind)).length, added=USER.length,
+    read=ALL.filter(x=>x.read_status==='read').length, rev=ALL.filter(needsReview).length;
+  const stat=(n,l)=>'<div class="lp-stat"><b>'+n+'</b><span>'+l+'</span></div>';
+  $('#landing').innerHTML='<div class="lp-wrap"><button class="lp-x" id="lp-x" aria-label="Close">×</button>'
+    +'<svg class="lp-mark" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lig" x1="0" y1="0" x2="32" y2="32"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#38bdf8"/></linearGradient></defs>'
+    +'<rect x="5" y="20" width="22" height="6.4" rx="2.4" fill="url(#lig)" opacity=".4"/><rect x="5" y="12.6" width="22" height="6.4" rx="2.4" fill="url(#lig)" opacity=".68"/><rect x="5" y="5.2" width="22" height="6.4" rx="2.4" fill="url(#lig)"/></svg>'
+    +'<div class="lp-name">Stacks</div>'
+    +'<div class="lp-tag">The durable home for everything behind the research.</div>'
+    +'<div class="lp-desc">Every <b>paper</b>, <b>repo</b>, <b>model</b>, <b>video</b> and article you find — captured in one click, searchable, filterable, and provenance-aware. Ask <b>the Librarian</b> to pull exactly what you need, or answer questions from the sources themselves.</div>'
+    +'<div class="lp-stats">'+stat(total,'sources')+stat(papers,'papers')+stat(repos,'repos & models')+stat(added,'added by you')+stat(read,'read')+stat(rev,'need review')+'</div>'
+    +'<div class="lp-doors"><button class="lp-door primary" id="lp-enter">Enter the library →</button>'
+    +'<button class="lp-door" id="lp-ask">✦ Ask the Librarian</button>'
+    +'<button class="lp-door" id="lp-add">＋ Add material</button></div>'
+    +'<div class="lp-foot">Built '+esc(BASE_DATA.generated||'')+' · syncs across your devices when signed in</div></div>';
+  $('#landing').hidden=false; document.body.style.overflow='hidden';
+  $('#lp-x').onclick=closeLanding; $('#lp-enter').onclick=closeLanding;
+  $('#lp-ask').onclick=()=>{ closeLanding(); $('#chat').hidden=false; renderChatScope(); $('#chat-in').focus(); };
+  $('#lp-add').onclick=()=>{ closeLanding(); openAdd(); };
+}
 function openSettings(){
   const email=ACCT_EMAIL||''; const hasKey=!!getKey();
   const total=ALL.length, added=USER.length, read=ALL.filter(x=>x.read_status==='read').length, rev=ALL.filter(needsReview).length;
@@ -709,7 +785,11 @@ rebuild();
 function sendersDatalist(){ const s=[...new Set(ALL.map(it=>it.sender).filter(Boolean))].sort();
   return '<datalist id="senders-list">'+s.map(x=>'<option value="'+esc(x)+'"></option>').join('')+'</datalist>'; }
 
-const state = { q:'', sort:'relevance', view:'cards', dateFrom:'', dateTo:'', resultSet:null, review:false, f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set(), read:new Set(), sender:new Set()} };
+const state = { q:'', sort:'relevance', view:'cards', dateFrom:'', dateTo:'', resultSet:null, review:false, askScope:'view', f:{kind:new Set(), domains:new Set(), focus:new Set(), origins:new Set(), topics:new Set(), read:new Set(), sender:new Set()} };
+// Is the library currently scoped (a Librarian view, Needs-review, a search, or any facet)?
+function viewActive(){ return !!(state.resultSet || state.review || state.q || state.dateFrom || state.dateTo || FACETS.some(f=>state.f[f.key].size)); }
+// The set the Librarian searches: the current on-screen view when scoped (unless the user flips to "all").
+function askPool(){ return (viewActive() && state.askScope!=='all') ? current() : ALL; }
 
 const FACETS = [
   {key:'kind', title:'Type', field:'kind', order:['paper','model','repo','dataset','toolkit','benchmark','video','podcast','article','company','event','grant','other'], label:k=>KIND_LABEL[k]||k},
@@ -824,6 +904,18 @@ function renderResultBar(){
 }
 function renderPills(){
   const p=$('#pills'); p.innerHTML='';
+  if(state.resultSet){
+    const el=document.createElement('span'); el.className='pill pill-ask';
+    el.innerHTML='<span class="pa-i">✦</span> '+esc(state.resultSet.label)+' <button aria-label="Clear Librarian view">×</button>';
+    el.querySelector('button').onclick=()=>{ state.resultSet=null; state.askScope='view'; syncViewsUI(); sync(); render(); window.scrollTo({top:0,behavior:'smooth'}); };
+    p.appendChild(el);
+  }
+  if(state.review){
+    const el=document.createElement('span'); el.className='pill pill-ask review';
+    el.innerHTML='⚠ Needs review <button aria-label="Clear">×</button>';
+    el.querySelector('button').onclick=()=>{ state.review=false; syncViewsUI(); sync(); render(); window.scrollTo({top:0,behavior:'smooth'}); };
+    p.appendChild(el);
+  }
   for(const f of FACETS){ for(const k of state.f[f.key]){
     const el=document.createElement('span'); el.className='pill';
     el.innerHTML=esc(f.label(k))+' <button aria-label="Remove">×</button>';
@@ -842,7 +934,8 @@ function sortItems(items){
   if(s==='added') return items.slice().sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
   if(s==='date') return items.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   if(state.q) return items.slice().sort((a,b)=>score(b,state.q)-score(a,state.q));
-  return items;
+  // relevance with no query → newest dated first, so the month-grouped default reads top-down like a feed
+  return items.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.addedAt||0)-(a.addedAt||0));
 }
 function cardCover(it){
   const [c1,c2]=provColors(it.provider); const mono=esc(monogram(it.title));
@@ -855,12 +948,22 @@ function cardCover(it){
   }
   return '<div class="cover" style="background:linear-gradient(135deg,'+c1+','+c2+')"><span class="mono">'+mono+'</span>'+kt+'</div>';
 }
+function monthOf(it){
+  const d = it.date || (it.addedAt ? new Date(it.addedAt).toISOString().slice(0,10) : '');
+  const p=(d||'').split('-'); if(p.length<2||!p[1]) return {key:'_undated', label:'Undated'};
+  const MO=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return {key:p[0]+'-'+p[1], label:(MO[+p[1]-1]||'')+' '+p[0]};
+}
 function renderGrid(){
   const grid=$('#grid'); const items=sortItems(current());
   $('#count').innerHTML='Showing <b>'+items.length+'</b> of '+ALL.length+' sources';
   grid.className = state.view==='rows' ? 'rows' : '';
   if(!items.length){ grid.className=''; grid.innerHTML='<div id="empty"><div class="g">✦</div><div class="big">Nothing matches</div><p>Try removing a filter or clearing the search.</p></div>'; return; }
+  // Month separators when browsing chronologically (like the reference), off during relevance-ranked search.
+  const grouped = (state.sort==='date' || state.sort==='added' || (state.sort==='relevance' && !state.q));
   const frag=document.createDocumentFragment();
+  let counts={}; if(grouped) items.forEach(it=>{ const k=monthOf(it).key; counts[k]=(counts[k]||0)+1; });
+  let lastKey=null;
   if(state.view==='rows'){
     for(const it of items){
       const el=document.createElement('article'); el.className='row'; el.dataset.id=it.id;
@@ -875,23 +978,28 @@ function renderGrid(){
     }
   } else {
     for(const it of items){
+      if(grouped){ const ml=monthOf(it); if(ml.key!==lastKey){ lastKey=ml.key;
+        const s=document.createElement('div'); s.className='month-sep';
+        s.innerHTML=esc(ml.label)+' <span class="ms-n">'+counts[ml.key]+' '+(counts[ml.key]===1?'source':'sources')+'</span>';
+        frag.appendChild(s); } }
       const desc = it.abstract || it.context || it.notes || (it.category?('Type: '+it.category):'') || it.url;
-      const tags = it.focus.concat(it.topics).slice(0,3).map(t=>'<span class="tg">'+esc(FOCUS_LABEL[t]||TOPIC_LABEL[t]||t)+'</span>').join('');
-      const src = (it.sender?'<span class="tg from">from '+esc(it.sender)+'</span>':'')
-        + it.origins.map(o=>'<span class="tg src'+(o==='Added by you'?' you':'')+'">'+esc(o)+'</span>').join('')
+      const tags = it.focus.concat(it.topics).slice(0,2).map(t=>'<span class="tg">'+esc(FOCUS_LABEL[t]||TOPIC_LABEL[t]||t)+'</span>').join('')
         + (it.via_linkedin?'<span class="tg li">via LinkedIn</span>':'')
         + (it.drive_url?'<span class="tg drive">Drive ✓</span>':'')
-        + (it.read_status?'<span class="tg" style="color:'+(READ_COLOR[it.read_status]||'var(--dim)')+';border-color:'+(READ_COLOR[it.read_status]||'var(--edge2)')+'66">'+esc(READ_LABEL[it.read_status])+'</span>':'');
+        + ((it.read_status&&it.read_status!=='read')?'<span class="tg" style="color:'+(READ_COLOR[it.read_status]||'var(--dim)')+';border-color:'+(READ_COLOR[it.read_status]||'var(--edge2)')+'66">'+esc(READ_LABEL[it.read_status])+'</span>':'');
       const el=document.createElement('article'); el.className='card'; el.dataset.id=it.id;
       el.innerHTML = cardCover(it)
         +'<div class="cbody"><div class="ctitle">'+esc(it.title)+'</div>'
         +'<div class="cdesc">'+esc(desc)+'</div>'
-        +'<div class="ctags">'+tags+src+'</div>'
+        +'<div class="ctags">'+tags+'</div>'
         +(it.userContext?'<div class="cctx"><span class="cctx-i">✎</span> '+esc(it.userContext)+'</div>':'')
         +'</div>'
-        +'<div class="cfoot"><span class="dot"></span>'+esc(it.provider)
-        +(it.date?'<span class="cdate">· '+esc(it.date)+'</span>':'')
-        +'<a class="open" href="'+esc(it.url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Opens '+esc(it.url)+'">'+esc(it.host||'open')+' ↗</a></div>';
+        +'<div class="cfoot"><span class="dot"></span><span class="cprov">'+esc(it.provider)+(it.date?' · '+esc(it.date):'')+'</span>'
+        +(it.sender?'<span class="cvia">via <b>'+esc(it.sender)+'</b></span>':'')
+        +'<span class="cfoot-r"><button class="copymd" title="Copy as Markdown">md</button>'
+        +'<a class="open" href="'+esc(it.url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Opens '+esc(it.url)+'">'+esc(it.host||'open')+' ↗</a></span></div>';
+      const cp=el.querySelector('.copymd'); if(cp) cp.onclick=(e)=>{ e.stopPropagation();
+        try{ navigator.clipboard.writeText('- ['+it.title+']('+it.url+') — '+(it.context||it.category||it.provider||'')); toast('Copied Markdown'); }catch(err){ toast('Copy unavailable'); } };
       el.onclick=()=>openDetail(it.id); frag.appendChild(el);
     }
   }
@@ -1153,7 +1261,8 @@ function parse(q){
 }
 function runQuery(q){
   const {types,topics,sources,wantCount}=parse(q);
-  let res=ALL.filter(it=>{
+  const POOL=askPool();
+  let res=POOL.filter(it=>{
     if(types.length && !types.includes(it.kind)) return false;
     if(sources.length && !sources.some(s=>it.origins.includes(s))) return false;
     if(topics.length){ const bag=it.focus.concat(it.topics); if(!topics.some(t=>bag.includes(t))) return false; }
@@ -1161,7 +1270,7 @@ function runQuery(q){
   });
   if(!types.length && !topics.length && !sources.length){
     const terms=q.toLowerCase().split(/\s+/).filter(w=>w.length>2);
-    res=ALL.map(it=>{ const hay=(it.title+' '+(it.notes||'')+' '+(it.context||'')+' '+it.provider+' '+it.category).toLowerCase();
+    res=POOL.map(it=>{ const hay=(it.title+' '+(it.notes||'')+' '+(it.context||'')+' '+it.provider+' '+it.category).toLowerCase();
       let s=0; terms.forEach(t=>{ if(it.title.toLowerCase().includes(t))s+=3; else if(hay.includes(t))s+=1; }); return {it,s}; })
       .filter(x=>x.s>0).sort((a,b)=>b.s-a.s).map(x=>x.it);
   }
@@ -1199,17 +1308,14 @@ function listAnswer(q){
 function getKey(){ if(SERVER) return MEMKEY||''; try{ return localStorage.getItem('stacks-anthropic-key')||''; }catch(e){ return ''; } }
 function setKey(k){ k=(k||'').trim(); if(SERVER){ MEMKEY=k; fetch('/api/key',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({apiKey:k})}).catch(()=>{}); return; } try{ localStorage.setItem('stacks-anthropic-key',k); }catch(e){} }
 function askForKey(pendingQ){
-  const b=chatBubble('bot','To answer questions about your sources I use Claude with your own Anthropic API key — stored only in this browser, never uploaded. Paste it to continue.');
-  const form=document.createElement('div'); form.style.cssText='display:flex;gap:6px;margin-top:8px';
-  form.innerHTML='<input type="password" placeholder="sk-ant-…" style="flex:1;padding:7px 10px;border:1px solid var(--edge);border-radius:9px;background:var(--bg2);color:var(--ink);font-size:12px"><button class="chat-send" style="width:auto;padding:0 14px;font-size:12px">Save</button>';
-  const inp=form.querySelector('input'), btn=form.querySelector('button');
-  btn.onclick=()=>{ if(inp.value.trim()){ setKey(inp.value); form.remove(); chatBubble('bot','Key saved in this browser. Ask away.'); if(pendingQ) ragAnswer(pendingQ); } };
-  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
-  b.appendChild(form); inp.focus();
+  const b=chatBubble('bot','To answer questions I use Claude with your own Anthropic key. Add it once in <b>Settings</b> — it’s saved '+(SERVER?'securely to your account and works on every device':'in this browser')+', and the Librarian uses it everywhere. Listing sources is always free.');
+  const btn=document.createElement('button'); btn.className='apply'; btn.textContent='Open Settings →';
+  btn.onclick=()=>{ closeChat(); openSettings(); setTimeout(()=>{ const f=$('#set-key'); if(f) f.focus(); },60); };
+  b.appendChild(btn);
 }
 function retrieve(q,k){
   const terms=q.toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(w=>w.length>2);
-  return ALL.map(it=>{ const t=it.title.toLowerCase(); const ab=(it.abstract||'').toLowerCase();
+  return askPool().map(it=>{ const t=it.title.toLowerCase(); const ab=(it.abstract||'').toLowerCase();
       const hay=t+' '+ab+' '+(it.context||'').toLowerCase()+' '+(it.notes||'').toLowerCase()+' '+it.focus.join(' ')+' '+it.topics.join(' ')+' '+it.provider.toLowerCase();
       let s=0; terms.forEach(x=>{ if(t.includes(x))s+=4; else if(ab.includes(x))s+=2; else if(hay.includes(x))s+=1; }); return {it,s}; })
     .filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,k||8).map(x=>x.it);
@@ -1250,13 +1356,13 @@ async function ragAnswer(q){
     const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
       headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-opus-4-8',max_tokens:1200,system:system,messages:[{role:'user',content:user}]})});
-    if(!resp.ok){ let t=''; try{t=await resp.text();}catch(e){} bubble.textContent = resp.status===401?'That API key was rejected. Set a valid Anthropic key with the ⚙ button.':('Anthropic error '+resp.status+': '+t.slice(0,180)); return; }
+    if(!resp.ok){ let t=''; try{t=await resp.text();}catch(e){} bubble.textContent = resp.status===401?'That API key was rejected. Update it in Settings.':('Anthropic error '+resp.status+': '+t.slice(0,180)); return; }
     const data=await resp.json();
     if(data.stop_reason==='refusal'){ bubble.textContent='The model declined to answer that one.'; return; }
     const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim()||'(no answer returned)';
     renderSourced(bubble, text, src, q);
     const meta=document.createElement('div'); meta.style.cssText='font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:6px'; meta.textContent='Answered from '+src.length+' sources'; bubble.appendChild(meta);
-  }catch(e){ bubble.textContent='Could not reach Anthropic (network or key issue). Check your connection and the ⚙ key.'; }
+  }catch(e){ bubble.textContent='Could not reach Anthropic (network or key issue). Check your connection and your key in Settings.'; }
 }
 function isListy(q){
   const ql=q.toLowerCase().trim();
@@ -1270,17 +1376,17 @@ function ask(q){
   if(isListy(q)) listAnswer(q); else ragAnswer(q);
 }
 
-function clearFilters(){ for(const f of FACETS) state.f[f.key].clear(); state.dateFrom=''; state.dateTo=''; state.resultSet=null; state.review=false; }
+function clearFilters(){ for(const f of FACETS) state.f[f.key].clear(); state.dateFrom=''; state.dateTo=''; state.resultSet=null; state.review=false; state.askScope='view'; }
 // Turn a Librarian result (a specific set of source ids) into a scoped main-grid view.
 function openAsView(label, ids){
   clearFilters(); state.q=''; const q=$('#q'); if(q) q.value='';
-  state.resultSet = { label: (label||'Librarian result').trim(), ids: new Set(ids) };
+  state.resultSet = { label: (label||'Librarian result').trim(), ids: new Set(ids) }; state.askScope='view';
   $('#chat').hidden=true; if(typeof setChatExpanded==='function') setChatExpanded(false);
   syncViewsUI(); sync(); render(); window.scrollTo({top:0,behavior:'smooth'});
 }
 function showModal(sel){ $(sel).hidden=false; document.body.style.overflow='hidden'; }
 function hideModal(sel){ $(sel).hidden=true; document.body.style.overflow=''; }
-function render(){ renderTimeline(); renderFacets(); renderPills(); renderResultBar(); renderGrid(); }
+function render(){ renderTimeline(); renderFacets(); renderPills(); renderResultBar(); renderGrid(); if(typeof renderChatScope==='function') renderChatScope(); }
 function sync(){ const p=new URLSearchParams(); if(state.q)p.set('q',state.q);
   for(const f of FACETS) if(state.f[f.key].size) p.set(f.key, Array.from(state.f[f.key]).join('~'));
   if(state.sort!=='relevance') p.set('sort',state.sort); if(state.view!=='cards') p.set('view',state.view);
@@ -1300,7 +1406,7 @@ $('#sort').addEventListener('change', e=>{ state.sort=e.target.value; render(); 
 $('#clear-all').onclick=()=>{ clearFilters(); state.q=''; $('#q').value=''; syncViewsUI(); sync(); render(); };
 $('#btn-add').onclick=openAdd;
 $('#btn-data').onclick=openData;
-$('#brand-home').onclick=()=>{ clearFilters(); state.q=''; const q=$('#q'); if(q) q.value=''; syncViewsUI&&syncViewsUI(); sync(); render(); window.scrollTo({top:0,behavior:'smooth'}); };
+$('#brand-home').onclick=openLanding;
 $('#btn-rail').onclick=()=>document.body.classList.toggle('rail-open');
 $('#btn-theme').onclick=()=>{ const d=document.documentElement.classList.toggle('dark'); localStorage.setItem('stacks-theme', d?'dark':'light'); };
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{ ['#modal','#addmodal','#datamodal'].forEach(hideModal); });
@@ -1308,17 +1414,35 @@ document.querySelectorAll('.scrim').forEach(s=>s.addEventListener('click',e=>{ i
 function setChatExpanded(on){ const c=$('#chat'); c.classList.toggle('expanded',on); $('#chat-backdrop').hidden=!on;
   const b=$('#chat-expand'); b.textContent=on?'⤡':'⤢'; b.title=on?'Shrink':'Expand to full screen'; b.setAttribute('aria-label',on?'Shrink':'Expand'); }
 function closeChat(){ $('#chat').hidden=true; setChatExpanded(false); }
-$('#fab').onclick=()=>{ const c=$('#chat'); c.hidden=!c.hidden; if(c.hidden) setChatExpanded(false); else $('#chat-in').focus(); };
+$('#fab').onclick=()=>{ const c=$('#chat'); c.hidden=!c.hidden; if(c.hidden) setChatExpanded(false); else { renderChatScope(); $('#chat-in').focus(); } };
 $('#chat-close').onclick=closeChat;
 $('#chat-expand').onclick=()=>{ setChatExpanded(!$('#chat').classList.contains('expanded')); $('#chat-in').focus(); };
 $('#chat-backdrop').onclick=()=>setChatExpanded(false);
 $('#chat-form').addEventListener('submit',e=>{ e.preventDefault(); const v=$('#chat-in').value; $('#chat-in').value=''; ask(v); });
 document.addEventListener('keydown',e=>{
   if(e.key==='/'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){ e.preventDefault(); $('#q').focus(); }
-  if(e.key==='Escape'){ if(!$('#settings').hidden){ closeSettings(); return; } const c=$('#chat'); if(!c.hidden && c.classList.contains('expanded')){ setChatExpanded(false); return; } ['#modal','#addmodal','#datamodal'].forEach(hideModal); closeChat(); }
+  if(e.key==='Escape'){ if(!$('#landing').hidden){ closeLanding(); return; } if(!$('#settings').hidden){ closeSettings(); return; } const c=$('#chat'); if(!c.hidden && c.classList.contains('expanded')){ setChatExpanded(false); return; } ['#modal','#addmodal','#datamodal'].forEach(hideModal); closeChat(); }
 });
 
-$('#chat-scope').innerHTML='I <b>list</b> instantly (free), or <b>answer</b> questions about your sources with citations — answering uses your own Anthropic key (⚙, kept only in this browser).';
+// Make it obvious whether the Librarian is answering within the current view or across the whole library.
+function renderChatScope(){
+  const el=$('#chat-scope'); if(!el) return;
+  const total=ALL.length;
+  if(viewActive()){
+    const n=current().length; const inView = state.askScope!=='all';
+    const label = state.resultSet ? state.resultSet.label : (state.review ? 'Needs review' : 'your current filters');
+    el.className='chat-scope'+(inView?' scoped':'');
+    el.innerHTML = inView
+      ? 'Asking <b>within your current view</b> — '+esc(label)+' · '+n+' source'+(n===1?'':'s')+'. <button class="scope-tog" id="scope-tog">Search all '+total+' instead</button>'
+      : 'Asking <b>across all '+total+' sources</b> (ignoring your view). <button class="scope-tog" id="scope-tog">Limit to this view ('+n+')</button>';
+    const t=$('#scope-tog'); if(t) t.onclick=()=>{ state.askScope = inView?'all':'view'; renderChatScope(); };
+  } else {
+    el.className='chat-scope';
+    el.innerHTML='Asking across all <b>'+total+'</b> sources. I <b>list</b> matches instantly (free); to <b>answer</b> questions I use your Anthropic key — add it once in <button class="scope-link" id="scope-set">Settings</button>.';
+    const s=$('#scope-set'); if(s) s.onclick=()=>{ closeChat(); openSettings(); };
+  }
+}
+renderChatScope();
 const PILLS=['Show me all the repos','Papers about ketamine','What do the papers say about rACC theta and antidepressant response?','EEG foundation models','Which sources say microstates need 20+ electrodes?','Grants &amp; fellowships','Podcasts to listen to'];
 // Pre-baked, grounded answers so the marquee question pills return instantly (no key, no wait).
 // Answers were composed from the actual source full text; ids[n-1] is citation [n].
@@ -1339,7 +1463,6 @@ function askPill(pillText){
 }
 $('#chat-pills').innerHTML=PILLS.map(p=>'<button>'+p+'</button>').join('');
 $('#chat-pills').querySelectorAll('button').forEach(b=>b.onclick=()=>askPill(b.textContent));
-$('#chat-key').onclick=()=>{ $('#chat').hidden=false; askForKey(null); };
 const QUICK=[{l:'Papers',k:'kind',v:['paper']},{l:'Repos & models',k:'kind',v:CODE_KINDS},{l:'Videos',k:'kind',v:['video']},{l:'Podcasts',k:'kind',v:['podcast']},{l:'Companies',k:'kind',v:['company']},{l:'Grants',k:'kind',v:['grant']},{l:'Articles',k:'kind',v:['article']},{l:'⚠ Needs review',review:true}];
 function renderQuick(){ const el=$('#quicklists'); if(!el) return;
   const rev=ALL.filter(needsReview).length;
