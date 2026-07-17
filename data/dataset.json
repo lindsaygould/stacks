@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-16",
+ "generated": "2026-07-17",
  "counts": {
   "total": 628,
   "papers": 300,
@@ -114,15 +114,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "arXiv paper/preprint",
+   "context": "I loved this piece by Ashish Jha in The Washington Post. His framing of AI as a co-pilot for physicians resonates with me. In the traditional model, medicine is often reactive and episodic, catching problems only after disease has already taken hold. AI can widen diagnostic thinking, reduce tunnel vision, and help ensure nothing critical is missed - especially when visits have to occur in 10-minute intervals to handle the sheer volume of patient needs. That is real progress. AI is not just a co-pilot for doctors. It can be a co-pilot for us and our loved ones. I know this personally. I lost my grandfather to a heart attack after he endured a quadruple bypass. I watched my dad go on a vicious health spiral and die a few years after his stroke. Those were not abstract statistics. They were warnings and lost time with my own family. Instead of waiting for my numbers to gradually worsen, I shared my family history of high cholesterol and cardiovascular disease with an LLM. The model walked me through the actual guidelines, the risk curves, and what sustained LDL exposure really means over decades. Together, we set a data-driven LDL target designed to materially reduce lifetime ASCVD risk. We reviewed the medicines that lower LDL, the particles that accumulate silently for years before suddenly stealing life from years. Then it built a structure around it. A tracker for every blood",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "thumbs/p2.png",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "2023-09",
    "drive_url": "https://drive.google.com/file/d/1O5p_pR-Jer9_ktOaTKIXqCtm0UB3i62e/view",
-   "sender": "",
+   "sender": "Alex Karnal",
    "abstract": "Recent efforts have augmented large language models (LLMs) with external resources (e.g., the Internet) or internal control flows (e.g., prompt chaining) for tasks requiring grounding or reasoning, leading to a new class of language agents. While these agents have achieved substantial empirical success, we lack a systematic framework to organize existing agents and plan future developments. In this paper, we draw on the rich history of cognitive science and symbolic artificial intelligence to propose Cognitive Architectures for Language Agents (CoALA). CoALA describes a language agent with modular memory components, a structured action space to interact with internal memory and external environments, and a generalized decision-making process to choose actions. We use CoALA to retrospectively survey and organize a large body of recent work, and prospectively identify actionable directions towards more capable agents. Taken together, CoALA contextualizes today's language agents within the broader history of AI and outlines a path towards language-based general intelligence.",
    "content": "content/p2.txt",
    "read_status": "read"
@@ -148,15 +148,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "arXiv paper/preprint",
+   "context": "The secret to building better foundation models is not massive compute, it is a smarter inductive bias. Standard foundation model recipes are predictable: tokenize the input, mask a portion, and train a transformer to guess the rest. But when you apply this brute-force approach to continuous, highly asymmetrical signals like brain activity, the architecture actively fights the data. Three new papers on EEG foundation models reveal what happens when you design for the signal instead of defaulting to scale. Rather than chopping continuous waveforms into arbitrary patches, models like BFM2 and REST-GAN process raw signals directly. By using techniques like continuous-time flow matching and generative adversarial networks, they respect the temporal dynamics of the brain. BFM2 even factorizes its architecture to preserve the spatial topology of scalp electrodes while heavily downsampling the time axis. The payoff is massive: it achieves state-of-the-art results using thirty times less pretraining data than competing models. But there is an uncomfortable systems implication. These efficient architectures are now generating synthetic brain signals so realistic that board-certified neurologists cannot distinguish them from real patient data. Simultaneously, models like NeuroShield are attempting to turn EEG into a device-agnostic biometric for identity authentication. The liveness and",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "thumbs/p3.png",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "2025-03",
    "drive_url": "https://drive.google.com/file/d/1dSWEpLUXjDTXDkK37dGHgVyoxxkDzWOA/view",
-   "sender": "",
+   "sender": "Soroush Sarabi",
    "abstract": "Resting-state EEG provides a non-invasive view of spontaneous brain activity, but extracting meaningful patterns is often limited by scarce high-quality data and reliance on manually engineered features. Generative adversarial networks (GANs) can synthesize neural signals and learn transferable representations directly from raw data, a dual capability that remains underexplored in EEG research. Here, we introduce REST-GAN, a GAN-based framework for resting-state EEG that combines adversarial training with an auxiliary self-supervised reconstruction objective to support signal synthesis and unsupervised feature extraction. Although trained only on raw time-domain signals, without explicit frequency-domain or sensor-topographic supervision, the generated time series reproduced key temporal, spectral, and connectivity properties of real EEG. In band-power feature space, generated samples showed high precision and recall across eyes-open and eyes-closed conditions (EO: 0.91/0.67; EC: 0.87/0.65), while group-average spectral coherence matrices showed low mean absolute differences from real data across frequency bands (~0.01-0.03). The representations learned by the model's critic transferred to independent resting-state demographic classification tasks, outperforming models trained directly on raw EEG and showing competitive performance relative to a recent EEG foundation model, while requiring substantially less training data and computational resources. These findings highlight a computationally efficient, architecture-driven strategy in which generative models serve not only as EEG signal generators, but also as unsupervised feature extractors. This approach may support more data-efficient EEG analysis while reducing reliance on manual feature engineering. The implementation code for REST-GAN is available at: https://github.com/Yeganehfrh/REST-GAN.",
    "content": "content/p3.txt",
    "read_status": "read"
@@ -458,15 +458,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "arXiv paper/preprint",
+   "context": "A startup copied our sales playbook that got us to our first $10M ARR. You can too. To make it easier, here it is in one place. Getting your first customers How I got my first 100 customers:[ https://lnkd.in/gr99AVPa ](https://www.linkedin.com/safety/go/?url=https%3A%2F%2Flnkd%2Ein%2Fgr99AVPa&urlhash=UUjA&mt=CJf_SdYIO_oF-qEC3iUpQ7eeCfFvSPOt8JUDjNw469FI57i3O-ons5OrK7nh97IiFf6VjPJ6c0gSJ1dA4YQcGnpKQzQlHgtO5QA7ioBeOO1xtfIYKSb0kA&isSdui=true)Messaging:[ https://lnkd.in/gHceepNW ](https://www.linkedin.com/safety/go/?url=https%3A%2F%2Flnkd%2Ein%2FgHceepNW&urlhash=AkDS&mt=X0J28iGAK68jkh5JyclpfCveM6fe7kqHZao6oh00Y9dt9El-UGuFmw1VNpk-NcoKikl75in5oX6jD3z6KXnfpAeQsSFkZb043SEx-Fg8EGHQFhaXDFYQ0A&isSdui=true)----- Founder-led Sales Discovery talk track:[ https://lnkd.in/gAnr6raM ](https://www.linkedin.com/safety/go/?url=https%3A%2F%2Flnkd%2Ein%2FgAnr6raM&urlhash=XzSx&mt=7XCaiFJjFeilTI7vEKMSBbt5vGqTQXDxThlQ0s6OP6ETxpTIpoDv79nVsulc8k4gzGagOqFeim-BW-ZaNQKGfrZ6eY-p17magA8jbEfKTU5Mw025Az_NQw&isSdui=true)Demo talk track:[ https://lnkd.in/gyFeM4GF ](https://www.linkedin.com/safety/go/?url=https%3A%2F%2Flnkd%2Ein%2FgyFeM4GF&urlhash=baKT&mt=qUa3lClhKiTAeuo78G1QjVk2uRWvYkLztbaT666UPQv3GhIOL1NRgMHqft7jEzQ0HSOKmlF2z0StyMKzwRYmuj07v3ThnczjBV8nbt7xB14tBdhfwlm4xQ&isSdui=true)Qualification framework:[ https://lnkd.in/guf59C5K ](https://www.linkedin.com/safety/go/?url=https%3A%2F%2Flnkd%2Ein%2Fguf59C5K&urlhash",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "thumbs/p12.png",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "2026-03",
    "drive_url": "https://drive.google.com/file/d/1LNaFl3Rmj9rW9fmJCBnGjcbdrhscUUJ7/view",
-   "sender": "",
+   "sender": "Amanda Zhu",
    "abstract": "We propose that the jagged intelligence landscape of modern AI systems arises from a missing training signal that we call \"cognitive dark matter\" (CDM): brain functions that meaningfully shape behavior yet are hard to infer from behavior alone. We identify key CDM domains-metacognition, cognitive flexibility, episodic memory, lifelong learning, abductive reasoning, social and common-sense reasoning, and emotional intelligence-and present evidence that current AI benchmarks and large-scale neuroscience datasets are both heavily skewed toward already-mastered capabilities, with CDM-loaded functions largely unmeasured. We then outline a research program centered on three complementary data types designed to surface CDM for model training: (i) latent variables from large-scale cognitive models, (ii) process-tracing data such as eye-tracking and think-aloud protocols, and (iii) paired neural-behavioral data. These data will enable AI training on cognitive process rather than behavioral outcome alone, producing models with more general, less jagged intelligence. As a dual benefit, the same data will advance our understanding of human intelligence itself.",
    "content": "content/p12.txt",
    "read_status": "read"
@@ -492,15 +492,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "arXiv paper/preprint",
+   "context": "Most systems try to improve reasoning by pushing a single model harder. Larger models, longer chains of thought, more tuning. This is wrong. In “Agentic AI and the Next Intelligence Explosion”, the Google Paradigms of Intelligence team points to something more concrete. Even within a single model, better performance shows up when the model implicitly runs multiple lines of reasoning, checks them against each other, and resolves disagreements. The model is not just extending a thought. It is coordinating several partial thoughts. The paper goes further and reframes intelligence itself. What we call “intelligence” has never been a property of an individual unit. Human reasoning is already collective. Language, writing, institutions, and markets all externalize cognition across many participants. Large models are trained on that accumulated output. What sits inside the model is already a compressed form of social reasoning. This is why the internal behavior looks the way it does. When pushed to solve harder tasks, the model reconstructs interaction. It creates multiple viewpoints because that is the structure it learned from. Once you take that seriously, system design changes. The goal is no longer to build a stronger standalone agent. The goal is to construct a system where interaction is explicit and controlled. Agents are not just tools attached to a model. They become roles i",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "thumbs/p13.png",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "2026-03",
    "drive_url": "https://drive.google.com/file/d/1k5mbYcJ_7Oks1DnDi611hWSR7UVaL3hr/view",
-   "sender": "",
+   "sender": "Sohrab Rahimi",
    "abstract": "The \"AI singularity\" is often miscast as a monolithic, godlike mind. Evolution suggests a different path: intelligence is fundamentally plural, social, and relational. Recent advances in agentic AI reveal that frontier reasoning models, such as DeepSeek-R1, do not improve simply by \"thinking longer\". Instead, they simulate internal \"societies of thought,\" spontaneous cognitive debates that argue, verify, and reconcile to solve complex tasks. Moreover, we are entering an era of human-AI centaurs: hybrid actors where collective agency transcends individual control. Scaling this intelligence requires shifting from dyadic alignment (RLHF) toward institutional alignment. By designing digital protocols, modeled on organizations and markets, we can build a social infrastructure of checks and balances. The next intelligence explosion will not be a single silicon brain, but a complex, combinatorial society specializing and sprawling like a city. No mind is an island.",
    "content": "content/p13.txt",
    "read_status": "read"
@@ -594,15 +594,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "arXiv paper/preprint",
+   "context": "Super excited to announce the release of our research, OpenJarvis, at Stanford! As discourse around AI largely centers around cloud and larger data centers, we believe local first intelligence will be the future. OpenJarvis is the most functional, complete, secure, and ipw-efficient personal AI assistant that lives, learns, and works on your device. Download it below and try it out! [https://lnkd.in/gSuYmbgP ](https://www.linkedin.com/safety/go/?url=https%3A%2F%2Flnkd%2Ein%2FgSuYmbgP&urlhash=69jV&mt=Tqo6COKQoASQ_RVLX3np4sIqbO5YNKnjCufoJZUF0D1rU48etEG3wZuOwFdSQeWVw_2e3GLa3ZdIAclXt2-Y0yOVpCWyxmCie6cf2SmWZLOjwPCrGTGpAQ&isSdui=true)https://lnkd.in/gb7_rWdY https://arxiv.org/abs/2605.17172",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "thumbs/p16.png",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "2026-05",
    "drive_url": "https://drive.google.com/file/d/1zlzQppPiOcOPQMN5HWyoQd6ZmcuMyLCT/view",
-   "sender": "",
+   "sender": "Tanvir Bhathal",
    "abstract": "Personal AI stacks, like OpenClaw and Hermes Agent, are becoming central to daily work, yet they route nearly every query (often over sensitive local data) to cloud-hosted frontier models. Replacing frontier models with local models inside existing stacks does not work: swapping Claude Opus 4.6 for Qwen3.5-9B drops accuracy by 25-39 pp across personal AI tasks like PinchBench and GAIA. Existing stacks bundle agentic prompts, tool descriptions, memory configuration, and runtime settings around a specific cloud model. Only the prompts can be tuned, and state-of-the-art prompt optimizers close just 5 pp of the local-cloud gap on their own. This motivates a decomposed personal AI stack: one that exposes individual primitives which can be optimized individually or jointly to close the local-cloud gap. We present OpenJarvis, an architecture that represents a personal AI system as a typed spec over five primitives: Intelligence, Engine, Agents, Tools & Memory, and Learning. Each primitive is an independently editable field, making the stack end-to-end optimizable and measurable against accuracy, cost, and latency. Towards closing the local-cloud gap without surrendering local-model properties, OpenJarvis introduces LLM-guided spec search, a local-cloud collaboration in which frontier cloud models propose edits across the spec at search time, only non-regressing edits are accepted, and the resulting spec runs entirely on-device at inference time. With LLM-guided spec search, on-device specs match or exceed cloud accuracy on 4 of 8 benchmarks and land within 3.2 pp of the best cloud baseline on average. They also reduce marginal API cost by ~800x and end-to-end latency by 4x.",
    "content": "content/p16.txt",
    "read_status": "read"
@@ -628,15 +628,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "arXiv paper/preprint",
+   "context": "The most interesting thing in tech: a new paper argues that a form of sleep for AI might help solve some of the memory issues we see with models. Context windows have gotten a lot better in recent years, but the longer and harder a task is, the worse a model does. By using a sleep phase to process that information into memory, we might be able to boost performance. <https://arxiv.org/pdf/2605.26099> <https://massaicoalition.com/unicorns>",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "thumbs/p17.png",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "2026-05",
    "drive_url": "https://drive.google.com/file/d/1MXVDbPrWGambRfcSCXD98QlDlVXGhtsP/view",
-   "sender": "",
+   "sender": "Nicholas Thompson",
    "abstract": "Transformer-based large language models are increasingly used for long-horizon tasks; however, their attention mechanism scales poorly with context length. To handle this, we study a sleep-like consolidation mechanism in which a model periodically converts recent context into persistent fast weights before clearing its key-value cache. During sleep, the model performs $N$ offline recurrent passes over the accumulated context and updates the fast weights in its state-space model (SSM) blocks through a learned local rule. During inference, this shifts extra computation to sleep while preserving the latency of wake-time prediction. We test our method on controlled synthetic tasks, including cellular automata and multi-hop graph retrieval, as well as a realistic math reasoning task, on which a regular transformer as well as SSM-attention hybrid models fail. We then show that increasing sleep duration $N$ for our models improves performance, with the largest gains on examples that require deeper reasoning.",
    "content": "content/p17.txt",
    "read_status": "read"
@@ -868,15 +868,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "arXiv paper/preprint",
+   "context": "A patient who once sat through 43-minute TMS sessions can now finish treatment in three. Those three minutes are only possible because TMS has advanced on two fronts over 15 years: faster protocols, and targeting built around each individual brain - rather than one coil position applied the same way to every patient. That second advance matters because cortical anatomy varies from person to person: a target defined by population averages lands in a slightly different location in each patient. This is where neuronavigation changes the clinical picture. ðð¨ð¡ðð§ & ðð¬ð¬ð¨ðð¢ðð­ðð¬, a US psychiatric practice specializing in interventional TMS, uses visor2™ to set coil placement against each patient's own neuroanatomy, identify the motor hotspot through motor mapping, determine the motor threshold using EMG, and hold that position session to session. For accelerated theta burst protocols delivered in minutes, reproducibility like that matters. Neuronavigation does not replace clinical judgment. It gives clinicians a more accurate, repeatable way to act on decisions they were already making. Full clinical application:[ https://lnkd.in/e_RYXRHk ](https://www.linkedin.com/safety/go/?url=https%3A%2F%2Flnkd%2Ein%2Fe_RYXRHk&urlhash=IoK8&mt=1KsTHqIdo1TTFLqy0xlNjaSWXLujbRVnuGUDR87DfyWNdNCWy5BQHuhOWHTG51pflFn7vFZmdPkMSX4K_jgGmpLeNzgEGalWQo_2GspfOXnYMP6YIo",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "thumbs/p24.png",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "2026-07",
    "drive_url": "https://drive.google.com/file/d/1HxJB_iGNUqjupOLDF95ZnOSVZzJ6qqcG/view",
-   "sender": "",
+   "sender": "Minha Hwang",
    "abstract": "Scientific machine learning papers typically make computational claims, e.g., that the relative mean square error is less than 5% or that the 95% predictive credible interval covers the test data. A coding agent can be prompted to replicate those claims from paper materials alone, but the prompt does not by itself reliably preserve progress or check whether generated evidence supports the paper's claims. We introduce Paper-replication, a workflow that makes each selected paper claim a target with recorded evidence, and implement it as a coding-agent skill. The workflow makes the agent record those targets, reconstruct the paper's method, run computational experiments, link generated outputs to provenance and comparisons with the paper's claims, record where matched evidence appears in the replication report, and pass validation checks before completion. We evaluate Paper-replication on twelve independent runs across four scientific machine learning papers. All twelve workspaces pass the completion gate, and all 158 recorded targets are matched with report coverage. Even in this completed workspace state, repeated runs differ in how papers are divided into targets, in numerical fidelity to the source papers, in elapsed replication time, in the number of intermediate executions replaced before final evidence is accepted, and in the rules used to accept evidence. Paper-replication makes completion depend on workspace evidence and validation checks rather than on the agent's final message.",
    "content": "content/p24.txt",
    "read_status": "read"
@@ -1040,15 +1040,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "Publisher/journal article page",
+   "context": "“I want them to use technology to examine my brain to really know what is wrong with me.” A patient handed me that note during residency. I haven’t stopped thinking about it since. In our new review in the ðð¦ðð«ð¢ððð§ ðð¨ð®ð«ð§ðð¥ ð¨ð ðð¬ð²ðð¡ð¢ðð­ð«ð², “ðððð ðððððð§ððð ðµðððð ðð¡ððð¢ððð¡ððð ððð ðð ð¦ðℎððð¡ððð ð·ðð ðððððð : ð¹ððð ð¶ðððð¢ðð¡ð  ð¡ð ð¶ððð ðð-ð¿ððð ð¶ððð¡ððð” Christopher Cline and I at Precision Neurotherapeutics Lab @ Stanford University in the Wu Tsai Neurosciences Institute at Stanford University School of Medicine explore what it would take to truly personalize brain stimulation for psychiatric disorders. Two decades into clinical use, TMS still only helps \\~50% of patients with depression. Meaningful progress for sure, but we still have a ways to go. For a field with fMRI guided targeting, robotic positioning, and accelerated one day treatment protocols, there is clear room to improve. The core idea is simple: Personalized brain stimulation requires validated biological signals that tell us, in real time, what the brain is doing and how it is changing. We outline a roadmap: ➤ U",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Corey Keller",
    "abstract": "Transcranial magnetic stimulation (TMS) is an established treatment for depression, yet response rates remain at 50% 1 month after treatment. Despite two decades of clinical use, substantial room for improvement remains. This overview examines biomarker-guided personalization of brain stimulation. The authors trace the translational path from invasive circuit-level insights through noninvasive biomarkers to clinical deployment. With validated biomarkers, systematic optimization becomes possible: stimulation parameter tuning, state-dependent approaches, augmentation strategies, and closed-loop systems. The path forward requires randomized trials demonstrating that biomarker-guided personalization improves outcomes beyond standard care, justifying increased complexity and costs. Success would mark an important pathway in interventional psychiatry's evolution to precision medicine.",
    "content": "",
    "read_status": "needs_pdf"
@@ -1414,15 +1414,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "ScienceDirect journal article page",
+   "context": "Excited to share that my meta-analysis on combined noninvasive brain stimulation with evidence-based psychotherapy was just published in its final form in Neuroscience and Biobehavioral Reviews! Thank you so much to all the authors for being so wonderful to work with. More work to come on brain stimulation as I start my PhD! https://www.sciencedirect.com/science/article/pii/S0149763426002435 How do we take advantage of the AI moment in neuroscience? Neuroscience is too much of an empirical science to expect a \\*country of geniuses in a datacenter\\* to build a science of intelligence, or solve all neuropsychiatric disorders. We have to build integrated systems to acquire data, build models, and test them judiciously. New capital from the coming 3rd era of American philanthropy unlocked by  AI lab IPOs can bootstrap this. I wrote a hype-free essay on fantastic neuroAI projects and how to fund them on the Amaranth Foundation blog. https://lnkd.in/eJ_8vTTe https://blog.amaranth.foundation/p/building-ai-neuroscience-from-atoms",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "https://drive.google.com/file/d/1NcXc6rninr9dRxSGCF4SOpApTezAsNtL/view",
-   "sender": "",
+   "sender": "Eva Wiener",
    "abstract": "",
    "content": "content/p40.txt",
    "read_status": "read"
@@ -1448,15 +1448,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "ScienceDirect journal article page",
+   "context": "\"It is either the most exciting new treatment for depression in years or it is a hallucinogenic club drug that is wrongly being dispensed to desperate patients in a growing number of clinics around the country.\" This statement, from a 2014 New York Times article titled “Special K, a Hallucinogen, Raises Hopes and Concerns as a Treatment for Depression,” highlighted the “wild west” nature of ketamine clinics emerging at that time, often led by providers lacking adequate mental health expertise or proper clinical protocols. I was interviewed and photographed for that article as \"one of the few academic psychiatrists offering ketamine as a treatment.\" By 2014, I had already been using ketamine to treat depression for six years, having launched the first ketamine treatment program in 2008, during my tenure at UC San Diego. Fast forward 12 years from that article. This groundbreaking therapy—once viewed with skepticism and considered a risky practice by many—took another significant step toward legitimacy with the acceptance for publication last week of consensus guidelines on the use of ketamine for depressive disorders, authored by an interdisciplinary team of experts in the Journal of Affective Disorders. I feel honored to have contributed as one of the expert authors and am sincerely grateful to my co-authors, especially David Mathai, MD and L. Alison McInnes  MD, MS, for their",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "https://drive.google.com/file/d/1dpjEc_1nYb5RAnuKVQRBWjV-4m6z-HV8/view",
-   "sender": "",
+   "sender": "David Feifel, MD, PhD",
    "abstract": "",
    "content": "content/p41.txt",
    "read_status": "read"
@@ -1760,15 +1760,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "PubMed Central full-text article",
+   "context": "The number of times I’ve had the “brain scan” conversation in the office… A patient (and I don’t blame them) wants to see something. They want an image. A marker. Proof that what they’re feeling has a physical correlate. And every time, I have to explain the same frustrating truth: for most psychiatric conditions, the resolution just isn’t there yet. You can spend thousands on a snazzy fMRI and, more often than not, I’ll still be left saying some version of, “Yep… there’s a brain in there.” But I almost always end that conversation the same way: “It’s so close I can taste it.” Today, I got a taste. A new pilot study led by Iain Campbell examined a ketogenic diet in individuals with bipolar disorder and paired it with something we desperately need more of in psychiatry: physiology tracked in real time, alongside brain imaging that can actually move in response to an intervention. Participants measured daily ketone levels and reported daily mood states. Higher ketone levels correlated with better self-rated mood and energy, and lower anxiety and impulsivity. At the same time, magnetic resonance spectroscopy showed reductions in Glx (glutamate + glutamine) in cingulate regions—areas we already suspect are involved in mood regulation and excitatory tone. This is not a “keto cures bipolar disorder” post. It was a small, open-label pilot study without a control group. It doesn’t prov",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "https://cdn.ncbi.nlm.nih.gov/pmc/cms/images/pmc-card-share.jpg?_=0",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "William Sauvé, MD",
    "abstract": "Background Preliminary evidence suggests that a ketogenic diet may be effective for bipolar disorder. Aims To assess the impact of a ketogenic diet in bipolar disorder on clinical, metabolic and magnetic resonance spectroscopy outcomes. Method Euthymic individuals with bipolar disorder ( N = 27) were recruited to a 6- to 8-week single-arm open pilot study of a modified ketogenic diet. Clinical, metabolic and MRS measures were assessed before and after the intervention. Results Of 27 recruited participants, 26 began and 20 completed the ketogenic diet. For participants completing the intervention, mean body weight fell by 4.2 kg ( P < 0.001), mean body mass index fell by 1.5 kg/m 2 ( P < 0.001) and mean systolic blood pressure fell by 7.4 mmHg ( P < 0.041). The euthymic participants had average baseline and follow-up assessments consistent with them being in the euthymic range with no statistically significant changes in Affective Lability Scale-18, Beck Depression Inventory and Young Mania Rating Scale. In participants providing reliable daily ecological momentary assessment data ( n = 14), there was a positive correlation between daily ketone levels and self-rated mood ( r = 0.21, P < 0.001) and energy ( r = 0.19 P < 0.001), and an inverse correlation between ketone levels and both impulsivity ( r = −0.30, P < 0.001) and anxiety ( r = −0.19, P < 0.001). From the MRS measurements, brain glutamate plus glutamine concentration decreased by 11.6% in the anterior cingulate cortex ( P = 0.025) and fell by 13.6% in the posterior cingulate cortex ( P = <0.001). Conclusions These findings suggest that a ketogenic diet may be clinically useful in bipolar disorder, for both mental health and metabolic outcomes. Replication and randomised controlled trials are now warranted.",
    "content": "content/p50.txt",
    "read_status": "read"
@@ -1896,15 +1896,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "PubMed record; use full-text links/PDF if available",
+   "context": "ð§  Before taking neuroscience to the field, you need to know where to look. EEG studies of motor performance sit on a spectrum between signal quality and ecological validity. At one end: stationary lab EEG with maximal signal quality and low ecological validity. In the middle: lab-grade wireless EEG still in the lab with repeatable and constrained sport movements. At the other end: fully ecological field recordings with maximal behavioral realism and maximal noise. Piskin et al. (2025) is a middle-of-the-spectrum study. They used a 65-channel mobile EEG system (actiCap, Brain Products GmbH) during a kicking task performed in a controlled lab setting. They analyzed multiscale entropy, a method used to measure brain signal complexity across different timescales. They found that experts showed lower neural entropy than novices, but not everywhere. Frontal regions differed at larger timescales, linked by the authors to overall movement coordination. Centroparietal regions differed at shorter timescales, linked to precise sensorimotor control. Lower entropy was also associated with better kicking accuracy. Moreover, lower entropy correlated with better kicking accuracy. ð¥ The methodological point is straightforward: when you sample densely in a controlled movement context, you can see where in the brain and at what temporal scales the effects emerge. Without that, you are guess",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image-v2.jpg",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Roksana Semenyuk",
    "abstract": "Multiscale entropy (MSE) as a measure of brain complexity provides substantial insights into the adaptability of the brain. However, it is often applied to resting-state electroencephalography (EEG) or in static tasks. The current study assessed the reliability, validity and classification accuracy of MSE computed on mobile EEG data for linking brain complexity to motor performance within a kicking task. Eleven novice participants underwent repeated measurements to assess test-retest reliability, while the data from 15 novices and 15 football players were used to evaluate known-groups validity, convergent validity and classification accuracy. EEG data were recorded using 65 active electrodes and MSE estimates were computed for 64 time scales on preprocessed data. Results showed poor to excellent reliability for MSE estimates, exhibiting channel- and scale-specific variations, with reliability generally higher at fine-to-mid scales. Experts exhibited significantly lower entropy at coarse scales in left frontal and at fine scales in centroparietal regions compared to novices. Negative correlations were found between entropy estimates and kicking accuracy. Receiver operating characteristic curves of entropy estimates and their principal components demonstrated moderate to good classification accuracy between expertise levels. These findings suggest MSE as a promising metric for investigating brain complexity in movement contexts, revealing distinct patterns of complexity associated with motor performance. Future research across diverse tasks and populations is crucial to further elucidate this relationship and explore the applied potential of MSE.",
    "content": "",
    "read_status": "needs_pdf"
@@ -1964,15 +1964,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "Publisher/journal article page",
+   "context": "We've been targeting the prefrontal cortex to treat depression for decades. But exactly where those signals travel in the brain? That's been a mystery...until now. Our new paper in ðð«ðð¢ð§ 'ðð¢ð ð¡-ð«ðð¬ð¨ð¥ð®ð­ð¢ð¨ð§ ðð¥ððð­ð«ð¨ð©ð¡ð²ð¬ð¢ð¨ð¥ð¨ð ð¢ððð¥ ð¦ðð©ð©ð¢ð§ð  ð¨ð ðððððð­ð¢ð¯ð ðð¨ð§ð§ððð­ð¢ð¯ð¢ð­ð² ð¨ð ð¥ðð­ðð«ðð¥ ð©ð«ððð«ð¨ð§ð­ðð¥ ðð¨ð«ð­ðð±' presents the largest probabilistic map of effective connectivity of the human lateral prefrontal cortex (LPFC) ever assembled. These maps were built from \\~50,000 stimulation runs across 700 patients. The recordings come from patients undergoing intracranial brain monitoring, providing millisecond temporal resolution and millimeter-scale spatial precision in the human brain. Key findings: ➤ Afferent and efferent patterns in the human brain are remarkably symmetric (R² = 0.93), suggesting a general principle of reciprocal connectivity across the LPFC ➤ Inferior frontal gyrus (IFG) is more broadly connected than classic DLPFC targets used in many therapies ➤ Posterior DLPFC shows stronger connections to large-scale networks than anterior DLPFC ➤ LPFC’s path to limbic structures (amygdala, hippocampus) is largely polysyn",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Corey Keller",
    "abstract": "",
    "content": "content/p56.txt",
    "read_status": "read"
@@ -2142,15 +2142,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "Cell Press full-text article page",
+   "context": "What if cognition and consciousness emerge not from individual brain states, but from the way the brain transitions between them? A fascinating new Trends in Neurosciences review explores EEG microstates—brief, recurring patterns of brain activity that may represent fundamental units of large-scale neural dynamics. The paper connects these transient states to cognition, consciousness, schizophrenia, Alzheimer's disease, sleep, anesthesia, and disorders of consciousness, while also challenging several long-standing assumptions in the field. This review also brought me back to questions I explored years ago regarding neuromodulation and cortical state dynamics. For anyone interested, I've shared a related paper in the comments below. Highly recommended. ð Trends in Neurosciences review: <https://www.cell.com/trends/neurosciences/fulltext/S0166-2236(26)00074-3>",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Yalda Fazlali, Ph.D.",
    "abstract": "",
    "content": "",
    "read_status": "needs_pdf"
@@ -2246,15 +2246,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "Publisher/journal article page",
+   "context": "How reliable are standardized psychiatric diagnostic interviews when repeated with the same patient only days apart? A new meta-analysis examined test–retest reliability across 57 studies involving more than 8,000 adults. The findings are striking: standardized diagnostic interviews showed only moderate consistency overall, and reliability varied substantially across disorders. In some cases, individuals received different diagnoses when reassessed just 7–14 days later using the same interview method. The results suggest that structured interviews may work better for conditions with clearer behavioral manifestations or timelines than for disorders relying heavily on subjective experience, interpretation, and clinical judgment. The study adds to the accumulating evidence that we should reconsider treating standardized diagnostic interviews as a “gold standard” in psychiatric assessment. https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2849585",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Julie Nordgaard",
    "abstract": "",
    "content": "",
    "read_status": "needs_pdf"
@@ -2592,15 +2592,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "Publisher/journal article page",
+   "context": "ð§  ðð ð®ð¬ð ððð ð­ð¨ ð­ð«ððð­ ððð©ð«ðð¬ð¬ð¢ð¨ð§ ðð¯ðð«ð² ððð². But we have never directly recorded what it does inside the human brain. Until now. In this paper, we combined transcranial magnetic stimulation (TMS) with intracranial EEG recordings in neurosurgical patients. This allowed us to directly measure how TMS affects human brain activity with millisecond precision. ðð¡ð ðð¡ðð¥ð¥ðð§ð ð TMS is FDA cleared and widely used for depression. But its mechanism in the brain has remained surprisingly unclear. Surface EEG and fMRI have been used to study TMS, but they lack either the spatial or temporal resolution needed to see what is actually happening in neural circuits. Intracranial recordings could solve this problem. But current safety guidelines list implanted hardware as a contraindication for TMS, and no one had systematically tested whether it was safe or measurable. ðð¡ðð­ ð°ð ðð¢ð After validating safety in a phantom brain model, we delivered single TMS pulses to the dorsolateral prefrontal cortex (dlPFC), the main clinical target for depression treatment. At the same time, we recorded brain activity from 1,414 intracranial electrodes in 22 neurosurgical patients. ðð¡ðð­ ð°ð ðð¨ð®ð§ð ð¿ðððð ðð",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "https://drive.google.com/file/d/1aDzu6UT1WbE78vXjHpCHGcz5rWgEHTlk/view",
-   "sender": "",
+   "sender": "Corey Keller",
    "abstract": "",
    "content": "",
    "read_status": "needs_pdf"
@@ -2660,15 +2660,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "Publisher/journal article page",
+   "context": "Quite interesting: “Compared to psilocybin, 2C-B exhibited less pronounced reductions in between-network dFC but elicited elevations in transmodal sFC.” Gemini: “If psilocybin is like melting the walls between every room in a house so everyone can mingle anywhere (\"ego dissolution\"), 2C-B is more like turning up the volume and strengthening the phone lines between the most important executive offices in the house. This explains why people often describe 2C-B as being more \"clear-headed\" or \"manageable\" than psilocybin; it enhances certain types of complex brain activity without completely dissolving the brain's organizational structure.” Curious how these different dimensions (dFC, sFC, complexity) map onto acute cognition. Of course, these are high level dimensions, and say little about the particular patterns of interconnectivity between brain regions that more directly map onto different cognitive states. It’s interesting that so much of psychedelic neuroscience is concerned with these high level dimensions. Curious to hear others’ takes. https://www.nature.com/articles/s41380-026-03447-0 https://www.neurofounders.co/",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "thumbs/p76.png",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "https://drive.google.com/file/d/1Gwf-4I3jn2ZUX4YQikx-DJ3HI-uPzlyB/view",
-   "sender": "",
+   "sender": "Brandon Weiss",
    "abstract": "",
    "content": "content/p76.txt",
    "read_status": "read"
@@ -2796,15 +2796,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "Publisher/journal article page",
+   "context": "\"If a Large Language Model (LLM) can replicate your scientific contribution, the problem is not the LLM. What does it say about our field that so much of the anxiety about AI comes down to the fear that a machine could do what we do? Perhaps it says we should be doing something better.\" Well said. https://www.nature.com/articles/s41550-026-02837-2",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "https://drive.google.com/file/d/1rQn5nrkBp5GkabeKhVHgnXCjonvcVkLi/view",
-   "sender": "",
+   "sender": "Joel Zylberberg",
    "abstract": "",
    "content": "",
    "read_status": "needs_pdf"
@@ -2932,15 +2932,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "Publisher/journal article page",
+   "context": "Your brain speaks a language. For a long time, we had no way to listen. Now we do. You've probably heard of foundation models; they're the technology behind every modern LLM, and the algorithmic equivalent of a Swiss Army knife. Pretrain one on a massive amount of raw text, let it learn the patterns of human language, then adapt it to almost any task: legal writing, medical summarization, code generation, etc. Pretty cool, right? Now what if you could do the same thing with the brain? Instead of text, you feed the model large amounts of brain data. It learns the rhythms and patterns of neural activity — not for any specific purpose, just the language of the brain itself. Then, with only a small amount of labeled data, you point it toward a specific task. Last year, we put this to the test with Thibaut Haslé de Barral and our partners at Sigma Nova on sleep stage classification, i.e. the task of automatically identifying which sleep stage you're in, from a single electrode in your ear. The result: performance within striking distance of two human clinical experts, using a fraction of the data a traditional approach would require. The same backbone that learned sleep can be adapted to detect fatigue, stress, or cognitive load. One foundation. Many applications. This is what we mean when we call the Guardian a \"smartwatch for the brain.\" Find out more in our latest blog post (link",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "thumbs/p84.png",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "https://drive.google.com/file/d/1DE31n9HXZmieMiPxRHIR8MWIcL4IUflB/view",
-   "sender": "",
+   "sender": "Eric Oermann",
    "abstract": "",
    "content": "content/p84.txt",
    "read_status": "read"
@@ -3170,15 +3170,15 @@
    "license": "",
    "weights": null,
    "notes": "From earlier manual/source-dump paper-download list",
-   "context": "Publisher/journal article page",
+   "context": "After decades of seeing limited progress in depression research despite enormous scientific effort, we started asking a more fundamental question: What if part of the problem is how we measure depression itself? Our new paper out now in Nature Mental Health (https://lnkd.in/dfnhHB_T) examines current challenges in depression phenotyping and discusses both short- and long-term implications for the field. To tackle this issue, we assembled an international and interdisciplinary team of leading depression researchers spanning psychiatry, psychology, psychometrics, epidemiology, AI/data science, and lived-experience expertise. Co-authors: Astrid Chevance, Eiko Fried ð¥ , Moritz Elsässer, Tim Hahn, Eric Ruhe, Nils Opel, Claudi Bockting, Roger McIntyre, Allan Young, Paolo Fusar-Poli, Elisabeth Schramm, Jessica Schleider, PhD, Christian Otte, Udo Dannlowski, Brenda Penninx &[ Andreas Reif ](https://www.linkedin.com/in/andreas-reif-90b35b149/)I’m very grateful to all co-authors for the collaboration and intellectual openness throughout this project. <https://www.nature.com/articles/s44220-026-00629-1>",
    "source_files": [
     "comprehensive_paper_download_links_no_linkedin.csv"
    ],
    "preview_url": "",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Jonathan Repple",
    "abstract": "",
    "content": "",
    "read_status": "needs_pdf"
@@ -6087,15 +6087,15 @@
    "license": "",
    "weights": null,
    "notes": "DOI extracted; Extracted from Claude master sources | Extracted from Claude master sources",
-   "context": "- **DeSouza et al. 2025**, *medRxiv* — naturalistic fMRI-guided vs non-guided accelerated TMS (retrospective, single-site). **[EMERGING]** (uploaded PDF) https://www.medrxiv.org/content/10.1101/2025.09.03.25334813v1 | - **DeSouza et al. 2025**, *medRxiv* — naturalistic fMRI-guided vs non-guided accelerated TMS (retrospective, single-site). **[EMERGING]** (uploaded PDF) https://www.medrxiv.org/content/10.1101/2025.09.03.25334813v1 | - **DeSouza et al. 2025**, *medRxiv* — \"Naturalistic Outcomes with fMRI-Guided and Non-fMRI-Guided Accelerated TMS for Depression\" (Acacia Clinics; Siddiqi). — see §4. https://www.medrxiv.org/content/10.1101/2025.09.03.25334813v1",
+   "context": "Connect ð§  Last year, we quietly released a preprint showing the added benefit of fMRI-guidance to accelerated TMS for depression. This year at the Clinical TMS Society Annual Meeting, data supporting this benefit was made loud and clear. I wrote more about what we and our colleagues found, what it means, and why the next step for the field may be wider adoption of personalized targeting. ⬇️ Read the article below. ð Link to the original preprint in the comments. We are grateful to the many clinicians and scientists whose work we have built upon, and who have been advancing more personalized approaches to targeting for more than a decade. [Acacia Clinics ](https://www.linkedin.com/company/acaciaclinics/)#fMRI #MRI #TMS #Neuromodulation #NIBS #BrainStimulation #Neuroscience #ClinicalResearch #CTMSS2026 #CTMSS #InterventionalPsychiatry #Psychiatry #Depression #MDD <https://www.medrxiv.org/content/10.1101/2025.09.03.25334813v1>",
    "source_files": [
     "eno_master_sources.md"
    ],
    "preview_url": "",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "2025-09",
    "drive_url": "https://drive.google.com/file/d/1ZFR1CF09ZKHWh9pF4W3C8fWwNQAvhX4w/view",
-   "sender": "",
+   "sender": "Danielle DeSouza MSc, PhD",
    "abstract": "",
    "content": "content/p166.txt",
    "read_status": "read"
@@ -7414,15 +7414,15 @@
    "license": "",
    "weights": null,
    "notes": "Extracted from Claude master sources",
-   "context": "- **Meta TRIBE v2 (2026)** — fMRI foundation model, **CC-BY-NC**. **[REF, non-commercial]** https://arxiv.org/abs/2605.04326 · https://github.com/facebookresearch/tribev2 · https://ai.meta.com/blog/tribe-v2-brain-predictive-foundation-model/",
+   "context": "AI can now predict how your brain reacts to the world, I write in a new article for IBM. The real question is whether that brings us any closer to understanding it. “AI is a paradigm shift in science in general, but in neuroscience in particular.” —[ Jean-Rémi King ](https://www.linkedin.com/in/jean-r%C3%A9mi-king-690388247/)Thanks to the researchers who shared their thinking: Takuya Ito Stéphane d'Ascoli Stanislaw Wozniak Konrad Kording and[ Karl Friston ](https://www.linkedin.com/in/karl-friston-067214340/)Three perspectives that stood out: • AI as a new scientific tool. Models like Meta's TRIBE V2 aim to connect brain activity across tasks, people and inputs, helping researchers build more unified views • Prediction is not explanation. Strong results can be mistaken for understanding, which remains a central misconception • Real promise, real limits. Earlier diagnosis and better targeting of treatment are possible, but data is scarce and models remain less robust to new conditions than the brain",
    "source_files": [
     "eno_master_sources.md"
    ],
    "preview_url": "https://static.arxiv.org/icons/twitter/arxiv-logo-twitter-square.png",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "2026-05",
    "drive_url": "",
-   "sender": "",
+   "sender": "Sascha Brodsky",
    "abstract": "Cognitive neuroscience is fragmented into specialized models, each tailored to specific experimental paradigms, hence preventing a unified model of cognition in the human brain. Here, we introduce TRIBE v2, a tri-modal (video, audio and language) foundation model capable of predicting human brain activity in a variety of naturalistic and experimental conditions. Leveraging a unified dataset of over 1,000 hours of fMRI across 720 subjects, we demonstrate that our model accurately predicts high-resolution brain responses for novel stimuli, tasks and subjects, superseding traditional linear encoding models, delivering several-fold improvements in accuracy. Critically, TRIBE v2 enables in silico experimentation: tested on seminal visual and neuro-linguistic paradigms, it recovers a variety of results established by decades of empirical research. Finally, by extracting interpretable latent features, TRIBE v2 reveals the fine-grained topography of multisensory integration. These results establish artificial intelligence as a unifying framework for exploring the functional organization of the human brain.",
    "content": "content/p202.txt",
    "read_status": "read"
@@ -8014,15 +8014,15 @@
    "license": "",
    "weights": null,
    "notes": "Extracted from Claude master sources",
-   "context": "- **REVE 2025** — largest EEG pretraining (~60k hrs); author-reported gains. **[EMERGING]** https://arxiv.org/abs/2510.21585 · https://huggingface.co/brain-bzh/reve-base",
+   "context": "More data and deeper algorithms don't automatically mean better EEG. More channels. More data. More parameters. But quantity isn't quality — and the more I work in this field, the more obvious that becomes for me. Signal quality is the foundation. Everything else is downstream of it. Stable electrodes, reliable hardware, clean acquisition — these aren't boring engineering details. They're the difference between useful data and expensive noise. We now have impressive foundation models like ZUNA and REVE (trained on 92 datasets across 25,000 subjects). I just finished the test for the PiEEG dataset. The benchmarks look great. But here's the question: How do you actually verify that a model cleaned your signal — rather than modeled over it? Removing artifacts is not the same as preserving neural information. Noise floor, spectral power distribution, SNR — these are indirect metrics. A model can be optimized to look good on all of them while quietly replacing real signal with learned priors. The most honest validation would be evoked potentials: if the model preserves ERP timing and amplitude on held-out paradigms it was never trained on, that's signal. But even then, you need to be certain the evoked response wasn't reconstructed from context — not recovered from the electrode. Foundation models trained on lab-grade data are genuinely impressive. But most real-world EEG projects d",
    "source_files": [
     "eno_master_sources.md"
    ],
    "preview_url": "https://static.arxiv.org/icons/twitter/arxiv-logo-twitter-square.png",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "2025-10",
    "drive_url": "",
-   "sender": "",
+   "sender": "Ildar Rakhmatulin",
    "abstract": "Foundation models have transformed AI by reducing reliance on task-specific data through large-scale pretraining. While successful in language and vision, their adoption in EEG has lagged due to the heterogeneity of public datasets, which are collected under varying protocols, devices, and electrode configurations. Existing EEG foundation models struggle to generalize across these variations, often restricting pretraining to a single setup, resulting in suboptimal performance, in particular under linear probing. We present REVE (Representation for EEG with Versatile Embeddings), a pretrained model explicitly designed to generalize across diverse EEG signals. REVE introduces a novel 4D positional encoding scheme that enables it to process signals of arbitrary length and electrode arrangement. Using a masked autoencoding objective, we pretrain REVE on over 60,000 hours of EEG data from 92 datasets spanning 25,000 subjects, representing the largest EEG pretraining effort to date. REVE achieves state-of-the-art results on 10 downstream EEG tasks, including motor imagery classification, seizure detection, sleep staging, cognitive load estimation, and emotion recognition. With little to no fine-tuning, it demonstrates strong generalization, and nuanced spatio-temporal modeling. We release code, pretrained weights, and tutorials to support standardized EEG research and accelerate progress in clinical neuroscience.",
    "content": "content/p218.txt",
    "read_status": "read"
@@ -12268,8 +12268,8 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "to Innomatics Research Labs for providing an excellent learning platform and for helping me build a strong foundation in deep learning and AI.A special thanks to my trainer, Swathi Reddy Thatikonda, and my mentor,Rahul Janjirala for their continuous guidance and support throughout my learning journey.If you're learning AI or deep learnin",
+   "notes": "to Innomatics Research Labs for providing an excellent learning platform and for helping me build a strong foundation in deep learning and AI.A special thanks to my trainer, Swathi Reddy Thatikonda, and my mentor,Rahul Janjirala for their continuous guidance and support throughout my learning journey.If you're learning AI or deep learnin",
+   "context": "ð¥ Most people can build a neural network with 10 lines of code. But very few can explain why it actually learns. That's exactly what I wanted to understand. After studying artificial neural networks in depth, I put together a detailed guide that explains everything in simple language—from intuition to implementation. Inside the article: ð§  Biological vs Artificial Neurons ⚙️ ANN Architecture ð Forward Propagation ð Backpropagation ð Loss Functions ð¯ Gradient Descent & Adam Optimizer ð ️ Hyperparameters & Regularization ð» TensorFlow/Keras Code ð Interview Questions Plus, I created custom illustrations to visualize each concept. ð Read it here: ð[ https://lnkd.in/dxAh_bAr ](https://www.linkedin.com/safety/go/?url=https%3A%2F%2Flnkd%2Ein%2FdxAh_bAr&urlhash=JPDJ&mt=Aonmxn7heQ5Kt85_N7iGu3s7zht6Q5lnk-DEzfpPcFdqb0gjD2r_SemhaDDvaNGubjMlVpjVcU2ricYeGsXpF-X6VKo6rPrEmlUsf-kHPahIr6_Vnve6cg&isSdui=true)Grateful to Innomatics Research Labs for providing an excellent learning platform and for helping me build a strong foundation in deep learning and AI. A special thanks to my trainer, Swathi Reddy Thatikonda, and my mentor,Rahul Janjirala for their continuous guidance and support throughout my learning journey. If you're learning AI or deep learnin <https://medium.com/@lohithgayam007/artificial-neural-networks-understanding-how-machines-learn-like-the-human-brai",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
@@ -12277,7 +12277,7 @@
    "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Lohith Reddy Gayam",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -12309,8 +12309,8 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "al attention, and other variables cannot be excluded.There was no control group, no sham stimulation, and no unified statistical protocol for the whole patient group.For this reason, the next step should be a properly designed pilot study with predefined inclusion criteria, validated rating scales, repeated EEG, adverse-event monitoring, follow-up, and — if feasible — control or sham stimulation.Important clarification: this is not a finished medical device and not a proven treatment method. It is a research hypothesis and an engineering-clinical prototype that requires independent validation.",
+   "notes": "al attention, and other variables cannot be excluded.There was no control group, no sham stimulation, and no unified statistical protocol for the whole patient group.For this reason, the next step should be a properly designed pilot study with predefined inclusion criteria, validated rating scales, repeated EEG, adverse-event monitoring, follow-up, and — if feasible — control or sham stimulation.Important clarification: this is not a finished medical device and not a proven treatment method. It is a research hypothesis and an engineering-clinical prototype that requires independent validation.",
+   "context": "One clinical observation from our EEG-informed workflow After several posts about the engineering logic of our project, I would like to show how this approach looked in one case selected from a series of practical clinical observations. This was not the only practical observation. I selected this particular case because its EEG spectral features were especially clear and useful for illustrating the workflow of the method. The workflow included: EEG recording; mathematical processing; comparison of selected electrode pairs; spectral analysis; calculation of an individual stimulation signal; stimulation course; follow-up assessment. The case concerned a 42-year-old woman with pronounced symptoms of depression. Before the method was applied, she had consulted a psychiatrist and received medication. Her baseline Beck Depression Inventory score was 44. EEG was recorded using a 16-channel TREDEX Expert system with the standard 10/20 electrode-placement scheme. When spectra and spectral power were compared, significant differences were identified in the F7–F8 and P3–P4 electrode pairs. Using Matlab scripts, a spectrum-difference file was generated based on the discrepancies identified between the selected electrode pairs. Differences in periodograms were also analyzed to clarify the signal structure and provide additional information for calculating the stimulation signal. Based on th",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
@@ -12318,7 +12318,7 @@
    "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Fedir Kuznetsov",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -12495,16 +12495,16 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "Chris Aiken, MD • 2nd Director, Psych Partners. Editor-in-Chief, Carlat Report Visit my website 1w • Follow SAINT TMS brought 80% of highly refractory depressions to full remission within a week in clinical trials. Here's how it performs in the real world of complex comorbidities, and where to find providers:",
+   "notes": "Chris Aiken, MD • 2nd Director, Psych Partners. Editor-in-Chief, Carlat Report Visit my website 1w • Follow SAINT TMS brought 80% of highly refractory depressions to full remission within a week in clinical trials. Here's how it performs in the real world of complex comorbidities, and where to find providers:",
+   "context": "SAINT TMS brought 80% of highly refractory depressions to full remission within a week in clinical trials. Here's how it performs in the real world of complex comorbidities, and where to find providers: https://psych-partners.com/how-saint-tms-holds-up-in-practice/",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
    "preview_url": "https://i0.wp.com/psych-partners.com/wp-content/uploads/2026/06/SAINT-TMS.png?fit=1648%2C856&ssl=1",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Chris Aiken, MD",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -12923,16 +12923,16 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "Dr. Richie Davidson • Following Neuroscientist at UW–Madison focused on methods to promote human flourishing and well-being 1w • There are rare moments in science when the data do not merely confirm a hypothesis. They rearrange the boundaries of the imaginable. One of those moments occurred in our laboratory at the University of Wisconsin–Madison in the early 2000s.",
+   "notes": "Dr. Richie Davidson • Following Neuroscientist at UW–Madison focused on methods to promote human flourishing and well-being 1w • There are rare moments in science when the data do not merely confirm a hypothesis. They rearrange the boundaries of the imaginable. One of those moments occurred in our laboratory at the University of Wisconsin–Madison in the early 2000s.",
+   "context": "There are rare moments in science when the data do not merely confirm a hypothesis. They rearrange the boundaries of the imaginable.  One of those moments occurred in our laboratory at the University of Wisconsin–Madison in the early 2000s. <https://www.dharmalab.co/p/the-moment-we-realized-meditation?r=e51qv&utm_campaign=post-expanded-share&utm_medium=post%2Bviewer&triedRedirect=true> [](https://www.linkedin.com/in/lindsaygould/) Lindsay Gould Growth @ InstaLILY AI New York, New York [](https://www.linkedin.com/in/lindsaygould/) InstaLILY AI Profile viewers 338 Post impressions 17 ## Feed post",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
    "preview_url": "https://substackcdn.com/image/fetch/$s_!uVOl!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff1874901-7634-43bb-a135-e36640137b81_1536x1024.png",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Dr. Richie Davidson",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -13868,16 +13868,16 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "rging trends that could help shape the future of mental health treatment:🎯 MRI-guided TMS for adolescent ADHD and the growing role of personalized, circuit-based interventions⚡ Accelerated brain stimulation protocols that can compress weeks of treatment into just a few daysTogether, these advances point toward a future where neuromodulation is becoming:• More personalized• Faster acting• More accessible• Increasingly guided by neuroscienceWhether you're attending CTMSS this week or simply interested in where psychiatric treatment is headed, I think you'll enjoy this one.Link in the comments. 👇",
+   "notes": "rging trends that could help shape the future of mental health treatment:🎯 MRI-guided TMS for adolescent ADHD and the growing role of personalized, circuit-based interventions⚡ Accelerated brain stimulation protocols that can compress weeks of treatment into just a few daysTogether, these advances point toward a future where neuromodulation is becoming:• More personalized• Faster acting• More accessible• Increasingly guided by neuroscienceWhether you're attending CTMSS this week or simply interested in where psychiatric treatment is headed, I think you'll enjoy this one.Link in the comments. 👇",
+   "context": "In honor of the Clinical TMS Society Conference kicking off today ð§  My friend Eric Tirrell and I put together a special edition of Scientific Horizons focused on one of the most exciting areas in psychiatry: brain stimulation. This week's issue, The Brain Stimulation Revolution, explores two emerging trends that could help shape the future of mental health treatment: ð¯ MRI-guided TMS for adolescent ADHD and the growing role of personalized, circuit-based interventions ⚡ Accelerated brain stimulation protocols that can compress weeks of treatment into just a few days Together, these advances point toward a future where neuromodulation is becoming: • More personalized • Faster acting • More accessible • Increasingly guided by neuroscience Whether you're attending CTMSS this week or simply interested in where psychiatric treatment is headed, I think you'll enjoy this one. Link in the comments. ð https://nicolashubacz.substack.com/p/the-brain-stimulation-revolution?r=34nf2r&utm_medium=ios&triedRedirect=true",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
    "preview_url": "https://substackcdn.com/image/fetch/$s_!LYnH!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9c8584a2-45c3-4534-94ad-58afa76f573f_713x496.jpeg",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Nicolas Hubacz, M.S.",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -13903,7 +13903,7 @@
    "license": "",
    "weights": null,
    "notes": "",
-   "context": "",
+   "context": "New results! Theta rhythms flexibly routing information based on behavior and feedback, organizing local and long-range neural communication. Theta gates and routes information in the frontal cortex https://lnkd.in/eMFxjuHd https://www.biorxiv.org/content/10.64898/2026.06.03.729810v1",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
@@ -13911,7 +13911,7 @@
    "via_linkedin": true,
    "date": "2026-06",
    "drive_url": "https://drive.google.com/file/d/1pCCcxJ8Ft-DFtQtWm9Ns956DJgMPdoAD/view",
-   "sender": "",
+   "sender": "Earl K. Miller, PhD",
    "abstract": "",
    "content": "content/d102.txt",
    "read_status": "read"
@@ -14258,16 +14258,16 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "- not just outputs, but the actual geometry of how emotions are organised internally in a multi dimensional space.Some interesting findings:• Emotional ambiguity emerges from competition between emotional prototypes• Both brains and LLMs show similar local geometric behaviour• Emotion in LLMs exists in surprisingly small low-rank subspaces• The brain and LLMs organise emotions differently globally: valence vs arousalWrote a detailed blog breaking down the intuition, datasets, methods, and findings. Would love to hear thoughts from people working in AI, neuroscience, or representation learning.",
+   "notes": "- not just outputs, but the actual geometry of how emotions are organised internally in a multi dimensional space.Some interesting findings:• Emotional ambiguity emerges from competition between emotional prototypes• Both brains and LLMs show similar local geometric behaviour• Emotion in LLMs exists in surprisingly small low-rank subspaces• The brain and LLMs organise emotions differently globally: valence vs arousalWrote a detailed blog breaking down the intuition, datasets, methods, and findings. Would love to hear thoughts from people working in AI, neuroscience, or representation learning.",
+   "context": "Neural networks were inspired by the human brain. So a question kept bothering me: If they are inspired by the brain, shouldn’t there be similarities in how both systems internally represent information? I’ve been working on a project comparing emotional representations inside LLMs and human brain fMRI data- not just outputs, but the actual geometry of how emotions are organised internally in a multi dimensional space. Some interesting findings: • Emotional ambiguity emerges from competition between emotional prototypes • Both brains and LLMs show similar local geometric behaviour • Emotion in LLMs exists in surprisingly small low-rank subspaces • The brain and LLMs organise emotions differently globally: valence vs arousal Wrote a detailed blog breaking down the intuition, datasets, methods, and findings. Would love to hear thoughts from people working in AI, neuroscience, or representation learning. https://medium.com/@pritishrv10/when-brains-and-llms-start-thinking-similarly-about-emotion-de3615082df2",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
    "preview_url": "",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Pritish Ranjan Verma",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -14398,16 +14398,16 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "ve control. It’s a sorry reflection of the confused and contradictory terminology in psychology and behavioural science that John needs to share this article in 2026, nearly 80 years since Kenneth Craik first applied control theory to psychology, but maybe our friends in AI and robotics will provide the impetus the field needs to move on! John Flach • 3rd+ Principal Scientist at Perspicacity; Emeritus Professor of Psychology at Wright State University 1mo • Follow Rather than stimulus-response maybe we should frame cognition in terms of constraints and possibilities? Some preliminary thoughts:",
+   "notes": "ve control. It’s a sorry reflection of the confused and contradictory terminology in psychology and behavioural science that John needs to share this article in 2026, nearly 80 years since Kenneth Craik first applied control theory to psychology, but maybe our friends in AI and robotics will provide the impetus the field needs to move on! John Flach • 3rd+ Principal Scientist at Perspicacity; Emeritus Professor of Psychology at Wright State University 1mo • Follow Rather than stimulus-response maybe we should frame cognition in terms of constraints and possibilities? Some preliminary thoughts:",
+   "context": "Rather than stimulus-response maybe we should frame cognition in terms of constraints and possibilities?  Some preliminary thoughts: https://perspicacityll.wpengine.com/2024/04/09/cognition-as-flow-constraints-and-possibility-fields/",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
    "preview_url": "https://perspicacityll.wpengine.com/wp-content/uploads/2024/04/Fields--300x169.jpg",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "2024-04",
    "drive_url": "",
-   "sender": "",
+   "sender": "John Flach",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -14508,16 +14508,16 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "Interoperability Stack by the prolific Brendan Keeler is a field guide to the aggregators providing the wrist-to-API layer and why so many exist without a regulatory floor.3. Wearables have some issues to fix by Nikhil Krishnan probably has the most memes in a story about barriers to adoption.4. Are Wearables Making You Healthier or More Anxious? by Sara Redondo, MD, MS is a gem and realistic take from the clinician’s seat.5. Can wearables save US healthcare? by yours truly. I dig into the contrast between wearable marketing for CMS access vs root issues with the populations they aim to serve.",
+   "notes": "Interoperability Stack by the prolific Brendan Keeler is a field guide to the aggregators providing the wrist-to-API layer and why so many exist without a regulatory floor.3. Wearables have some issues to fix by Nikhil Krishnan probably has the most memes in a story about barriers to adoption.4. Are Wearables Making You Healthier or More Anxious? by Sara Redondo, MD, MS is a gem and realistic take from the clinician’s seat.5. Can wearables save US healthcare? by yours truly. I dig into the contrast between wearable marketing for CMS access vs root issues with the populations they aim to serve.",
+   "context": "Something must be in the water this month for wearables. With ŌURA’s IPO filing announced yesterday, these are 5 essential posts to get up to speed on consumer health monitoring devices. Since LinkedIn has been suppressing my content with external links lately, I've succumbed to the dreaded carousel. Go check these out! 1. How Well Can Your Wearable Track Sleep? By Anna D. Zych, PhD tells us that they’re not as accurate as they might appear, especially with sleep duration and time awake. 2. The Wearables Interoperability Stack by the prolific Brendan Keeler is a field guide to the aggregators providing the wrist-to-API layer and why so many exist without a regulatory floor. 3. Wearables have some issues to fix by Nikhil Krishnan probably has the most memes in a story about barriers to adoption. 4. Are Wearables Making You Healthier or More Anxious? by Sara Redondo, MD, MS is a gem and realistic take from the clinician’s seat. 5. Can wearables save US healthcare? by yours truly. I dig into the contrast between wearable marketing for CMS access vs root issues with the populations they aim to serve. https://nova.substack.com/p/wearables-and-ai-health-advisors?r=8qk7g",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
    "preview_url": "https://substackcdn.com/image/fetch/$s_!c-Ri!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F116c5473-61e5-4ff0-8345-76c06249db7e_957x458.jpeg",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Nova Syed",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -15227,15 +15227,15 @@
    "license": "",
    "weights": null,
    "notes": "",
-   "context": "",
+   "context": "ð§   There’s a moment in elite performance when conscious control gets quieter. What does that look like in the data? Watching Jonathan Wolpaw's lecture at the BCI & Neurotechnology Spring School 2026 organized by g.tec medical engineering GmbH - NEVER STOP RECORDING, something clicked. A skill isn't stored anywhere. It's maintained by distributed networks of neurons and synapses that constantly adjust to keep the outcome stable. Wolpaw calls them hexers, from the ancient Greek hexus: not an act, but a disposition, a state of possession. Bernstein's work feels connected to this idea. He filmed an expert hitting a chisel with a hammer. Every trajectory was different, but every strike landed in exactly the same spot. The result was stable. The movement was not. He called it \"repetition without repetition.\" That's one way a hexer might look from the outside. Gibson called them affordances: action possibilities the environment offers to a specific body. Davids and Williams with colleagues brought this framework into sport science in the 1990s. In this view, athletes don't calculate the perfect movement first. They perceive and act in one continuous loop. Three different frameworks. Different languages, perhaps, for describing the same phenomenon: a skill emerging through continuous negotiation between the nervous system, the body, and the environment. I saw something in the data t",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
    "preview_url": "https://www.gtec.at/wp-content/uploads/2021/05/web-20240926_GTC__c_Florian-Voggeneder_VOG_4528.jpg",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Roksana Semenyuk",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -16279,16 +16279,16 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "Researchers trained a foundation model on 2.5B hours of wearable data from 162K people (using Apple Watch). It outperformed models built on raw sensor data across dozens of health tasks. This is early proof of where healthcare AI's real foundation will come from the data you generate just by living, not the data collected once you're already sick. Wearables are set to become essential in next generation healthcare AI.",
+   "notes": "Researchers trained a foundation model on 2.5B hours of wearable data from 162K people (using Apple Watch). It outperformed models built on raw sensor data across dozens of health tasks. This is early proof of where healthcare AI's real foundation will come from the data you generate just by living, not the data collected once you're already sick. Wearables are set to become essential in next generation healthcare AI.",
+   "context": "Join me at #OHBM to see what functional brain networks and emotional states our EEG biomarkers are tracking in concurrent fMRI-EEG wholebrain data! Come check out our poster, number 2446, on Wednesday and Thursday poster sessions ð This figure, showing that our two EFPs are associated with two completely different activation patters, is where we begin. We then move on to show the data-driven CAP states and behaviorally recorded emotional states associated with the EFP dynamics. Learn more at our poster \"EEG models of fMRI amygdala and ventral striatum activity associated with distinct cortical networks\". https://www.nature.com/articles/s41380-025-03418-x # **Fine-tuning LLMs for Detecting Negative Self-Referential Language in Smartphone Text among Youth with Depression** <https://osf.io/preprints/psyarxiv/kzgpj_v1> Researchers trained a foundation model on 2.5B hours of wearable data from 162K people (using Apple Watch). It outperformed models built on raw sensor data across dozens of health tasks. This is early proof of where healthcare AI's real foundation will come from the data you generate just by living, not the data collected once you're already sick. Wearables are set to become essential in next generation healthcare AI. https://arxiv.org/abs/2507.00191 <https://www.biospace.com/press-releases/cumulus-neuroscience-and-muse-by-interaxon-bring-validated-at-home-sleep-e",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
    "preview_url": "https://static.arxiv.org/icons/twitter/arxiv-logo-twitter-square.png",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "2025-07",
    "drive_url": "https://drive.google.com/file/d/1tI6KZYPUPeO6f7QrYYbnqt6IZOROwbHj/view",
-   "sender": "",
+   "sender": "Talia Brandman, PhD",
    "abstract": "Wearable devices record physiological and behavioral signals that can improve health predictions. While foundation models are increasingly used for such predictions, they have been primarily applied to low-level sensor data, despite behavioral data often being more informative due to their alignment with physiologically relevant timescales and quantities. We develop foundation models of such behavioral signals using over 2.5B hours of wearable data from 162K individuals, systematically optimizing architectures and tokenization strategies for this unique dataset. Evaluated on 57 health-related tasks, our model shows strong performance across diverse real-world applications including individual-level classification and time-varying health state prediction. The model excels in behavior-driven tasks like sleep prediction, and improves further when combined with representations of raw sensor data. These results underscore the importance of tailoring foundation model design to wearables and demonstrate the potential to enable new health applications.",
    "content": "content/d195.txt",
    "read_status": "read"
@@ -16700,8 +16700,8 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "Andrew Mitchell • Following Co-Founder @ North Light AI Visit my website 1d • Edited • a pretty good read....being helpful is not synonymous with being right or harmless. And who actually gets to decide what values AI should follow? Because right now it doesn’t feel very democratic (in fact, less democratic than it did even a year ago)...more like a small group of governments, billionaires (and a trillionaire), and tech companies.",
+   "notes": "Andrew Mitchell • Following Co-Founder @ North Light AI Visit my website 1d • Edited • a pretty good read....being helpful is not synonymous with being right or harmless. And who actually gets to decide what values AI should follow? Because right now it doesn’t feel very democratic (in fact, less democratic than it did even a year ago)...more like a small group of governments, billionaires (and a trillionaire), and tech companies.",
+   "context": "a pretty good read....being helpful is not synonymous with being right or harmless. And who actually gets to decide what values AI should follow? Because right now it doesn’t feel very democratic (in fact, less democratic than it did even a year ago)...more like a small group of governments, billionaires (and a trillionaire), and tech companies. https://www.theguardian.com/news/ng-interactive/2026/jun/30/theres-this-deep-mystery-of-what-actually-is-this-thing-the-philosopher-inside-google-deepmind New episode drop! From Electrical Engineering to Scaling Neurotech: What does it actually take to turn deep neuroscience into a scalable service? In the latest episode of The Business of Neurotech, host Adam Fraser sits down with Ryan Field , CEO of Kernel, to unpack the reality of building brain technology in an emerging market. They dive into Ryan’s transition from electrical engineering into neurotech, and how Kernel evolved from an early invasive BCI vision into a company pioneering non-invasive brain measurement. Key takeaways from the episode: ð¬ The Evolution: Moving from invasive tech to building a scalable, non-invasive platform. ð° The Funding Journey: Navigating the unique investor landscape for hard tech. ð The Big Picture: Why whole-brain measurement matters much more than the market currently realizes. Whether you're an entrepreneur, investor, or tech enthusiast,",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
@@ -16709,7 +16709,7 @@
    "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Andrew Mitchell",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -17711,16 +17711,16 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "w shorten that 2 month process across every GTM process you’re running. Territories, events, ABM campaigns, landing pages, SDR call scripts, upsell offers, QBR deck creation, ad campaigns, and more.That’s the value of Clay… David Huynh • 3rd+ Engineering at Glean, previously Google, Metaweb, Microsoft, MIT 1mo • Edited • Follow Glean's Enterprise Knowledge Graph, visualized. Like watching neurons firing in a brain as Glean traverses your enterprise's context space in leaps and bounds rather than one token after another. Pre-indexing saves cost and time, and boosts completeness and determinism.",
+   "notes": "w shorten that 2 month process across every GTM process you’re running. Territories, events, ABM campaigns, landing pages, SDR call scripts, upsell offers, QBR deck creation, ad campaigns, and more.That’s the value of Clay… David Huynh • 3rd+ Engineering at Glean, previously Google, Metaweb, Microsoft, MIT 1mo • Edited • Follow Glean's Enterprise Knowledge Graph, visualized. Like watching neurons firing in a brain as Glean traverses your enterprise's context space in leaps and bounds rather than one token after another. Pre-indexing saves cost and time, and boosts completeness and determinism.",
+   "context": "I can’t name the company, but a leader of a $250B market cap just said something crazy about their Clay POC: “The sales team gave me a list of 88 accounts. I punched those into the system we built with Clay and it gave 626 ICP contacts then generated 1800 personalized emails. And it did all of that in 7 minutes. I showed that to the marketing team and they told me that would have taken them 2 months.” Now shorten that 2 month process across every GTM process you’re running.  Territories, events, ABM campaigns, landing pages, SDR call scripts, upsell offers, QBR deck creation, ad campaigns, and more. That’s the value of Clay…",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
    "preview_url": "https://img.youtube.com/vi/Lri2LNYtERM/hqdefault.jpg",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Todd Busler",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -17783,16 +17783,16 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "ething that doesn't read like a bot.Recruiting has been stuck in 2014. Go-to-market changed last week.Watch Davide and Danielle break it down LIVE:📆 Next Thurs, May 21 @ 12 PM ET Lindsay Gould Growth @ InstaLILY AI New York, New York InstaLILY AI Profile viewers 337 Post impressions 14 Feed post Apoorv Agrawal • 2nd Partner at Altimeter Capital 1mo • Follow MS&E 435 with Ali Ghodsi - the most insight dense conversation I've had this year. We cover the death of software, AI's jagged frontier, AGI implications, open source AI vs closed, advice for students as they navigate education and careers!",
+   "notes": "ething that doesn't read like a bot.Recruiting has been stuck in 2014. Go-to-market changed last week.Watch Davide and Danielle break it down LIVE:📆 Next Thurs, May 21 @ 12 PM ET Lindsay Gould Growth @ InstaLILY AI New York, New York InstaLILY AI Profile viewers 337 Post impressions 14 Feed post Apoorv Agrawal • 2nd Partner at Altimeter Capital 1mo • Follow MS&E 435 with Ali Ghodsi - the most insight dense conversation I've had this year. We cover the death of software, AI's jagged frontier, AGI implications, open source AI vs closed, advice for students as they navigate education and careers!",
+   "context": "Clay's recruiting team turns every new employee's LinkedIn connections into a warm-intro pipeline. The play: 1. Employee exports their full LinkedIn network 2. Clay finds who they've worked with at past jobs 3. Recruiter sends a warm intro (not a cold ask) 4. Candidate enters Ashby pre-vetted by a coworker This is just ONE of THREE motions Danielle runs at Clay. The other two: ➡️ ATS rediscovery: re-enrich 10,000+ past applicants to find the people you said no to in 2023 who'd be perfect for the role open today. ➡️ Signal-based screening: stop keyword-matching resumes. Surface the viral TikTok campaign, the non-profit, the side project that tells you who's actually worth a call. The whole playbook is the same shape as outbound sales... Find the right peeps, find the right signals, and reach out with something that doesn't read like a bot. Recruiting has been stuck in 2014. Go-to-market changed last week. Watch Davide and Danielle break it down LIVE: ð Next Thurs, May 21 @ 12 PM ET [](https://www.linkedin.com/in/lindsaygould/) Lindsay Gould Growth @ InstaLILY AI New York, New York [](https://www.linkedin.com/in/lindsaygould/) InstaLILY AI Profile viewers 337 Post impressions 14 ## Feed post",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
    "preview_url": "https://img.youtube.com/vi/1-v5ODNx9fM/hqdefault.jpg",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Claire Gouze",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -18278,16 +18278,16 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "t: we are in a period of structured ferment. Not chaos, but not a settled race either. The dominant design for AI hasn't emerged. The shakeout hasn't happened. And the winners aren't yet identifiable with the confidence that most commentary projects onto the moment.This matters enormously if you are:→ Making career decisions in AI→ Building or investing in AI companies→ Leading an organization trying to figure out which platforms to bet on→ Anyone tired of leaderboard thinkingThe essay includes original figures from Utterback and Klepper that make the historical pattern visceral. Worth a look.",
+   "notes": "t: we are in a period of structured ferment. Not chaos, but not a settled race either. The dominant design for AI hasn't emerged. The shakeout hasn't happened. And the winners aren't yet identifiable with the confidence that most commentary projects onto the moment.This matters enormously if you are:→ Making career decisions in AI→ Building or investing in AI companies→ Leading an organization trying to figure out which platforms to bet on→ Anyone tired of leaderboard thinkingThe essay includes original figures from Utterback and Klepper that make the historical pattern visceral. Worth a look.",
+   "context": "Everyone in my Harvard Business School classroom is debating who's winning the AI model wars. Claude vs. ChatGPT vs. Gemini. Which lab is ahead. Which model is best. I think that's the wrong question — and history tells us why. In my latest essay on Learn with Professor KL, I go back to 1926 — when the auto industry looked exactly like this. Hundreds of firms. Competing designs. Weekly shifts in who seemed to be \"winning.\" We know how that story ended. But nobody living through it could see the shakeout coming. Two scholars changed how I think about moments like this: James Utterback (MIT) and Steven Klepper (CMU). Their frameworks — dominant design, industry life cycles, and the shakeout — are the right lenses for reading what's actually happening in foundation models right now. The argument in short: we are in a period of structured ferment. Not chaos, but not a settled race either. The dominant design for AI hasn't emerged. The shakeout hasn't happened. And the winners aren't yet identifiable with the confidence that most commentary projects onto the moment. This matters enormously if you are: → Making career decisions in AI → Building or investing in AI companies → Leading an organization trying to figure out which platforms to bet on → Anyone tired of leaderboard thinking The essay includes original figures from Utterback and Klepper that make the historical pattern viscer",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
    "preview_url": "https://substackcdn.com/image/fetch/$s_!RgTk!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fac6d6494-7b2c-4dfb-b5c1-bbc5b73d6faf_2752x1536.webp",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Karim Lakhani",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -18488,16 +18488,16 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "𝗦→ What is the next best solution in the market?→ Why do you think you will win?𝗖𝗔𝗣𝗜𝗧𝗔𝗟 & 𝗔𝗟𝗜𝗚𝗡𝗠𝗘𝗡𝗧→ How much are you raising, why now, and why this amount?→ What are you looking for in investors?Common denominator? They're testing how you reason under uncertainty.The strongest signal = A founder who says \"I don't know, here's how I'll find out.\"Save this before your next investor meeting. 🔖Thanks to Redbud VC team for sharing these. PS: Join the weekly EverythingStartups newsletter for more on where early-stage capital is flowing + tech insights across USA, Europe, and Israel: From Zac 3/3/26",
+   "notes": "𝗦→ What is the next best solution in the market?→ Why do you think you will win?𝗖𝗔𝗣𝗜𝗧𝗔𝗟 & 𝗔𝗟𝗜𝗚𝗡𝗠𝗘𝗡𝗧→ How much are you raising, why now, and why this amount?→ What are you looking for in investors?Common denominator? They're testing how you reason under uncertainty.The strongest signal = A founder who says \"I don't know, here's how I'll find out.\"Save this before your next investor meeting. 🔖Thanks to Redbud VC team for sharing these. PS: Join the weekly EverythingStartups newsletter for more on where early-stage capital is flowing + tech insights across USA, Europe, and Israel: From Zac 3/3/26",
+   "context": "Founders often screw up their pre-seed/seed pitch without even knowing it. They prep for pitch meetings by rehearsing answers. But... Investors aren’t really evaluating the pitch, they are evaluating how you think. A VC recently shared inside information on the actual questions they ask founders at pre-seed, and almost none of them are about the product. They’re about...judgment. YOUR judgement. Here's what investors actually care about: ð§ððð  & ðð¢ð¨ð¡ððð¥ ðð¬ð¡ðð ððð¦ → How did you meet your co-founders? → How do you work together? → Who is your first hire and why? ð ð¢ð§ðð©ðð§ðð¢ð¡ & ð£ð¦ð¬ððð¢ðð¢ððððð ðð¨ð¥ðððððð§ð¬ → Why did you decide to be a founder? → What led you to start this company? → What other ideas have you tinkered with? → How did you land on this idea? → Why will you not give up when things get hard? → What's the #1 reason you will fail? ð ðð¥ððð§ ðð¡ð¦ðððð§ & ðððððð¥ðð¡ð§ððð§ðð¢ð¡ → What has changed in the market or technology that makes this possible now? → What is your unique insight, and how are you thinking about the world differently? → Why do you believe your wedge unlocks a massive market? → How do you see your product fitting in the market in years 5 an",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
    "preview_url": "",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Ivelina Dineva",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -18699,7 +18699,7 @@
    "license": "",
    "weights": null,
    "notes": "",
-   "context": "",
+   "context": "When I was a kid, my dream was to become a journalist. Although I never achieved that goal, it's now awesome to be able to partner with one of my favorite journalists, Christina Farr and have my piece \"Rethinking EHRs in an AI-",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
@@ -18707,7 +18707,7 @@
    "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Sam Toole",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -20973,16 +20973,16 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "ssion.This one is personal for me. During my time at Mindful Health Solutions, I saw up close how seriously that team approaches difficult-to-treat cases, and I have a deep respect for Tobias Marton MD, PhD, who helped lead this work and is quoted in the piece. The findings are early, real-world, and not yet FDA-cleared for PTSD, so the science still has to do its job through peer review. But for a patient population that has run out of options too many times, results like these are a reason for measured hope.This is why I do interventional psychiatry. The hardest cases deserve our best tools.",
+   "notes": "ssion.This one is personal for me. During my time at Mindful Health Solutions, I saw up close how seriously that team approaches difficult-to-treat cases, and I have a deep respect for Tobias Marton MD, PhD, who helped lead this work and is quoted in the piece. The findings are early, real-world, and not yet FDA-cleared for PTSD, so the science still has to do its job through peer review. But for a patient population that has run out of options too many times, results like these are a reason for measured hope.This is why I do interventional psychiatry. The hardest cases deserve our best tools.",
+   "context": "Some of the most challenging cases I see are patients carrying two diagnoses at once. New real-world data from BrainsWay out today in Psychiatric Times looks at Deep TMS in 462 patients living with both PTSD and major depression, the combination that tends to bring more severe symptoms, higher suicide risk, and a poorer response to standard treatment. Across 11 sites, 83.5% saw a meaningful reduction in PTSD symptoms and two thirds saw the same in their depression. This one is personal for me. During my time at Mindful Health Solutions, I saw up close how seriously that team approaches difficult-to-treat cases, and I have a deep respect for Tobias Marton MD, PhD, who helped lead this work and is quoted in the piece. The findings are early, real-world, and not yet FDA-cleared for PTSD, so the science still has to do its job through peer review. But for a patient population that has run out of options too many times, results like these are a reason for measured hope. This is why I do interventional psychiatry. The hardest cases deserve our best tools. https://www.psychiatrictimes.com/view/new-positive-data-from-largest-real-world-study-of-deep-tms-in-patients-with-comorbid-ptsd-and-mdd",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
    "preview_url": "https://cdn.sanity.io/images/0vv8moc6/psychtimes/06fe566da1f287f98dc318a189d238257b64e3ab-6912x3456.jpg",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "David Roth MD, DFAACAP, FAPA, FAAP",
    "abstract": "",
    "content": "",
    "read_status": ""
@@ -21419,16 +21419,16 @@
    "category": "",
    "license": "",
    "weights": null,
-   "notes": "",
-   "context": "featured on Good Morning America discussing the growing impact of TMS and the importance of expanding access to innovative mental health treatment options. Conversations like these continue to move psychiatry forward — helping reduce stigma while bringing greater awareness to evidence-based treatments that can truly change lives.Grateful to work alongside clinicians and teams who are committed to thoughtful, patient-centered brain medicine every day at Radial . Excited for the future of TMS and the broader work being done to improve outcomes for patients who deserve more options and more hope.",
+   "notes": "featured on Good Morning America discussing the growing impact of TMS and the importance of expanding access to innovative mental health treatment options. Conversations like these continue to move psychiatry forward — helping reduce stigma while bringing greater awareness to evidence-based treatments that can truly change lives.Grateful to work alongside clinicians and teams who are committed to thoughtful, patient-centered brain medicine every day at Radial . Excited for the future of TMS and the broader work being done to improve outcomes for patients who deserve more options and more hope.",
+   "context": "Proud to see Owen Muir MD DFAACAP, FCTMSS featured on Good Morning America discussing the growing impact of TMS and the importance of expanding access to innovative mental health treatment options. Conversations like these continue to move psychiatry forward — helping reduce stigma while bringing greater awareness to evidence-based treatments that can truly change lives. Grateful to work alongside clinicians and teams who are committed to thoughtful, patient-centered brain medicine every day at Radial . Excited for the future of TMS and the broader work being done to improve outcomes for patients who deserve more options and more hope. https://www.goodmorningamerica.com/video/133415232 [](https://www.linkedin.com/in/lindsaygould/) Lindsay Gould Growth @ InstaLILY AI New York, New York [](https://www.linkedin.com/in/lindsaygould/) InstaLILY AI Profile viewers 338 Post impressions 14 ## Feed post",
    "source_files": [
     "Source file dump (7/4/26)"
    ],
    "preview_url": "https://s.abcnews.com/images/GMA/260529_gma_narula2_hpMain_4x3_1600.jpg",
-   "via_linkedin": false,
+   "via_linkedin": true,
    "date": "",
    "drive_url": "",
-   "sender": "",
+   "sender": "Devin Beatrice",
    "abstract": "",
    "content": "",
    "read_status": ""

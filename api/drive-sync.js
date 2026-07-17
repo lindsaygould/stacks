@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
   const access = await L.driveAccess(L.decrypt(blob.driveRefresh));
   if (!access) { L.json(res, 200, { connected: false, error: 'reconnect' }); return; }
 
-  const folderId = (await L.driveFindFolder(access, 'Stacks Papers')) || (await L.driveFindFolder(access, 'Papers'));
+  const folderId = await L.driveFindFolder(access, 'Stacks Papers');   // pinned: only ENO/Stacks/Stacks Papers is synced
   if (!folderId) { L.json(res, 200, { connected: true, folder: false, error: 'No Drive folder named "Stacks Papers" found — create one and drop PDFs in it.' }); return; }
 
   const all = await L.driveListPdfs(access, folderId);

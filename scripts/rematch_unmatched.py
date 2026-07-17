@@ -29,6 +29,8 @@ def core_keys(url):
         ks.add('pii:s' + m.group(1))
     for m in re.finditer(r'/(?:fullarticle|document|poster|records?|abstract_id=)/?(\d{6,})', u):
         ks.add('num:' + m.group(1))
+    for m in re.finditer(r'drive\.google\.com/file/d/([A-Za-z0-9_-]{20,})', u):   # Lindsay's workflow:
+        ks.add('drive:' + m.group(1))                                            # paper posted as a Drive file, lnkd.in kept
     return ks
 
 def title_words(t):
@@ -38,7 +40,7 @@ def title_words(t):
 key2item = {}
 item_tw = {}
 for it in items:
-    for u in ([it.get("url")] + list(it.get("all_urls") or []) + [it.get("ident", "")]):
+    for u in ([it.get("url")] + list(it.get("all_urls") or []) + [it.get("ident", ""), it.get("drive_url", "")]):
         for k in core_keys(u):
             key2item.setdefault(k, it["id"])
     item_tw[it["id"]] = title_words(it.get("title", ""))
